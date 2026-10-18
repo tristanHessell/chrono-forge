@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import type { Card } from '../game';
 import type { GameLog } from '../gameLog';
@@ -24,6 +25,15 @@ export function GameLogView({ log }: { log: GameLog }) {
         : t('owner.neutral'),
     });
   };
+  const cardReference = (card?: Card) => (
+    <strong
+      className="log-card-reference"
+      data-event-category={card?.category}
+      data-card-type={card?.type}
+    >
+      {cardName(card)}
+    </strong>
+  );
 
   return (
     <section className="game-log-readable" aria-label={t('log.history')}>
@@ -46,32 +56,33 @@ export function GameLogView({ log }: { log: GameLog }) {
         <ol className="game-log-entries">
           {items.map((item) => {
             const values = {
-              card: cardName(item.card),
-              target: cardName(item.target),
-              second: cardName(item.secondTarget),
+              card: cardReference(item.card),
+              target: cardReference(item.target),
+              second: cardReference(item.secondTarget),
+              action: item.move,
               row: item.position?.row ?? 0,
               column: item.position?.column ?? 0,
             };
             const description = (() => {
               switch (item.move) {
                 case 'playEvent':
-                  return t('log.action.confirm', values);
+                  return 'log.action.confirm';
                 case 'confirmPlacement':
-                  return t('log.action.confirm', values);
+                  return 'log.action.confirm';
                 case 'replacePendingCard':
-                  return t('log.action.replace', values);
+                  return 'log.action.replace';
                 case 'movePendingCard':
-                  return t('log.action.move', values);
+                  return 'log.action.move';
                 case 'returnPendingCard':
-                  return t('log.action.return', values);
+                  return 'log.action.return';
                 case 'discardCard':
-                  return t('log.action.discard', values);
+                  return 'log.action.discard';
                 case 'manipulate':
                   return item.card?.type === 'manipulation'
-                    ? t(`log.action.${item.card.action}`, values)
-                    : t('log.action.other', { action: item.move });
+                    ? `log.action.${item.card.action}`
+                    : 'log.action.other';
                 default:
-                  return t('log.action.other', { action: item.move });
+                  return 'log.action.other';
               }
             })();
 
@@ -83,14 +94,9 @@ export function GameLogView({ log }: { log: GameLog }) {
                     count: item.turn,
                   })}
                 </small>
-                <span>{description}</span>
-                {item.drawn.length > 0 && (
-                  <span>
-                    {t('log.drawn', {
-                      cards: item.drawn.map(cardName).join(', '),
-                    })}
-                  </span>
-                )}
+                <span>
+                  <FormattedMessage id={description} values={values} />
+                </span>
                 {item.nextPlayer && (
                   <small>
                     {t('log.nextPlayer', {

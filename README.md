@@ -60,7 +60,8 @@ the same configuration for inline spelling feedback.
 ### Debugging with game logs
 
 Use **Game Log** to read the action history, including player names, card names,
-placements and draws. The modal also shows the initial seed and player
+placements. Card references are highlighted; drawn-card details are hidden.
+The modal also shows the initial seed and player
 count. **Export JSON** reveals a copyable JSON replay; **Import JSON** accepts
 that text and recreates the game. Only confirmed actions are logged: draft
 selections, replacements, movements, and returns to hand are omitted.

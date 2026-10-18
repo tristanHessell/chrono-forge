@@ -169,6 +169,22 @@
   margin: 0.2rem 0;
 }
 
+.log-card-reference {
+  display: inline-block;
+  margin: 0.15rem 0;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--category-border, var(--accent-text));
+  border-radius: 0.3rem;
+  color: var(--text);
+  background: var(--control-bg);
+  font-size: 0.9em;
+  font-weight: 750;
+}
+
+.log-card-reference[data-card-type='manipulation'] {
+  border-color: #b58cff;
+}
+
 body {
   margin: 0;
   min-width: 320px;
