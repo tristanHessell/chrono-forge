@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file gives rules to Claude Code for work in this repository.
+This file gives repository rules to Claude Code and Codex.
 
 ## Writing style for non-user text
 
@@ -78,22 +78,133 @@ The GitHub Actions workflow runs the full quality checks on pull requests and pu
 
 ## Architecture
 
-TODO
+Chrono-Forge uses React, TypeScript, Vite, and boardgame.io.
+The local client supports two to four players.
+The human uses player ID `0`.
+The other seats use computer players.
+
+- `src/main.tsx` mounts the application with the internationalisation provider and theme setup.
+- `src/App.tsx` creates seeded client sessions.
+  A new game or player count change creates a new session.
+- `src/game.ts` defines the state, moves, turn progression, undo history, and end conditions.
+- `src/data/cards.json` lists every deck card and the neutral starting card.
+  Edit this catalog to change the cards.
+  Give each copy a unique ID.
+- `src/cardCatalog.ts` validates the catalog and copies its cards for each game.
+- `src/gameRules.ts` contains pure placement rules and destination discovery.
+- `src/manipulationRules.ts` validates and applies Manipulations.
+- `src/scoring.ts` calculates base points and timeline bonuses.
+- `src/computer.ts` chooses actions from the computer's hand and the public board.
+  Do not give the computer access to other hands or the deck order.
+- `src/useComputerOpponent.ts` schedules computer actions and handles pauses.
+- `src/GameBoard.tsx` coordinates board interactions and dispatches moves.
+- `src/components/` contains the hands, cards, slots, toolbar, results, and log modal.
+- `src/handOrder.ts` manages visual hand order.
+  Visual order does not change game state.
+- `src/gameLog.ts` exports confirmed card uses and replays seeded games.
+  `src/gameLogSummary.ts` creates human-readable descriptions.
+- `src/theme.ts` selects the light or dark theme.
+  The styles use theme variables.
+
+Keep shared rule checks in the rule modules.
+Use the same rules for moves, UI destinations, and computer decisions.
+Keep the game state independent of translated labels and view settings.
+
+### Game logs
+
+Build logs from the current applied history.
+Exclude pending placements, undone actions, abandoned branches, and undo or redo commands.
+Record each confirmed Event with its final card and position.
+Show card references distinctly in the modal.
+Do not show drawn cards in the human-readable log.
+
+Replays require matching rules and card definitions.
+Increment `rulesVersion` in `src/gameLog.ts` for incompatible changes.
+Validate an imported log before replacing the current session.
+Keep computers paused during log inspection and after import.
+
+### Internationalisation
+
+The UI uses `react-intl`.
+`src/i18n/en.json` contains the English messages.
+`GameIntlProvider` wraps the application.
+English browser locales determine number formatting.
+Other languages currently use English.
+
+- Use the typed `useMessages` hook for UI text and accessibility labels.
+- Use `useIntl` for numbers and percentages.
+- Keep card IDs, state types, and move names independent of the locale.
+- Preserve message IDs and ICU placeholders when translating the catalog.
+- Register each new catalog and locale in `GameIntlProvider`.
+
+The boardgame.io developer panel uses the library's own English text.
+
+### Tests
+
+Keep unit tests beside the source in `*.test.ts` or `*.test.tsx` files.
+The `tests/` directory contains tests for the quality tools.
+Add regression tests for changes to placement rules, Manipulations, scoring, turns, or replay behaviour.
+Use deterministic seeds or fixtures to reproduce game cases.
+
+The manual simulations use the real game client.
+`vitest.simulation.config.ts` selects `simulations/**/*.simulation.ts` separately from the normal tests.
+Do not add these simulations to `npm run check` or the pull request workflow.
+Simulation reports belong in the ignored `simulation-results/` directory.
+Count only explicit hand discards in the discard statistics.
+Exclude used Manipulations and overwritten Events from those statistics.
+
+## Code style
+
+- Put a blank line before and after each group of variable declarations, including exported variables.
+  Consecutive declarations can stay together.
+- Put a blank line before each return statement.
+  A function with only a return statement needs no extra blank line.
+- Use braces for all control-flow bodies, including single-statement `if` and `else` branches.
+- Order imports by side effects, Node built-ins, third-party packages, absolute paths, then relative paths.
+  Preserve the relative order of side-effect imports.
+  Separate the groups with blank lines.
+  Sort module paths and named imports alphabetically.
+  Put type-only imports before value imports from the same module.
+- Use Prettier with semicolons, single quotes, trailing commas, and an 80-character line width.
+
+Run `npm run format` to apply ESLint fixes and Prettier formatting.
+Run `npm run lint:fix` to apply only ESLint fixes.
+
+## Commit and pull request checks
+
+`npm ci` and `npm install` install the Husky hook through `npm run prepare`.
+Run `npm run prepare` if the hooks need installation again.
+The pre-commit hook checks staged files with ESLint, Prettier, and CSpell.
+It also checks `package.json` when that file changes.
+The checks do not fix files automatically.
+Partially staged files keep their unstaged changes.
+Fix failures before staging the corrected files.
+
+The **Quality checks** workflow also supports manual runs.
+It uses a read-only token and action versions pinned to commit IDs.
+Repository administrators can require this check through branch protection.
 
 ## Tooling notes
 
-- ESLint uses the flat config format, in `eslint.config.js`, with ESLint 10 and `typescript-eslint`.
-  Reference the flat preset from `eslint-plugin-react-hooks` as `reactHooks.configs.flat['recommended-latest']` - do not use the old top-level export.
-  `eslint-config-prettier` must be the last entry in the config, to stop ESLint rules from conflicting with Prettier rules.
-- Stylelint uses `stylelint-config-standard`, `stylelint-config-css-modules`, and the recommended config from `stylelint-plugin-defensive-css`. It overrides `selector-class-pattern` to `^[a-z][a-zA-Z0-9]*$` because `stylelint-config-css-modules` does not itself relax that rule for camelCase class names, and allows intentional global/theme selectors in `defensive-css/require-pure-selectors`.
-- cspell uses the config file `cspell.json`, set to British English (`en-GB`).
-  Add a genuinely new, correct project word to the `words` list; do not turn off a spelling check.
-- markdownlint uses `.markdownlint-cli2.jsonc` for all Markdown files, including files in hidden directories.
-  Use the default rules except `MD013` for one sentence per line and `MD033` for the README logo image.
+- ESLint 9 uses the flat config in `eslint.config.js` with `typescript-eslint`.
+  React Hooks and React Refresh rules check the React code.
+  `@stylistic` checks blank lines.
+  `eslint-plugin-simple-import-sort` checks import order.
+- Prettier uses `.prettierrc.json`.
+  ESLint and Prettier both contribute to the formatting checks.
+- CSpell uses `cspell.json` with English and British English dictionaries.
+  It checks source, configuration, documentation, and the GitHub workflow.
+  It excludes dependencies, generated builds, and the lockfile.
+  Add correct project words to its `words` list.
+  Do not disable a spelling check to hide an error.
+  Editor extensions can use the same configuration.
 - npm-package-json-lint uses the config file `.npmpackagejsonlintrc.json`.
-  The rules `prefer-absolute-version-dependencies` and `prefer-absolute-version-devDependencies` require an exact version for each package in `dependencies` and in `devDependencies` - no `^` and no `~` prefix.
-  Pin a new dependency to its exact installed version, from `package-lock.json`, when you add it.
+  Runtime, development, and peer dependencies require exact versions without `^` or `~` prefixes.
+  Optional dependencies are excluded from package validation.
+  `.npmrc` sets `save-exact=true` for new installations.
+  Pin each new dependency to its installed version from `package-lock.json`.
+  Commit the lockfile with dependency changes.
 - The file `.nvmrc` sets the Node version for this project.
   Run `nvm use` to switch to this version locally.
-  The GitHub Actions workflow reads the same file, through the setting `node-version-file: .nvmrc` in `actions/setup-node`, so CI and local development never drift apart.
-  To change the Node version, edit only the file `.nvmrc`.
+  The GitHub workflow reads the same file through `node-version-file: .nvmrc` in `actions/setup-node`.
+  Change the Node version in `.nvmrc` instead of duplicating it in the workflow.
