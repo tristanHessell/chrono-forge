@@ -14,13 +14,9 @@ npm run dev
 
 Then open the local URL printed by Vite.
 
-`.nvmrc` pins Node.js to 24.16.0, matching the runtime used for development.
-Runtime, development, and peer dependency versions must be exact. `.npmrc` sets
-`save-exact=true` so new `npm install` commands keep that policy. Use `npm ci`
-for reproducible installs; transitive versions are recorded in `package-lock.json`.
-Package linting calls `npm-package-json-lint` directly, using its built-in
-absolute-version rules for runtime, development, and peer dependencies. Optional
-dependencies are excluded from package validation.
+`.nvmrc` selects the Node.js version for local development and CI.
+Use `npm ci` for reproducible installs from `package-lock.json`.
+See [CLAUDE.md](./CLAUDE.md) for repository rules, architecture, and contributor guidance.
 
 ## Commands
 
@@ -40,42 +36,11 @@ dependencies are excluded from package validation.
 
 ### Commit and pull request checks
 
-`npm ci` and `npm install` install the Husky hook through `npm run prepare`.
-The pre-commit hook runs `lint-staged` against the staged files.
-It checks ESLint, Prettier, spelling, and the package manifest where applicable.
-The checks do not change files automatically.
-Use `npm run format` to fix spacing and formatting, then stage the corrected files.
-Partially staged files keep their unstaged changes.
-Run `npm run prepare` again if the Git hooks need installation.
+The pre-commit hook checks staged files without automatic changes.
+The **Quality checks** workflow runs the full checks on pull requests and pushes to `main`.
+See [CLAUDE.md](./CLAUDE.md#commit-and-pull-request-checks) for hook setup and workflow details.
 
-The **Quality checks** GitHub Actions workflow runs on pull requests and pushes to `main`.
-It also supports manual runs.
-It uses the Node.js version from `.nvmrc` and installs the dependencies with `npm ci`.
-It runs `npm run check` for lint, formatting, spelling, unit tests, and the production build.
-The manual computer simulations do not run in this workflow.
-The workflow uses a read-only token and pins the action versions to commit IDs.
-Repository administrators can require **Quality checks** in the branch protection settings.
-
-ESLint requires a blank line before and after a group of variable declarations (including
-exported variables) and before a return statement. Consecutive declarations can
-stay together, and a function containing only a return needs no extra blank line.
-Control-flow bodies, including single-statement `if` and `else` branches, always
-require braces.
-Imports are checked and auto-fixed with `eslint-plugin-simple-import-sort`:
-side-effect imports first (preserving their relative order), then Node built-ins,
-third-party packages, absolute imports, and relative imports. Groups are separated
-by blank lines; module paths and named imports are sorted alphabetically. Type-only
-imports sort before value imports from the same module. `npm run format` and
-`npm run lint:fix` apply this order automatically.
-Prettier preserves this spacing; run both `npm run lint` and `npm run format:check`
-to verify the full formatting policy.
-
-Spellchecking uses `cspell.json` for source files and documentation, excluding
-dependencies, generated builds, and the lockfile. Add legitimate game terms and
-library names to its `words` list when needed. CSpell editor extensions can use
-the same configuration for inline spelling feedback.
-
-## Project structure
+## Debugging and simulations
 
 ### Debugging with game logs
 
@@ -88,8 +53,6 @@ selections, replacements, movements, and returns to hand are omitted.
 Undo and redo are not entries: undo removes the undone card use from the log,
 redo restores it, and a new action after undo replaces that abandoned branch.
 The JSON replay contains the resulting card uses, not the debugging history.
-The modal and JSON export are built from the current game's applied undo-history
-snapshots, so undone moves and abandoned branches are never included.
 A confirmed Event is a single action recording its final card and position. Exporting while
 a card is unconfirmed replays the last confirmed state, not that draft. Earlier
 JSON logs using the same rules version are converted on import. Leave the
@@ -101,9 +64,8 @@ Computers are paused while viewing logs and after loading a replay; use
 
 Logs recreate game data, not view settings such as zoom or visual hand order.
 They reveal all hands and the seeded deck order, so treat them as debugging data.
-Replays require matching game rules and card definitions; increment `rulesVersion`
-in `src/gameLog.ts` when making incompatible changes. Logs from earlier sessions
-without this feature cannot be recovered retroactively.
+Replays require matching game rules and card definitions.
+Logs from sessions before the log feature cannot be recovered.
 
 ### Manual computer simulation
 
@@ -142,7 +104,7 @@ game failed. The separate configuration selects `simulations/**/*.simulation.ts`
 these files do not match the normal test pattern, so `npm test`, build, lint, and
 format checks do not execute this batch.
 
-### Game code
+## Playing the game
 
 Choose 2, 3, or 4 players in the top-bar Players selector (this starts a new game).
 Player 0 is you; the other seats are computers, with visible hands and individually
@@ -156,51 +118,21 @@ use only its hand and the public board, not your hand or the deck order. Its han
 remains visible for this prototype. Computer moves run locally after a short
 delay. Undo/redo pauses the computer so restored positions can be inspected;
 click Resume computer to continue. New game resumes normal computer play.
-The decision logic is in `src/computer.ts`, with turn scheduling in
-`src/useComputerOpponent.ts`.
 
-The UI uses `react-intl`, with English messages in `src/i18n/en.json` and
-`GameIntlProvider` at the application root. Browser English regional preferences
-are used for number formatting; other languages currently fall back to English.
-To add a language, translate the catalog while preserving message IDs and ICU
-placeholders, then register it and its locale in `GameIntlProvider`. Use the typed
-`useMessages` hook for UI text, including accessibility labels, and `useIntl` for
-numbers and percentages. Card IDs, types in game state, and move names remain
-locale-independent. The boardgame.io developer panel is provided by the library
-and retains its own English text.
+Event categories are Political (red border), Technological (yellow border), and Environmental (green border).
+Each decade has one card from each category.
+Categories do not change placement rules or card effects.
 
-- `src/game.ts` defines player-indexed hands, round tracking, boardgame.io moves, and end conditions.
-- `src/App.tsx` configures the client and resets the game when player count changes.
-- `src/data/cards.json` explicitly lists every deck card and the neutral starting
-  card. Edit this catalog to change cards; every copy needs its own unique ID.
-- `src/cardCatalog.ts` validates and copies the catalog for each new game.
-  Event categories are Political (red border), Technological (yellow border),
-  and Environmental (green border), with one of each per decade. The starting
-  card is neutral. Categories do not change placement rules or card effects.
-- `src/gameRules.ts` contains shared, pure placement rules and slot discovery.
-- `src/GameBoard.tsx` renders the current game state and dispatches moves.
-- `src/components/` contains focused board UI pieces for hands, slots, cards, and
-  toolbar controls.
-- `src/main.tsx` connects the game definition to the React client.
+Choose a hand card to reveal valid positions beside the cards on the table.
+You can place cards to the left, right, above, or below existing cards.
+A newly placed card stays movable until you confirm it with the control on the card.
+The pending card remains marked in your hand.
+Select another hand card to replace it at the pending position.
 
-The included single-player card table lets you choose a card and place it to
-the left, right, above, or below a card already on the table. A newly placed
-card stays movable until its position is confirmed. It is deliberately small
-and remains visibly marked in the hand, where selecting another card replaces
-it at the pending position. Cards can also be dragged from the hand to a valid
-slot, or dragged between valid slots while unconfirmed. It provides a working
-slot, dragged between valid slots while unconfirmed, or dropped directly onto
-the unconfirmed card to replace it in place. It provides a working foundation
-on which to add the real deck, rules, turn structure, and multiplayer or
-computer opponents.
-
-Valid table drop targets remain visible so a card can be dragged directly from
-the hand without selecting it first. Hovering over a valid target snaps a card
-preview into the exact grid position before the drop is committed. An
-unconfirmed card can be dragged back onto its original hand to cancel its
-placement. For the current prototype, the other player's hand is visible above
-the played-card area and its cards can be selected or dragged onto the table
-using the same controls.
+Drag a hand card to a valid position or onto the pending card to replace it.
+Drag a pending card between valid positions to change its location.
+The preview snaps to the target position during the drag.
+Drag the pending card back to your hand to cancel its placement.
 
 Drag a card across your hand to reorder it live. Neighboring cards slide into
 their new positions as you drag, and releasing keeps the displayed order.
@@ -324,6 +256,4 @@ The New game control fully resets the deck, board, hands, and starting player.
 Turns advance automatically after two actions, and refills use the remaining
 deck while preserving the played board.
 
-Placement rules live in `src/gameRules.ts`, keeping the game moves and board UI
-in sync. The tests in `src/gameRules.test.ts` cover valid and invalid merges,
-square prevention, turn refills, and undo/redo state restoration.
+See [CLAUDE.md](./CLAUDE.md#architecture) for the source module map and test guidance.
