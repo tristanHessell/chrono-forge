@@ -65,10 +65,16 @@ Write each commit message in the Conventional Commits format: `type(scope): desc
 ## Commands
 
 ```bash
-TODO
+npm ci
+npm run check
+npm run lint:staged
 ```
 
-TODO
+Run `npm run check` before you submit work.
+The command checks lint, formatting, spelling, unit tests, and the production build.
+The manual simulations stay outside the quality checks.
+The pre-commit hook uses Husky and `lint-staged` to check staged files without automatic changes.
+The GitHub Actions workflow runs the full quality checks on pull requests and pushes to `main`.
 
 ## Architecture
 
