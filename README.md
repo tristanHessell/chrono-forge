@@ -24,10 +24,12 @@ dependencies are excluded from package validation.
 
 ## Commands
 
+- `npm run check` runs the full quality checks for the repository.
 - `npm run dev` starts the development server.
 - `npm run build` type-checks and creates a production build.
 - `npm run lint` runs ESLint and package.json linting.
 - `npm run lint:package` checks package.json and exact dependency versions.
+- `npm run lint:staged` checks the staged files before a commit.
 - `npm run lint:fix` applies ESLint's automatic fixes, including blank-line spacing.
 - `npm run spellcheck` checks spelling in source, configuration, and documentation.
 - `npm run test` runs the Vitest unit-test suite once.
@@ -35,6 +37,24 @@ dependencies are excluded from package validation.
 - `npm run format` applies ESLint fixes, then formats the repository with Prettier.
 - `npm run format:check` verifies formatting without changing files.
 - `npm run preview` serves the production build locally.
+
+### Commit and pull request checks
+
+`npm ci` and `npm install` install the Husky hook through `npm run prepare`.
+The pre-commit hook runs `lint-staged` against the staged files.
+It checks ESLint, Prettier, spelling, and the package manifest where applicable.
+The checks do not change files automatically.
+Use `npm run format` to fix spacing and formatting, then stage the corrected files.
+Partially staged files keep their unstaged changes.
+Run `npm run prepare` again if the Git hooks need installation.
+
+The **Quality checks** GitHub Actions workflow runs on pull requests and pushes to `main`.
+It also supports manual runs.
+It uses the Node.js version from `.nvmrc` and installs the dependencies with `npm ci`.
+It runs `npm run check` for lint, formatting, spelling, unit tests, and the production build.
+The manual computer simulations do not run in this workflow.
+The workflow uses a read-only token and pins the action versions to commit IDs.
+Repository administrators can require **Quality checks** in the branch protection settings.
 
 ESLint requires a blank line before and after a group of variable declarations (including
 exported variables) and before a return statement. Consecutive declarations can

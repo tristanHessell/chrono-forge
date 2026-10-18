@@ -2,7 +2,10 @@
   "version": "0.2",
   "language": "en,en-GB",
   "useGitignore": true,
-  "files": ["**/*.{ts,tsx,js,json,css,html,md}"],
+  "files": [
+    "**/*.{ts,tsx,js,jsx,mjs,cjs,json,jsonc,css,html,md,yaml,yml}",
+    ".github/**/*.{yaml,yml}"
+  ],
   "ignorePaths": ["node_modules", "dist", "package-lock.json", ".git"],
   "words": [
     "boardgame",
@@ -17,6 +20,7 @@
     "minimaxmer",
     "negamax",
     "nums",
+    "nvmrc",
     "pannable",
     "redeal",
     "redeals",
