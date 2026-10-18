@@ -4,8 +4,14 @@ import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
 import { GameLogView } from './components/GameLogView';
+import setup from './fixtures/removed-time-jump.json';
 import { CardGame } from './game';
-import { exportGameLog, parseGameLog } from './gameLog';
+import {
+  currentGameLog,
+  exportGameLog,
+  parseGameLog,
+  replayGameLog,
+} from './gameLog';
 import { summarizeGameLog } from './gameLogSummary';
 import messages from './i18n/en.json';
 
@@ -56,7 +62,8 @@ it('summarises actor, card, coordinates, refill draws, turn changes and history 
   expect(html).not.toContain('Selected');
   expect(html).toContain('Confirmed');
   expect(html).toContain('Discarded');
-  expect(html).toContain('Drew:');
+  expect(html).not.toContain('Drew:');
+  expect(html.match(/class="log-card-reference"/g)).toHaveLength(2);
   expect(html).not.toContain('Undid');
   expect(html).not.toContain('Redid');
   expect(html).not.toContain('MAKE_MOVE');
@@ -77,3 +84,48 @@ it('shows seed, player count and an empty-state message before the first action'
   expect(html).toContain('No actions yet.');
   expect(html).toContain('Player 1 takes the first turn.');
 });
+
+it.each(['time-jump', 'time-swap', 'take-control'] as const)(
+  'highlights the %s card and every referenced target',
+  (action) => {
+    const client = replayGameLog(parseGameLog(JSON.stringify(setup)));
+    const manipulation = client
+      .getState()!
+      .G.hands['0'].find(
+        (card) => card.type === 'manipulation' && card.action === action,
+      )!;
+
+    if (action === 'time-jump') {
+      client.moves.manipulate(manipulation.id, 'event-1920-3', {
+        row: -1,
+        column: 1,
+      });
+    } else if (action === 'time-swap') {
+      client.moves.manipulate(manipulation.id, 'event-1920-3', 'event-1910-2');
+    } else {
+      client.moves.manipulate(manipulation.id, 'event-1940-3');
+    }
+
+    const state = client.getState()!;
+    const log = currentGameLog(setup.seed, state.G, state.ctx.currentPlayer);
+    const html = renderToStaticMarkup(
+      <IntlProvider locale="en" messages={messages}>
+        <GameLogView log={log} />
+      </IntlProvider>,
+    );
+
+    expect(log.actions).toHaveLength(5);
+    expect(html.match(/class="log-card-reference"/g)).toHaveLength(
+      action === 'time-swap' ? 8 : 7,
+    );
+    expect(html).toMatch(
+      /<strong[^>]*data-card-type="manipulation"[^>]*>Remove Event<\/strong>/,
+    );
+    expect(html).toContain(
+      `>${messages[`manipulation.${action}.name`]}</strong>`,
+    );
+    expect(html).not.toContain('Drew:');
+    expect(html).not.toContain('a card');
+    client.stop();
+  },
+);
