@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "rulesVersion": 2,
+  "seed": "df80fe20-9bf2-4723-9e46-2df7780a1488",
+  "numPlayers": 2,
+  "actions": [
+    {
+      "type": "MAKE_MOVE",
+      "payload": {
+        "type": "playEvent",
+        "args": ["event-1920-3", { "row": 0, "column": 1 }],
+        "playerID": "0"
+      }
+    },
+    {
+      "type": "MAKE_MOVE",
+      "payload": {
+        "type": "playEvent",
+        "args": ["event-1910-2", { "row": -1, "column": 0 }],
+        "playerID": "0"
+      }
+    },
+    {
+      "type": "MAKE_MOVE",
+      "payload": {
+        "type": "playEvent",
+        "args": ["event-1940-3", { "row": 0, "column": -1 }],
+        "playerID": "1"
+      }
+    },
+    {
+      "type": "MAKE_MOVE",
+      "payload": {
+        "type": "manipulate",
+        "args": ["remove-event-4", "event-1920-3"],
+        "playerID": "1"
+      }
+    }
+  ]
+}

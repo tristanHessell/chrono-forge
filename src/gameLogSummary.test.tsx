@@ -1,0 +1,79 @@
+import { Client } from 'boardgame.io/client';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { IntlProvider } from 'react-intl';
+import { expect, it } from 'vitest';
+
+import { GameLogView } from './components/GameLogView';
+import { CardGame } from './game';
+import { exportGameLog, parseGameLog } from './gameLog';
+import { summarizeGameLog } from './gameLogSummary';
+import messages from './i18n/en.json';
+
+it('summarises actor, card, coordinates, refill draws, turn changes and history without changing the game', () => {
+  const seed = 'readable-log';
+  const client = Client({ game: { ...CardGame, seed }, debug: false });
+  const initial = client.getState()!;
+  const event = initial.G.hands['0'].find((card) => card.type === 'event')!;
+
+  client.moves.playCard(event.id, { row: 0, column: 1 });
+  client.moves.movePendingCard({ row: -1, column: 0 });
+  client.moves.confirmPlacement();
+
+  const discarded = client.getState()!.G.hands['0'][0];
+
+  client.moves.discardCard(discarded.id);
+  client.moves.undoTest();
+  client.moves.redoTest();
+
+  const before = client.getState()!;
+  const log = parseGameLog(exportGameLog(seed, 2, client.log));
+  const items = summarizeGameLog(log);
+
+  expect(items).toHaveLength(2);
+  expect(items[0]).toMatchObject({
+    index: 1,
+    player: '0',
+    turn: 1,
+    move: 'playEvent',
+    card: event,
+    position: { row: -1, column: 0 },
+  });
+  expect(items[1]).toMatchObject({
+    move: 'discardCard',
+    card: discarded,
+    nextPlayer: '1',
+  });
+  expect(items[1].drawn.length).toBeGreaterThan(0);
+  expect(client.getState()).toEqual(before);
+
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <GameLogView log={log} />
+    </IntlProvider>,
+  );
+
+  expect(html).toContain('Player 1');
+  expect(html).not.toContain('Selected');
+  expect(html).toContain('Confirmed');
+  expect(html).toContain('Discarded');
+  expect(html).toContain('Drew:');
+  expect(html).not.toContain('Undid');
+  expect(html).not.toContain('Redid');
+  expect(html).not.toContain('MAKE_MOVE');
+  expect(html).not.toContain(event.id);
+  client.stop();
+});
+
+it('shows seed, player count and an empty-state message before the first action', () => {
+  const log = parseGameLog(exportGameLog('initial-seed', 4));
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <GameLogView log={log} />
+    </IntlProvider>,
+  );
+
+  expect(summarizeGameLog(log)).toEqual([]);
+  expect(html).toContain('initial-seed');
+  expect(html).toContain('No actions yet.');
+  expect(html).toContain('Player 1 takes the first turn.');
+});

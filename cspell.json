@@ -1,0 +1,25 @@
+{
+  "version": "0.2",
+  "language": "en,en-GB",
+  "useGitignore": true,
+  "files": ["**/*.{ts,tsx,js,json,css,html,md}"],
+  "ignorePaths": ["node_modules", "dist", "package-lock.json", ".git"],
+  "words": [
+    "boardgame",
+    "clsx",
+    "Comlink",
+    "Flexbox",
+    "gameover",
+    "GSAP",
+    "MCTS",
+    "minimaxer",
+    "minimaxmer",
+    "negamax",
+    "nums",
+    "pannable",
+    "redeal",
+    "redeals",
+    "vitest",
+    "zoomable"
+  ]
+}

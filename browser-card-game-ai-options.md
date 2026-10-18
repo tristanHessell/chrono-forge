@@ -71,12 +71,12 @@ MCTS can use whatever time budget is available, but its results vary and its imp
 
 ## Relevant Libraries
 
-| Library | Provides | Best use | Main tradeoff |
-|---|---|---|---|
-| **boardgame.io** | Turn and state management, deterministic randomness, game logs, a random bot, and an MCTS bot | Starting a turn-based card game from scratch | It influences the architecture of the entire game rather than supplying only an AI algorithm. Its published npm release is several years old, so compatibility should be tested. |
-| **minimaxer** | Minimax, negamax, alpha-beta pruning, iterative deepening, fixed-depth and time-limited searches, move ordering, and randomized selection | Adding search to an existing TypeScript game engine | It has a small ecosystem. Review and pin the dependency before adopting it. The repository currently lists the npm package name as `minimaxmer`, with an extra `m`. |
-| **Comlink** | A convenient RPC-style interface for Web Workers | Preventing AI calculations from freezing the browser interface | It simplifies worker communication but does not provide an AI algorithm. |
-| **TensorFlow.js** | Browser-based neural-network inference and training | Experimental learned agents backed by substantial training data | It adds far more complexity than most card games require and does not automatically produce a capable opponent. |
+| Library           | Provides                                                                                                                                  | Best use                                                        | Main tradeoff                                                                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **boardgame.io**  | Turn and state management, deterministic randomness, game logs, a random bot, and an MCTS bot                                             | Starting a turn-based card game from scratch                    | It influences the architecture of the entire game rather than supplying only an AI algorithm. Its published npm release is several years old, so compatibility should be tested. |
+| **minimaxer**     | Minimax, negamax, alpha-beta pruning, iterative deepening, fixed-depth and time-limited searches, move ordering, and randomized selection | Adding search to an existing TypeScript game engine             | It has a small ecosystem. Review and pin the dependency before adopting it. The repository currently lists the npm package name as `minimaxmer`, with an extra `m`.              |
+| **Comlink**       | A convenient RPC-style interface for Web Workers                                                                                          | Preventing AI calculations from freezing the browser interface  | It simplifies worker communication but does not provide an AI algorithm.                                                                                                         |
+| **TensorFlow.js** | Browser-based neural-network inference and training                                                                                       | Experimental learned agents backed by substantial training data | It adds far more complexity than most card games require and does not automatically produce a capable opponent.                                                                  |
 
 Regardless of the library, the game must still define legal moves, state transitions, terminal conditions, and a position evaluation or simulation policy.
 
@@ -86,7 +86,7 @@ Search should run in a Web Worker so card dragging and animations remain respons
 
 ```ts
 // ai.worker.ts
-import { chooseMove } from "./ai";
+import { chooseMove } from './ai';
 
 self.onmessage = (event: MessageEvent<GameState>) => {
   const move = chooseMove(event.data);
@@ -96,16 +96,15 @@ self.onmessage = (event: MessageEvent<GameState>) => {
 
 ```ts
 // Application thread
-const aiWorker = new Worker(
-  new URL("./ai.worker.ts", import.meta.url),
-  { type: "module" }
-);
+const aiWorker = new Worker(new URL('./ai.worker.ts', import.meta.url), {
+  type: 'module',
+});
 
 aiWorker.postMessage(state);
 
 aiWorker.onmessage = ({ data: move }: MessageEvent<Move>) => {
   // Validate the move through the game engine before applying it.
-  dispatch({ type: "PLAY_MOVE", move });
+  dispatch({ type: 'PLAY_MOVE', move });
 };
 ```
 

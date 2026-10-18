@@ -1,18 +1,18 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { Client } from 'boardgame.io/react'
-import { GameBoard } from './GameBoard'
-import { CardGame } from './game'
-import './styles.css'
+import './styles.css';
 
-const CardGameClient = Client({
-  game: CardGame,
-  board: GameBoard,
-  debug: import.meta.env.DEV,
-})
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import { App } from './App';
+import { GameIntlProvider } from './i18n/GameIntlProvider';
+import { initializeTheme } from './theme';
+
+initializeTheme();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <CardGameClient />
+    <GameIntlProvider>
+      <App />
+    </GameIntlProvider>
   </StrictMode>,
-)
+);

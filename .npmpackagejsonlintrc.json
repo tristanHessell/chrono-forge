@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "dependencies-type": "error",
+    "devDependencies-type": "error",
+    "peerDependencies-type": "error",
+    "no-duplicate-properties": "error",
+    "prefer-absolute-version-dependencies": "error",
+    "prefer-absolute-version-devDependencies": "error",
+    "prefer-absolute-version-peerDependencies": "error"
+  }
+}
