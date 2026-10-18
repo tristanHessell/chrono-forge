@@ -1,4 +1,4 @@
-# Browser Card Game
+# Chrono-Forge
 
 A browser-based card game starter built with React, TypeScript, Vite, and
 [boardgame.io](https://boardgame.io/).
