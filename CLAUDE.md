@@ -87,9 +87,11 @@ The other seats use computer players.
 - `src/App.tsx` creates seeded client sessions.
   A new game or player count change creates a new session.
 - `src/game.ts` defines the state, moves, turn progression, undo history, and end conditions.
-- `src/data/cards.json` lists every deck card and the neutral starting card.
-  Edit this catalog to change the cards.
+- `src/cards/` contains one TypeScript file for each card, including the neutral starting card.
+  Edit these typed definitions to change the cards.
   Give each copy a unique ID.
+  Register each card in `src/cards/index.ts`.
+  Preserve the deck order to keep existing seeded replays compatible.
 - `src/cardCatalog.ts` validates the catalog and copies its cards for each game.
 - `src/gameRules.ts` contains pure placement rules and destination discovery.
 - `src/manipulationRules.ts` validates and applies Manipulations.

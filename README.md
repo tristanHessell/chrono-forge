@@ -178,7 +178,7 @@ explains it. Cards on the table display the icon without a tooltip.
 
 There are four each of **Time Jump**, **Time Swap**, **Take Control**, and
 **Remove Event**, all listed in
-the JSON catalog. Select a Manipulation card in your hand, then select a highlighted
+the TypeScript catalog. Select a Manipulation card in your hand, then select a highlighted
 Event on the board. For Time Jump, choose a highlighted empty destination or
 overwrite a removed Event; for
 Time Swap, choose a highlighted second Event. Cancel targeting to change your mind
