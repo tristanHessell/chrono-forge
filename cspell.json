@@ -6,6 +6,7 @@
   "ignorePaths": ["node_modules", "dist", "package-lock.json", ".git"],
   "words": [
     "boardgame",
+    "Chrono-Forge",
     "clsx",
     "Comlink",
     "Flexbox",
