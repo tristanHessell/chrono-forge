@@ -9,6 +9,7 @@ type Props = {
   onPlayerCountChange: (count: PlayerCount) => void;
   onNewGame: () => void;
   onOpenLog: () => void;
+  onOpenCatalog: () => void;
 };
 
 export function GameMenu({
@@ -16,6 +17,7 @@ export function GameMenu({
   onPlayerCountChange,
   onNewGame,
   onOpenLog,
+  onOpenCatalog,
 }: Props) {
   const t = useMessages();
   const menu = useRef<HTMLDetailsElement>(null);
@@ -97,6 +99,16 @@ export function GameMenu({
         </label>
         <small className="game-menu-hint">{t('game.playersHint')}</small>
         <ThemeToggle />
+        <button
+          className="history-button"
+          type="button"
+          onClick={() => {
+            closeMenu(true);
+            onOpenCatalog();
+          }}
+        >
+          {t('catalog.title')}
+        </button>
         <button
           className="history-button"
           type="button"

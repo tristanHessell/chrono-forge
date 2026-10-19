@@ -31,6 +31,7 @@ export function CardEffect({
     top: number;
     left: number;
     above: boolean;
+    container: HTMLElement;
   } | null>(null);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export function CardEffect({
         left: Math.max(8, Math.min(rect.left, window.innerWidth - 288)),
         top: above ? rect.top - 10 : rect.bottom + 10,
         above,
+        container: card.closest('dialog') ?? document.body,
       });
     };
     const hide = () => setAnchor(null);
@@ -117,7 +119,7 @@ export function CardEffect({
             <strong>{t(nameId)}</strong>
             <p>{t(descriptionId)}</p>
           </div>,
-          document.body,
+          anchor.container,
         )}
     </>
   );

@@ -18,6 +18,7 @@ it.each([2, 3, 4] as const)(
           playerCount={playerCount}
           onNewGame={() => {}}
           onOpenLog={() => {}}
+          onOpenCatalog={() => {}}
           onPlayerCountChange={() => {}}
         />
       </IntlProvider>,
@@ -28,6 +29,7 @@ it.each([2, 3, 4] as const)(
     expect(html).toContain('aria-label="Game menu"');
     expect(html).toContain('>New game</button>');
     expect(html).toContain('>Game Log</button>');
+    expect(html).toContain('>All cards</button>');
     expect(html).toContain('>Theme toggle</button>');
     expect(html).toContain('aria-label="Players"');
     expect(html).toContain(

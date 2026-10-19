@@ -15,6 +15,7 @@ import { useIntl } from 'react-intl';
 import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
 import { BoardToolbar } from './components/BoardToolbar';
 import { BoardZoomControls } from './components/BoardZoomControls';
+import { CardCatalogDialog } from './components/CardCatalogDialog';
 import { CardEffect } from './components/CardEffect';
 import { CardHand } from './components/CardHand';
 import { GameLogControls } from './components/GameLogControls';
@@ -100,6 +101,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const [boardZoom, setBoardZoom] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const boardViewport = useRef<HTMLDivElement>(null);
+  const cardCatalogDialog = useRef<HTMLDialogElement>(null);
   const lastJumpDestination = useRef<CardPosition | null>(null);
   const panStart = useRef({
     pointerX: 0,
@@ -681,6 +683,14 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               playerCount: G.playerIds.length as PlayerCount,
               onPlayerCountChange: setPlayerCount,
               onNewGame: startNewGame,
+              onOpenCatalog: () => {
+                setComputerPaused(true);
+                touchDrag.controller.cancel();
+                finishDrag();
+                setSelectedCardId(null);
+                setManipulationTargetId(null);
+                cardCatalogDialog.current?.showModal();
+              },
             }}
           />
         </div>
@@ -1038,6 +1048,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           </span>
         </div>
       )}
+      <CardCatalogDialog dialogRef={cardCatalogDialog} />
       <footer>
         {finished ? (
           <GameResults played={G.played} playerIds={G.playerIds} />

@@ -107,6 +107,9 @@ format checks do not execute this batch.
 ## Playing the game
 
 Open **Menu** for New game, Players, the theme, and Game Log.
+Choose **All cards** to inspect the complete catalog and its distribution.
+The catalog shows each copy, its ID, Event categories, Manipulation types, and the starting card.
+Its counts come from the configured deck, not the remaining cards in the current game.
 Choose 2, 3, or 4 players with the Players selector (this starts a new game).
 Player 0 is you; the other seats are computers, with visible hands and individually
 labelled cards and scores. Each player starts with five cards, takes two actions,
