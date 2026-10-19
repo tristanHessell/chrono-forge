@@ -111,6 +111,9 @@ The Theme selector offers Light, Dark, Greyscale Light, and Greyscale Dark.
 The browser saves your choice across reloads.
 Greyscale removes colour from the game and its dialogs to help test colour-independent cues.
 It does not simulate specific types of colour blindness.
+Card backgrounds identify categories without colour: Politics uses stripes, Tech uses a grid, Nature uses dots, and Command uses checks.
+Use **Colour-independent backgrounds** in Menu to turn these patterns on or off.
+The browser saves this setting separately from the theme.
 Choose **All cards** to inspect the complete catalog and its distribution.
 The catalog shows each copy, its ID, Event categories, Manipulation types, and the starting card.
 Its counts come from the configured deck, not the remaining cards in the current game.
@@ -127,7 +130,7 @@ remains visible for this prototype. Computer moves run locally after a short
 delay. Undo/redo pauses the computer so restored positions can be inspected;
 click Resume computer to continue. New game resumes normal computer play.
 
-Event categories are Political (red border), Technological (yellow border), and Environmental (green border).
+Event categories are Politics (red border), Tech (yellow border), and Nature (green border).
 Each decade has one card from each category.
 Categories do not change placement rules or card effects.
 

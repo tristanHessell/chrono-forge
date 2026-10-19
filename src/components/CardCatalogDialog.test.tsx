@@ -28,12 +28,16 @@ it('shows every card copy and the starting card exactly once', () => {
   expect(html).not.toContain('open=""');
 });
 
-it('shows deck totals, categories, effects, and Manipulation distributions', () => {
+it('shows deck totals, categories, effects, and Command distributions', () => {
   const html = renderCatalog();
 
   expect(html).toContain('<dt>Deck cards</dt><dd>46</dd>');
   expect(html).toContain('<dt>Event</dt><dd>30</dd>');
-  expect(html).toContain('<dt>Manipulation</dt><dd>16</dd>');
+  expect(html).toContain('<dt>Command</dt><dd>16</dd>');
+  expect(html).toContain('<h3>Politics <span>10 cards</span></h3>');
+  expect(html).toContain('<h3>Tech <span>10 cards</span></h3>');
+  expect(html).toContain('<h3>Nature <span>10 cards</span></h3>');
+  expect(html).not.toContain('>Manipulation<');
   expect(html).toContain('<dt>Starting card</dt><dd>1</dd>');
   expect(html.match(/>10 cards<\/span>/g)).toHaveLength(3);
   expect(html.match(/>4 cards<\/span>/g)).toHaveLength(4);

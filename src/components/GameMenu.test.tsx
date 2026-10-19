@@ -31,6 +31,8 @@ it.each([2, 3, 4] as const)(
     expect(html).toContain('>Game Log</button>');
     expect(html).toContain('>All cards</button>');
     expect(html).toContain('>Theme toggle</button>');
+    expect(html).toContain('Colour-independent backgrounds');
+    expect(html).toContain('type="checkbox"');
     expect(html).toContain('aria-label="Players"');
     expect(html).toContain(
       `<option value="${playerCount}" selected="">${playerCount}</option>`,
