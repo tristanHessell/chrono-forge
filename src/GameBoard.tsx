@@ -14,13 +14,13 @@ import { useIntl } from 'react-intl';
 
 import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
 import { BoardToolbar } from './components/BoardToolbar';
+import { BoardZoomControls } from './components/BoardZoomControls';
 import { CardEffect } from './components/CardEffect';
 import { CardHand } from './components/CardHand';
 import { GameLogControls } from './components/GameLogControls';
 import { GameResults } from './components/GameResults';
 import { PlacementSlot } from './components/PlacementSlot';
 import { PlayedCard } from './components/PlayedCard';
-import { ThemeToggle } from './components/ThemeToggle';
 import {
   type CardGameState,
   type CardPosition,
@@ -574,28 +574,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               setSelectedCardId(null);
               setManipulationTargetId(null);
             }}
+            menuProps={{
+              playerCount: G.playerIds.length as PlayerCount,
+              onPlayerCountChange: setPlayerCount,
+              onNewGame: startNewGame,
+            }}
           />
-          <button className="reset" onClick={startNewGame} type="button">
-            {t('game.new')}
-          </button>
-          <ThemeToggle />
-          <label className="player-count">
-            {t('game.players')}
-            <select
-              aria-label={t('game.players')}
-              title={t('game.playersHint')}
-              value={G.playerIds.length}
-              onChange={(event) =>
-                setPlayerCount(Number(event.target.value) as PlayerCount)
-              }
-            >
-              {[2, 3, 4].map((count) => (
-                <option key={count} value={count}>
-                  {count}
-                </option>
-              ))}
-            </select>
-          </label>
         </div>
       </header>
 
@@ -630,7 +614,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         <div className="play-area">
           <div className="area-heading">
             <div className="area-title-with-deck">
-              <p className="area-label">{t('board.title')}</p>
               <div
                 aria-label={t('deck.label', { count: G.deck.length })}
                 className="deck-display"
@@ -679,203 +662,208 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             <BoardToolbar
               playerIds={G.playerIds}
               scores={calculateScores(G.played)}
+            />
+          </div>
+          <div className="board-surface">
+            <BoardZoomControls
               boardZoom={boardZoom}
               onResetZoom={() => setBoardZoom(1)}
               onZoomChange={adjustBoardZoom}
             />
-          </div>
-          <div
-            ref={boardViewport}
-            aria-label={t('board.label')}
-            className={clsx('played-viewport', { 'is-panning': isPanning })}
-            onPointerCancel={stopBoardPan}
-            onPointerDown={startBoardPan}
-            onPointerMove={panBoard}
-            onPointerUp={stopBoardPan}
-          >
             <div
-              className="played-grid"
-              style={{ ...gridStyle, zoom: boardZoom }}
+              ref={boardViewport}
+              aria-label={t('board.label')}
+              className={clsx('played-viewport', { 'is-panning': isPanning })}
+              onPointerCancel={stopBoardPan}
+              onPointerDown={startBoardPan}
+              onPointerMove={panBoard}
+              onPointerUp={stopBoardPan}
             >
-              {G.played.length === 0 && !G.pending && showPlacementSlots ? (
-                <PlacementSlot
-                  ariaLabel={t('placement.center')}
-                  draggedCard={draggedCardDetails}
-                  initial
-                  isDragActive={Boolean(draggedCard)}
-                  isPreview={Boolean(
-                    draggedCardDetails && isSnappedTo({ row: 0, column: 0 }),
-                  )}
-                  onClick={() => placeSelectedCard({ row: 0, column: 0 })}
-                  onDragEnter={(event) =>
-                    snapToPosition(event, { row: 0, column: 0 })
-                  }
-                  onDragOver={allowDrop}
-                  onDrop={(event) => dropCard(event, { row: 0, column: 0 })}
-                />
-              ) : (
-                <>
-                  {G.played
-                    .filter(
-                      (card) =>
-                        !card.removed ||
-                        !(
-                          (G.pending &&
-                            positionKey(card) === positionKey(G.pending)) ||
-                          (showPlacementSlots &&
-                            availablePositions.some(
-                              (position) =>
-                                positionKey(position) === positionKey(card),
-                            ))
-                        ),
-                    )
-                    .map((card) => (
-                      <PlayedCard
-                        key={card.id}
-                        style={positionStyle(card)}
-                        card={card}
-                        isLatest={
-                          card.owner !== 'neutral' &&
-                          card.id === G.played.at(-1)?.id
-                        }
-                        links={renderLinkDirections(card)}
-                        selected={Boolean(
-                          manipulation && manipulationTargetId === card.id,
-                        )}
-                        onTarget={
-                          manipulationTargets.some(
-                            (target) => target.id === card.id,
-                          )
-                            ? () => {
-                                if (
-                                  manipulation?.action === 'take-control' ||
-                                  manipulation?.action === 'remove-event'
-                                ) {
-                                  gameMoves.manipulate(
-                                    manipulation.id,
-                                    card.id,
-                                  );
-                                  setSelectedCardId(null);
-                                  setManipulationTargetId(null);
-
-                                  return;
-                                }
-                                if (
-                                  manipulation?.action === 'time-swap' &&
-                                  manipulationTargetId
-                                ) {
-                                  gameMoves.manipulate(
-                                    manipulation.id,
-                                    manipulationTargetId,
-                                    card.id,
-                                  );
-                                  setSelectedCardId(null);
-                                  setManipulationTargetId(null);
-                                } else {
-                                  setManipulationTargetId(card.id);
-                                }
-                              }
-                            : undefined
-                        }
-                      />
-                    ))}
-                  {G.pending && (
-                    <div
-                      aria-label={t('placement.pending')}
-                      className={clsx(
-                        'card',
-                        'pending-card',
-                        `owner-${displayedPendingOwner}`,
-                        { 'replacement-target': pendingShowsReplacement },
-                      )}
-                      data-owner={displayedPendingOwner}
-                      data-card-type={displayedPendingCard?.type}
-                      data-event-category={displayedPendingCard?.category}
-                      draggable={activeOwner === '0' && !finished}
-                      key={`${G.pending.id}:${G.pending.row}:${G.pending.column}`}
-                      onDragEnd={finishDrag}
-                      onDragEnter={(event) => snapToPosition(event, G.pending!)}
-                      onDragOver={allowDrop}
-                      onDragStart={(event) =>
-                        beginDrag(event, G.pending!.id, 'pending')
-                      }
-                      onDrop={dropOnPendingCard}
-                      role="region"
-                      style={positionStyle(G.pending)}
-                    >
-                      {renderLinkDirections(G.pending)}
-                      <CardEffect effect={displayedPendingCard?.effect} />
-                      <strong>
-                        {displayedPendingCard &&
-                          intl.formatNumber(displayedPendingCard.number, {
-                            useGrouping: false,
-                          })}
-                      </strong>
-                      <span className="card-type-name">
-                        {t(
-                          displayedPendingCard?.category
-                            ? `card.category.${displayedPendingCard.category}`
-                            : 'card.event',
-                        )}
-                      </span>
-                      <span className="owner-badge">
-                        {t(`owner.${displayedPendingOwner ?? activeOwner}`)}
-                      </span>
-                      <button
-                        aria-label={t('placement.confirmLabel')}
-                        className="pending-confirm"
-                        disabled={activeOwner !== '0' || finished}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          gameMoves.confirmPlacement();
-                        }}
-                        onPointerDown={(event) => event.stopPropagation()}
-                        type="button"
-                      >
-                        {t('placement.confirm')}
-                      </button>
-                    </div>
-                  )}
-                  {showPlacementSlots &&
-                    availablePositions
+              <div
+                className="played-grid"
+                style={{ ...gridStyle, zoom: boardZoom }}
+              >
+                {G.played.length === 0 && !G.pending && showPlacementSlots ? (
+                  <PlacementSlot
+                    ariaLabel={t('placement.center')}
+                    draggedCard={draggedCardDetails}
+                    initial
+                    isDragActive={Boolean(draggedCard)}
+                    isPreview={Boolean(
+                      draggedCardDetails && isSnappedTo({ row: 0, column: 0 }),
+                    )}
+                    onClick={() => placeSelectedCard({ row: 0, column: 0 })}
+                    onDragEnter={(event) =>
+                      snapToPosition(event, { row: 0, column: 0 })
+                    }
+                    onDragOver={allowDrop}
+                    onDrop={(event) => dropCard(event, { row: 0, column: 0 })}
+                  />
+                ) : (
+                  <>
+                    {G.played
                       .filter(
-                        (position) =>
-                          !G.pending ||
-                          positionKey(position) !== positionKey(G.pending),
+                        (card) =>
+                          !card.removed ||
+                          !(
+                            (G.pending &&
+                              positionKey(card) === positionKey(G.pending)) ||
+                            (showPlacementSlots &&
+                              availablePositions.some(
+                                (position) =>
+                                  positionKey(position) === positionKey(card),
+                              ))
+                          ),
                       )
-                      .map((position) => (
-                        <PlacementSlot
-                          overwrite={G.played.some(
-                            (card) =>
-                              card.removed &&
-                              positionKey(card) === positionKey(position),
-                          )}
-                          ariaLabel={t('placement.target', {
-                            pending: G.pending ? 'yes' : 'no',
-                            row: position.row,
-                            column: position.column,
-                          })}
-                          draggedCard={draggedCardDetails}
-                          isDragActive={Boolean(draggedCard)}
-                          isPreview={Boolean(
-                            draggedCardDetails && isSnappedTo(position),
-                          )}
-                          key={positionKey(position)}
-                          onClick={() => placeSelectedCard(position)}
-                          onDragEnter={(event) =>
-                            snapToPosition(event, position)
+                      .map((card) => (
+                        <PlayedCard
+                          key={card.id}
+                          style={positionStyle(card)}
+                          card={card}
+                          isLatest={
+                            card.owner !== 'neutral' &&
+                            card.id === G.played.at(-1)?.id
                           }
-                          onDragOver={allowDrop}
-                          onDrop={(event) => dropCard(event, position)}
-                          style={positionStyle(position)}
+                          links={renderLinkDirections(card)}
+                          selected={Boolean(
+                            manipulation && manipulationTargetId === card.id,
+                          )}
+                          onTarget={
+                            manipulationTargets.some(
+                              (target) => target.id === card.id,
+                            )
+                              ? () => {
+                                  if (
+                                    manipulation?.action === 'take-control' ||
+                                    manipulation?.action === 'remove-event'
+                                  ) {
+                                    gameMoves.manipulate(
+                                      manipulation.id,
+                                      card.id,
+                                    );
+                                    setSelectedCardId(null);
+                                    setManipulationTargetId(null);
+
+                                    return;
+                                  }
+                                  if (
+                                    manipulation?.action === 'time-swap' &&
+                                    manipulationTargetId
+                                  ) {
+                                    gameMoves.manipulate(
+                                      manipulation.id,
+                                      manipulationTargetId,
+                                      card.id,
+                                    );
+                                    setSelectedCardId(null);
+                                    setManipulationTargetId(null);
+                                  } else {
+                                    setManipulationTargetId(card.id);
+                                  }
+                                }
+                              : undefined
+                          }
                         />
                       ))}
-                </>
-              )}
+                    {G.pending && (
+                      <div
+                        aria-label={t('placement.pending')}
+                        className={clsx(
+                          'card',
+                          'pending-card',
+                          `owner-${displayedPendingOwner}`,
+                          { 'replacement-target': pendingShowsReplacement },
+                        )}
+                        data-owner={displayedPendingOwner}
+                        data-card-type={displayedPendingCard?.type}
+                        data-event-category={displayedPendingCard?.category}
+                        draggable={activeOwner === '0' && !finished}
+                        key={`${G.pending.id}:${G.pending.row}:${G.pending.column}`}
+                        onDragEnd={finishDrag}
+                        onDragEnter={(event) =>
+                          snapToPosition(event, G.pending!)
+                        }
+                        onDragOver={allowDrop}
+                        onDragStart={(event) =>
+                          beginDrag(event, G.pending!.id, 'pending')
+                        }
+                        onDrop={dropOnPendingCard}
+                        role="region"
+                        style={positionStyle(G.pending)}
+                      >
+                        {renderLinkDirections(G.pending)}
+                        <CardEffect effect={displayedPendingCard?.effect} />
+                        <strong>
+                          {displayedPendingCard &&
+                            intl.formatNumber(displayedPendingCard.number, {
+                              useGrouping: false,
+                            })}
+                        </strong>
+                        <span className="card-type-name">
+                          {t(
+                            displayedPendingCard?.category
+                              ? `card.category.${displayedPendingCard.category}`
+                              : 'card.event',
+                          )}
+                        </span>
+                        <span className="owner-badge">
+                          {t(`owner.${displayedPendingOwner ?? activeOwner}`)}
+                        </span>
+                        <button
+                          aria-label={t('placement.confirmLabel')}
+                          className="pending-confirm"
+                          disabled={activeOwner !== '0' || finished}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            gameMoves.confirmPlacement();
+                          }}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          type="button"
+                        >
+                          {t('placement.confirm')}
+                        </button>
+                      </div>
+                    )}
+                    {showPlacementSlots &&
+                      availablePositions
+                        .filter(
+                          (position) =>
+                            !G.pending ||
+                            positionKey(position) !== positionKey(G.pending),
+                        )
+                        .map((position) => (
+                          <PlacementSlot
+                            overwrite={G.played.some(
+                              (card) =>
+                                card.removed &&
+                                positionKey(card) === positionKey(position),
+                            )}
+                            ariaLabel={t('placement.target', {
+                              pending: G.pending ? 'yes' : 'no',
+                              row: position.row,
+                              column: position.column,
+                            })}
+                            draggedCard={draggedCardDetails}
+                            isDragActive={Boolean(draggedCard)}
+                            isPreview={Boolean(
+                              draggedCardDetails && isSnappedTo(position),
+                            )}
+                            key={positionKey(position)}
+                            onClick={() => placeSelectedCard(position)}
+                            onDragEnter={(event) =>
+                              snapToPosition(event, position)
+                            }
+                            onDragOver={allowDrop}
+                            onDrop={(event) => dropCard(event, position)}
+                            style={positionStyle(position)}
+                          />
+                        ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-
         <div className="hand">
           <CardHand
             activeOwner={activeOwner}
