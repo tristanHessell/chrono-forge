@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 
 import type { CardEffect as Effect, ManipulationAction } from '../game';
 import { useMessages } from '../i18n/useMessages';
+import { listenForEffectTooltip } from './effectTooltip';
 
 export function CardEffect({
   effect,
@@ -33,9 +34,10 @@ export function CardEffect({
   } | null>(null);
 
   useEffect(() => {
-    const card = icon.current?.parentElement;
+    const target = icon.current;
+    const card = target?.parentElement;
 
-    if (!card || !effect || !showTooltip) {
+    if (!target || !card || !effect || !showTooltip) {
       return;
     }
 
@@ -51,32 +53,7 @@ export function CardEffect({
     };
     const hide = () => setAnchor(null);
 
-    card.addEventListener('pointerenter', show);
-    card.addEventListener('pointerleave', hide);
-    card.addEventListener('focusin', show);
-    card.addEventListener('focusout', hide);
-    card.addEventListener('dragstart', hide);
-
-    const dismiss = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        hide();
-      }
-    };
-
-    window.addEventListener('keydown', dismiss);
-    window.addEventListener('scroll', hide, true);
-    window.addEventListener('resize', hide);
-
-    return () => {
-      card.removeEventListener('pointerenter', show);
-      card.removeEventListener('pointerleave', hide);
-      card.removeEventListener('focusin', show);
-      card.removeEventListener('focusout', hide);
-      card.removeEventListener('dragstart', hide);
-      window.removeEventListener('keydown', dismiss);
-      window.removeEventListener('scroll', hide, true);
-      window.removeEventListener('resize', hide);
-    };
+    return listenForEffectTooltip(target, card, window, show, hide);
   }, [effect, showTooltip]);
 
   if (!effect || !nameId || !descriptionId) {
@@ -89,6 +66,8 @@ export function CardEffect({
         ref={icon}
         className="card-effect"
         role="img"
+        tabIndex={showTooltip ? 0 : undefined}
+        data-tooltip-enabled={showTooltip || undefined}
         aria-label={t(nameId)}
         aria-describedby={showTooltip && anchor ? tooltipId : undefined}
       >
