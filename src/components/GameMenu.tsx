@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 
 import { useMessages } from '../i18n/useMessages';
 import type { PlayerCount } from '../playerCount';
+import { CardPatternsToggle } from './CardPatternsToggle';
+import { focusMovedOutside } from './menuFocus';
 import { ThemeToggle } from './ThemeToggle';
 
 type Props = {
@@ -46,7 +48,7 @@ export function GameMenu({
       className="game-menu"
       ref={menu}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
+        if (focusMovedOutside(event.currentTarget, event.relatedTarget)) {
           closeMenu();
         }
       }}
@@ -99,6 +101,7 @@ export function GameMenu({
         </label>
         <small className="game-menu-hint">{t('game.playersHint')}</small>
         <ThemeToggle />
+        <CardPatternsToggle />
         <button
           className="history-button"
           type="button"
