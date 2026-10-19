@@ -1,7 +1,46 @@
 import { expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
-import definitions from './data/cards.json';
+import definitions from './cards';
+import type { Card } from './game';
+
+it('registers every individual card file exactly once', () => {
+  const modules = import.meta.glob<{ default: Card }>(
+    ['./cards/**/*.ts', '!./cards/index.ts'],
+    { eager: true },
+  );
+  const { startingCard, deck } = loadCardCatalog();
+  const cards = [startingCard, ...deck];
+
+  expect(Object.keys(modules)).toHaveLength(47);
+  expect(cards).toHaveLength(47);
+  expect(new Set(cards.map((card) => card.id)).size).toBe(cards.length);
+  for (const module of Object.values(modules)) {
+    expect(cards).toContainEqual(module.default);
+  }
+  expect(startingCard).toEqual({ id: 'starting-0', type: 'event', number: 0 });
+});
+
+it('preserves the deck order for existing seeds and game logs', () => {
+  const { deck } = loadCardCatalog();
+  const eventIds = [1, 2, 3].flatMap((copy) =>
+    Array.from(
+      { length: 10 },
+      (_, decade) => `event-${1900 + decade * 10}-${copy}`,
+    ),
+  );
+  const manipulationIds = [
+    'time-jump',
+    'time-swap',
+    'take-control',
+    'remove-event',
+  ].flatMap((action) => [1, 2, 3, 4].map((copy) => `${action}-${copy}`));
+
+  expect(deck.map((card) => card.id)).toEqual([
+    ...eventIds,
+    ...manipulationIds,
+  ]);
+});
 
 it('includes one card per category for every decade and keeps the start neutral', () => {
   const { deck, startingCard } = loadCardCatalog();

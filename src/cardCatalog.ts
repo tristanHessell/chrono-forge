@@ -1,4 +1,4 @@
-import definitions from './data/cards.json';
+import definitions from './cards';
 import type { Card, ManipulationAction } from './game';
 
 function readCard(definition: {
