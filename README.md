@@ -135,6 +135,13 @@ Drag a pending card between valid positions to change its location.
 The preview snaps to the target position during the drag.
 Drag the pending card back to your hand to cancel its placement.
 
+On a touch screen, drag an Event card from your hand onto a highlighted position.
+Valid positions highlight when the drag starts.
+The preview snaps to a valid position beneath your finger.
+Release the card to place it, then use its Confirm control.
+Release outside a valid position to cancel the drag.
+You can also move a pending card with touch or drag it back to your hand.
+
 Drag a card across your hand to reorder it live. Neighboring cards slide into
 their new positions as you drag, and releasing keeps the displayed order.
 Keyboard users can focus a card and press Alt + Left
@@ -182,8 +189,10 @@ There are four each of **Time Jump**, **Time Swap**, **Take Control**, and
 the TypeScript catalog. Select a Manipulation card in your hand, then select a highlighted
 Event on the board. For Time Jump, choose a highlighted empty destination or
 overwrite a removed Event; for
-Time Swap, choose a highlighted second Event. Cancel targeting to change your mind
-without spending an action. If no legal targets exist, the card can be discarded.
+Time Swap, choose a highlighted second Event.
+Select the same hand card again or press Escape to cancel without spending an action.
+Select the current target again to change the target or restore the hands during Time Jump.
+If no legal targets exist, discard the card.
 While choosing a Time Jump destination, both hands temporarily fold away to give
 the board more space and expose its destination slots. Completing or cancelling
 the move restores the hands; after a move, the camera centers the moved Event.

@@ -606,6 +606,8 @@ h1 {
 }
 
 .hand-fan .hand-card {
+  touch-action: none;
+  -webkit-touch-callout: none;
   position: absolute;
   top: 0.6rem;
   left: calc(var(--hand-index) * var(--hand-step));
@@ -634,6 +636,19 @@ h1 {
   opacity: 0.35;
   outline: 2px dashed var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* Override the base card position so the preview cannot take space from the table. */
+.card.touch-drag-preview {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  transform: translate(-50%, -115%);
+  box-shadow: var(--table-shadow);
+}
+
+.touch-dragging .hand-card[aria-pressed='true'] {
+  opacity: 0.35;
 }
 
 .hand-fan .hand-card:disabled {

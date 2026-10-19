@@ -2,12 +2,14 @@ import clsx from 'clsx';
 import type { CSSProperties, DragEvent } from 'react';
 import { useIntl } from 'react-intl';
 
-import type { Card } from '../game';
+import type { Card, CardPosition } from '../game';
+import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
 import { CardEffect } from './CardEffect';
 
 type PlacementSlotProps = {
   ariaLabel: string;
+  position?: CardPosition;
   initial?: boolean;
   overwrite?: boolean;
   draggedCard: Card | null | undefined;
@@ -22,6 +24,7 @@ type PlacementSlotProps = {
 
 export function PlacementSlot({
   ariaLabel,
+  position,
   initial = false,
   overwrite = false,
   draggedCard,
@@ -39,6 +42,7 @@ export function PlacementSlot({
   return (
     <button
       aria-label={ariaLabel}
+      data-drop-position={position ? positionKey(position) : undefined}
       className={clsx('placement-slot', {
         'initial-drop-slot': initial,
         'drag-ready': isDragActive,
