@@ -26,6 +26,7 @@ it('visually and accessibly marks a removed Event and its overwrite target', () 
       />
       <PlacementSlot
         ariaLabel="Overwrite removed Event"
+        position={{ row: -1, column: 2 }}
         draggedCard={null}
         overwrite
         isDragActive={false}
@@ -44,6 +45,7 @@ it('visually and accessibly marks a removed Event and its overwrite target', () 
   expect(html).toContain('Removed');
   expect(html).toContain(messages['card.removedDescription']);
   expect(html).toContain('overwrite-slot');
+  expect(html).toContain('data-drop-position="-1:2"');
   expect(html).toContain('Overwrite');
   expect(html).not.toContain('role="tooltip"');
 });

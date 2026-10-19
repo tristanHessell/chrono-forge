@@ -10,6 +10,7 @@ import {
   restoreHandOrder,
 } from '../handOrder';
 import { useMessages } from '../i18n/useMessages';
+import type { TouchCardDragHandlers } from '../useTouchCardDrag';
 import { CardEffect } from './CardEffect';
 
 type CardHandProps = {
@@ -25,6 +26,7 @@ type CardHandProps = {
   onDragEnd: () => void;
   onDragOver: (event: DragEvent<HTMLElement>) => void;
   onDrop: (event: DragEvent<HTMLElement>) => void;
+  touchDrag?: TouchCardDragHandlers;
 };
 
 export function CardHand({
@@ -40,6 +42,7 @@ export function CardHand({
   onDragEnd,
   onDragOver,
   onDrop,
+  touchDrag,
 }: CardHandProps) {
   const t = useMessages();
   const intl = useIntl();
@@ -150,6 +153,7 @@ export function CardHand({
       </div>
       <div
         aria-label={t('hand.dropArea', { owner })}
+        data-hand-owner={owner}
         data-return-label={t('hand.return')}
         className={clsx(
           'card-row',
@@ -219,15 +223,27 @@ export function CardHand({
                 draggable={interactive && activeOwner === owner}
                 key={card.id}
                 onClick={() => onChoose(card.id)}
+                onPointerDown={
+                  card.type === 'event' && interactive && activeOwner === owner
+                    ? (event) => touchDrag?.onPointerDown(event, card.id)
+                    : undefined
+                }
+                onPointerMove={touchDrag?.onPointerMove}
+                onPointerUp={touchDrag?.onPointerUp}
+                onPointerCancel={touchDrag?.onPointerCancel}
+                onLostPointerCapture={touchDrag?.onLostPointerCapture}
                 onPointerEnter={() => setHoveredCardId(card.id)}
                 onPointerLeave={() => setHoveredCardId(null)}
                 onFocus={() => setFocusedCardId(card.id)}
                 onBlur={() => setFocusedCardId(null)}
                 onDragEnd={finishHandDrag}
                 onDragStart={(event) => {
+                  onDragStart(event, card.id);
+                  if (event.defaultPrevented) {
+                    return;
+                  }
                   setDragStartIds(orderedCards.map((card) => card.id));
                   setDraggedId(card.id);
-                  onDragStart(event, card.id);
                 }}
                 onKeyDown={(event) => {
                   if (
@@ -251,7 +267,7 @@ export function CardHand({
                   effect={
                     card.type === 'manipulation' ? card.action : card.effect
                   }
-                  showTooltip
+                  showTooltip={!touchDrag?.preview}
                 />
                 {card.type === 'event' && (
                   <span className="hand-corner-number" aria-hidden="true">

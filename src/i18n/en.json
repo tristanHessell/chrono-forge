@@ -76,7 +76,6 @@
   "manipulation.jumpDestination": "Choose a highlighted empty position or removed Event to complete Time Jump.",
   "manipulation.swapDestination": "Choose a highlighted second Event card to complete Time Swap.",
   "manipulation.noTargets": "No legal targets for this card. Select another card or discard it.",
-  "manipulation.cancel": "Cancel targeting",
   "card.category.political": "Political",
   "card.category.technological": "Technological",
   "card.category.environmental": "Environmental",

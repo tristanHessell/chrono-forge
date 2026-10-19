@@ -38,7 +38,13 @@ import {
 } from './manipulationRules';
 import { type PlayerCount, PlayerCountContext } from './playerCount';
 import { calculateScores } from './scoring';
+import {
+  type DragPoint,
+  type DragSource,
+  touchDropPosition,
+} from './touchCardDrag';
 import { useComputerOpponent } from './useComputerOpponent';
+import { useTouchCardDrag } from './useTouchCardDrag';
 
 type CardGameMoves = {
   manipulate: (
@@ -306,6 +312,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     cardId: string,
     source: DraggedCard['source'],
   ) => {
+    if (touchDrag.controller.tracking) {
+      event.preventDefault();
+
+      return;
+    }
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', cardId);
     event.dataTransfer.setData('application/x-card-source', source);
@@ -368,6 +379,76 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setDraggedCard(null);
     setSnapPosition(null);
   };
+
+  const touchPosition = (
+    point: DragPoint,
+    cardId: string,
+    source: DragSource,
+  ) => {
+    const target = document
+      .elementFromPoint(point.x, point.y)
+      ?.closest<HTMLElement>('[data-drop-position]');
+    const key = target?.dataset.dropPosition;
+    const card =
+      source === 'pending'
+        ? G.pending
+        : G.hands['0'].find((candidate) => candidate.id === cardId);
+
+    if (card?.id !== cardId) {
+      return null;
+    }
+
+    return touchDropPosition(G.played, card, key);
+  };
+  const touchDrag = useTouchCardDrag({
+    onStart: (cardId, source) => {
+      setDraggedCard({ cardId, source });
+      setSelectedCardId(cardId);
+      setManipulationTargetId(null);
+    },
+    onMove: (point) => {
+      setSnapPosition(
+        draggedCard
+          ? touchPosition(point, draggedCard.cardId, draggedCard.source)
+          : null,
+      );
+    },
+    onDrop: (cardId, source, point) => {
+      if (finished || activeOwner !== '0') {
+        return;
+      }
+
+      const target = document.elementFromPoint(point.x, point.y);
+
+      if (target?.closest('.discard-pile')) {
+        gameMoves.discardCard(cardId);
+
+        return;
+      }
+      if (source === 'pending' && target?.closest('[data-hand-owner="0"]')) {
+        gameMoves.returnPendingCard();
+
+        return;
+      }
+
+      const position = touchPosition(point, cardId, source);
+
+      if (!position) {
+        return;
+      }
+      if (source === 'pending') {
+        gameMoves.movePendingCard(position);
+      } else if (G.pending) {
+        gameMoves.replacePendingCard(cardId, position);
+      } else {
+        gameMoves.playCard(cardId, position);
+      }
+    },
+    onFinish: () => {
+      finishDrag();
+      setSelectedCardId(null);
+    },
+  });
 
   const discardCard = (cardId: string) => {
     gameMoves.discardCard(cardId);
@@ -501,7 +582,29 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     <main
       className={clsx('game-shell', {
         'choosing-jump-destination': choosingJumpDestination,
+        'touch-dragging': Boolean(touchDrag.preview),
       })}
+      onPointerDownCapture={() => touchDrag.controller.resetClickSuppression()}
+      onClickCapture={(event) => {
+        if (touchDrag.controller.consumeClick()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (
+          event.key === 'Escape' &&
+          !event.defaultPrevented &&
+          manipulation &&
+          !(event.target as Element).closest('dialog[open]')
+        ) {
+          event.preventDefault();
+          setSelectedCardId(null);
+          setManipulationTargetId(null);
+          touchDrag.controller.cancel();
+          finishDrag();
+        }
+      }}
     >
       <header>
         <div className="top-actions">
@@ -686,6 +789,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 {G.played.length === 0 && !G.pending && showPlacementSlots ? (
                   <PlacementSlot
                     ariaLabel={t('placement.center')}
+                    position={{ row: 0, column: 0 }}
                     draggedCard={draggedCardDetails}
                     initial
                     isDragActive={Boolean(draggedCard)}
@@ -729,10 +833,17 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                             manipulation && manipulationTargetId === card.id,
                           )}
                           onTarget={
+                            (manipulation &&
+                              manipulationTargetId === card.id) ||
                             manipulationTargets.some(
                               (target) => target.id === card.id,
                             )
                               ? () => {
+                                  if (manipulationTargetId === card.id) {
+                                    setManipulationTargetId(null);
+
+                                    return;
+                                  }
                                   if (
                                     manipulation?.action === 'take-control' ||
                                     manipulation?.action === 'remove-event'
@@ -775,11 +886,29 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           { 'replacement-target': pendingShowsReplacement },
                         )}
                         data-owner={displayedPendingOwner}
+                        data-drop-position={positionKey(G.pending)}
                         data-card-type={displayedPendingCard?.type}
                         data-event-category={displayedPendingCard?.category}
                         draggable={activeOwner === '0' && !finished}
                         key={`${G.pending.id}:${G.pending.row}:${G.pending.column}`}
                         onDragEnd={finishDrag}
+                        onPointerDown={(event) => {
+                          if (
+                            activeOwner === '0' &&
+                            !finished &&
+                            !(event.target as Element).closest('button')
+                          ) {
+                            touchDrag.onPointerDown(
+                              event,
+                              G.pending!.id,
+                              'pending',
+                            );
+                          }
+                        }}
+                        onPointerMove={touchDrag.onPointerMove}
+                        onPointerUp={touchDrag.onPointerUp}
+                        onPointerCancel={touchDrag.onPointerCancel}
+                        onLostPointerCapture={touchDrag.onLostPointerCapture}
                         onDragEnter={(event) =>
                           snapToPosition(event, G.pending!)
                         }
@@ -833,6 +962,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         )
                         .map((position) => (
                           <PlacementSlot
+                            position={position}
                             overwrite={G.played.some(
                               (card) =>
                                 card.removed &&
@@ -868,6 +998,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           <CardHand
             activeOwner={activeOwner}
             cards={G.hands['0']}
+            touchDrag={touchDrag}
             interactive={!finished}
             isReturnTarget={
               draggedCard?.source === 'pending' && G.pending?.owner === '0'
@@ -884,6 +1015,29 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         </div>
       </section>
 
+      {touchDrag.preview && draggedCardDetails?.type === 'event' && (
+        <div
+          className="card touch-drag-preview"
+          aria-hidden="true"
+          data-card-type="event"
+          data-event-category={draggedCardDetails.category}
+          style={{ left: touchDrag.preview.x, top: touchDrag.preview.y }}
+        >
+          <CardEffect effect={draggedCardDetails.effect} />
+          <strong>
+            {intl.formatNumber(draggedCardDetails.number, {
+              useGrouping: false,
+            })}
+          </strong>
+          <span className="card-type-name">
+            {t(
+              draggedCardDetails.category
+                ? `card.category.${draggedCardDetails.category}`
+                : 'card.event',
+            )}
+          </span>
+        </div>
+      )}
       <footer>
         {finished ? (
           <GameResults played={G.played} playerIds={G.playerIds} />
@@ -909,18 +1063,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         owner: activeOwner,
                         count: G.deck.length,
                       })}
-            {manipulation && (
-              <button
-                className="history-button"
-                type="button"
-                onClick={() => {
-                  setSelectedCardId(null);
-                  setManipulationTargetId(null);
-                }}
-              >
-                {t('manipulation.cancel')}
-              </button>
-            )}
           </p>
         )}
       </footer>
