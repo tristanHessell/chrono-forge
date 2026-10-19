@@ -106,7 +106,8 @@ format checks do not execute this batch.
 
 ## Playing the game
 
-Choose 2, 3, or 4 players in the top-bar Players selector (this starts a new game).
+Open **Menu** for New game, Players, the theme, and Game Log.
+Choose 2, 3, or 4 players with the Players selector (this starts a new game).
 Player 0 is you; the other seats are computers, with visible hands and individually
 labelled cards and scores. Each player starts with five cards, takes two actions,
 and refills to five from the shared 46-card deck. Turns rotate through the seats;
@@ -245,7 +246,8 @@ is empty, play out the remaining hands with up to two actions per turn. The game
 ends when all hands and the deck are empty, then final scores are shown.
 
 The played-card board has its own scrollable viewport and can be zoomed from
-60% to 160% with the toolbar or mouse wheel. Hold the left mouse button on
+60% to 160% with the floating controls in its top-right corner or the mouse wheel.
+Hold the left mouse button on
 empty board space and drag to pan the board in any direction.
 
 The top-right Undo and Redo controls are test-history tools: after a confirmed

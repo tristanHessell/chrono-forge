@@ -1,0 +1,113 @@
+import { useEffect, useRef } from 'react';
+
+import { useMessages } from '../i18n/useMessages';
+import type { PlayerCount } from '../playerCount';
+import { ThemeToggle } from './ThemeToggle';
+
+type Props = {
+  playerCount: PlayerCount;
+  onPlayerCountChange: (count: PlayerCount) => void;
+  onNewGame: () => void;
+  onOpenLog: () => void;
+};
+
+export function GameMenu({
+  playerCount,
+  onPlayerCountChange,
+  onNewGame,
+  onOpenLog,
+}: Props) {
+  const t = useMessages();
+  const menu = useRef<HTMLDetailsElement>(null);
+  const trigger = useRef<HTMLElement>(null);
+  const closeMenu = (restoreFocus = false) => {
+    menu.current?.removeAttribute('open');
+    if (restoreFocus) {
+      trigger.current?.focus();
+    }
+  };
+
+  useEffect(() => {
+    const closeOutside = (event: PointerEvent) => {
+      if (!menu.current?.contains(event.target as Node)) {
+        menu.current?.removeAttribute('open');
+      }
+    };
+
+    document.addEventListener('pointerdown', closeOutside);
+
+    return () => document.removeEventListener('pointerdown', closeOutside);
+  }, []);
+
+  return (
+    <details
+      className="game-menu"
+      ref={menu}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          closeMenu();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeMenu(true);
+        }
+      }}
+    >
+      <summary
+        className="history-button"
+        ref={trigger}
+        aria-label={t('menu.title')}
+      >
+        <span aria-hidden="true">☰</span> {t('menu.toggle')}
+      </summary>
+      <div
+        className="game-menu-panel"
+        role="group"
+        aria-label={t('menu.title')}
+      >
+        <button
+          className="history-button"
+          type="button"
+          onClick={() => {
+            closeMenu(true);
+            onNewGame();
+          }}
+        >
+          {t('game.new')}
+        </button>
+        <label className="player-count">
+          {t('game.players')}
+          <select
+            aria-label={t('game.players')}
+            title={t('game.playersHint')}
+            value={playerCount}
+            onChange={(event) => {
+              closeMenu(true);
+              onPlayerCountChange(Number(event.target.value) as PlayerCount);
+            }}
+          >
+            {[2, 3, 4].map((count) => (
+              <option key={count} value={count}>
+                {count}
+              </option>
+            ))}
+          </select>
+        </label>
+        <small className="game-menu-hint">{t('game.playersHint')}</small>
+        <ThemeToggle />
+        <button
+          className="history-button"
+          type="button"
+          onClick={() => {
+            closeMenu(true);
+            onOpenLog();
+          }}
+        >
+          {t('log.title')}
+        </button>
+      </div>
+    </details>
+  );
+}

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { type ComponentProps, useContext, useRef, useState } from 'react';
 
 import type { CardGameState } from '../game';
 import {
@@ -10,14 +10,21 @@ import {
 import { GameLogContext } from '../gameLogContext';
 import { useMessages } from '../i18n/useMessages';
 import { GameLogView } from './GameLogView';
+import { GameMenu } from './GameMenu';
 
 type Props = {
   G: CardGameState;
   currentPlayer: string;
   onOpen: () => void;
+  menuProps?: Omit<ComponentProps<typeof GameMenu>, 'onOpenLog'>;
 };
 
-export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
+export function GameLogControls({
+  G,
+  currentPlayer,
+  onOpen,
+  menuProps,
+}: Props) {
   const t = useMessages();
   const { seed, loadLog } = useContext(GameLogContext);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -54,9 +61,13 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
 
   return (
     <>
-      <button className="history-button" type="button" onClick={open}>
-        {t('log.title')}
-      </button>
+      {menuProps ? (
+        <GameMenu {...menuProps} onOpenLog={open} />
+      ) : (
+        <button className="history-button" type="button" onClick={open}>
+          {t('log.title')}
+        </button>
+      )}
       <dialog
         ref={dialog}
         className="game-log-dialog"
