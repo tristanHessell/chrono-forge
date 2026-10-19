@@ -1,0 +1,19 @@
+.theme-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.theme-choice select {
+  color: var(--text);
+  background: var(--control-bg);
+  border: 1px solid var(--border);
+  padding: 0.3rem;
+}
+
+.theme-choice {
+  justify-content: space-between;
+  padding: 0.35rem 0.75rem;
+}

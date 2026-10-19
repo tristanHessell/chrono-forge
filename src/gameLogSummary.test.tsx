@@ -4,6 +4,7 @@ import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
 import { GameLogView } from './components/GameLogView';
+import logStyles from './components/GameLogView.module.css';
 import setup from './fixtures/removed-time-jump.json';
 import { CardGame } from './game';
 import {
@@ -63,7 +64,7 @@ it('summarises actor, card, coordinates, refill draws, turn changes and history 
   expect(html).toContain('Confirmed');
   expect(html).toContain('Discarded');
   expect(html).not.toContain('Drew:');
-  expect(html.match(/class="log-card-reference"/g)).toHaveLength(2);
+  expect(html.split(`class="${logStyles.logCardReference}"`)).toHaveLength(3);
   expect(html).not.toContain('Undid');
   expect(html).not.toContain('Redid');
   expect(html).not.toContain('MAKE_MOVE');
@@ -115,8 +116,8 @@ it.each(['time-jump', 'time-swap', 'take-control'] as const)(
     );
 
     expect(log.actions).toHaveLength(5);
-    expect(html.match(/class="log-card-reference"/g)).toHaveLength(
-      action === 'time-swap' ? 8 : 7,
+    expect(html.split(`class="${logStyles.logCardReference}"`)).toHaveLength(
+      action === 'time-swap' ? 9 : 8,
     );
     expect(html).toMatch(
       /<strong[^>]*data-card-type="manipulation"[^>]*>Remove Event<\/strong>/,

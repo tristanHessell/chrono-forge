@@ -23,6 +23,8 @@ See [CLAUDE.md](./CLAUDE.md) for repository rules, architecture, and contributor
 - `npm run check` runs the full quality checks for the repository.
 - `npm run dev` starts the development server.
 - `npm run build` type-checks and creates a production build.
+- `npm run typecheck` regenerates CSS types and runs the TypeScript compiler.
+- `npm run css:types` regenerates CSS declarations and navigation maps.
 - `npm run lint` runs ESLint and package.json linting.
 - `npm run lint:package` checks package.json and exact dependency versions.
 - `npm run lint:staged` checks the staged files before a commit.
@@ -39,6 +41,24 @@ See [CLAUDE.md](./CLAUDE.md) for repository rules, architecture, and contributor
 The pre-commit hook checks staged files without automatic changes.
 The **Quality checks** workflow runs the full checks on pull requests and pushes to `main`.
 See [CLAUDE.md](./CLAUDE.md#commit-and-pull-request-checks) for hook setup and workflow details.
+
+## Styling
+
+Component styles use adjacent CSS modules, such as `CardHand.module.css` and `GameMenu.module.css`.
+Vite exports camelCase keys, so `.game-log-readable` becomes `styles.gameLogReadable` in TypeScript.
+Shared card, appearance, ownership, control, and dialog modules support multiple components.
+`src/styles/theme.css` contains theme tokens and card dimensions.
+`src/styles/global.css` contains the page reset and base element styles.
+Vitest processes CSS modules to check scoped classes and shared compositions.
+Generated `*.module.css.d.ts` files supply exact readonly class types to the editor and compiler.
+Declaration maps link each camelCase property directly to the original CSS selector.
+Types and maps are generated during installation, before tests, and before every build.
+The Vite server updates them when CSS modules change.
+Generated files are ignored by Git; do not edit them.
+Use **Go to Definition** on `styles.gameLogReadable` to open `.game-log-readable` in its CSS module.
+Restart the TypeScript server once to discard the previous editor-only plugin.
+If types are missing, run `npm run css:types`.
+Missing class references fail `npm run typecheck` and `npm run build`.
 
 ## Debugging and simulations
 

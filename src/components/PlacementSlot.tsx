@@ -5,7 +5,9 @@ import { useIntl } from 'react-intl';
 import type { Card, CardPosition } from '../game';
 import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
+import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
+import placementSlotStyles from './PlacementSlot.module.css';
 
 type PlacementSlotProps = {
   ariaLabel: string;
@@ -42,12 +44,13 @@ export function PlacementSlot({
   return (
     <button
       aria-label={ariaLabel}
+      data-placement-slot
       data-drop-position={position ? positionKey(position) : undefined}
-      className={clsx('placement-slot', {
-        'initial-drop-slot': initial,
-        'drag-ready': isDragActive,
-        'snap-preview': isPreview,
-        'overwrite-slot': overwrite,
+      className={clsx(placementSlotStyles.placementSlot, {
+        [placementSlotStyles.initialDropSlot]: initial,
+        [placementSlotStyles.dragReady]: isDragActive,
+        [placementSlotStyles.snapPreview]: isPreview,
+        [placementSlotStyles.overwriteSlot]: overwrite,
       })}
       data-card-type={isPreview ? draggedCard?.type : undefined}
       data-event-category={isPreview ? draggedCard?.category : undefined}
@@ -64,7 +67,7 @@ export function PlacementSlot({
           <strong>
             {intl.formatNumber(draggedCard.number, { useGrouping: false })}
           </strong>
-          <span className="card-type-name">
+          <span className={cardStyles.cardTypeName}>
             {t(
               draggedCard.category
                 ? `card.category.${draggedCard.category}`

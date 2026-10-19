@@ -1,6 +1,7 @@
 import { useIntl } from 'react-intl';
 
 import { useMessages } from '../i18n/useMessages';
+import boardZoomControlsStyles from './BoardZoomControls.module.css';
 
 type Props = {
   boardZoom: number;
@@ -17,7 +18,11 @@ export function BoardZoomControls({
   const intl = useIntl();
 
   return (
-    <div className="zoom-controls" role="group" aria-label={t('zoom.label')}>
+    <div
+      className={boardZoomControlsStyles.zoomControls}
+      role="group"
+      aria-label={t('zoom.label')}
+    >
       <button
         aria-label={t('zoom.out')}
         disabled={boardZoom <= 0.6}
@@ -36,7 +41,7 @@ export function BoardZoomControls({
       </button>
       <button
         aria-label={t('zoom.reset')}
-        className="zoom-value"
+        className={boardZoomControlsStyles.zoomValue}
         onClick={(event) => {
           if (event.detail === 0) {
             onResetZoom();

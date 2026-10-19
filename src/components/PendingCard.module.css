@@ -1,0 +1,71 @@
+.pending-card {
+  box-shadow:
+    0 0.6rem 1rem rgba(0, 0, 0, 0.2),
+    inset 0 0 0 4px var(--owner-color);
+}
+
+.pending-card:active {
+  cursor: grabbing;
+}
+
+.pending-card {
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 3px;
+  cursor: grab;
+  animation:
+    snap-in 180ms ease-out,
+    pending-pulse 1.5s 180ms ease-in-out infinite alternate;
+}
+
+.replacement-target {
+  outline-color: var(--card-cream);
+  filter: brightness(1.14);
+  transform: scale(1.04);
+}
+
+.pending-confirm {
+  grid-area: 3 / 2;
+  min-width: 0;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--card-cream);
+  background: var(--card-accent-ink);
+  cursor: pointer;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.pending-card > [data-card-label] {
+  display: none;
+}
+
+.pending-confirm:hover,
+.pending-confirm:focus-visible {
+  outline: 2px solid var(--card-cream);
+  outline-offset: 2px;
+  background: var(--card-badge-ink);
+}
+
+.replacement-target .pending-confirm {
+  background: var(--card-accent-ink);
+}
+
+@keyframes pending-pulse {
+  to {
+    box-shadow:
+      0 0 1.4rem rgba(var(--card-highlight-rgb), 0.8),
+      inset 0 0 0 4px var(--owner-color);
+  }
+}
+
+@keyframes snap-in {
+  from {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}

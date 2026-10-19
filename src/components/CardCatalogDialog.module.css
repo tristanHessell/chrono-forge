@@ -1,0 +1,88 @@
+.card-catalog-dialog {
+  --dialog-width: 1000px;
+}
+
+.card-catalog-header {
+  position: sticky;
+  z-index: 4;
+  top: -1.25rem;
+  padding: 1.25rem;
+  margin: -1.25rem -1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--table-bg);
+}
+
+.catalog-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.catalog-summary > div {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--control-bg);
+}
+
+.catalog-summary dt {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+}
+
+.catalog-summary dd {
+  margin: 0.5rem 0 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.catalog-group {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+}
+
+.catalog-group h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.catalog-group h3 span {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.25rem;
+}
+
+.catalog-entry code,
+.catalog-entry > small {
+  max-width: 100%;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.catalog-entry > div {
+  flex-shrink: 0;
+}

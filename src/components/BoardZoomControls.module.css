@@ -1,0 +1,47 @@
+.zoom-controls {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.zoom-controls button {
+  min-width: 2rem;
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  color: var(--text);
+  background: var(--control-bg);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.zoom-controls button + button {
+  border-left: 1px solid var(--border);
+}
+
+.zoom-controls button:hover:not(:disabled),
+.zoom-controls button:focus-visible {
+  outline: none;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
+}
+
+.zoom-controls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.zoom-controls .zoom-value {
+  min-width: 3.5rem;
+  font-size: 0.72rem;
+}
+
+.zoom-controls {
+  border-radius: 0.25rem;
+  letter-spacing: 0.04em;
+  position: absolute;
+  z-index: 5;
+  top: 0.75rem;
+  right: 0.75rem;
+  box-shadow: var(--table-shadow);
+}

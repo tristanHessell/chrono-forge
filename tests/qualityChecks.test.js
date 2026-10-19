@@ -24,7 +24,7 @@ it('checks staged files without automatic fixes or simulated games', () => {
   expect(config['*']).toBe('prettier --check --ignore-unknown');
   expect(config['package.json']()).toBe('npm run lint:package');
   expect(JSON.stringify(config)).not.toMatch(/--fix|--write|test:simulation/);
-  expect(manifest.scripts.prepare).toBe('husky');
+  expect(manifest.scripts.prepare).toBe('husky && npm run css:types');
   expect(manifest.scripts.check).toBe(
     'npm run lint && npm run format:check && npm run spellcheck && npm test && npm run build',
   );

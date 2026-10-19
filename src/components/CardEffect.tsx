@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 
 import type { CardEffect as Effect, ManipulationAction } from '../game';
 import { useMessages } from '../i18n/useMessages';
+import cardEffectStyles from './CardEffect.module.css';
 import { listenForEffectTooltip } from './effectTooltip';
 
 export function CardEffect({
@@ -66,7 +67,7 @@ export function CardEffect({
     <>
       <span
         ref={icon}
-        className="card-effect"
+        className={cardEffectStyles.cardEffect}
         role="img"
         tabIndex={showTooltip ? 0 : undefined}
         data-tooltip-enabled={showTooltip || undefined}
@@ -109,7 +110,7 @@ export function CardEffect({
           <div
             id={tooltipId}
             role="tooltip"
-            className="effect-tooltip"
+            className={cardEffectStyles.effectTooltip}
             style={{
               top: anchor.top,
               left: anchor.left,

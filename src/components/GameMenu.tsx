@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react';
 import { useMessages } from '../i18n/useMessages';
 import type { PlayerCount } from '../playerCount';
 import { CardPatternsToggle } from './CardPatternsToggle';
+import controlsStyles from './Controls.module.css';
+import gameMenuStyles from './GameMenu.module.css';
 import { focusMovedOutside } from './menuFocus';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -45,7 +47,7 @@ export function GameMenu({
 
   return (
     <details
-      className="game-menu"
+      className={gameMenuStyles.gameMenu}
       ref={menu}
       onBlur={(event) => {
         if (focusMovedOutside(event.currentTarget, event.relatedTarget)) {
@@ -60,19 +62,19 @@ export function GameMenu({
       }}
     >
       <summary
-        className="history-button"
+        className={controlsStyles.historyButton}
         ref={trigger}
         aria-label={t('menu.title')}
       >
         <span aria-hidden="true">☰</span> {t('menu.toggle')}
       </summary>
       <div
-        className="game-menu-panel"
+        className={gameMenuStyles.gameMenuPanel}
         role="group"
         aria-label={t('menu.title')}
       >
         <button
-          className="history-button"
+          className={controlsStyles.historyButton}
           type="button"
           onClick={() => {
             closeMenu(true);
@@ -81,7 +83,7 @@ export function GameMenu({
         >
           {t('game.new')}
         </button>
-        <label className="player-count">
+        <label className={gameMenuStyles.playerCount}>
           {t('game.players')}
           <select
             aria-label={t('game.players')}
@@ -99,11 +101,13 @@ export function GameMenu({
             ))}
           </select>
         </label>
-        <small className="game-menu-hint">{t('game.playersHint')}</small>
+        <small className={gameMenuStyles.gameMenuHint}>
+          {t('game.playersHint')}
+        </small>
         <ThemeToggle />
         <CardPatternsToggle />
         <button
-          className="history-button"
+          className={controlsStyles.historyButton}
           type="button"
           onClick={() => {
             closeMenu(true);
@@ -113,7 +117,7 @@ export function GameMenu({
           {t('catalog.title')}
         </button>
         <button
-          className="history-button"
+          className={controlsStyles.historyButton}
           type="button"
           onClick={() => {
             closeMenu(true);

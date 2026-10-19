@@ -5,7 +5,10 @@ import { useIntl } from 'react-intl';
 import type { PlacedCard } from '../game';
 import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
+import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
+import ownershipStyles from './Ownership.module.css';
+import playedCardStyles from './PlayedCard.module.css';
 
 type PlayedCardProps = {
   card: PlacedCard;
@@ -35,12 +38,19 @@ export function PlayedCard({
         owner: card.owner,
         latest: isLatest ? 'yes' : 'no',
       })}
-      className={clsx('card', 'played-card', `owner-${card.owner}`, {
-        'latest-card': isLatest,
-        'manipulation-target': Boolean(onTarget),
-        'manipulation-selected': selected,
-        'removed-card': card.removed,
-      })}
+      className={clsx(
+        cardStyles.card,
+        playedCardStyles.playedCard,
+        card.owner === 'neutral'
+          ? ownershipStyles.ownerNeutral
+          : ownershipStyles[`owner${card.owner}`],
+        {
+          [playedCardStyles.latestCard]: isLatest,
+          [playedCardStyles.manipulationTarget]: Boolean(onTarget),
+          [playedCardStyles.manipulationSelected]: selected,
+          [playedCardStyles.removedCard]: card.removed,
+        },
+      )}
       data-card-type={card.type}
       data-event-category={card.category}
       data-owner={card.owner}
@@ -67,9 +77,11 @@ export function PlayedCard({
     >
       {links}
       <CardEffect effect={card.effect} />
-      {isLatest && <span className="latest-badge">{t('card.latest')}</span>}
+      {isLatest && (
+        <span className={playedCardStyles.latestBadge}>{t('card.latest')}</span>
+      )}
       <strong>{intl.formatNumber(card.number, { useGrouping: false })}</strong>
-      <span className="card-type-name">
+      <span className={cardStyles.cardTypeName}>
         {t(
           card.removed
             ? 'card.removed'
@@ -78,7 +90,7 @@ export function PlayedCard({
               : 'card.event',
         )}
       </span>
-      <span className="owner-badge">{t(`owner.${card.owner}`)}</span>
+      <span className={cardStyles.ownerBadge}>{t(`owner.${card.owner}`)}</span>
     </div>
   );
 }

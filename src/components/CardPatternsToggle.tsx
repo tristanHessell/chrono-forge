@@ -2,13 +2,14 @@ import { useState } from 'react';
 
 import { saveCardPatterns, savedCardPatterns } from '../cardPatterns';
 import { useMessages } from '../i18n/useMessages';
+import cardPatternsToggleStyles from './CardPatternsToggle.module.css';
 
 export function CardPatternsToggle() {
   const t = useMessages();
   const [enabled, setEnabled] = useState(savedCardPatterns);
 
   return (
-    <label className="card-patterns-choice">
+    <label className={cardPatternsToggleStyles.cardPatternsChoice}>
       <input
         type="checkbox"
         checked={enabled}

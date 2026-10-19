@@ -12,7 +12,7 @@ const variableDeclaration = {
 };
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', '**/*.module.css.d.ts'] },
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     plugins: {

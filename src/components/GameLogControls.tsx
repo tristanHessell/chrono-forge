@@ -9,6 +9,9 @@ import {
 } from '../gameLog';
 import { GameLogContext } from '../gameLogContext';
 import { useMessages } from '../i18n/useMessages';
+import controlsStyles from './Controls.module.css';
+import dialogStyles from './Dialog.module.css';
+import gameLogControlsStyles from './GameLogControls.module.css';
 import { GameLogView } from './GameLogView';
 import { GameMenu } from './GameMenu';
 
@@ -64,19 +67,23 @@ export function GameLogControls({
       {menuProps ? (
         <GameMenu {...menuProps} onOpenLog={open} />
       ) : (
-        <button className="history-button" type="button" onClick={open}>
+        <button
+          className={controlsStyles.historyButton}
+          type="button"
+          onClick={open}
+        >
           {t('log.title')}
         </button>
       )}
       <dialog
         ref={dialog}
-        className="game-log-dialog"
+        className={dialogStyles.gameLogDialog}
         aria-labelledby="game-log-title"
       >
-        <div className="game-log-header">
+        <div className={dialogStyles.gameLogHeader}>
           <h2 id="game-log-title">{t('log.title')}</h2>
           <button
-            className="game-log-close"
+            className={dialogStyles.gameLogClose}
             type="button"
             aria-label={t('log.close')}
             onClick={() => dialog.current?.close()}
@@ -85,7 +92,7 @@ export function GameLogControls({
           </button>
         </div>
         <p>{t('log.overview')}</p>
-        <div className="game-log-actions">
+        <div className={gameLogControlsStyles.gameLogActions}>
           <button
             type="button"
             aria-pressed={mode === 'import'}
@@ -147,7 +154,7 @@ export function GameLogControls({
               </>
             )}
             <p role="status">{status}</p>
-            <div className="game-log-actions">
+            <div className={gameLogControlsStyles.gameLogActions}>
               {mode === 'export' && (
                 <button
                   type="button"
