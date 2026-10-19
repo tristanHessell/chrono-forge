@@ -1,19 +1,19 @@
 .area-label {
-  margin: 0;
   color: var(--text-muted);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.13em;
+  margin: 0;
   text-transform: uppercase;
 }
 
 .card-row {
+  align-items: center;
   display: flex;
   flex-wrap: nowrap;
   gap: 0.5rem;
-  align-items: center;
-  min-height: 96px;
   margin-top: 0.75rem;
+  min-height: 96px;
 }
 
 .card-row [data-card-type] {
@@ -22,44 +22,41 @@
 }
 
 .hand-drop-area {
-  container-type: inline-size;
-  position: relative;
-  padding: 0.7rem;
-  margin: 0.05rem -0.7rem -0.7rem;
   border: 2px dashed transparent;
   border-radius: 1rem;
-  transition:
-    border-color 160ms ease,
-    background 160ms ease;
+  container-type: inline-size;
+  margin: 0.05rem -0.7rem -0.7rem;
+  padding: 0.7rem;
+  position: relative;
 }
 
 .hand-heading {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
+  display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 0.5rem;
+  justify-content: space-between;
 }
 
 .hand-order {
   display: inline-flex;
+  flex-wrap: nowrap;
   gap: 0.25rem;
 }
 
 .hand-order button {
-  padding: 0.2rem 0.5rem;
+  background: var(--control-bg);
   border: 1px solid var(--border);
   border-radius: 0.2rem;
   color: var(--text-muted);
-  background: var(--control-bg);
-  font-size: 0.65rem;
   cursor: pointer;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
 }
 
-.hand-order button[aria-pressed='true'],
-.hand-order button:hover {
-  color: var(--accent-text);
+.hand-order button[aria-pressed='true'] {
   border-color: var(--accent-text);
+  color: var(--accent-text);
 }
 
 .hand-order button:focus-visible {
@@ -68,28 +65,27 @@
 }
 
 .hand-fan {
-  --hand-step: clamp(20px, calc((100cqw - var(--card-width) - 3rem) / 4), 72px);
+  --hand-count: 1;
   --hand-reveal: clamp(10px, 4cqw, 28px);
+  --hand-step: clamp(20px, calc((100cqw - var(--card-width) - 3rem) / 4), 72px);
+
+  flex: 0 0 auto;
+  height: calc(var(--card-height) + 1rem);
+  isolation: isolate;
+  margin: 0 auto;
   position: relative;
   width: calc(var(--card-width) + (var(--hand-count) - 1) * var(--hand-step));
-  height: calc(var(--card-height) + 1rem);
-  margin: 0 auto;
-  flex: 0 0 auto;
-  isolation: isolate;
 }
 
 .hand-fan .hand-card {
-  touch-action: none;
-  -webkit-touch-callout: none;
+  --hand-index: 0;
+
+  left: calc(var(--hand-index) * var(--hand-step));
   position: absolute;
   top: 0.6rem;
-  left: calc(var(--hand-index) * var(--hand-step));
+  touch-action: none;
+  -webkit-touch-callout: none;
   z-index: var(--hand-index);
-  transition:
-    left 180ms ease,
-    translate 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
 }
 
 .hand-card.hand-card-before {
@@ -101,8 +97,8 @@
 }
 
 .hand-card.hand-card-highlighted {
-  z-index: 10;
   transform: translateY(-8px);
+  z-index: 10;
 }
 
 .hand-card.hand-card-dragging {
@@ -116,85 +112,69 @@
 }
 
 .hand-fan .hand-card:disabled {
-  opacity: 1;
   filter: saturate(0.55) brightness(0.75);
+  opacity: 1;
 }
 
 .hand-corner-number {
-  grid-area: 1 / 1 / 2 / 3;
-  justify-self: start;
   font-size: 0.65rem;
   font-weight: 800;
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: start;
   line-height: 1;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hand-fan .hand-card {
-    transition: none;
-  }
-}
-
 .hand-return-target {
+  background: rgb(var(--card-highlight-rgb), 0.12);
   border-color: var(--card-gold);
-  background: rgba(var(--card-highlight-rgb), 0.12);
 }
 
 .hand-return-target::before {
-  position: absolute;
-  top: -1.55rem;
-  right: 0;
-  padding: 0.25rem 0.55rem;
+  background: var(--card-gold);
   border-radius: 999px;
   color: var(--card-accent-ink);
-  background: var(--card-gold);
   content: attr(data-return-label);
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.05em;
+  padding: 0.25rem 0.55rem;
+  position: absolute;
+  right: 0;
   text-transform: uppercase;
+  top: -1.55rem;
 }
 
 .opponent-card-row {
-  min-height: 96px;
   justify-content: center;
+  min-height: 96px;
 }
 
 .opponent-card {
   box-shadow:
-    0 0.6rem 1rem rgba(0, 0, 0, 0.2),
-    inset 0 0 0 3px rgba(var(--card-tint-rgb), 0.16);
+    0 0.6rem 1rem rgb(0 0 0 / 20%),
+    inset 0 0 0 3px rgb(var(--card-tint-rgb), 0.16);
 }
 
 .playable {
   cursor: pointer;
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.playable:disabled {
-  cursor: not-allowed;
-  filter: grayscale(0.45);
-  opacity: 0.48;
-}
-
-.playable:disabled:hover {
-  outline: none;
-  transform: none;
-  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
 }
 
 .playable:active {
   cursor: grabbing;
 }
 
-.playable:hover,
 .playable:focus-visible {
+  box-shadow: 0 1rem 1.2rem rgb(0 0 0 / 25%);
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
   transform: translateY(-8px) rotate(-1deg);
-  box-shadow: 0 1rem 1.2rem rgba(0, 0, 0, 0.25);
+}
+
+.playable:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.45);
+  opacity: 0.48;
 }
 
 .playable[aria-pressed='true'] {
@@ -209,39 +189,81 @@
 }
 
 .pending-in-hand::after {
-  position: absolute;
-  inset: 0;
-  border-radius: 0.7rem;
   background: repeating-linear-gradient(
     -45deg,
     transparent,
     transparent 7px,
-    rgba(var(--card-tint-rgb), 0.12) 7px,
-    rgba(var(--card-tint-rgb), 0.12) 14px
+    rgb(var(--card-tint-rgb), 0.12) 7px,
+    rgb(var(--card-tint-rgb), 0.12) 14px
   );
+  border-radius: 0.7rem;
   content: '';
+  inset: 0;
   pointer-events: none;
+  position: absolute;
 }
 
 .hand-card .hand-status {
-  grid-area: 1 / 1 / 2 / 3;
-  justify-self: center;
-  z-index: 1;
-  padding: 0.1rem 0.2rem;
-  font-size: 0.45rem;
+  background: var(--card-accent-ink);
   border-radius: 999px;
   color: var(--card-cream);
-  background: var(--card-accent-ink);
+  font-size: 0.45rem;
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: center;
+  padding: 0.1rem 0.2rem;
   text-align: center;
+  z-index: 1;
 }
 
 .area-label::before {
-  margin-right: 0.5rem;
   color: var(--accent-text);
   content: '//';
+  margin-right: 0.5rem;
 }
 
-@media (max-height: 700px) {
+@media (hover: hover) {
+  .hand-order button:hover {
+    border-color: var(--accent-text);
+    color: var(--accent-text);
+  }
+
+  .playable:hover {
+    box-shadow: 0 1rem 1.2rem rgb(0 0 0 / 25%);
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    transform: translateY(-8px) rotate(-1deg);
+  }
+
+  .playable:disabled:hover {
+    box-shadow: 0 0.6rem 1rem rgb(0 0 0 / 20%);
+    outline: none;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hand-drop-area {
+    transition:
+      border-color 160ms ease,
+      background 160ms ease;
+  }
+
+  .hand-fan .hand-card {
+    transition:
+      left 180ms ease,
+      translate 180ms ease,
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .playable {
+    transition:
+      transform 160ms ease,
+      box-shadow 160ms ease;
+  }
+}
+
+@media (height <= 700px) {
   .card-row,
   .opponent-card-row {
     min-height: 72px;

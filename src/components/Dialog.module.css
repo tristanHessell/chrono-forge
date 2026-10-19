@@ -1,12 +1,12 @@
 .game-log-dialog {
-  width: min(var(--dialog-width, 760px), calc(100vw - 2rem));
-  max-height: calc(100dvh - 2rem);
-  overflow: auto;
+  background: var(--table-bg);
   border: 1px solid var(--border);
   border-radius: 0.75rem;
-  padding: 1.25rem;
-  background: var(--table-bg);
   color: var(--text);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: 1.25rem;
+  width: min(var(--dialog-width, 760px), calc(100vw - 2rem));
 }
 
 .game-log-dialog::backdrop {
@@ -14,10 +14,11 @@
 }
 
 .game-log-header {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
+  justify-content: space-between;
 }
 
 .game-log-header h2 {
@@ -25,22 +26,18 @@
 }
 
 .game-log-close {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
+  background: var(--control-bg);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   color: var(--text);
-  background: var(--control-bg);
-  font-size: 1.75rem;
   cursor: pointer;
-}
-
-.game-log-close:hover {
-  color: var(--accent-text);
+  display: grid;
+  flex-shrink: 0;
+  font-size: 1.75rem;
+  height: 2.75rem;
+  padding: 0;
+  place-items: center;
+  width: 2.75rem;
 }
 
 .game-log-close:focus-visible {
@@ -48,22 +45,28 @@
   outline-offset: 2px;
 }
 
+@media (hover: hover) {
+  .game-log-close:hover {
+    color: var(--accent-text);
+  }
+}
+
 .game-log-dialog textarea {
-  display: block;
-  width: 100%;
-  height: min(40dvh, 350px);
-  margin: 0.5rem 0 1rem;
-  resize: vertical;
-  font: inherit;
-  color: var(--text);
   background: var(--board-bg);
   border: 1px solid var(--border);
+  color: var(--text);
+  display: block;
+  font: inherit;
+  height: min(40dvh, 350px);
+  margin: 0.5rem 0 1rem;
   padding: 0.5rem;
+  resize: vertical;
+  width: 100%;
 }
 
 .game-log-dialog input {
-  color: var(--text);
   background: var(--board-bg);
   border: 1px solid var(--border);
+  color: var(--text);
   padding: 0.5rem;
 }

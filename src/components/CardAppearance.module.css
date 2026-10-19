@@ -5,37 +5,37 @@
 .appearance[data-card-type='manipulation'] {
   --card-color: var(--manipulation-card-color);
   --card-pattern: repeating-conic-gradient(
-    rgba(255, 255, 255, 0.2) 0% 25%,
+    rgb(255 255 255 / 20%) 0% 25%,
     transparent 0% 50%
   );
   --card-pattern-size: 20px 20px;
 }
 
 .appearance[data-event-category='political'] {
-  --category-border: var(--political-card-border);
   --card-pattern: repeating-linear-gradient(
     135deg,
     transparent 0 10px,
-    rgba(255, 255, 255, 0.24) 10px 14px
+    rgb(255 255 255 / 24%) 10px 14px
   );
+  --category-border: var(--political-card-border);
 }
 
 .appearance[data-event-category='technological'] {
-  --category-border: var(--technological-card-border);
   --card-pattern: conic-gradient(
     from 90deg at 2px 2px,
     transparent 25%,
-    rgba(255, 255, 255, 0.24) 0
+    rgb(255 255 255 / 24%) 0
   );
   --card-pattern-size: 18px 18px;
+  --category-border: var(--technological-card-border);
 }
 
 .appearance[data-event-category='environmental'] {
-  --category-border: var(--environmental-card-border);
   --card-pattern: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.35) 2.5px,
+    rgb(255 255 255 / 35%) 2.5px,
     transparent 3px
   );
   --card-pattern-size: 14px 14px;
+  --category-border: var(--environmental-card-border);
 }

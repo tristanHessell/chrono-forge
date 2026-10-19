@@ -1,45 +1,48 @@
 :root {
-  --event-card-color: #2878b8;
-  --manipulation-card-color: #65449f;
-  --political-card-border: #ff6262;
-  --technological-card-border: #f5d547;
-  --environmental-card-border: #4cdb88;
-  --player-zero-color: #76e5ef;
-  --player-one-color: #e1a5ff;
-  --player-two-color: #ffba78;
-  --player-three-color: #97e19a;
-  --neutral-owner-color: #bfcfe2;
+  --accent-text: #66e5f5;
+  --board-bg: #091323;
+  --border: #2e4863;
   --card-accent-ink: #15372c;
   --card-badge-ink: #10271f;
-  --card-dark-ink: #071323;
-  --card-cyan: #80edff;
-  --effect-icon-background: #10283f;
   --card-cream: #fffaf0;
-  --card-gold: #f0c56a;
-  --card-tint-rgb: 21, 55, 44;
-  --card-highlight-rgb: 240, 197, 106;
   --card-cream-rgb: 255, 250, 240;
-  color-scheme: dark;
+  --card-cyan: #80edff;
+  --card-dark-ink: #071323;
+  --card-gold: #f0c56a;
+  --card-height: 88px;
+  --card-highlight-rgb: 240, 197, 106;
+  --card-tint-rgb: 21, 55, 44;
+  --card-width: 124px;
+  --control-bg: #14273d;
+  --effect-icon-background: #10283f;
+  --environmental-card-border: #4cdb88;
+  --event-card-color: #2878b8;
+  --focus-ring: var(--card-cyan);
+  --grid-line: rgb(102 229 245 / 7.5%);
+  --manipulation-card-color: #65449f;
+  --neutral-owner-color: #bfcfe2;
   --page-bg: #070d1b;
-  --page-glow: rgba(40, 84, 157, 0.28);
+  --page-glow: rgb(40 84 157 / 28%);
+  --player-one-color: #e1a5ff;
+  --player-three-color: #97e19a;
+  --player-two-color: #ffba78;
+  --player-zero-color: #76e5ef;
+  --political-card-border: #ff6262;
+  --slot-bg: #18384d;
+  --slot-hover: #245269;
+  --slot-text: #a4f3ff;
   --table-bg: #101c30;
+  --table-shadow: 0 2rem 5rem rgb(0 0 0 / 25%);
+  --technological-card-border: #f5d547;
   --text: #e4f4ff;
   --text-muted: #93afc6;
   --text-secondary: #b5d0e4;
-  --border: #2e4863;
-  --control-bg: #14273d;
-  --board-bg: #091323;
-  --accent-text: #66e5f5;
-  --grid-line: rgba(102, 229, 245, 0.075);
-  --focus-ring: var(--card-cyan);
-  --slot-bg: #18384d;
-  --slot-text: #a4f3ff;
-  --slot-hover: #245269;
-  --table-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.25);
-  --card-width: 124px;
-  --card-height: 88px;
+
+  background: var(--page-bg);
+  color: var(--text);
+  color-scheme: dark;
   font-family:
-    'SFMono-Regular',
+    SFMono-Regular,
     Consolas,
     'Liberation Mono',
     ui-sans-serif,
@@ -48,117 +51,117 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  color: var(--text);
-  background: var(--page-bg);
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
 }
+
 /* Native drag images can omit ancestor filters. Use neutral card paints as well. */
 :root[data-theme='greyscale-light'],
 :root[data-theme='greyscale-dark'],
 :root[data-theme='greyscale'],
 :root[data-theme='grayscale'] {
+  --card-accent-ink: #2f2f2f;
+  --card-badge-ink: #222;
+  --card-cream: #fafafa;
+  --card-cream-rgb: 250, 250, 250;
+  --card-cyan: #d7d7d7;
+  --card-dark-ink: #121212;
+  --card-gold: #c8c8c8;
+  --card-highlight-rgb: 200, 200, 200;
+  --card-tint-rgb: 47, 47, 47;
+  --effect-icon-background: #252525;
+  --environmental-card-border: #b7b7b7;
   --event-card-color: #6c6c6c;
   --manipulation-card-color: #525252;
+  --neutral-owner-color: #cdcdcd;
+  --player-one-color: #b8b8b8;
+  --player-three-color: #ccc;
+  --player-two-color: #c4c4c4;
+  --player-zero-color: #cecece;
   --political-card-border: #838383;
   --technological-card-border: #d2d2d2;
-  --environmental-card-border: #b7b7b7;
-  --player-zero-color: #cecece;
-  --player-one-color: #b8b8b8;
-  --player-two-color: #c4c4c4;
-  --player-three-color: #cccccc;
-  --neutral-owner-color: #cdcdcd;
-  --card-accent-ink: #2f2f2f;
-  --card-badge-ink: #222222;
-  --card-dark-ink: #121212;
-  --card-cyan: #d7d7d7;
-  --effect-icon-background: #252525;
-  --card-cream: #fafafa;
-  --card-gold: #c8c8c8;
-  --card-tint-rgb: 47, 47, 47;
-  --card-highlight-rgb: 200, 200, 200;
-  --card-cream-rgb: 250, 250, 250;
 }
 
 :root[data-theme='greyscale-dark'],
 :root[data-theme='greyscale'],
 :root[data-theme='grayscale'] {
+  --accent-text: #d3d3d3;
+  --board-bg: #121212;
+  --border: #484848;
+  --control-bg: #272727;
+  --focus-ring: #eee;
+  --grid-line: rgb(194 194 194 / 7.5%);
   --page-bg: #0d0d0d;
-  --page-glow: rgba(82, 82, 82, 0.28);
+  --page-glow: rgb(82 82 82 / 28%);
+  --slot-bg: #303030;
+  --slot-hover: #414141;
+  --slot-text: #eee;
   --table-bg: #1c1c1c;
   --text: #f2f2f2;
   --text-muted: #aaa;
   --text-secondary: #ccc;
-  --border: #484848;
-  --control-bg: #272727;
-  --board-bg: #121212;
-  --accent-text: #d3d3d3;
-  --grid-line: rgba(194, 194, 194, 0.075);
-  --focus-ring: #eee;
-  --slot-bg: #303030;
-  --slot-text: #eee;
-  --slot-hover: #414141;
+
   filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
 }
+
 /* Filter dialog content without changing fixed tooltip coordinates. */
 :root[data-theme='greyscale-light'] dialog > *,
 :root[data-theme='greyscale-dark'] dialog > *,
 :root[data-theme='greyscale'] dialog > *,
 :root[data-theme='grayscale'] dialog > * {
   filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
 }
 
 :root[data-theme='light'],
 :root[data-theme='greyscale-light'] {
   color-scheme: light;
+
+  --accent-text: #00677f;
+  --board-bg: #edf3fa;
+  --border: #acbed1;
+  --control-bg: #e4edf7;
+  --focus-ring: #007d9b;
+  --grid-line: rgb(0 85 120 / 9%);
   --page-bg: #e6edf5;
-  --page-glow: rgba(112, 166, 207, 0.24);
+  --page-glow: rgb(112 166 207 / 24%);
+  --slot-bg: #d5e9f2;
+  --slot-hover: #bddfea;
+  --slot-text: #005d78;
   --table-bg: #f7faff;
+  --table-shadow: 0 1rem 3rem rgb(35 65 100 / 12%);
   --text: #172c46;
   --text-muted: #4b637e;
   --text-secondary: #344f6d;
-  --border: #acbed1;
-  --control-bg: #e4edf7;
-  --board-bg: #edf3fa;
-  --accent-text: #00677f;
-  --grid-line: rgba(0, 85, 120, 0.09);
-  --focus-ring: #007d9b;
-  --slot-bg: #d5e9f2;
-  --slot-text: #005d78;
-  --slot-hover: #bddfea;
-  --table-shadow: 0 1rem 3rem rgba(35, 65, 100, 0.12);
 }
 
 :root[data-theme='greyscale-light'] {
+  --accent-text: #555;
+  --board-bg: #f2f2f2;
+  --border: #bcbcbc;
+  --control-bg: #ededed;
+  --focus-ring: #444;
+  --grid-line: rgb(85 85 85 / 9%);
   --page-bg: #ededed;
-  --page-glow: rgba(155, 155, 155, 0.24);
+  --page-glow: rgb(155 155 155 / 24%);
+  --slot-bg: #e5e5e5;
+  --slot-hover: #d7d7d7;
+  --slot-text: #484848;
   --table-bg: #fafafa;
   --text: #292929;
   --text-muted: #606060;
   --text-secondary: #4b4b4b;
-  --border: #bcbcbc;
-  --control-bg: #ededed;
-  --board-bg: #f2f2f2;
-  --accent-text: #555;
-  --grid-line: rgba(85, 85, 85, 0.09);
-  --focus-ring: #444;
-  --slot-bg: #e5e5e5;
-  --slot-text: #484848;
-  --slot-hover: #d7d7d7;
+
   filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
 }
 
-@media (max-width: 540px) {
+@media (width <= 540px) {
   :root {
-    --card-width: 104px;
     --card-height: 72px;
+    --card-width: 104px;
   }
 }
 
-@media (max-height: 700px) {
+@media (height <= 700px) {
   :root {
     --card-height: 72px;
   }
