@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { type RefObject, useId } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -5,16 +6,22 @@ import { loadCardCatalog } from '../cardCatalog';
 import { catalogGroups } from '../catalogGroups';
 import type { Card } from '../game';
 import { useMessages } from '../i18n/useMessages';
+import cardStyles from './Card.module.css';
+import cardCatalogDialogStyles from './CardCatalogDialog.module.css';
 import { CardEffect } from './CardEffect';
+import dialogStyles from './Dialog.module.css';
 
 function CatalogCard({ card }: { card: Card }) {
   const t = useMessages();
   const intl = useIntl();
 
   return (
-    <li className="catalog-entry" data-catalog-card-id={card.id}>
+    <li
+      className={cardCatalogDialogStyles.catalogEntry}
+      data-catalog-card-id={card.id}
+    >
       <div
-        className="card catalog-card"
+        className={cardStyles.card}
         data-card-type={card.type}
         data-event-category={card.category}
       >
@@ -24,14 +31,16 @@ function CatalogCard({ card }: { card: Card }) {
         />
         <strong
           className={
-            card.type === 'manipulation' ? 'manipulation-name' : undefined
+            card.type === 'manipulation'
+              ? cardStyles.manipulationName
+              : undefined
           }
         >
           {card.type === 'event'
             ? intl.formatNumber(card.number, { useGrouping: false })
             : t(`manipulation.${card.action}.name`)}
         </strong>
-        <span className="card-type-name">
+        <span className={cardStyles.cardTypeName}>
           {t(
             card.type === 'manipulation'
               ? 'card.manipulation'
@@ -62,13 +71,21 @@ export function CardCatalogDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="game-log-dialog card-catalog-dialog"
+      className={clsx(
+        dialogStyles.gameLogDialog,
+        cardCatalogDialogStyles.cardCatalogDialog,
+      )}
       aria-labelledby={titleId}
     >
-      <div className="game-log-header card-catalog-header">
+      <div
+        className={clsx(
+          dialogStyles.gameLogHeader,
+          cardCatalogDialogStyles.cardCatalogHeader,
+        )}
+      >
         <h2 id={titleId}>{t('catalog.title')}</h2>
         <button
-          className="game-log-close"
+          className={dialogStyles.gameLogClose}
           type="button"
           aria-label={t('catalog.close')}
           onClick={() => dialogRef.current?.close()}
@@ -77,7 +94,7 @@ export function CardCatalogDialog({
         </button>
       </div>
       <p>{t('catalog.overview')}</p>
-      <dl className="catalog-summary">
+      <dl className={cardCatalogDialogStyles.catalogSummary}>
         {(
           [
             ['catalog.deck', deck.length],
@@ -92,11 +109,11 @@ export function CardCatalogDialog({
           </div>
         ))}
       </dl>
-      <section className="catalog-group">
+      <section className={cardCatalogDialogStyles.catalogGroup}>
         <h3>
           {t('catalog.start')} <span>{t('catalog.count', { count: 1 })}</span>
         </h3>
-        <ul className="catalog-grid">
+        <ul className={cardCatalogDialogStyles.catalogGrid}>
           <CatalogCard card={startingCard} />
         </ul>
       </section>
@@ -110,11 +127,11 @@ export function CardCatalogDialog({
             : t(`manipulation.${card.action}.name`);
 
         return (
-          <section className="catalog-group" key={id}>
+          <section className={cardCatalogDialogStyles.catalogGroup} key={id}>
             <h3>
               {label} <span>{t('catalog.count', { count: cards.length })}</span>
             </h3>
-            <ul className="catalog-grid">
+            <ul className={cardCatalogDialogStyles.catalogGrid}>
               {cards.map((entry) => (
                 <CatalogCard key={entry.id} card={entry} />
               ))}

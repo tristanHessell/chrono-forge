@@ -1,8 +1,8 @@
-import clsx from 'clsx';
-
 import type { PlacedCard, PlayerId } from '../game';
 import { useMessages } from '../i18n/useMessages';
 import { calculateScoreBreakdown } from '../scoring';
+import gameResultsStyles from './GameResults.module.css';
+import ownershipStyles from './Ownership.module.css';
 
 export function GameResults({
   played,
@@ -19,7 +19,7 @@ export function GameResults({
   );
 
   return (
-    <div className="game-results" role="status">
+    <div className={gameResultsStyles.gameResults} role="status">
       <strong>
         {winners.length === 1
           ? t('score.result', { winner: winners[0] })
@@ -27,9 +27,9 @@ export function GameResults({
               players: winners.map((id) => t(`owner.${id}`)).join(', '),
             })}
       </strong>
-      <div className="score-breakdown">
+      <div className={gameResultsStyles.scoreBreakdown}>
         {playerIds.map((owner) => (
-          <span className={clsx('final-score', `owner-${owner}`)} key={owner}>
+          <span className={ownershipStyles[`owner${owner}`]} key={owner}>
             {t('score.breakdown', {
               owner,
               ...(scores[owner] ?? { base: 0, bonus: 0, total: 0 }),

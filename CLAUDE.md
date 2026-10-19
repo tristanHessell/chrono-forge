@@ -107,6 +107,16 @@ The other seats use computer players.
   `src/gameLogSummary.ts` creates human-readable descriptions.
 - `src/theme.ts` selects light or dark themes with optional greyscale variants.
   The styles use theme variables.
+- Component styles use adjacent `*.module.css` files.
+  Vite exports camelCase class names for TypeScript dot notation.
+  `scripts/css-module-types.ts` generates exact readonly declarations from Vite's CSS module exports.
+  Declaration maps link properties to the original CSS selectors without an editor plugin.
+  Installation, tests, builds, and Vite's dev watcher keep these generated files current.
+  Do not edit or commit generated `*.module.css.d.ts` files or their maps.
+  Shared card, appearance, ownership, control, and dialog modules supply reusable styles.
+  `src/styles/theme.css` contains global theme tokens.
+  `src/styles/global.css` contains the page reset and base element styles.
+  Use data attributes for interaction targets instead of CSS class names.
 
 Keep shared rule checks in the rule modules.
 Use the same rules for moves, UI destinations, and computer decisions.
@@ -144,6 +154,7 @@ The boardgame.io developer panel uses the library's own English text.
 ### Tests
 
 Keep unit tests beside the source in `*.test.ts` or `*.test.tsx` files.
+Vitest processes CSS modules to test scoped classes and shared compositions.
 The `tests/` directory contains tests for the quality tools.
 Add regression tests for changes to placement rules, Manipulations, scoring, turns, or replay behaviour.
 Use deterministic seeds or fixtures to reproduce game cases.
@@ -174,7 +185,7 @@ Run `npm run lint:fix` to apply only ESLint fixes.
 
 ## Commit and pull request checks
 
-`npm ci` and `npm install` install the Husky hook through `npm run prepare`.
+`npm ci` and `npm install` install the Husky hook and generate CSS types through `npm run prepare`.
 Run `npm run prepare` if the hooks need installation again.
 The pre-commit hook checks staged files with ESLint, Prettier, and CSpell.
 It also checks `package.json` when that file changes.

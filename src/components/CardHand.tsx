@@ -11,7 +11,9 @@ import {
 } from '../handOrder';
 import { useMessages } from '../i18n/useMessages';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
+import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
+import cardHandStyles from './CardHand.module.css';
 
 type CardHandProps = {
   interactive?: boolean;
@@ -78,8 +80,9 @@ export function CardHand({
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
 
-    const fan = event.currentTarget.querySelector<HTMLElement>('.hand-fan');
-    const cardElement = fan?.querySelector<HTMLElement>('.hand-card');
+    const fan =
+      event.currentTarget.querySelector<HTMLElement>('[data-hand-fan]');
+    const cardElement = fan?.querySelector<HTMLElement>('[data-hand-card]');
 
     if (!fan || !cardElement || orderedCards.length < 2) {
       return;
@@ -128,10 +131,10 @@ export function CardHand({
 
   return (
     <>
-      <div className="hand-heading">
-        <p className="area-label">{t('hand.title', { owner })}</p>
+      <div className={cardHandStyles.handHeading}>
+        <p className={cardHandStyles.areaLabel}>{t('hand.title', { owner })}</p>
         <div
-          className="hand-order"
+          className={cardHandStyles.handOrder}
           role="group"
           aria-label={t('hand.orderLabel', { owner })}
         >
@@ -156,11 +159,11 @@ export function CardHand({
         data-hand-owner={owner}
         data-return-label={t('hand.return')}
         className={clsx(
-          'card-row',
-          isOpponent && 'opponent-card-row',
-          'hand-drop-area',
+          cardHandStyles.cardRow,
+          isOpponent && cardHandStyles.opponentCardRow,
+          cardHandStyles.handDropArea,
           {
-            'hand-return-target': isReturnTarget,
+            [cardHandStyles.handReturnTarget]: isReturnTarget,
           },
         )}
         onDragOver={previewHandReorder}
@@ -175,7 +178,8 @@ export function CardHand({
         }}
       >
         <div
-          className="hand-fan"
+          className={cardHandStyles.handFan}
+          data-hand-fan
           style={{ '--hand-count': Math.max(1, cards.length) } as CSSProperties}
         >
           {renderedCards.map((card) => {
@@ -198,26 +202,28 @@ export function CardHand({
                   .filter(Boolean)
                   .join(' ')}
                 className={clsx(
-                  'card',
-                  'playable',
-                  'hand-card',
-                  isOpponent && 'opponent-card',
+                  cardStyles.card,
+                  cardHandStyles.playable,
+                  cardHandStyles.handCard,
+                  isOpponent && cardHandStyles.opponentCard,
                   {
-                    'pending-in-hand': pendingCardId === card.id,
-                    'hand-card-highlighted': index === highlightedIndex,
-                    'hand-card-before':
+                    [cardHandStyles.pendingInHand]: pendingCardId === card.id,
+                    [cardHandStyles.handCardHighlighted]:
+                      index === highlightedIndex,
+                    [cardHandStyles.handCardBefore]:
                       !draggedId &&
                       highlightedIndex >= 0 &&
                       index < highlightedIndex,
-                    'hand-card-after':
+                    [cardHandStyles.handCardAfter]:
                       !draggedId &&
                       highlightedIndex >= 0 &&
                       index > highlightedIndex,
-                    'hand-card-dragging': draggedId === card.id,
+                    [cardHandStyles.handCardDragging]: draggedId === card.id,
                   },
                 )}
                 style={{ '--hand-index': index } as CSSProperties}
                 data-card-type={card.type}
+                data-hand-card
                 data-event-category={card.category}
                 disabled={!interactive || activeOwner !== owner}
                 draggable={interactive && activeOwner === owner}
@@ -270,20 +276,23 @@ export function CardHand({
                   showTooltip={!touchDrag?.preview}
                 />
                 {card.type === 'event' && (
-                  <span className="hand-corner-number" aria-hidden="true">
+                  <span
+                    className={cardHandStyles.handCornerNumber}
+                    aria-hidden="true"
+                  >
                     {intl.formatNumber(card.number, { useGrouping: false })}
                   </span>
                 )}
                 <strong
                   className={clsx(
-                    card.type === 'manipulation' && 'manipulation-name',
+                    card.type === 'manipulation' && cardStyles.manipulationName,
                   )}
                 >
                   {card.type === 'event'
                     ? intl.formatNumber(card.number, { useGrouping: false })
                     : t(`manipulation.${card.action}.name`)}
                 </strong>
-                <span className="card-type-name">
+                <span className={cardStyles.cardTypeName}>
                   {t(
                     card.type === 'manipulation'
                       ? 'card.manipulation'
@@ -293,7 +302,9 @@ export function CardHand({
                   )}
                 </span>
                 {pendingCardId === card.id && (
-                  <small className="hand-status">{t('hand.onTable')}</small>
+                  <small className={cardHandStyles.handStatus}>
+                    {t('hand.onTable')}
+                  </small>
                 )}
               </button>
             );

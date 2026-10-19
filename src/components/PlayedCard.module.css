@@ -1,0 +1,87 @@
+.link-arrow {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: 1.1rem;
+  height: 1.1rem;
+  place-items: center;
+  border: 1px solid rgba(var(--card-cream-rgb), 0.8);
+  border-radius: 50%;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.link-top {
+  top: -0.65rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.link-right {
+  top: 50%;
+  right: -0.65rem;
+  transform: translateY(-50%);
+}
+
+.link-bottom {
+  bottom: -0.65rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.link-left {
+  top: 50%;
+  left: -0.65rem;
+  transform: translateY(-50%);
+}
+
+.manipulation-target[data-card-type] {
+  cursor: crosshair;
+  outline: 3px dashed var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.manipulation-selected[data-card-type] {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.removed-card {
+  filter: saturate(0.2);
+  opacity: 0.65;
+}
+
+.removed-card strong {
+  text-decoration: line-through;
+}
+
+.played-card {
+  box-shadow:
+    0 0.6rem 1rem rgba(0, 0, 0, 0.2),
+    inset 0 0 0 4px var(--owner-color);
+}
+
+.latest-card {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.latest-badge {
+  grid-area: 1 / 1 / 2 / -1;
+  justify-self: start;
+  padding: 0.18rem 0.3rem;
+  border-radius: 0.15rem;
+  color: var(--card-dark-ink);
+  background: var(--card-cyan);
+  font-size: 0.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  pointer-events: none;
+}

@@ -1,0 +1,48 @@
+.owner-legend {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.board-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.board-help {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.legend-item::before {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--owner-color);
+  content: '';
+}
+
+@media (max-width: 540px) {
+  .board-toolbar {
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+@media (max-height: 700px) {
+  .board-help {
+    display: none;
+  }
+}

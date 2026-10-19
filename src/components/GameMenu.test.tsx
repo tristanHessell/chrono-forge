@@ -4,6 +4,7 @@ import { expect, it, vi } from 'vitest';
 
 import messages from '../i18n/en.json';
 import { GameMenu } from './GameMenu';
+import styles from './GameMenu.module.css';
 
 vi.mock('./ThemeToggle', () => ({
   ThemeToggle: () => <button type="button">Theme toggle</button>,
@@ -24,7 +25,7 @@ it.each([2, 3, 4] as const)(
       </IntlProvider>,
     );
 
-    expect(html).toMatch(/^<details class="game-menu">/);
+    expect(html).toContain(`<details class="${styles.gameMenu}">`);
     expect(html).not.toContain('open=""');
     expect(html).toContain('aria-label="Game menu"');
     expect(html).toContain('>New game</button>');

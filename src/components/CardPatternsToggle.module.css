@@ -1,0 +1,15 @@
+.card-patterns-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.card-patterns-choice input {
+  flex: none;
+  accent-color: var(--accent-text);
+}

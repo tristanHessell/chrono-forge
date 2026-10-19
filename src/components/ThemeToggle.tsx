@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useMessages } from '../i18n/useMessages';
 import { parseTheme, savedTheme, saveTheme, type Theme } from '../theme';
+import themeToggleStyles from './ThemeToggle.module.css';
 
 export function ThemeToggle() {
   const t = useMessages();
@@ -26,7 +27,7 @@ export function ThemeToggle() {
   }, []);
 
   return (
-    <label className="theme-choice">
+    <label className={themeToggleStyles.themeChoice}>
       {t('theme.label')}
       <select
         aria-label={t('theme.label')}

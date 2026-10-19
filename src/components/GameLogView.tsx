@@ -5,6 +5,7 @@ import type { Card } from '../game';
 import type { GameLog } from '../gameLog';
 import { summarizeGameLog } from '../gameLogSummary';
 import { useMessages } from '../i18n/useMessages';
+import gameLogViewStyles from './GameLogView.module.css';
 
 export function GameLogView({ log }: { log: GameLog }) {
   const t = useMessages();
@@ -27,7 +28,7 @@ export function GameLogView({ log }: { log: GameLog }) {
   };
   const cardReference = (card?: Card) => (
     <strong
-      className="log-card-reference"
+      className={gameLogViewStyles.logCardReference}
       data-event-category={card?.category}
       data-card-type={card?.type}
     >
@@ -36,8 +37,11 @@ export function GameLogView({ log }: { log: GameLog }) {
   );
 
   return (
-    <section className="game-log-readable" aria-label={t('log.history')}>
-      <dl className="game-log-metadata">
+    <section
+      className={gameLogViewStyles.gameLogReadable}
+      aria-label={t('log.history')}
+    >
+      <dl className={gameLogViewStyles.gameLogMetadata}>
         <div>
           <dt>{t('log.seed')}</dt>
           <dd>
@@ -53,7 +57,7 @@ export function GameLogView({ log }: { log: GameLog }) {
       {items.length === 0 ? (
         <p>{t('log.empty')}</p>
       ) : (
-        <ol className="game-log-entries">
+        <ol className={gameLogViewStyles.gameLogEntries}>
           {items.map((item) => {
             const values = {
               card: cardReference(item.card),

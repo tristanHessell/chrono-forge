@@ -1,0 +1,249 @@
+.area-label {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.card-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 96px;
+  margin-top: 0.75rem;
+}
+
+.card-row [data-card-type] {
+  flex: 0 1 var(--card-width);
+  min-width: 0;
+}
+
+.hand-drop-area {
+  container-type: inline-size;
+  position: relative;
+  padding: 0.7rem;
+  margin: 0.05rem -0.7rem -0.7rem;
+  border: 2px dashed transparent;
+  border-radius: 1rem;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.hand-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.hand-order {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.hand-order button {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.2rem;
+  color: var(--text-muted);
+  background: var(--control-bg);
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.hand-order button[aria-pressed='true'],
+.hand-order button:hover {
+  color: var(--accent-text);
+  border-color: var(--accent-text);
+}
+
+.hand-order button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.hand-fan {
+  --hand-step: clamp(20px, calc((100cqw - var(--card-width) - 3rem) / 4), 72px);
+  --hand-reveal: clamp(10px, 4cqw, 28px);
+  position: relative;
+  width: calc(var(--card-width) + (var(--hand-count) - 1) * var(--hand-step));
+  height: calc(var(--card-height) + 1rem);
+  margin: 0 auto;
+  flex: 0 0 auto;
+  isolation: isolate;
+}
+
+.hand-fan .hand-card {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  position: absolute;
+  top: 0.6rem;
+  left: calc(var(--hand-index) * var(--hand-step));
+  z-index: var(--hand-index);
+  transition:
+    left 180ms ease,
+    translate 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.hand-card.hand-card-before {
+  translate: calc(-1 * var(--hand-reveal)) 0;
+}
+
+.hand-card.hand-card-after {
+  translate: var(--hand-reveal) 0;
+}
+
+.hand-card.hand-card-highlighted {
+  z-index: 10;
+  transform: translateY(-8px);
+}
+
+.hand-card.hand-card-dragging {
+  opacity: 0.35;
+  outline: 2px dashed var(--focus-ring);
+  outline-offset: 2px;
+}
+
+:global([data-touch-dragging='true']) .hand-card[aria-pressed='true'] {
+  opacity: 0.35;
+}
+
+.hand-fan .hand-card:disabled {
+  opacity: 1;
+  filter: saturate(0.55) brightness(0.75);
+}
+
+.hand-corner-number {
+  grid-area: 1 / 1 / 2 / -1;
+  justify-self: start;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hand-fan .hand-card {
+    transition: none;
+  }
+}
+
+.hand-return-target {
+  border-color: var(--card-gold);
+  background: rgba(var(--card-highlight-rgb), 0.12);
+}
+
+.hand-return-target::before {
+  position: absolute;
+  top: -1.55rem;
+  right: 0;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
+  content: attr(data-return-label);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.opponent-card-row {
+  min-height: 96px;
+  justify-content: center;
+}
+
+.opponent-card {
+  box-shadow:
+    0 0.6rem 1rem rgba(0, 0, 0, 0.2),
+    inset 0 0 0 3px rgba(var(--card-tint-rgb), 0.16);
+}
+
+.playable {
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.playable:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.45);
+  opacity: 0.48;
+}
+
+.playable:disabled:hover {
+  outline: none;
+  transform: none;
+  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.playable:active {
+  cursor: grabbing;
+}
+
+.playable:hover,
+.playable:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+  transform: translateY(-8px) rotate(-1deg);
+  box-shadow: 0 1rem 1.2rem rgba(0, 0, 0, 0.25);
+}
+
+.playable[aria-pressed='true'] {
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 3px;
+  transform: translateY(-8px);
+}
+
+.pending-in-hand {
+  filter: saturate(0.35);
+  opacity: 0.68;
+}
+
+.pending-in-hand::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.7rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 7px,
+    rgba(var(--card-tint-rgb), 0.12) 7px,
+    rgba(var(--card-tint-rgb), 0.12) 14px
+  );
+  content: '';
+  pointer-events: none;
+}
+
+.hand-card .hand-status {
+  grid-area: 1 / 1 / 2 / -1;
+  justify-self: end;
+  z-index: 1;
+  padding: 0.1rem 0.2rem;
+  font-size: 0.45rem;
+  border-radius: 999px;
+  color: var(--card-cream);
+  background: var(--card-accent-ink);
+  text-align: center;
+}
+
+.area-label::before {
+  margin-right: 0.5rem;
+  color: var(--accent-text);
+  content: '//';
+}
+
+@media (max-height: 700px) {
+  .card-row,
+  .opponent-card-row {
+    min-height: 72px;
+  }
+}

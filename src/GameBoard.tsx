@@ -15,13 +15,18 @@ import { useIntl } from 'react-intl';
 import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
 import { BoardToolbar } from './components/BoardToolbar';
 import { BoardZoomControls } from './components/BoardZoomControls';
+import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
 import { CardEffect } from './components/CardEffect';
 import { CardHand } from './components/CardHand';
+import controlsStyles from './components/Controls.module.css';
 import { GameLogControls } from './components/GameLogControls';
 import { GameResults } from './components/GameResults';
+import ownershipStyles from './components/Ownership.module.css';
+import pendingCardStyles from './components/PendingCard.module.css';
 import { PlacementSlot } from './components/PlacementSlot';
 import { PlayedCard } from './components/PlayedCard';
+import playedCardStyles from './components/PlayedCard.module.css';
 import {
   type CardGameState,
   type CardPosition,
@@ -30,6 +35,7 @@ import {
   type PlayerId,
   positionKey,
 } from './game';
+import gameBoardStyles from './GameBoard.module.css';
 import { GameLogContext } from './gameLogContext';
 import { useMessages } from './i18n/useMessages';
 import {
@@ -69,10 +75,34 @@ type DraggedCard = {
 };
 
 const linkDirections = [
-  { row: -1, column: 0, className: 'top', outward: '↑', inward: '↓' },
-  { row: 0, column: -1, className: 'left', outward: '←', inward: '→' },
-  { row: 0, column: 1, className: 'right', outward: '→', inward: '←' },
-  { row: 1, column: 0, className: 'bottom', outward: '↓', inward: '↑' },
+  {
+    row: -1,
+    column: 0,
+    className: playedCardStyles.linkTop,
+    outward: '↑',
+    inward: '↓',
+  },
+  {
+    row: 0,
+    column: -1,
+    className: playedCardStyles.linkLeft,
+    outward: '←',
+    inward: '→',
+  },
+  {
+    row: 0,
+    column: 1,
+    className: playedCardStyles.linkRight,
+    outward: '→',
+    inward: '←',
+  },
+  {
+    row: 1,
+    column: 0,
+    className: playedCardStyles.linkBottom,
+    outward: '↓',
+    inward: '↑',
+  },
 ] as const;
 
 export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
@@ -251,7 +281,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       return (
         <span
           aria-hidden="true"
-          className={clsx('link-arrow', `link-${link.className}`)}
+          className={clsx(playedCardStyles.linkArrow, link.className)}
           key={link.className}
         >
           {link.inward}
@@ -422,7 +452,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
       const target = document.elementFromPoint(point.x, point.y);
 
-      if (target?.closest('.discard-pile')) {
+      if (target?.closest('[data-discard-pile]')) {
         gameMoves.discardCard(cardId);
 
         return;
@@ -523,7 +553,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const startBoardPan = (event: PointerEvent<HTMLDivElement>) => {
     if (
       event.button !== 0 ||
-      (event.target as Element).closest('.card, .placement-slot')
+      (event.target as Element).closest(
+        '[data-card-type], [data-placement-slot]',
+      )
     ) {
       return;
     }
@@ -582,10 +614,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
   return (
     <main
-      className={clsx('game-shell', {
-        'choosing-jump-destination': choosingJumpDestination,
-        'touch-dragging': Boolean(touchDrag.preview),
+      className={clsx(gameBoardStyles.gameShell, {
+        [gameBoardStyles.choosingJumpDestination]: choosingJumpDestination,
       })}
+      data-touch-dragging={Boolean(touchDrag.preview)}
       onPointerDownCapture={() => touchDrag.controller.resetClickSuppression()}
       onClickCapture={(event) => {
         if (touchDrag.controller.consumeClick()) {
@@ -608,15 +640,23 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         }
       }}
     >
-      <header>
-        <div className="top-actions">
-          <div className="game-brand" aria-label={t('brand.label')}>
+      <header className={gameBoardStyles.header}>
+        <div className={gameBoardStyles.topActions}>
+          <div
+            className={gameBoardStyles.gameBrand}
+            aria-label={t('brand.label')}
+          >
             <span aria-hidden="true">⬡</span>
             <div>
               NEXUS<small>{t('brand.tagline')}</small>
             </div>
           </div>
-          <p className={clsx('turn-indicator', `owner-${activeOwner}`)}>
+          <p
+            className={clsx(
+              gameBoardStyles.turnIndicator,
+              ownershipStyles[`owner${activeOwner}`],
+            )}
+          >
             <span aria-hidden="true" />
             {finished
               ? t('game.over')
@@ -631,10 +671,13 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               </small>
             )}
           </p>
-          <div className="history-controls" aria-label={t('history.label')}>
+          <div
+            className={gameBoardStyles.historyControls}
+            aria-label={t('history.label')}
+          >
             <button
               aria-label={t('history.undoLabel')}
-              className="history-button"
+              className={controlsStyles.historyButton}
               disabled={G.testHistory.length === 0}
               onClick={() => {
                 setComputerPaused(true);
@@ -648,7 +691,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             </button>
             <button
               aria-label={t('history.redoLabel')}
-              className="history-button"
+              className={controlsStyles.historyButton}
               disabled={G.testFuture.length === 0}
               onClick={() => {
                 setComputerPaused(true);
@@ -663,7 +706,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           </div>
           {computerPaused && !finished && (
             <button
-              className="history-button"
+              className={controlsStyles.historyButton}
               type="button"
               onClick={() => setComputerPaused(false)}
             >
@@ -696,12 +739,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         </div>
       </header>
 
-      <section className="table" aria-label={t('table.label')}>
-        <div className="opponent-hand">
+      <section className={gameBoardStyles.table} aria-label={t('table.label')}>
+        <div className={gameBoardStyles.opponentHand}>
           {G.playerIds
             .filter((id) => id !== '0')
             .map((id) => (
-              <div className="computer-hand" key={id}>
+              <div className={gameBoardStyles.computerHand} key={id}>
                 <CardHand
                   activeOwner={activeOwner}
                   cards={G.hands[id]}
@@ -724,15 +767,18 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             ))}
         </div>
 
-        <div className="play-area">
-          <div className="area-heading">
-            <div className="area-title-with-deck">
+        <div className={gameBoardStyles.playArea}>
+          <div className={gameBoardStyles.areaHeading}>
+            <div className={gameBoardStyles.areaTitleWithDeck}>
               <div
                 aria-label={t('deck.label', { count: G.deck.length })}
-                className="deck-display"
+                className={gameBoardStyles.deckDisplay}
                 role="status"
               >
-                <div className="deck-card-back" aria-hidden="true">
+                <div
+                  className={gameBoardStyles.deckCardBack}
+                  aria-hidden="true"
+                >
                   <strong>{intl.formatNumber(G.deck.length)}</strong>
                 </div>
                 <span>
@@ -742,8 +788,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               </div>
               <button
                 type="button"
-                className={clsx('discard-pile', {
-                  'discard-ready': draggedCard && !finished,
+                data-discard-pile
+                className={clsx(gameBoardStyles.discardPile, {
+                  [gameBoardStyles.discardReady]: draggedCard && !finished,
                 })}
                 aria-label={t('discard.label', { count: G.discarded.length })}
                 title={t('discard.hint')}
@@ -777,7 +824,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               scores={calculateScores(G.played)}
             />
           </div>
-          <div className="board-surface">
+          <div className={gameBoardStyles.boardSurface}>
             <BoardZoomControls
               boardZoom={boardZoom}
               onResetZoom={() => setBoardZoom(1)}
@@ -786,14 +833,16 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             <div
               ref={boardViewport}
               aria-label={t('board.label')}
-              className={clsx('played-viewport', { 'is-panning': isPanning })}
+              className={clsx(gameBoardStyles.playedViewport, {
+                [gameBoardStyles.isPanning]: isPanning,
+              })}
               onPointerCancel={stopBoardPan}
               onPointerDown={startBoardPan}
               onPointerMove={panBoard}
               onPointerUp={stopBoardPan}
             >
               <div
-                className="played-grid"
+                className={gameBoardStyles.playedGrid}
                 style={{ ...gridStyle, zoom: boardZoom }}
               >
                 {G.played.length === 0 && !G.pending && showPlacementSlots ? (
@@ -890,10 +939,17 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                       <div
                         aria-label={t('placement.pending')}
                         className={clsx(
-                          'card',
-                          'pending-card',
-                          `owner-${displayedPendingOwner}`,
-                          { 'replacement-target': pendingShowsReplacement },
+                          cardStyles.card,
+                          pendingCardStyles.pendingCard,
+                          displayedPendingOwner === 'neutral'
+                            ? ownershipStyles.ownerNeutral
+                            : ownershipStyles[
+                                `owner${displayedPendingOwner ?? activeOwner}`
+                              ],
+                          {
+                            [pendingCardStyles.replacementTarget]:
+                              pendingShowsReplacement,
+                          },
                         )}
                         data-owner={displayedPendingOwner}
                         data-drop-position={positionKey(G.pending)}
@@ -938,19 +994,22 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                               useGrouping: false,
                             })}
                         </strong>
-                        <span className="card-type-name">
+                        <span
+                          data-card-label
+                          className={cardStyles.cardTypeName}
+                        >
                           {t(
                             displayedPendingCard?.category
                               ? `card.category.${displayedPendingCard.category}`
                               : 'card.event',
                           )}
                         </span>
-                        <span className="owner-badge">
+                        <span className={cardStyles.ownerBadge}>
                           {t(`owner.${displayedPendingOwner ?? activeOwner}`)}
                         </span>
                         <button
                           aria-label={t('placement.confirmLabel')}
-                          className="pending-confirm"
+                          className={pendingCardStyles.pendingConfirm}
                           disabled={activeOwner !== '0' || finished}
                           onClick={(event) => {
                             event.stopPropagation();
@@ -1004,7 +1063,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             </div>
           </div>
         </div>
-        <div className="hand">
+        <div className={gameBoardStyles.hand}>
           <CardHand
             activeOwner={activeOwner}
             cards={G.hands['0']}
@@ -1027,7 +1086,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
       {touchDrag.preview && draggedCardDetails?.type === 'event' && (
         <div
-          className="card touch-drag-preview"
+          className={clsx(cardStyles.card, cardStyles.touchDragPreview)}
           aria-hidden="true"
           data-card-type="event"
           data-event-category={draggedCardDetails.category}
@@ -1039,7 +1098,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               useGrouping: false,
             })}
           </strong>
-          <span className="card-type-name">
+          <span className={cardStyles.cardTypeName}>
             {t(
               draggedCardDetails.category
                 ? `card.category.${draggedCardDetails.category}`
@@ -1049,11 +1108,13 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         </div>
       )}
       <CardCatalogDialog dialogRef={cardCatalogDialog} />
-      <footer>
+      <footer className={gameBoardStyles.footer}>
         {finished ? (
           <GameResults played={G.played} playerIds={G.playerIds} />
         ) : (
-          <p className={clsx(manipulation && 'manipulation-prompt')}>
+          <p
+            className={clsx(manipulation && gameBoardStyles.manipulationPrompt)}
+          >
             {manipulation
               ? t(
                   !manipulationTargetId
