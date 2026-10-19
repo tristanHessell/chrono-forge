@@ -50,4 +50,7 @@ it('shows deck totals, categories, effects, and Command distributions', () => {
   expect(html).toContain('Time Swap');
   expect(html).toContain('Take Control');
   expect(html).toContain('Remove Event');
+  expect(html).toContain('Imperial Alliances');
+  expect(html).toContain('Powered Flight');
+  expect(html).toContain('Conservation Movement');
 });

@@ -16,6 +16,38 @@ export {
 
 export type CardEffect = 'draw-one' | 'timeline-1900-bonus';
 export type EventCategory = 'political' | 'technological' | 'environmental';
+export type EventName =
+  | 'assembly-lines'
+  | 'atomic-age'
+  | 'civil-rights'
+  | 'climate-summit'
+  | 'cold-war'
+  | 'conservation-movement'
+  | 'democratic-change'
+  | 'detente'
+  | 'dust-bowl'
+  | 'earth-day'
+  | 'european-union'
+  | 'global-conflict'
+  | 'green-revolution'
+  | 'imperial-alliances'
+  | 'internet-expansion'
+  | 'microprocessor'
+  | 'moon-landing'
+  | 'national-parks'
+  | 'new-deal'
+  | 'ozone-hole'
+  | 'personal-computers'
+  | 'powered-flight'
+  | 'radar-discovery'
+  | 'radio-age'
+  | 'silent-spring'
+  | 'smog-crisis'
+  | 'space-race'
+  | 'suffrage'
+  | 'timeline-origin'
+  | 'united-nations'
+  | 'wildlife-refuges';
 export type ManipulationAction =
   'time-jump' | 'time-swap' | 'take-control' | 'remove-event';
 
@@ -24,6 +56,10 @@ export type EventCard = {
   type: 'event';
   // Only the neutral starting card has no category.
   category?: EventCategory;
+  /**
+   * The id for the intl message corresponding to this event's name.
+   */
+  name?: EventName;
   number: number;
   effect?: CardEffect;
 };

@@ -3,6 +3,7 @@ import { expect, it } from 'vitest';
 import { loadCardCatalog } from './cardCatalog';
 import definitions from './cards';
 import type { Card } from './game';
+import messages from './i18n/en.json';
 
 it('registers every individual card file exactly once', () => {
   const modules = import.meta.glob<{ default: Card }>(
@@ -18,7 +19,12 @@ it('registers every individual card file exactly once', () => {
   for (const module of Object.values(modules)) {
     expect(cards).toContainEqual(module.default);
   }
-  expect(startingCard).toEqual({ id: 'starting-0', type: 'event', number: 0 });
+  expect(startingCard).toEqual({
+    id: 'starting-0',
+    type: 'event',
+    name: 'timeline-origin',
+    number: 0,
+  });
 });
 
 it('preserves the deck order for existing seeds and game logs', () => {
@@ -65,6 +71,20 @@ it('includes one card per category for every decade and keeps the start neutral'
       .filter((card) => card.number === 1990)
       .every((card) => card.effect === 'timeline-1900-bonus'),
   ).toBe(true);
+});
+
+it('gives every Event a unique translated name', () => {
+  const { deck, startingCard } = loadCardCatalog();
+  const events = [startingCard, ...deck].filter(
+    (card) => card.type === 'event',
+  );
+  const names = events.map((card) => card.name);
+
+  expect(names.every(Boolean)).toBe(true);
+  expect(new Set(names)).toHaveLength(events.length);
+  for (const name of names) {
+    expect(messages).toHaveProperty(`card.name.${name}`);
+  }
 });
 
 it('loads all listed cards and returns independent copies for each game', () => {

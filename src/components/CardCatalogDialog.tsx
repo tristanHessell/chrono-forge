@@ -9,6 +9,7 @@ import { useMessages } from '../i18n/useMessages';
 import cardStyles from './Card.module.css';
 import cardCatalogDialogStyles from './CardCatalogDialog.module.css';
 import { CardEffect } from './CardEffect';
+import { CardEventName } from './CardEventName';
 import dialogStyles from './Dialog.module.css';
 
 function CatalogCard({ card }: { card: Card }) {
@@ -40,6 +41,7 @@ function CatalogCard({ card }: { card: Card }) {
             ? intl.formatNumber(card.number, { useGrouping: false })
             : t(`manipulation.${card.action}.name`)}
         </strong>
+        {card.type === 'event' && <CardEventName card={card} />}
         <span className={cardStyles.cardTypeName}>
           {t(
             card.type === 'manipulation'

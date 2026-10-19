@@ -13,6 +13,7 @@ import { useMessages } from '../i18n/useMessages';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
+import { CardEventName } from './CardEventName';
 import cardHandStyles from './CardHand.module.css';
 
 type CardHandProps = {
@@ -292,6 +293,7 @@ export function CardHand({
                     ? intl.formatNumber(card.number, { useGrouping: false })
                     : t(`manipulation.${card.action}.name`)}
                 </strong>
+                {card.type === 'event' && <CardEventName card={card} />}
                 <span className={cardStyles.cardTypeName}>
                   {t(
                     card.type === 'manipulation'

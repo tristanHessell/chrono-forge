@@ -36,6 +36,7 @@ describe('English messages', () => {
           column: 2,
           pending: 'yes',
           number: 10,
+          name: 'Sample Event',
           latest: 'yes',
           theme: 'dark',
         },

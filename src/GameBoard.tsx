@@ -18,6 +18,7 @@ import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
 import { CardEffect } from './components/CardEffect';
+import { CardEventName } from './components/CardEventName';
 import { CardHand } from './components/CardHand';
 import controlsStyles from './components/Controls.module.css';
 import { GameLogControls } from './components/GameLogControls';
@@ -994,6 +995,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                               useGrouping: false,
                             })}
                         </strong>
+                        {displayedPendingCard && (
+                          <CardEventName card={displayedPendingCard} />
+                        )}
                         <span
                           data-card-label
                           className={cardStyles.cardTypeName}
@@ -1016,9 +1020,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                             gameMoves.confirmPlacement();
                           }}
                           onPointerDown={(event) => event.stopPropagation()}
+                          title={t('placement.confirm')}
                           type="button"
                         >
-                          {t('placement.confirm')}
+                          <span aria-hidden="true">✓</span>
                         </button>
                       </div>
                     )}
@@ -1098,6 +1103,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               useGrouping: false,
             })}
           </strong>
+          <CardEventName card={draggedCardDetails} />
           <span className={cardStyles.cardTypeName}>
             {t(
               draggedCardDetails.category

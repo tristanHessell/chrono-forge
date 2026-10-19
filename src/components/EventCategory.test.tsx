@@ -14,6 +14,7 @@ it.each(['political', 'technological', 'environmental'] as const)(
       id: 'test',
       type: 'event',
       category,
+      name: 'imperial-alliances',
       number: 1900,
       row: 0,
       column: 1,
@@ -40,6 +41,7 @@ it.each(['political', 'technological', 'environmental'] as const)(
       html.match(new RegExp(`data-event-category="${category}"`, 'g')),
     ).toHaveLength(2);
     expect(html).toContain(messages[`card.category.${category}`]);
+    expect(html.match(/Imperial Alliances/g)).toHaveLength(3);
     expect(html).toContain('placed by you');
   },
 );

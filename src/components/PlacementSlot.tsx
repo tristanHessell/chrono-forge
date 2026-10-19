@@ -7,6 +7,7 @@ import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
+import { CardEventName } from './CardEventName';
 import placementSlotStyles from './PlacementSlot.module.css';
 
 type PlacementSlotProps = {
@@ -67,6 +68,7 @@ export function PlacementSlot({
           <strong>
             {intl.formatNumber(draggedCard.number, { useGrouping: false })}
           </strong>
+          <CardEventName card={draggedCard} />
           <span className={cardStyles.cardTypeName}>
             {t(
               draggedCard.category
@@ -74,7 +76,9 @@ export function PlacementSlot({
                 : 'card.event',
             )}
           </span>
-          <small>{t('placement.release')}</small>
+          <small className={placementSlotStyles.releaseLabel}>
+            {t('placement.release')}
+          </small>
         </>
       ) : (
         <>
