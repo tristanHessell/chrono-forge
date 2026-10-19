@@ -1,4 +1,24 @@
 :root {
+  --event-card-color: #2878b8;
+  --manipulation-card-color: #65449f;
+  --political-card-border: #ff6262;
+  --technological-card-border: #f5d547;
+  --environmental-card-border: #4cdb88;
+  --player-zero-color: #76e5ef;
+  --player-one-color: #e1a5ff;
+  --player-two-color: #ffba78;
+  --player-three-color: #97e19a;
+  --neutral-owner-color: #bfcfe2;
+  --card-accent-ink: #15372c;
+  --card-badge-ink: #10271f;
+  --card-dark-ink: #071323;
+  --card-cyan: #80edff;
+  --effect-icon-background: #10283f;
+  --card-cream: #fffaf0;
+  --card-gold: #f0c56a;
+  --card-tint-rgb: 21, 55, 44;
+  --card-highlight-rgb: 240, 197, 106;
+  --card-cream-rgb: 255, 250, 240;
   color-scheme: dark;
   --page-bg: #070d1b;
   --page-glow: rgba(40, 84, 157, 0.28);
@@ -11,7 +31,7 @@
   --board-bg: #091323;
   --accent-text: #66e5f5;
   --grid-line: rgba(102, 229, 245, 0.075);
-  --focus-ring: #80edff;
+  --focus-ring: var(--card-cyan);
   --slot-bg: #18384d;
   --slot-text: #a4f3ff;
   --slot-hover: #245269;
@@ -34,7 +54,66 @@
   text-rendering: optimizeLegibility;
 }
 
-:root[data-theme='light'] {
+/* Native drag images can omit ancestor filters. Use neutral card paints as well. */
+:root[data-theme='greyscale-light'],
+:root[data-theme='greyscale-dark'],
+:root[data-theme='greyscale'],
+:root[data-theme='grayscale'] {
+  --event-card-color: #6c6c6c;
+  --manipulation-card-color: #525252;
+  --political-card-border: #838383;
+  --technological-card-border: #d2d2d2;
+  --environmental-card-border: #b7b7b7;
+  --player-zero-color: #cecece;
+  --player-one-color: #b8b8b8;
+  --player-two-color: #c4c4c4;
+  --player-three-color: #cccccc;
+  --neutral-owner-color: #cdcdcd;
+  --card-accent-ink: #2f2f2f;
+  --card-badge-ink: #222222;
+  --card-dark-ink: #121212;
+  --card-cyan: #d7d7d7;
+  --effect-icon-background: #252525;
+  --card-cream: #fafafa;
+  --card-gold: #c8c8c8;
+  --card-tint-rgb: 47, 47, 47;
+  --card-highlight-rgb: 200, 200, 200;
+  --card-cream-rgb: 250, 250, 250;
+}
+
+:root[data-theme='greyscale-dark'],
+:root[data-theme='greyscale'],
+:root[data-theme='grayscale'] {
+  --page-bg: #0d0d0d;
+  --page-glow: rgba(82, 82, 82, 0.28);
+  --table-bg: #1c1c1c;
+  --text: #f2f2f2;
+  --text-muted: #aaa;
+  --text-secondary: #ccc;
+  --border: #484848;
+  --control-bg: #272727;
+  --board-bg: #121212;
+  --accent-text: #d3d3d3;
+  --grid-line: rgba(194, 194, 194, 0.075);
+  --focus-ring: #eee;
+  --slot-bg: #303030;
+  --slot-text: #eee;
+  --slot-hover: #414141;
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+}
+
+/* Top-layer dialogs do not inherit the page filter. Keep tooltip coordinates unchanged. */
+:root[data-theme='greyscale-light'] dialog > *,
+:root[data-theme='greyscale-dark'] dialog > *,
+:root[data-theme='greyscale'] dialog > *,
+:root[data-theme='grayscale'] dialog > * {
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+}
+
+:root[data-theme='light'],
+:root[data-theme='greyscale-light'] {
   color-scheme: light;
   --page-bg: #e6edf5;
   --page-glow: rgba(112, 166, 207, 0.24);
@@ -52,6 +131,26 @@
   --slot-text: #005d78;
   --slot-hover: #bddfea;
   --table-shadow: 0 1rem 3rem rgba(35, 65, 100, 0.12);
+}
+
+:root[data-theme='greyscale-light'] {
+  --page-bg: #ededed;
+  --page-glow: rgba(155, 155, 155, 0.24);
+  --table-bg: #fafafa;
+  --text: #292929;
+  --text-muted: #606060;
+  --text-secondary: #4b4b4b;
+  --border: #bcbcbc;
+  --control-bg: #ededed;
+  --board-bg: #f2f2f2;
+  --accent-text: #555;
+  --grid-line: rgba(85, 85, 85, 0.09);
+  --focus-ring: #444;
+  --slot-bg: #e5e5e5;
+  --slot-text: #484848;
+  --slot-hover: #d7d7d7;
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
 }
 
 * {
@@ -362,6 +461,8 @@ h1 {
 .computer-hand {
   flex: 1;
   min-width: 0;
+  /* Leave room for the card shadows inside the horizontal clipping boundary. */
+  padding-bottom: 1.5rem;
   overflow: hidden;
 }
 
@@ -376,7 +477,8 @@ h1 {
   grid-template-rows: minmax(0, 1fr);
 }
 
-.player-count {
+.player-count,
+.theme-choice {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -384,7 +486,8 @@ h1 {
   font-size: 0.7rem;
 }
 
-.player-count select {
+.player-count select,
+.theme-choice select {
   color: var(--text);
   background: var(--control-bg);
   border: 1px solid var(--border);
@@ -566,8 +669,8 @@ h1 {
 .zoom-controls button:hover:not(:disabled),
 .zoom-controls button:focus-visible {
   outline: none;
-  color: #15372c;
-  background: #f0c56a;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
 }
 
 .zoom-controls button:disabled {
@@ -599,24 +702,24 @@ h1 {
 
 .owner-you,
 .owner-0 {
-  --owner-color: #76e5ef;
+  --owner-color: var(--player-zero-color);
 }
 
 .owner-opponent,
 .owner-1 {
-  --owner-color: #e1a5ff;
+  --owner-color: var(--player-one-color);
 }
 
 .owner-neutral {
-  --owner-color: #bfcfe2;
+  --owner-color: var(--neutral-owner-color);
 }
 
 .owner-2 {
-  --owner-color: #ffba78;
+  --owner-color: var(--player-two-color);
 }
 
 .owner-3 {
-  --owner-color: #97e19a;
+  --owner-color: var(--player-three-color);
 }
 
 .hand {
@@ -762,8 +865,8 @@ h1 {
 }
 
 .hand-return-target {
-  border-color: #f0c56a;
-  background: rgba(240, 197, 106, 0.12);
+  border-color: var(--card-gold);
+  background: rgba(var(--card-highlight-rgb), 0.12);
 }
 
 .hand-return-target::before {
@@ -772,8 +875,8 @@ h1 {
   right: 0;
   padding: 0.25rem 0.55rem;
   border-radius: 999px;
-  color: #15372c;
-  background: #f0c56a;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
   content: attr(data-return-label);
   font-size: 0.62rem;
   font-weight: 800;
@@ -807,7 +910,7 @@ h1 {
   background-size: 28px 28px;
   cursor: grab;
   overscroll-behavior: contain;
-  scrollbar-color: rgba(240, 197, 106, 0.75) rgba(13, 36, 29, 0.25);
+  scrollbar-color: rgba(var(--card-highlight-rgb), 0.75) rgba(13, 36, 29, 0.25);
   scrollbar-width: none;
   touch-action: none;
   user-select: none;
@@ -881,10 +984,10 @@ h1 {
   width: 1.1rem;
   height: 1.1rem;
   place-items: center;
-  border: 1px solid rgba(255, 250, 240, 0.8);
+  border: 1px solid rgba(var(--card-cream-rgb), 0.8);
   border-radius: 50%;
-  color: #15372c;
-  background: #f0c56a;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 0.78rem;
   font-weight: 900;
@@ -932,11 +1035,11 @@ h1 {
 }
 
 [data-card-type='event'] {
-  --card-color: #2878b8;
+  --card-color: var(--event-card-color);
 }
 
 [data-card-type='manipulation'] {
-  --card-color: #65449f;
+  --card-color: var(--manipulation-card-color);
 }
 
 .card .manipulation-name {
@@ -976,15 +1079,15 @@ h1 {
 }
 
 [data-event-category='political'] {
-  --category-border: #ff6262;
+  --category-border: var(--political-card-border);
 }
 
 [data-event-category='technological'] {
-  --category-border: #f5d547;
+  --category-border: var(--technological-card-border);
 }
 
 [data-event-category='environmental'] {
-  --category-border: #4cdb88;
+  --category-border: var(--environmental-card-border);
 }
 
 .card[data-event-category],
@@ -1013,7 +1116,7 @@ h1 {
   right: 0.4rem;
   padding: 0.18rem 0.38rem;
   border-radius: 999px;
-  color: #10271f;
+  color: var(--card-badge-ink);
   background: var(--owner-color);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 0.52rem;
@@ -1034,8 +1137,8 @@ h1 {
   left: 0.4rem;
   padding: 0.18rem 0.3rem;
   border-radius: 0.15rem;
-  color: #071323;
-  background: #80edff;
+  color: var(--card-dark-ink);
+  background: var(--card-cyan);
   font-size: 0.5rem;
   font-weight: 900;
   line-height: 1;
@@ -1056,7 +1159,7 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.65);
   border-radius: 0.2rem;
   color: #fff;
-  background: #10283f;
+  background: var(--effect-icon-background);
   pointer-events: none;
 }
 
@@ -1106,7 +1209,7 @@ h1 {
 .opponent-card {
   box-shadow:
     0 0.6rem 1rem rgba(0, 0, 0, 0.2),
-    inset 0 0 0 3px rgba(21, 55, 44, 0.16);
+    inset 0 0 0 3px rgba(var(--card-tint-rgb), 0.16);
 }
 
 .playable {
@@ -1160,8 +1263,8 @@ h1 {
     -45deg,
     transparent,
     transparent 7px,
-    rgba(21, 55, 44, 0.12) 7px,
-    rgba(21, 55, 44, 0.12) 14px
+    rgba(var(--card-tint-rgb), 0.12) 7px,
+    rgba(var(--card-tint-rgb), 0.12) 14px
   );
   content: '';
   pointer-events: none;
@@ -1175,8 +1278,8 @@ h1 {
   z-index: 1;
   padding: 0.24rem 0.2rem;
   border-radius: 999px;
-  color: #fffaf0;
-  background: #15372c;
+  color: var(--card-cream);
+  background: var(--card-accent-ink);
   text-align: center;
 }
 
@@ -1190,7 +1293,7 @@ h1 {
 }
 
 .replacement-target {
-  outline-color: #fffaf0;
+  outline-color: var(--card-cream);
   filter: brightness(1.14);
   transform: scale(1.04);
 }
@@ -1203,8 +1306,8 @@ h1 {
   padding: 0.25rem;
   border: 0;
   border-radius: 999px;
-  color: #fffaf0;
-  background: #15372c;
+  color: var(--card-cream);
+  background: var(--card-accent-ink);
   cursor: pointer;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 0.58rem;
@@ -1216,19 +1319,19 @@ h1 {
 
 .pending-confirm:hover,
 .pending-confirm:focus-visible {
-  outline: 2px solid #fffaf0;
+  outline: 2px solid var(--card-cream);
   outline-offset: 2px;
-  background: #10271f;
+  background: var(--card-badge-ink);
 }
 
 .replacement-target .pending-confirm {
-  background: #15372c;
+  background: var(--card-accent-ink);
 }
 
 @keyframes pending-pulse {
   to {
     box-shadow:
-      0 0 1.4rem rgba(240, 197, 106, 0.8),
+      0 0 1.4rem rgba(var(--card-highlight-rgb), 0.8),
       inset 0 0 0 4px var(--owner-color);
   }
 }
@@ -1290,7 +1393,7 @@ h1 {
 }
 
 .drag-ready {
-  outline: 3px solid #fffaf0;
+  outline: 3px solid var(--card-cream);
   outline-offset: 3px;
 }
 
@@ -1304,7 +1407,7 @@ h1 {
   border-style: solid;
   color: #fff;
   background: var(--card-color);
-  box-shadow: 0 0 1.4rem rgba(240, 197, 106, 0.8);
+  box-shadow: 0 0 1.4rem rgba(var(--card-highlight-rgb), 0.8);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   opacity: 1;
   transform: scale(1.04);
@@ -1483,7 +1586,8 @@ footer p {
   text-align: left;
 }
 
-.game-menu-panel .player-count {
+.game-menu-panel .player-count,
+.game-menu-panel .theme-choice {
   justify-content: space-between;
   padding: 0.35rem 0.75rem;
 }
@@ -1544,15 +1648,15 @@ footer p {
   padding: 0.72rem 1.1rem;
   border: 0;
   border-radius: 999px;
-  color: #15372c;
-  background: #f0c56a;
+  color: var(--card-accent-ink);
+  background: var(--card-gold);
   font-weight: 800;
   cursor: pointer;
 }
 
 .confirm:hover,
 .confirm:focus-visible {
-  outline: 3px solid #fffaf0;
+  outline: 3px solid var(--card-cream);
   outline-offset: 2px;
 }
 

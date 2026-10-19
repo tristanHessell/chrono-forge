@@ -107,6 +107,10 @@ format checks do not execute this batch.
 ## Playing the game
 
 Open **Menu** for New game, Players, the theme, and Game Log.
+The Theme selector offers Light, Dark, Greyscale Light, and Greyscale Dark.
+The browser saves your choice across reloads.
+Greyscale removes colour from the game and its dialogs to help test colour-independent cues.
+It does not simulate specific types of colour blindness.
 Choose **All cards** to inspect the complete catalog and its distribution.
 The catalog shows each copy, its ID, Event categories, Manipulation types, and the starting card.
 Its counts come from the configured deck, not the remaining cards in the current game.

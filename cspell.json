@@ -24,6 +24,7 @@
     "pannable",
     "redeal",
     "redeals",
+    "unstub",
     "vitest",
     "zoomable"
   ]
