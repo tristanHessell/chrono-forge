@@ -342,9 +342,11 @@ describe('Manipulation game moves', () => {
       const choice = chooseComputerAction(G);
 
       expect(choice?.type).toBe('manipulate');
+
       if (choice?.type !== 'manipulate') {
         throw new Error('Expected Manipulation');
       }
+
       expect(choice.cardId).toBe('manipulation');
 
       const result =

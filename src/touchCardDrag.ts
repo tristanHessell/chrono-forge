@@ -113,10 +113,12 @@ export class TouchCardDrag {
       ) {
         return;
       }
+
       session.active = true;
       this.suppressClick = true;
       this.callbacks.onStart(session.cardId, session.source);
     }
+
     event.preventDefault();
     this.callbacks.onMove(point);
   }
@@ -134,6 +136,7 @@ export class TouchCardDrag {
         y: event.clientY,
       });
     }
+
     this.cancel(event.pointerId);
   }
 
@@ -143,7 +146,9 @@ export class TouchCardDrag {
     if (!session || (pointerId !== undefined && session.id !== pointerId)) {
       return;
     }
+
     this.session = null;
+
     if (session.target.hasPointerCapture(session.id)) {
       session.target.releasePointerCapture(session.id);
     }

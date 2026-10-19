@@ -176,6 +176,7 @@ const advanceTurn = (
 
   hand.push(...G.deck.splice(0, drawCount));
   G.actionsThisTurn = 0;
+
   if (G.playerIds.every((id) => G.hands[id].length === 0)) {
     G.roundOver = true;
 
@@ -191,6 +192,7 @@ const advanceTurn = (
   if (G.playerIds.indexOf(nextPlayer) <= currentIndex) {
     G.round += 1;
   }
+
   endTurn({ next: nextPlayer });
 };
 
@@ -268,6 +270,7 @@ export const CardGame: Game<CardGameState> = {
       if (!played) {
         return;
       }
+
       G.testHistory.push(snapshotGame(G, ctx.currentPlayer));
       G.testFuture = [];
       for (const overwritten of G.played.filter(
@@ -440,6 +443,7 @@ export const CardGame: Game<CardGameState> = {
           ...(effect ? { effect } : {}),
         });
       }
+
       G.played = withPlacedEvent(G.played, playedCard);
       G.pending = null;
       G.nextPlacementOrder += 1;
@@ -470,6 +474,7 @@ export const CardGame: Game<CardGameState> = {
       G.testFuture.unshift(snapshotGame(G, ctx.currentPlayer));
       restoreSnapshot(G, previous);
       G.pendingSnapshot = null;
+
       if (previous.currentPlayer !== ctx.currentPlayer) {
         events.endTurn({ next: previous.currentPlayer });
       }
@@ -485,6 +490,7 @@ export const CardGame: Game<CardGameState> = {
       G.testHistory.push(snapshotGame(G, ctx.currentPlayer));
       restoreSnapshot(G, next);
       G.pendingSnapshot = null;
+
       if (next.currentPlayer !== ctx.currentPlayer) {
         events.endTurn({ next: next.currentPlayer });
       }

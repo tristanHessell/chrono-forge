@@ -39,10 +39,12 @@ server.stdout.on('data', (chunk) => {
     const message = JSON.parse(bytes.subarray(0, length).toString());
 
     buffer = bytes.subarray(length).toString();
+
     if (message.type === 'response') {
       const pending = requests.get(message.request_seq);
 
       requests.delete(message.request_seq);
+
       if (message.success) {
         pending?.resolve(message.body);
       } else {

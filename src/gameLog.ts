@@ -68,6 +68,7 @@ export function currentGameLog(
 
         type = 'manipulate';
         args = [used.id, target.id];
+
         if (used.action === 'time-jump') {
           args.push({ row: moved.row, column: moved.column });
         } else if (used.action === 'time-swap') {
@@ -75,6 +76,7 @@ export function currentGameLog(
         }
       }
     }
+
     actions.push({
       type: 'MAKE_MOVE',
       payload: { type, args, playerID: before.currentPlayer },
@@ -114,10 +116,13 @@ export function applyGameLogAction(
     const [cardId, position] = action.payload.args;
 
     client.moves.playCard(cardId, position);
+
     if (client.getState()!.G.pending?.id !== cardId) {
       throw new Error('Confirmed Event placement was rejected.');
     }
+
     client.moves.confirmPlacement();
+
     if (
       client.getState()!.G.pending ||
       !client.getState()!.G.played.some((card) => card.id === cardId)
@@ -187,6 +192,7 @@ function confirmedActions(
             result.push(redone);
           }
         }
+
         continue;
       }
       if (
@@ -235,6 +241,7 @@ export function exportGameLog(
       if (seen.has(entry._stateID)) {
         return false;
       }
+
       seen.add(entry._stateID);
 
       return !entry.automatic;
@@ -292,6 +299,7 @@ export function parseGameLog(text: string): GameLog {
   ) {
     throw new Error('Invalid or incompatible game log.');
   }
+
   for (const action of data.actions) {
     if (
       !action ||
@@ -354,6 +362,7 @@ export function replayGameLog(log: GameLog, steps = log.actions.length) {
       const before = client.getState()!._stateID;
 
       applyGameLogAction(client, action);
+
       if (client.getState()!._stateID === before) {
         throw new Error(
           `Action ${index + 1} was rejected. The log may require a different game version.`,

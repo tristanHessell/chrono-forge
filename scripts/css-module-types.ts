@@ -159,6 +159,7 @@ export function cssModuleTypesPlugin(): Plugin {
         if (!file.endsWith('.module.css')) {
           return;
         }
+
         pending = pending
           .then(() => generateCssModuleTypes(server.config))
           .catch((error: Error) => server.config.logger.error(error.message));

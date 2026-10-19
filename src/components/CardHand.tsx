@@ -78,6 +78,7 @@ export function CardHand({
 
       return;
     }
+
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
 
@@ -246,9 +247,11 @@ export function CardHand({
                 onDragEnd={finishHandDrag}
                 onDragStart={(event) => {
                   onDragStart(event, card.id);
+
                   if (event.defaultPrevented) {
                     return;
                   }
+
                   setDragStartIds(orderedCards.map((card) => card.id));
                   setDraggedId(card.id);
                 }}
@@ -259,6 +262,7 @@ export function CardHand({
                   ) {
                     return;
                   }
+
                   event.preventDefault();
 
                   const before = event.key === 'ArrowLeft';

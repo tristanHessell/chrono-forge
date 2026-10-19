@@ -20,6 +20,7 @@ export function listenForEffectTooltip(
     if ((event as PointerEvent).pointerType === 'touch') {
       return;
     }
+
     cancel();
     timer = setTimeout(() => {
       timer = undefined;

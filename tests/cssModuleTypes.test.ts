@@ -80,6 +80,7 @@ it('updates generated types when the dev watcher reports a CSS change', async ()
   if (typeof hook !== 'function') {
     throw new Error('Missing CSS types dev hook');
   }
+
   await hook.call(
     {} as never,
     {

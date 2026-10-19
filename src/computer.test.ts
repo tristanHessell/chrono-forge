@@ -36,9 +36,11 @@ describe('computer opponent', () => {
     const action = chooseComputerAction(G);
 
     expect(action?.type).toBe('play');
+
     if (action?.type !== 'play') {
       throw new Error('Expected a placement');
     }
+
     expect(action.cardId).toBe('event-1990-1');
 
     const card = G.hands['1'].find(
@@ -48,6 +50,7 @@ describe('computer opponent', () => {
     if (card.type !== 'event') {
       throw new Error('Expected an Event');
     }
+
     expect(isValidPlacement(G.played, action.position, card)).toBe(true);
     expect(
       calculateScoreBreakdown([
@@ -124,6 +127,7 @@ describe('computer opponent', () => {
         const action = chooseComputerAction(before.G, owner);
 
         expect(action).not.toBeNull();
+
         if (action?.type === 'play') {
           const hand = before.G.hands[owner];
           const card = hand.find(
@@ -146,6 +150,7 @@ describe('computer opponent', () => {
             action.destination,
           );
         }
+
         moves += 1;
       }
 

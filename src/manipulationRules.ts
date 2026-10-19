@@ -155,6 +155,7 @@ export function getTimeJumpPositions(
     if (card.removed) {
       candidates.set(positionKey(card), { row: card.row, column: card.column });
     }
+
     for (const offset of ADJACENT_OFFSETS) {
       const position = {
         row: card.row + offset.row,

@@ -63,14 +63,18 @@ function playMatch(game: number, seed: string): MatchResult {
           `${playerLabel(before.ctx.currentPlayer)} has no action`,
         );
       }
+
       moves.push({ player: before.ctx.currentPlayer, action });
+
       if (action.type === 'play') {
         client.moves.playCard(action.cardId, action.position);
+
         if (client.getState()!.G.pending?.id !== action.cardId) {
           throw new Error('Event placement was rejected');
         }
       } else if (action.type === 'confirm') {
         client.moves.confirmPlacement();
+
         if (
           !client
             .getState()!
@@ -186,6 +190,7 @@ it(`records and summarises 100 games with ${numPlayers} computers (manual only)`
 
   for (let game = 1; game <= GAME_COUNT; game += 1) {
     matches.push(playMatch(game, `${baseSeed}-${game}`));
+
     if (game % 10 === 0) {
       console.log(
         `Completed ${game}/${GAME_COUNT} simulations (${numPlayers} players)`,

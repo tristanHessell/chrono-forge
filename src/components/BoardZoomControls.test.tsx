@@ -28,6 +28,7 @@ it.each([
     expect(html).toContain('aria-label="Zoom in"');
     expect(html).toContain('aria-label="Reset board zoom"');
     expect(html).toContain(`>${percent}</button>`);
+
     if (disabled) {
       expect(html).toContain(`aria-label="${disabled}" disabled=""`);
     } else {
