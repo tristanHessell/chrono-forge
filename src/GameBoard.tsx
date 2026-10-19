@@ -3,14 +3,16 @@ import clsx from 'clsx';
 import {
   type DragEvent,
   type PointerEvent,
+  useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
-  type WheelEvent,
 } from 'react';
 import { useIntl } from 'react-intl';
 
+import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
 import { BoardToolbar } from './components/BoardToolbar';
 import { CardEffect } from './components/CardEffect';
 import { CardHand } from './components/CardHand';
@@ -421,16 +423,19 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     newGame();
   };
 
-  const adjustBoardZoom = (change: number) => {
-    setBoardZoom((current) =>
-      Math.min(1.6, Math.max(0.6, Math.round((current + change) * 10) / 10)),
-    );
-  };
+  const adjustBoardZoom = useCallback((change: number) => {
+    setBoardZoom((current) => changeBoardZoom(current, change));
+  }, []);
 
-  const zoomBoardWithWheel = (event: WheelEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    adjustBoardZoom(event.deltaY < 0 ? 0.1 : -0.1);
-  };
+  useEffect(() => {
+    const viewport = boardViewport.current;
+
+    if (!viewport) {
+      return;
+    }
+
+    return listenForBoardWheel(viewport, adjustBoardZoom);
+  }, [adjustBoardZoom]);
 
   const startBoardPan = (event: PointerEvent<HTMLDivElement>) => {
     if (
@@ -687,7 +692,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             onPointerDown={startBoardPan}
             onPointerMove={panBoard}
             onPointerUp={stopBoardPan}
-            onWheel={zoomBoardWithWheel}
           >
             <div
               className="played-grid"
