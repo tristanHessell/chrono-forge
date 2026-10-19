@@ -181,8 +181,11 @@ union with `type: 'event'` or `type: 'manipulation'`.
 All 1940 cards have a `draw-one` effect in the catalog:
 confirming one draws a card into the active player's hand before turn
 progression. An empty deck skips the draw, and discarding never triggers effects.
-Effect cards show a bottom-left icon; hovering or focusing a card in your hand
-explains it. Cards on the table display the icon without a tooltip.
+Effect cards show a bottom-left icon.
+Hover over that icon for one second to read its explanation.
+Keyboard users can focus the icon for the same explanation.
+Hovering over the rest of the card does not open it.
+Cards on the table display the icon without a tooltip.
 
 There are four each of **Time Jump**, **Time Swap**, **Take Control**, and
 **Remove Event**, all listed in
