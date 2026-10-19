@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { useMessages } from '../i18n/useMessages';
-import { savedTheme, storageKey, type Theme } from '../theme';
+import { parseTheme, savedTheme, saveTheme, type Theme } from '../theme';
 
 export function ThemeToggle() {
   const t = useMessages();
-  const [theme, setTheme] = useState<Theme>(() =>
-    document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
+  const [theme, setTheme] = useState<Theme>(
+    () => parseTheme(document.documentElement.dataset.theme) ?? 'light',
   );
 
   useEffect(() => {
@@ -25,29 +25,29 @@ export function ThemeToggle() {
     return () => preference.removeEventListener('change', followSystem);
   }, []);
 
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-
-    document.documentElement.dataset.theme = next;
-    setTheme(next);
-    try {
-      localStorage.setItem(storageKey, next);
-    } catch {
-      // The theme still works when browser storage is unavailable.
-    }
-  };
-
   return (
-    <button
-      className="history-button theme-toggle"
-      type="button"
-      aria-label={t('theme.darkLabel')}
-      aria-pressed={theme === 'dark'}
-      onClick={toggleTheme}
-      title={t('theme.switch', { theme: theme === 'dark' ? 'light' : 'dark' })}
-    >
-      <span aria-hidden="true">{theme === 'dark' ? '☾' : '☀'}</span>{' '}
-      {t('theme.name', { theme })}
-    </button>
+    <label className="theme-choice">
+      {t('theme.label')}
+      <select
+        aria-label={t('theme.label')}
+        value={theme}
+        onChange={(event) => {
+          const next = parseTheme(event.target.value);
+
+          if (next) {
+            saveTheme(next);
+            setTheme(next);
+          }
+        }}
+      >
+        {(['light', 'dark', 'greyscale-light', 'greyscale-dark'] as const).map(
+          (value) => (
+            <option key={value} value={value}>
+              {t(`theme.${value}`)}
+            </option>
+          ),
+        )}
+      </select>
+    </label>
   );
 }

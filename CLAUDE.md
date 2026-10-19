@@ -105,7 +105,7 @@ The other seats use computer players.
   Visual order does not change game state.
 - `src/gameLog.ts` exports confirmed card uses and replays seeded games.
   `src/gameLogSummary.ts` creates human-readable descriptions.
-- `src/theme.ts` selects the light or dark theme.
+- `src/theme.ts` selects light or dark themes with optional greyscale variants.
   The styles use theme variables.
 
 Keep shared rule checks in the rule modules.
