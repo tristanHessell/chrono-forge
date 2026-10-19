@@ -1,21 +1,28 @@
 .history-button {
-  padding: 0.62rem 0.75rem;
+  background: var(--control-bg);
   border: 1px solid var(--border);
   border-radius: 0.25rem;
   color: var(--text);
-  background: var(--control-bg);
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  padding: 0.62rem 0.75rem;
   text-transform: uppercase;
 }
 
-.history-button:hover:not(:disabled),
 .history-button:focus-visible {
   border-color: var(--accent-text);
-  outline: none;
   color: var(--accent-text);
+  outline: none;
+}
+
+@media (hover: hover) {
+  .history-button:hover:not(:disabled) {
+    border-color: var(--accent-text);
+    color: var(--accent-text);
+    outline: none;
+  }
 }
 
 .history-button:disabled {

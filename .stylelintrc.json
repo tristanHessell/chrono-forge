@@ -1,0 +1,29 @@
+{
+  "plugins": ["stylelint-plugin-defensive-css", "stylelint-order"],
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-css-modules",
+    "stylelint-plugin-defensive-css/configs/recommended"
+  ],
+  "reportDescriptionlessDisables": true,
+  "reportInvalidScopeDisables": true,
+  "reportNeedlessDisables": true,
+  "referenceFiles": [
+    "src/styles/theme.css",
+    "src/components/CardAppearance.module.css",
+    "src/components/Ownership.module.css"
+  ],
+  "rules": {
+    "defensive-css/require-pure-selectors": [
+      true,
+      {
+        "ignoreAttributeModifiers": true,
+        "ignoreElements": ["*", "html", "body", "dialog"]
+      }
+    ],
+    "selector-class-pattern": "^[a-z][a-z0-9-]*$",
+    "no-unknown-custom-properties": true,
+    "order/custom-properties-alphabetical-order": true,
+    "order/properties-alphabetical-order": true
+  }
+}

@@ -1,20 +1,20 @@
 .card-effect {
-  grid-area: 3 / 1;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 1.4rem;
-  height: 1.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: var(--effect-icon-background);
+  border: 1px solid rgb(255 255 255 / 65%);
   border-radius: 0.2rem;
   color: #fff;
-  background: var(--effect-icon-background);
+  display: grid;
+  grid-area: 3 / 1;
+  height: 1.4rem;
+  place-items: center;
   pointer-events: none;
+  width: 1.4rem;
+  z-index: 2;
 }
 
 .card-effect[data-tooltip-enabled] {
-  pointer-events: auto;
   cursor: help;
+  pointer-events: auto;
 }
 
 .card-effect[tabindex]:focus-visible {
@@ -23,18 +23,18 @@
 }
 
 .effect-tooltip {
-  position: fixed;
-  z-index: 1000;
-  width: min(280px, calc(100vw - 16px));
-  padding: 0.75rem;
+  background: var(--table-bg);
   border: 1px solid var(--accent-text);
   border-radius: 0.3rem;
-  background: var(--table-bg);
-  color: var(--text);
   box-shadow: var(--table-shadow);
+  color: var(--text);
   font-size: 0.75rem;
   line-height: 1.5;
+  padding: 0.75rem;
   pointer-events: none;
+  position: fixed;
+  width: min(280px, calc(100vw - 16px));
+  z-index: 1000;
 }
 
 .effect-tooltip strong {

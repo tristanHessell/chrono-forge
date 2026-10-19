@@ -1,10 +1,10 @@
 .game-results {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
+  background: var(--control-bg);
   border: 1px solid var(--accent-text);
   border-radius: 0.3rem;
-  background: var(--control-bg);
   font-size: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  width: 100%;
 }
 
 .game-results > strong {
@@ -12,9 +12,9 @@
 }
 
 .score-breakdown {
+  color: var(--text);
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem 1.5rem;
   margin-top: 0.35rem;
-  color: var(--text);
 }

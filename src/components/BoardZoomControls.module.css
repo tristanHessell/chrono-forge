@@ -1,29 +1,35 @@
 .zoom-controls {
-  display: inline-flex;
-  overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: 0.25rem;
+  box-shadow: var(--table-shadow);
+  display: inline-flex;
+  flex-wrap: nowrap;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 5;
 }
 
 .zoom-controls button {
-  min-width: 2rem;
-  padding: 0.35rem 0.55rem;
+  background: var(--control-bg);
   border: 0;
   color: var(--text);
-  background: var(--control-bg);
   cursor: pointer;
   font-weight: 800;
+  min-width: 2rem;
+  padding: 0.35rem 0.55rem;
 }
 
 .zoom-controls button + button {
   border-left: 1px solid var(--border);
 }
 
-.zoom-controls button:hover:not(:disabled),
 .zoom-controls button:focus-visible {
-  outline: none;
-  color: var(--card-accent-ink);
   background: var(--card-gold);
+  color: var(--card-accent-ink);
+  outline: none;
 }
 
 .zoom-controls button:disabled {
@@ -32,16 +38,14 @@
 }
 
 .zoom-controls .zoom-value {
-  min-width: 3.5rem;
   font-size: 0.72rem;
+  min-width: 3.5rem;
 }
 
-.zoom-controls {
-  border-radius: 0.25rem;
-  letter-spacing: 0.04em;
-  position: absolute;
-  z-index: 5;
-  top: 0.75rem;
-  right: 0.75rem;
-  box-shadow: var(--table-shadow);
+@media (hover: hover) {
+  .zoom-controls button:hover:not(:disabled) {
+    background: var(--card-gold);
+    color: var(--card-accent-ink);
+    outline: none;
+  }
 }

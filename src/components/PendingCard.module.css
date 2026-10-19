@@ -1,56 +1,65 @@
 .pending-card {
   box-shadow:
-    0 0.6rem 1rem rgba(0, 0, 0, 0.2),
+    0 0.6rem 1rem rgb(0 0 0 / 20%),
     inset 0 0 0 4px var(--owner-color);
+  cursor: grab;
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 
 .pending-card:active {
   cursor: grabbing;
 }
 
-.pending-card {
-  outline: 4px solid var(--focus-ring);
-  outline-offset: 3px;
-  cursor: grab;
-  animation:
-    snap-in 180ms ease-out,
-    pending-pulse 1.5s 180ms ease-in-out infinite alternate;
-}
-
 .replacement-target {
-  outline-color: var(--card-cream);
   filter: brightness(1.14);
+  outline-color: var(--card-cream);
   transform: scale(1.04);
 }
 
 .pending-confirm {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  z-index: 5;
-  display: grid;
-  width: 1.4rem;
-  height: 1.4rem;
-  padding: 0;
-  place-items: center;
+  background: var(--card-cyan);
   border: 2px solid var(--card-cream);
   border-radius: 50%;
+  box-shadow: 0 0.25rem 0.65rem rgb(0 0 0 / 35%);
   color: var(--card-dark-ink);
-  background: var(--card-cyan);
-  box-shadow: 0 0.25rem 0.65rem rgba(0, 0, 0, 0.35);
   cursor: pointer;
+  display: grid;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 1rem;
   font-weight: 900;
+  height: 1.4rem;
   line-height: 1;
+  padding: 0;
+  place-items: center;
+  position: absolute;
+  right: 0.25rem;
   text-align: center;
+  top: 0.25rem;
+  width: 1.4rem;
+  z-index: 5;
 }
 
-.pending-confirm:hover,
 .pending-confirm:focus-visible {
+  background: var(--card-cream);
   outline: 2px solid var(--card-cream);
   outline-offset: 2px;
-  background: var(--card-cream);
+}
+
+@media (hover: hover) {
+  .pending-confirm:hover {
+    background: var(--card-cream);
+    outline: 2px solid var(--card-cream);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pending-card {
+    animation:
+      snap-in 180ms ease-out,
+      pending-pulse 1.5s 180ms ease-in-out infinite alternate;
+  }
 }
 
 .replacement-target .pending-confirm {
@@ -60,7 +69,7 @@
 @keyframes pending-pulse {
   to {
     box-shadow:
-      0 0 1.4rem rgba(var(--card-highlight-rgb), 0.8),
+      0 0 1.4rem rgb(var(--card-highlight-rgb), 0.8),
       inset 0 0 0 4px var(--owner-color);
   }
 }
