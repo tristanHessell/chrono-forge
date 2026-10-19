@@ -1,5 +1,5 @@
 import definitions from './cards';
-import type { Card, ManipulationAction } from './game';
+import type { Card, EventName, ManipulationAction } from './game';
 
 function readCard(definition: {
   id: string;
@@ -8,6 +8,7 @@ function readCard(definition: {
   action?: string;
   category?: string;
   effect?: string;
+  name?: string;
 }): Card {
   if (definition.type === 'manipulation') {
     if (
@@ -17,7 +18,8 @@ function readCard(definition: {
       ) ||
       definition.category !== undefined ||
       definition.number !== undefined ||
-      definition.effect !== undefined
+      definition.effect !== undefined ||
+      definition.name !== undefined
     ) {
       throw new Error(`Invalid Manipulation card: ${definition.id}`);
     }
@@ -31,6 +33,7 @@ function readCard(definition: {
   if (
     !definition.id ||
     definition.type !== 'event' ||
+    !definition.name ||
     !Number.isInteger(definition.number)
   ) {
     throw new Error(`Invalid card definition: ${definition.id}`);
@@ -43,7 +46,7 @@ function readCard(definition: {
     throw new Error(`Unknown card effect: ${definition.effect}`);
   }
 
-  const { effect, category, ...card } = definition;
+  const { effect, category, name, ...card } = definition;
 
   if (
     category !== undefined &&
@@ -60,6 +63,7 @@ function readCard(definition: {
     type: definition.type,
     ...(category ? { category } : {}),
     ...(effect ? { effect } : {}),
+    ...(name ? { name: name as EventName } : {}),
   };
 }
 
@@ -72,8 +76,10 @@ export function loadCardCatalog() {
 
   const deck = definitions.deck.map(readCard);
 
-  if (deck.some((card) => card.type === 'event' && !card.category)) {
-    throw new Error('Every deck card must have an Event category.');
+  if (
+    deck.some((card) => card.type === 'event' && (!card.category || !card.name))
+  ) {
+    throw new Error('Every deck Event must have a category and name.');
   }
 
   const cards = [startingCard, ...deck];

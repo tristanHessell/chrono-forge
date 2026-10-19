@@ -3,6 +3,7 @@ import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
 import messages from '../i18n/en.json';
+import cardStyles from './Card.module.css';
 import { CardHand } from './CardHand';
 
 it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
@@ -28,6 +29,7 @@ it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
 
     expect(html).toContain('data-card-type="manipulation"');
     expect(html).toContain(messages[`manipulation.${action}.name`]);
+    expect(html).toContain(`class="${cardStyles.manipulationName}"`);
     expect(html).toContain(
       renderToStaticMarkup(
         <>{messages[`manipulation.${action}.description`]}</>,

@@ -79,7 +79,7 @@
 .snap-preview {
   position: relative;
   display: grid;
-  grid-template-columns: 1.4rem minmax(0, 1fr);
+  grid-template-columns: 1.4rem minmax(0, 1fr) 0.65rem;
   grid-template-rows: 0.65rem minmax(0, 1fr) 1.4rem;
   gap: 0.1rem 0.2rem;
   padding: 0.3rem;
@@ -102,7 +102,7 @@
 }
 
 .snap-preview > strong {
-  grid-area: 2 / 1 / 3 / -1;
+  grid-area: 2 / 1 / 3 / 3;
   font-size: min(1.5rem, calc(var(--card-height) - 54px));
   line-height: 1;
   pointer-events: none;
@@ -114,15 +114,15 @@
   line-height: 1;
 }
 
-.snap-preview > small {
-  grid-area: 1 / 1 / 2 / -1;
-  font-size: 0.45rem;
-  line-height: 1;
-}
-
-.snap-preview small {
+.release-label {
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: start;
+  z-index: 2;
   max-width: none;
   font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
   line-height: 1;
+  text-transform: uppercase;
   white-space: nowrap;
 }

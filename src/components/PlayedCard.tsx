@@ -2,11 +2,13 @@ import clsx from 'clsx';
 import type { CSSProperties, ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
+import { eventCardNameMessageId } from '../eventCardName';
 import type { PlacedCard } from '../game';
 import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
+import { CardEventName } from './CardEventName';
 import ownershipStyles from './Ownership.module.css';
 import playedCardStyles from './PlayedCard.module.css';
 
@@ -33,6 +35,7 @@ export function PlayedCard({
   return (
     <div
       aria-label={t('card.label', {
+        name: t(eventCardNameMessageId(card)),
         number: card.number,
         category: card.category ?? 'neutral',
         owner: card.owner,
@@ -77,10 +80,8 @@ export function PlayedCard({
     >
       {links}
       <CardEffect effect={card.effect} />
-      {isLatest && (
-        <span className={playedCardStyles.latestBadge}>{t('card.latest')}</span>
-      )}
       <strong>{intl.formatNumber(card.number, { useGrouping: false })}</strong>
+      <CardEventName card={card} />
       <span className={cardStyles.cardTypeName}>
         {t(
           card.removed

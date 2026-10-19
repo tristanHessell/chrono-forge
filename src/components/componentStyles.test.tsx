@@ -18,6 +18,7 @@ const card: Event = {
   id: 'styled-event',
   type: 'event',
   category: 'technological',
+  name: 'atomic-age',
   number: 1940,
   effect: 'draw-one',
   owner: '0',
@@ -58,6 +59,8 @@ it('renders board card states and effect icons with their scoped classes', () =>
   expect(html).toContain(cardStyles.card);
   expect(html).toContain(playedStyles.latestCard);
   expect(html).toContain(effectStyles.cardEffect);
+  expect(html).toContain(cardStyles.cardEventName);
+  expect(html).toContain('Atomic Age');
 });
 
 it.each(['0', '1', '2', '3', 'neutral'] as const)(
@@ -101,6 +104,7 @@ it('preserves scoped preview styles and a stable drop target', () => {
   );
 
   expect(html).toContain(slotStyles.snapPreview);
+  expect(html).toContain(slotStyles.releaseLabel);
   expect(html).toContain(appearanceStyles.appearance);
   expect(html).toContain('data-drop-position="1:0"');
   expect(html).toContain('data-placement-slot="true"');

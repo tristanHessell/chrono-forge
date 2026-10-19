@@ -121,7 +121,7 @@
 }
 
 .hand-corner-number {
-  grid-area: 1 / 1 / 2 / -1;
+  grid-area: 1 / 1 / 2 / 3;
   justify-self: start;
   font-size: 0.65rem;
   font-weight: 800;
@@ -224,8 +224,8 @@
 }
 
 .hand-card .hand-status {
-  grid-area: 1 / 1 / 2 / -1;
-  justify-self: end;
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: center;
   z-index: 1;
   padding: 0.1rem 0.2rem;
   font-size: 0.45rem;
