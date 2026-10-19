@@ -181,6 +181,7 @@ describe('Take Control and Remove Event', () => {
       client.moves.manipulate('manipulation', 'unknown');
       client.moves.manipulate('other', 'bonus');
       expect(client.getState()!.G).toEqual(before);
+
       if (action === 'take-control') {
         expect(applyManipulation(board(), action, 'bonus', '1')).toBeNull();
       } else {
@@ -425,9 +426,11 @@ describe('computer control/removal decisions', () => {
       const choice = chooseComputerAction(G, '0');
 
       expect(choice?.type).toBe('manipulate');
+
       if (choice?.type !== 'manipulate') {
         throw new Error('Expected a Manipulation');
       }
+
       expect(
         applyManipulation(
           G.played,

@@ -76,11 +76,13 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
     expect(client.getState()!.ctx.currentPlayer).toBe('2');
     expect(client.getState()!.G.roundOver).toBe(false);
     client.moves.discardCard('last-2');
+
     if (numPlayers === 4) {
       expect(client.getState()!.G.roundOver).toBe(false);
       expect(client.getState()!.ctx.currentPlayer).toBe('3');
       client.moves.discardCard('last-3');
     }
+
     expect(client.getState()!.G.roundOver).toBe(true);
     expect(client.getState()!.G.round).toBe(1);
   });

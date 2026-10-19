@@ -34,6 +34,7 @@ function GameSession({ CardGameClient, replay }: Session) {
     if (!replay || replayed.current || !ref.current) {
       return;
     }
+
     replayed.current = true;
     for (const action of replay.log.actions.slice(0, replay.steps)) {
       applyGameLogAction(ref.current.client, action);

@@ -28,6 +28,7 @@ export function GameMenu({
   const trigger = useRef<HTMLElement>(null);
   const closeMenu = (restoreFocus = false) => {
     menu.current?.removeAttribute('open');
+
     if (restoreFocus) {
       trigger.current?.focus();
     }

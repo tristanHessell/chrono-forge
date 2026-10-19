@@ -97,6 +97,7 @@ export function chooseComputerAction(
       }
       continue;
     }
+
     for (const position of getAvailablePositions(G.played, card)) {
       const played = withPlacedEvent(G.played, {
         ...card,
@@ -123,6 +124,7 @@ export function chooseComputerAction(
       }
     }
   }
+
   if (best) {
     return best.action;
   }

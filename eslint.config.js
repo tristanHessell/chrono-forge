@@ -32,6 +32,14 @@ export default tseslint.config(
           next: variableDeclaration,
         },
         { blankLine: 'always', prev: '*', next: 'return' },
+        // Always put a line between a block of `if` statements and anything after it
+        { blankLine: 'always', next: '*', prev: ['if'] },
+        { blankLine: 'always', next: 'if', prev: ['*'] },
+        {
+          blankLine: 'any',
+          next: ['if'],
+          prev: ['if'],
+        },
       ],
     },
   },

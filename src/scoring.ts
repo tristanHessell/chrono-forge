@@ -14,10 +14,13 @@ export function timelineIncludes1900(
     if (visited.has(current.id)) {
       continue;
     }
+
     visited.add(current.id);
+
     if (current.number === 1900 && !current.removed) {
       return true;
     }
+
     // Follow incoming arrows only: another branch through the starting card
     // is not part of this card's timeline.
     pending.push(
@@ -43,14 +46,17 @@ export function calculateScoreBreakdown(played: PlacedCard[]) {
     if (card.owner === 'neutral' || card.removed) {
       continue;
     }
+
     scores[card.owner] ??= { base: 0, bonus: 0, total: 0 };
     scores[card.owner].base += 1;
+
     if (
       card.effect === 'timeline-1900-bonus' &&
       timelineIncludes1900(card, played)
     ) {
       scores[card.owner].bonus += 1;
     }
+
     scores[card.owner].total =
       scores[card.owner].base + scores[card.owner].bonus;
   }

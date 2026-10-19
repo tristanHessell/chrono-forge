@@ -221,6 +221,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         viewBounds.top -
         viewBounds.height / 2;
     }
+
     lastJumpDestination.current = null;
   }, [choosingJumpDestination, G.played]);
 
@@ -292,12 +293,14 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
   const chooseCard = (cardId: string) => {
     setManipulationTargetId(null);
+
     if (
       G.hands['0'].find((card) => card.id === cardId)?.type === 'manipulation'
     ) {
       if (G.pending) {
         gameMoves.returnPendingCard();
       }
+
       setSelectedCardId((current) => (current === cardId ? null : cardId));
 
       return;
@@ -350,6 +353,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
       return;
     }
+
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', cardId);
     event.dataTransfer.setData('application/x-card-source', source);
@@ -590,6 +594,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
+
     setIsPanning(false);
   };
 
