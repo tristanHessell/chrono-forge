@@ -63,3 +63,13 @@ it('names only the tied leaders in a four-player game', () => {
   expect(html).toContain('it&#x27;s a tie! (Barry, Morgan)');
   expect(html).toContain('You: 0 card points');
 });
+
+it('renders a round scores button when requested', () => {
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <GameResults onOpenRoundScores={() => {}} played={[]} />
+    </IntlProvider>,
+  );
+
+  expect(html).toContain('>Round scores</button>');
+});

@@ -156,6 +156,7 @@ describe('card game state transitions', () => {
     },
     playerIds: ['0', '1'],
     round: 1,
+    roundScores: [],
   });
 
   it('keeps a played card pending until confirmation without drawing', () => {

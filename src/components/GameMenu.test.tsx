@@ -32,3 +32,18 @@ it('keeps all settings inside a closed menu', () => {
   expect(html).toContain('type="checkbox"');
   expect(html).not.toContain('role="menu"');
 });
+
+it('includes the round scores button when requested', () => {
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <GameMenu
+        onNewGame={() => {}}
+        onOpenCatalog={() => {}}
+        onOpenLog={() => {}}
+        onOpenRoundScores={() => {}}
+      />
+    </IntlProvider>,
+  );
+
+  expect(html).toContain('>Round scores</button>');
+});

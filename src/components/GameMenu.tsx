@@ -11,9 +11,15 @@ type Props = {
   onNewGame: () => void;
   onOpenLog: () => void;
   onOpenCatalog: () => void;
+  onOpenRoundScores?: () => void;
 };
 
-export function GameMenu({ onNewGame, onOpenLog, onOpenCatalog }: Props) {
+export function GameMenu({
+  onNewGame,
+  onOpenLog,
+  onOpenCatalog,
+  onOpenRoundScores,
+}: Props) {
   const t = useMessages();
   const menu = useRef<HTMLDetailsElement>(null);
   const trigger = useRef<HTMLElement>(null);
@@ -97,6 +103,18 @@ export function GameMenu({ onNewGame, onOpenLog, onOpenCatalog }: Props) {
         >
           {t('log.title')}
         </button>
+        {onOpenRoundScores && (
+          <button
+            className={controlsStyles.historyButton}
+            type="button"
+            onClick={() => {
+              closeMenu(true);
+              onOpenRoundScores();
+            }}
+          >
+            {t('roundScores.title')}
+          </button>
+        )}
       </div>
     </details>
   );

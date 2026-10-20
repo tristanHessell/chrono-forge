@@ -1,0 +1,120 @@
+.round-scores-dialog {
+  --dialog-width: 580px;
+}
+
+.view-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.toggle-button {
+  background: var(--control-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+}
+
+.toggle-button:focus-visible {
+  border-color: var(--focus-ring);
+  outline: none;
+}
+
+.toggle-button-active {
+  background: var(--slot-bg);
+  border-color: var(--accent-text);
+  color: var(--accent-text);
+}
+
+.table-wrapper {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  text-align: left;
+  width: 100%;
+}
+
+.header-cell {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+}
+
+.player-header {
+  color: var(--owner-color, var(--text));
+  text-align: right;
+}
+
+.round-cell {
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.number-cell {
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.75rem 1rem;
+  text-align: right;
+}
+
+.score-cell-content {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.primary-score {
+  font-weight: 600;
+}
+
+.secondary-score {
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+}
+
+.current-row {
+  background: rgb(102 229 245 / 5%);
+}
+
+.current-badge {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-style: italic;
+  font-weight: normal;
+  margin-left: 0.375rem;
+}
+
+.total-row {
+  background: rgb(255 255 255 / 2.5%);
+  border-top: 2px solid var(--border);
+}
+
+.total-score {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.empty-message {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 1rem 0;
+}
