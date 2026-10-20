@@ -50,6 +50,9 @@ it('composes shared appearance into cards, previews, and log references', () => 
   }
   expect(cardStyles.card).not.toBe('card');
   expect(slotStyles.placementSlot).not.toBe('placement-slot');
+  for (const className of cardStyles.card.split(' ')) {
+    expect(slotStyles.snapPreview.split(' ')).toContain(className);
+  }
 });
 
 it('uses the same card back artwork for the deck and computer hands', () => {

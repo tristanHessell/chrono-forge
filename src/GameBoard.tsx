@@ -108,6 +108,35 @@ const linkDirections = [
   },
 ] as const;
 
+function setCardDragImage(event: DragEvent<HTMLElement>) {
+  const preview = event.currentTarget.cloneNode(true) as HTMLElement;
+
+  preview.className = cardStyles.card;
+  preview.removeAttribute('aria-pressed');
+  preview.removeAttribute('style');
+  preview.querySelectorAll('[data-drag-decoration]').forEach((element) => {
+    element.remove();
+  });
+  preview.setAttribute('aria-hidden', 'true');
+  preview.style.animation = 'none';
+  preview.style.left = '-10000px';
+  preview.style.opacity = '1';
+  preview.style.outline = 'none';
+  preview.style.pointerEvents = 'none';
+  preview.style.position = 'fixed';
+  preview.style.top = '0';
+  preview.style.transform = 'none';
+  preview.style.translate = 'none';
+  document.body.append(preview);
+
+  event.dataTransfer.setDragImage(
+    preview,
+    preview.offsetWidth / 2,
+    preview.offsetHeight / 2,
+  );
+  window.setTimeout(() => preview.remove(), 0);
+}
+
 export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const t = useMessages();
   const intl = useIntl();
@@ -294,6 +323,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         <span
           aria-hidden="true"
           className={clsx(playedCardStyles.linkArrow, link.className)}
+          data-drag-decoration
           key={link.className}
         >
           {link.inward}
@@ -368,6 +398,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', cardId);
     event.dataTransfer.setData('application/x-card-source', source);
+    setCardDragImage(event);
     setDraggedCard({ cardId, source });
     setSelectedCardId(null);
     setManipulationTargetId(null);
@@ -1055,6 +1086,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         <button
                           aria-label={t('placement.confirmLabel')}
                           className={pendingCardStyles.pendingConfirm}
+                          data-drag-decoration
                           disabled={!isHumanTurn || finished}
                           onClick={(event) => {
                             event.stopPropagation();
