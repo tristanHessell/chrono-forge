@@ -5,11 +5,17 @@ import { CardGame, type CardGameState } from './game';
 import { GameBoard } from './GameBoard';
 import { applyGameLogAction, type GameLog } from './gameLog';
 import { GameLogContext } from './gameLogContext';
-import { type PlayerCount, PlayerCountContext } from './playerCount';
+import type { PlayerCount } from './playerCount';
+import {
+  createDefaultPlayers,
+  type PlayerSetup,
+  PlayerSetupContext,
+} from './playerSetup';
 
 type Session = {
   seed: string;
   numPlayers: PlayerCount;
+  players: PlayerSetup[];
   replay?: { log: GameLog; steps: number };
   CardGameClient: ReturnType<typeof Client<CardGameState>>;
 };
@@ -26,7 +32,7 @@ function createSession(options: Omit<Session, 'CardGameClient'>): Session {
   };
 }
 
-function GameSession({ CardGameClient, replay }: Session) {
+function GameSession({ CardGameClient, players, replay }: Session) {
   const ref = useRef<InstanceType<typeof CardGameClient>>(null);
   const replayed = useRef(false);
 
@@ -41,7 +47,11 @@ function GameSession({ CardGameClient, replay }: Session) {
     }
   }, [replay]);
 
-  return <CardGameClient ref={ref} />;
+  return (
+    <PlayerSetupContext.Provider value={players}>
+      <CardGameClient ref={ref} />
+    </PlayerSetupContext.Provider>
+  );
 }
 
 export function App() {
@@ -49,6 +59,7 @@ export function App() {
     createSession({
       seed: crypto.randomUUID(),
       numPlayers: 2,
+      players: createDefaultPlayers(),
     }),
   );
   const [revision, setRevision] = useState(0);
@@ -56,31 +67,29 @@ export function App() {
     setSession(createSession(next));
     setRevision((value) => value + 1);
   };
-  const newGame = () =>
+  const newGame = (players: PlayerSetup[]) =>
     replaceSession({
       seed: crypto.randomUUID(),
-      numPlayers: session.numPlayers,
+      numPlayers: players.length as PlayerCount,
+      players,
     });
-  const setPlayerCount = (numPlayers: PlayerCount) =>
-    replaceSession({ seed: crypto.randomUUID(), numPlayers });
 
   return (
-    <PlayerCountContext.Provider value={{ setPlayerCount }}>
-      <GameLogContext.Provider
-        value={{
-          seed: session.seed,
-          replayPaused: Boolean(session.replay),
-          newGame,
-          loadLog: (log, steps) =>
-            replaceSession({
-              seed: log.seed,
-              numPlayers: log.numPlayers,
-              replay: { log, steps },
-            }),
-        }}
-      >
-        <GameSession key={revision} {...session} />
-      </GameLogContext.Provider>
-    </PlayerCountContext.Provider>
+    <GameLogContext.Provider
+      value={{
+        seed: session.seed,
+        replayPaused: Boolean(session.replay),
+        newGame,
+        loadLog: (log, steps) =>
+          replaceSession({
+            seed: log.seed,
+            numPlayers: log.numPlayers,
+            players: createDefaultPlayers(log.numPlayers),
+            replay: { log, steps },
+          }),
+      }}
+    >
+      <GameSession key={revision} {...session} />
+    </GameLogContext.Provider>
   );
 }

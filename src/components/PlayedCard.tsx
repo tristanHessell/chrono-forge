@@ -1,11 +1,12 @@
 import clsx from 'clsx';
-import type { CSSProperties, ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useContext } from 'react';
 import { useIntl } from 'react-intl';
 
 import { eventCardNameMessageId } from '../eventCardName';
 import type { PlacedCard } from '../game';
 import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
+import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
 import { CardEventName } from './CardEventName';
@@ -31,6 +32,17 @@ export function PlayedCard({
 }: PlayedCardProps) {
   const t = useMessages();
   const intl = useIntl();
+  const players = useContext(PlayerSetupContext);
+  const ownerName =
+    card.owner === 'neutral'
+      ? t('owner.neutral')
+      : getPlayer(players, card.owner).name;
+  const ownerDescription =
+    card.owner === 'neutral'
+      ? t('card.owner.start')
+      : card.owner === '0'
+        ? t('card.owner.you')
+        : t('card.owner.player', { name: ownerName });
 
   return (
     <div
@@ -38,7 +50,7 @@ export function PlayedCard({
         name: t(eventCardNameMessageId(card)),
         number: card.number,
         category: card.category ?? 'neutral',
-        owner: card.owner,
+        owner: ownerDescription,
         latest: isLatest ? 'yes' : 'no',
       })}
       className={clsx(
@@ -91,7 +103,7 @@ export function PlayedCard({
               : 'card.event',
         )}
       </span>
-      <span className={cardStyles.ownerBadge}>{t(`owner.${card.owner}`)}</span>
+      <span className={cardStyles.ownerBadge}>{ownerName}</span>
     </div>
   );
 }

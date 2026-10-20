@@ -20,6 +20,7 @@ type CardHandProps = {
   interactive?: boolean;
   cards: Card[];
   owner: Exclude<CardOwner, 'neutral'>;
+  ownerName: string;
   activeOwner: Exclude<CardOwner, 'neutral'>;
   pendingCardId: string | undefined;
   isReturnTarget: boolean;
@@ -36,6 +37,7 @@ export function CardHand({
   interactive = true,
   cards,
   owner,
+  ownerName,
   activeOwner,
   pendingCardId,
   isReturnTarget,
@@ -134,11 +136,18 @@ export function CardHand({
   return (
     <>
       <div className={cardHandStyles.handHeading}>
-        <p className={cardHandStyles.areaLabel}>{t('hand.title', { owner })}</p>
+        <p className={cardHandStyles.areaLabel}>
+          {t(owner === '0' ? 'hand.yourTitle' : 'hand.playerTitle', {
+            name: ownerName,
+          })}
+        </p>
         <div
           className={cardHandStyles.handOrder}
           role="group"
-          aria-label={t('hand.orderLabel', { owner })}
+          aria-label={t(
+            owner === '0' ? 'hand.yourOrderLabel' : 'hand.orderLabel',
+            { name: ownerName },
+          )}
         >
           {(['date'] as const).map((value) => (
             <button
@@ -157,7 +166,9 @@ export function CardHand({
         </div>
       </div>
       <div
-        aria-label={t('hand.dropArea', { owner })}
+        aria-label={t(owner === '0' ? 'hand.yourDropArea' : 'hand.dropArea', {
+          name: ownerName,
+        })}
         data-hand-owner={owner}
         data-return-label={t('hand.return')}
         className={clsx(

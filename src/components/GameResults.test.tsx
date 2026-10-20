@@ -36,7 +36,9 @@ it.each(['0', '1', '2', '3'] as const)(
     );
 
     expect(html).toContain(
-      owner === '0' ? 'you win!' : `Computer ${owner} wins!`,
+      owner === '0'
+        ? 'you win!'
+        : `${['Sally', 'Barry', 'Morgan'][Number(owner) - 1]} wins!`,
     );
     expect(html).toContain('1 card point + 0 bonus points = 1 total');
   },
@@ -58,6 +60,6 @@ it('names only the tied leaders in a four-player game', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('it&#x27;s a tie! (Computer 2, Computer 3)');
+  expect(html).toContain('it&#x27;s a tie! (Barry, Morgan)');
   expect(html).toContain('You: 0 card points');
 });

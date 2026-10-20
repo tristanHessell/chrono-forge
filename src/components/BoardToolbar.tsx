@@ -1,7 +1,9 @@
 import clsx from 'clsx';
+import { useContext } from 'react';
 
 import type { PlayerId } from '../game';
 import { useMessages } from '../i18n/useMessages';
+import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import boardToolbarStyles from './BoardToolbar.module.css';
 import ownershipStyles from './Ownership.module.css';
 
@@ -12,6 +14,7 @@ type BoardToolbarProps = {
 
 export function BoardToolbar({ scores, playerIds }: BoardToolbarProps) {
   const t = useMessages();
+  const players = useContext(PlayerSetupContext);
 
   return (
     <div className={boardToolbarStyles.boardToolbar}>
@@ -27,7 +30,10 @@ export function BoardToolbar({ scores, playerIds }: BoardToolbarProps) {
               ownershipStyles[`owner${owner}`],
             )}
           >
-            {t('score.player', { owner, count: scores[owner] ?? 0 })}
+            {t('score.player', {
+              name: getPlayer(players, owner).name,
+              count: scores[owner] ?? 0,
+            })}
           </span>
         ))}
         <span

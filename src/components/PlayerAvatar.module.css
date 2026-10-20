@@ -1,0 +1,23 @@
+.avatar {
+  align-items: center;
+  background: color-mix(in srgb, var(--owner-color) 18%, var(--control-bg));
+  border: 2px solid var(--owner-color);
+  border-radius: 50%;
+  color: var(--owner-color);
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.avatar svg {
+  fill: none;
+  height: 2rem;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  width: 2rem;
+}
