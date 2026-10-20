@@ -3,10 +3,13 @@ import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
 import type { PlacedCard as Event } from '../game';
+import gameBoardStyles from '../GameBoard.module.css';
 import messages from '../i18n/en.json';
 import cardStyles from './Card.module.css';
 import appearanceStyles from './CardAppearance.module.css';
+import cardBackStyles from './CardBack.module.css';
 import effectStyles from './CardEffect.module.css';
+import computerPlayerStyles from './ComputerPlayer.module.css';
 import logStyles from './GameLogView.module.css';
 import ownerStyles from './Ownership.module.css';
 import { PlacementSlot } from './PlacementSlot';
@@ -47,6 +50,15 @@ it('composes shared appearance into cards, previews, and log references', () => 
   }
   expect(cardStyles.card).not.toBe('card');
   expect(slotStyles.placementSlot).not.toBe('placement-slot');
+});
+
+it('uses the same card back artwork for the deck and computer hands', () => {
+  for (const value of [
+    gameBoardStyles.deckCardBack,
+    computerPlayerStyles.cardBack,
+  ]) {
+    expect(value.split(' ')).toContain(cardBackStyles.cardBack);
+  }
 });
 
 it('renders board card states and effect icons with their scoped classes', () => {

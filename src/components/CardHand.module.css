@@ -38,6 +38,23 @@
   justify-content: space-between;
 }
 
+.hand-identity {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+.hand-identity-text {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.hand-identity-text > span {
+  color: var(--text-muted);
+  font-size: 0.62rem;
+}
+
 .hand-order {
   display: inline-flex;
   flex-wrap: nowrap;

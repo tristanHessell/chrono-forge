@@ -52,3 +52,20 @@
 .log-card-reference[data-card-type='manipulation'] {
   border-color: #b58cff;
 }
+
+.log-player-reference {
+  align-items: center;
+  color: var(--owner-color);
+  display: inline-flex;
+  flex-wrap: nowrap;
+  font-weight: 750;
+  gap: 0.25rem;
+}
+
+.log-player-reference::before {
+  background: var(--owner-color);
+  border-radius: 50%;
+  content: '';
+  height: 0.55rem;
+  width: 0.55rem;
+}

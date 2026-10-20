@@ -15,8 +15,10 @@ it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
           cards={[{ id: 'test', type: 'manipulation', action }]}
           owner="0"
           ownerName="You"
+          playerType="human"
           activeOwner="0"
           pendingCardId={undefined}
+          score={0}
           isReturnTarget={false}
           selectedCardId={null}
           onChoose={() => {}}

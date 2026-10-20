@@ -1,14 +1,5 @@
 # TODO
 
-Prompt: Update the UI for the section for computer players:
-
-- Flip the cards over and make computers hands smaller
-- No need to say `... Hand`, just show their name, colour and points.
-
-Make a new new game select (first player is always human, other's could be human or AI)
-
-- Include DP for computers and humans
-
 Prompt: Dragging a command like `take control` over the card it's targetting doesn't work
 
 Track Round by Round points

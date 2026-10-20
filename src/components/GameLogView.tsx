@@ -1,16 +1,33 @@
-import { useMemo } from 'react';
+import clsx from 'clsx';
+import { useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { Card } from '../game';
+import type { Card, PlayerId } from '../game';
 import type { GameLog } from '../gameLog';
 import { summarizeGameLog } from '../gameLogSummary';
 import { useMessages } from '../i18n/useMessages';
+import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import gameLogViewStyles from './GameLogView.module.css';
+import ownershipStyles from './Ownership.module.css';
 
 export function GameLogView({ log }: { log: GameLog }) {
   const t = useMessages();
+  const players = useContext(PlayerSetupContext);
   const items = useMemo(() => summarizeGameLog(log), [log]);
-  const playerName = (id: string) => t('log.player', { count: Number(id) + 1 });
+  const playerReference = (id: string) => {
+    const player = getPlayer(players, id as PlayerId);
+
+    return (
+      <strong
+        className={clsx(
+          gameLogViewStyles.logPlayerReference,
+          ownershipStyles[`owner${player.id}`],
+        )}
+      >
+        {player.name}
+      </strong>
+    );
+  };
   const cardName = (card?: Card): string => {
     if (!card) {
       return t('log.unknownCard');
@@ -53,7 +70,12 @@ export function GameLogView({ log }: { log: GameLog }) {
           <dd>{log.numPlayers}</dd>
         </div>
       </dl>
-      <p>{t('log.started', { player: playerName('0') })}</p>
+      <p>
+        <FormattedMessage
+          id="log.started"
+          values={{ player: playerReference('0') }}
+        />
+      </p>
       {items.length === 0 ? (
         <p>{t('log.empty')}</p>
       ) : (
@@ -93,19 +115,23 @@ export function GameLogView({ log }: { log: GameLog }) {
             return (
               <li key={item.index}>
                 <small>
-                  {t('log.entry', {
-                    player: playerName(item.player),
-                    count: item.turn,
-                  })}
+                  <FormattedMessage
+                    id="log.entry"
+                    values={{
+                      player: playerReference(item.player),
+                      count: item.turn,
+                    }}
+                  />
                 </small>
                 <span>
                   <FormattedMessage id={description} values={values} />
                 </span>
                 {item.nextPlayer && (
                   <small>
-                    {t('log.nextPlayer', {
-                      player: playerName(item.nextPlayer),
-                    })}
+                    <FormattedMessage
+                      id="log.nextPlayer"
+                      values={{ player: playerReference(item.nextPlayer) }}
+                    />
                   </small>
                 )}
               </li>

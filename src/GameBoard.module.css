@@ -148,35 +148,15 @@
 }
 
 .deck-card-back {
-  background:
-    repeating-linear-gradient(
-      135deg,
-      transparent 0 5px,
-      rgb(102 229 245 / 18%) 5px 6px
-    ),
-    #142e4c;
-  border: 2px solid #f7f2e8;
-  border-radius: 0.15rem;
   box-shadow:
     3px 3px 0 #b5d5c4,
     6px 6px 0 rgb(247 242 232 / 35%);
-  color: #f7f2e8;
+  composes: card-back from './components/CardBack.module.css';
   display: grid;
   font-size: 0.9rem;
   height: 35px;
   place-items: center;
-  position: relative;
   width: 50px;
-  z-index: 0;
-}
-
-.deck-card-back::after {
-  border: 1px solid rgb(255 255 255 / 55%);
-  border-radius: 0.2rem;
-  content: '';
-  inset: 4px;
-  position: absolute;
-  z-index: -1;
 }
 
 .board-surface {
