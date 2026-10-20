@@ -1,21 +1,41 @@
 .owner-you,
 .owner-0 {
   --owner-color: var(--player-zero-color);
+  --owner-foreground-color: var(
+    --player-zero-foreground-color,
+    var(--owner-color)
+  );
 }
 
 .owner-opponent,
 .owner-1 {
   --owner-color: var(--player-one-color);
+  --owner-foreground-color: var(
+    --player-one-foreground-color,
+    var(--owner-color)
+  );
 }
 
 .owner-neutral {
   --owner-color: var(--neutral-owner-color);
+  --owner-foreground-color: var(
+    --neutral-owner-foreground-color,
+    var(--owner-color)
+  );
 }
 
 .owner-2 {
   --owner-color: var(--player-two-color);
+  --owner-foreground-color: var(
+    --player-two-foreground-color,
+    var(--owner-color)
+  );
 }
 
 .owner-3 {
   --owner-color: var(--player-three-color);
+  --owner-foreground-color: var(
+    --player-three-foreground-color,
+    var(--owner-color)
+  );
 }

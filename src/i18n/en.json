@@ -56,7 +56,7 @@
   "score.tie": "Game over — it's a tie! ({players})",
   "score.breakdown": "{name}: {base, plural, one {# card point} other {# card points}} + {bonus, plural, one {# bonus point} other {# bonus points}} = {total, number} total",
   "table.label": "Card table",
-  "hand.yourTitle": "Your hand",
+  "hand.yourTitle": "You",
   "hand.playerTitle": "{name}'s hand",
   "hand.yourDropArea": "Your hand drop area",
   "hand.dropArea": "{name}'s hand drop area",

@@ -52,7 +52,7 @@
 }
 
 .player-header {
-  color: var(--owner-color, var(--text));
+  color: var(--owner-foreground-color, var(--owner-color, var(--text)));
   text-align: right;
 }
 

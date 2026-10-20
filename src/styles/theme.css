@@ -134,6 +134,14 @@
   --text-secondary: #344f6d;
 }
 
+:root[data-theme='light'] {
+  --neutral-owner-foreground-color: #5b6b7c;
+  --player-one-foreground-color: #7a3da0;
+  --player-three-foreground-color: #287236;
+  --player-two-foreground-color: #9a4a00;
+  --player-zero-foreground-color: #006f80;
+}
+
 :root[data-theme='greyscale-light'] {
   --accent-text: #555;
   --board-bg: #f2f2f2;
@@ -141,8 +149,13 @@
   --control-bg: #ededed;
   --focus-ring: #444;
   --grid-line: rgb(85 85 85 / 9%);
+  --neutral-owner-foreground-color: #707070;
   --page-bg: #ededed;
   --page-glow: rgb(155 155 155 / 24%);
+  --player-one-foreground-color: #565656;
+  --player-three-foreground-color: #686868;
+  --player-two-foreground-color: #303030;
+  --player-zero-foreground-color: #424242;
   --slot-bg: #e5e5e5;
   --slot-hover: #d7d7d7;
   --slot-text: #484848;

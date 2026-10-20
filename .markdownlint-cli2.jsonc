@@ -1,0 +1,11 @@
+{
+  "globs": ["**/*.{md,markdown}"],
+  "ignores": ["**/node_modules/**", "**/dist/**", "**/.git/**"],
+  "config": {
+    "default": true,
+    // Keep the repository's one-sentence-per-line prose.
+    "MD013": false,
+    // Allow the README logo to specify its display size.
+    "MD033": { "allowed_elements": ["img"] },
+  },
+}
