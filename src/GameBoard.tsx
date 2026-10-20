@@ -23,6 +23,7 @@ import { CardHand } from './components/CardHand';
 import controlsStyles from './components/Controls.module.css';
 import { GameLogControls } from './components/GameLogControls';
 import { GameResults } from './components/GameResults';
+import { NewGameDialog } from './components/NewGameDialog';
 import ownershipStyles from './components/Ownership.module.css';
 import pendingCardStyles from './components/PendingCard.module.css';
 import { PlacementSlot } from './components/PlacementSlot';
@@ -44,7 +45,7 @@ import {
   applyTimeSwap,
   getTimeJumpPositions,
 } from './manipulationRules';
-import { type PlayerCount, PlayerCountContext } from './playerCount';
+import { getPlayer, type PlayerSetup, PlayerSetupContext } from './playerSetup';
 import { calculateScores } from './scoring';
 import {
   type DragPoint,
@@ -112,13 +113,17 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const gameMoves = moves as CardGameMoves;
   const finished = Boolean(ctx.gameover) || G.roundOver;
   const activeOwner = ctx.currentPlayer as PlayerId;
-  const { setPlayerCount } = useContext(PlayerCountContext);
+  const players = useContext(PlayerSetupContext);
+  const activePlayer = getPlayer(players, activeOwner);
+  const isHumanTurn = activePlayer.type === 'human';
+  const handOwner = isHumanTurn ? activeOwner : '0';
   const { newGame, replayPaused } = useContext(GameLogContext);
   const [computerPaused, setComputerPaused] = useState(replayPaused);
 
   useComputerOpponent(
     G,
     ctx.currentPlayer,
+    players,
     computerPaused || finished,
     gameMoves,
   );
@@ -133,6 +138,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const [isPanning, setIsPanning] = useState(false);
   const boardViewport = useRef<HTMLDivElement>(null);
   const cardCatalogDialog = useRef<HTMLDialogElement>(null);
+  const newGameDialog = useRef<HTMLDialogElement>(null);
   const lastJumpDestination = useRef<CardPosition | null>(null);
   const panStart = useRef({
     pointerX: 0,
@@ -155,7 +161,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     G.pending;
   const manipulation =
     placementCard?.type === 'manipulation' &&
-    activeOwner === '0' &&
+    isHumanTurn &&
     !finished &&
     !G.pending
       ? placementCard
@@ -295,7 +301,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setManipulationTargetId(null);
 
     if (
-      G.hands['0'].find((card) => card.id === cardId)?.type === 'manipulation'
+      G.hands[activeOwner].find((card) => card.id === cardId)?.type ===
+      'manipulation'
     ) {
       if (G.pending) {
         gameMoves.returnPendingCard();
@@ -429,7 +436,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     const card =
       source === 'pending'
         ? G.pending
-        : G.hands['0'].find((candidate) => candidate.id === cardId);
+        : G.hands[activeOwner].find((candidate) => candidate.id === cardId);
 
     if (card?.id !== cardId) {
       return null;
@@ -451,7 +458,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       );
     },
     onDrop: (cardId, source, point) => {
-      if (finished || activeOwner !== '0') {
+      if (finished || !isHumanTurn) {
         return;
       }
 
@@ -462,7 +469,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
         return;
       }
-      if (source === 'pending' && target?.closest('[data-hand-owner="0"]')) {
+      if (
+        source === 'pending' &&
+        target?.closest(`[data-hand-owner="${activeOwner}"]`)
+      ) {
         gameMoves.returnPendingCard();
 
         return;
@@ -533,12 +543,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setSelectedCardId(null);
   };
 
-  const startNewGame = () => {
+  const startNewGame = (nextPlayers: PlayerSetup[]) => {
     setComputerPaused(false);
     setSelectedCardId(null);
     setDraggedCard(null);
     setSnapPosition(null);
-    newGame();
+    newGame(nextPlayers);
   };
 
   const adjustBoardZoom = useCallback((change: number) => {
@@ -613,9 +623,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       ? draggedCardDetails
       : G.pending;
   const displayedPendingOwner = pendingShowsReplacement
-    ? G.hands['0'].some((card) => card.id === draggedCardDetails?.id)
-      ? '0'
-      : '1'
+    ? activeOwner
     : G.pending?.owner;
 
   return (
@@ -666,11 +674,13 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             <span aria-hidden="true" />
             {finished
               ? t('game.over')
-              : activeOwner !== '0'
+              : activePlayer.type === 'computer'
                 ? t(computerPaused ? 'computer.paused' : 'computer.thinking', {
-                    owner: activeOwner,
+                    name: activePlayer.name,
                   })
-                : t('turn', { owner: activeOwner })}
+                : activeOwner === '0'
+                  ? t('turn.you')
+                  : t('turn.player', { name: activePlayer.name })}
             {!finished && (
               <small>
                 {t('turn.action', { count: G.actionsThisTurn + 1 })}
@@ -710,7 +720,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               {t('history.redo')}
             </button>
           </div>
-          {computerPaused && !finished && (
+          {computerPaused && !finished && activePlayer.type === 'computer' && (
             <button
               className={controlsStyles.historyButton}
               type="button"
@@ -729,9 +739,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               setManipulationTargetId(null);
             }}
             menuProps={{
-              playerCount: G.playerIds.length as PlayerCount,
-              onPlayerCountChange: setPlayerCount,
-              onNewGame: startNewGame,
+              onNewGame: () => newGameDialog.current?.showModal(),
               onOpenCatalog: () => {
                 setComputerPaused(true);
                 touchDrag.controller.cancel();
@@ -748,7 +756,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       <section className={gameBoardStyles.table} aria-label={t('table.label')}>
         <div className={gameBoardStyles.opponentHand}>
           {G.playerIds
-            .filter((id) => id !== '0')
+            .filter((id) => id !== handOwner)
             .map((id) => (
               <div className={gameBoardStyles.computerHand} key={id}>
                 <CardHand
@@ -766,6 +774,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   }
                   onDrop={returnCardToHand}
                   owner={id}
+                  ownerName={getPlayer(players, id).name}
                   pendingCardId={G.pending?.id}
                   selectedCardId={selectedCardId}
                 />
@@ -802,7 +811,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 title={t('discard.hint')}
                 disabled={
                   finished ||
-                  activeOwner !== '0' ||
+                  !isHumanTurn ||
                   !(draggedCard || selectedCardId || G.pending)
                 }
                 onDragEnter={allowDrop}
@@ -961,12 +970,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         data-drop-position={positionKey(G.pending)}
                         data-card-type={displayedPendingCard?.type}
                         data-event-category={displayedPendingCard?.category}
-                        draggable={activeOwner === '0' && !finished}
+                        draggable={isHumanTurn && !finished}
                         key={`${G.pending.id}:${G.pending.row}:${G.pending.column}`}
                         onDragEnd={finishDrag}
                         onPointerDown={(event) => {
                           if (
-                            activeOwner === '0' &&
+                            isHumanTurn &&
                             !finished &&
                             !(event.target as Element).closest('button')
                           ) {
@@ -1014,12 +1023,17 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           )}
                         </span>
                         <span className={cardStyles.ownerBadge}>
-                          {t(`owner.${displayedPendingOwner ?? activeOwner}`)}
+                          {displayedPendingOwner === 'neutral'
+                            ? t('owner.neutral')
+                            : getPlayer(
+                                players,
+                                displayedPendingOwner ?? activeOwner,
+                              ).name}
                         </span>
                         <button
                           aria-label={t('placement.confirmLabel')}
                           className={pendingCardStyles.pendingConfirm}
-                          disabled={activeOwner !== '0' || finished}
+                          disabled={!isHumanTurn || finished}
                           onClick={(event) => {
                             event.stopPropagation();
                             gameMoves.confirmPlacement();
@@ -1076,18 +1090,20 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         <div className={gameBoardStyles.hand}>
           <CardHand
             activeOwner={activeOwner}
-            cards={G.hands['0']}
+            cards={G.hands[handOwner]}
             touchDrag={touchDrag}
-            interactive={!finished}
+            interactive={isHumanTurn && !finished}
             isReturnTarget={
-              draggedCard?.source === 'pending' && G.pending?.owner === '0'
+              draggedCard?.source === 'pending' &&
+              G.pending?.owner === handOwner
             }
             onChoose={chooseCard}
             onDragEnd={finishDrag}
             onDragOver={allowDrop}
             onDragStart={(event, cardId) => beginDrag(event, cardId, 'hand')}
             onDrop={returnCardToHand}
-            owner="0"
+            owner={handOwner}
+            ownerName={getPlayer(players, handOwner).name}
             pendingCardId={G.pending?.id}
             selectedCardId={selectedCardId}
           />
@@ -1118,6 +1134,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           </span>
         </div>
       )}
+      <NewGameDialog
+        dialogRef={newGameDialog}
+        initialPlayers={players}
+        onStart={startNewGame}
+      />
       <CardCatalogDialog dialogRef={cardCatalogDialog} />
       <footer className={gameBoardStyles.footer}>
         {finished ? (
@@ -1142,10 +1163,15 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   ? t('status.dragging')
                   : selectedCardId
                     ? t('status.selected')
-                    : t('status.turn', {
-                        owner: activeOwner,
-                        count: G.deck.length,
-                      })}
+                    : t(
+                        activeOwner === '0'
+                          ? 'status.yourTurn'
+                          : 'status.playerTurn',
+                        {
+                          name: activePlayer.name,
+                          count: G.deck.length,
+                        },
+                      )}
           </p>
         )}
       </footer>

@@ -21,10 +21,8 @@ it('supports a menu trigger while keeping the dialog outside the menu', () => {
         currentPlayer="0"
         onOpen={() => {}}
         menuProps={{
-          playerCount: 2,
           onNewGame: () => {},
           onOpenCatalog: () => {},
-          onPlayerCountChange: () => {},
         }}
       />
     </IntlProvider>,

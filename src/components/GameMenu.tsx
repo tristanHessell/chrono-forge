@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 
 import { useMessages } from '../i18n/useMessages';
-import type { PlayerCount } from '../playerCount';
 import { CardPatternsToggle } from './CardPatternsToggle';
 import controlsStyles from './Controls.module.css';
 import gameMenuStyles from './GameMenu.module.css';
@@ -9,20 +8,12 @@ import { focusMovedOutside } from './menuFocus';
 import { ThemeToggle } from './ThemeToggle';
 
 type Props = {
-  playerCount: PlayerCount;
-  onPlayerCountChange: (count: PlayerCount) => void;
   onNewGame: () => void;
   onOpenLog: () => void;
   onOpenCatalog: () => void;
 };
 
-export function GameMenu({
-  playerCount,
-  onPlayerCountChange,
-  onNewGame,
-  onOpenLog,
-  onOpenCatalog,
-}: Props) {
+export function GameMenu({ onNewGame, onOpenLog, onOpenCatalog }: Props) {
   const t = useMessages();
   const menu = useRef<HTMLDetailsElement>(null);
   const trigger = useRef<HTMLElement>(null);
@@ -84,27 +75,6 @@ export function GameMenu({
         >
           {t('game.new')}
         </button>
-        <label className={gameMenuStyles.playerCount}>
-          {t('game.players')}
-          <select
-            aria-label={t('game.players')}
-            title={t('game.playersHint')}
-            value={playerCount}
-            onChange={(event) => {
-              closeMenu(true);
-              onPlayerCountChange(Number(event.target.value) as PlayerCount);
-            }}
-          >
-            {[2, 3, 4].map((count) => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </select>
-        </label>
-        <small className={gameMenuStyles.gameMenuHint}>
-          {t('game.playersHint')}
-        </small>
         <ThemeToggle />
         <CardPatternsToggle />
         <button

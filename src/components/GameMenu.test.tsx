@@ -10,35 +10,25 @@ vi.mock('./ThemeToggle', () => ({
   ThemeToggle: () => <button type="button">Theme toggle</button>,
 }));
 
-it.each([2, 3, 4] as const)(
-  'keeps all settings inside a closed menu with %s players selected',
-  (playerCount) => {
-    const html = renderToStaticMarkup(
-      <IntlProvider locale="en" messages={messages}>
-        <GameMenu
-          playerCount={playerCount}
-          onNewGame={() => {}}
-          onOpenLog={() => {}}
-          onOpenCatalog={() => {}}
-          onPlayerCountChange={() => {}}
-        />
-      </IntlProvider>,
-    );
+it('keeps all settings inside a closed menu', () => {
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <GameMenu
+        onNewGame={() => {}}
+        onOpenLog={() => {}}
+        onOpenCatalog={() => {}}
+      />
+    </IntlProvider>,
+  );
 
-    expect(html).toContain(`<details class="${styles.gameMenu}">`);
-    expect(html).not.toContain('open=""');
-    expect(html).toContain('aria-label="Game menu"');
-    expect(html).toContain('>New game</button>');
-    expect(html).toContain('>Game Log</button>');
-    expect(html).toContain('>All cards</button>');
-    expect(html).toContain('>Theme toggle</button>');
-    expect(html).toContain('Colour-independent backgrounds');
-    expect(html).toContain('type="checkbox"');
-    expect(html).toContain('aria-label="Players"');
-    expect(html).toContain(
-      `<option value="${playerCount}" selected="">${playerCount}</option>`,
-    );
-    expect(html).toContain(messages['game.playersHint']);
-    expect(html).not.toContain('role="menu"');
-  },
-);
+  expect(html).toContain(`<details class="${styles.gameMenu}">`);
+  expect(html).not.toContain('open=""');
+  expect(html).toContain('aria-label="Game menu"');
+  expect(html).toContain('>New game</button>');
+  expect(html).toContain('>Game Log</button>');
+  expect(html).toContain('>All cards</button>');
+  expect(html).toContain('>Theme toggle</button>');
+  expect(html).toContain('Colour-independent backgrounds');
+  expect(html).toContain('type="checkbox"');
+  expect(html).not.toContain('role="menu"');
+});

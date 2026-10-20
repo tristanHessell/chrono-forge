@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { chooseComputerAction } from './computer';
 import type { CardGameState, CardPosition, PlayerId } from './game';
+import type { PlayerSetup } from './playerSetup';
 
 type ComputerMoves = {
   manipulate: (
@@ -17,13 +18,16 @@ type ComputerMoves = {
 export function useComputerOpponent(
   G: CardGameState,
   currentPlayer: string,
+  players: PlayerSetup[],
   paused: boolean,
   moves: ComputerMoves,
 ) {
   const { playCard, discardCard, confirmPlacement, manipulate } = moves;
 
   useEffect(() => {
-    if (paused || currentPlayer === '0' || G.roundOver) {
+    const current = players.find((player) => player.id === currentPlayer);
+
+    if (paused || current?.type !== 'computer' || G.roundOver) {
       return;
     }
 
@@ -45,6 +49,7 @@ export function useComputerOpponent(
   }, [
     G,
     currentPlayer,
+    players,
     paused,
     playCard,
     discardCard,

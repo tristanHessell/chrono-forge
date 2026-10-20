@@ -14,6 +14,7 @@ it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
         <CardHand
           cards={[{ id: 'test', type: 'manipulation', action }]}
           owner="0"
+          ownerName="You"
           activeOwner="0"
           pendingCardId={undefined}
           isReturnTarget={false}

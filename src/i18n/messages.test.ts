@@ -57,7 +57,10 @@ describe('English messages', () => {
       '2 cards remaining in the deck',
     );
     expect(
-      intl.formatMessage({ id: 'status.turn' }, { owner: '1', count: 1 }),
-    ).toBe("Computer 1's turn — 1 card remains in the deck");
+      intl.formatMessage(
+        { id: 'status.playerTurn' },
+        { name: 'Sally', count: 1 },
+      ),
+    ).toBe("Sally's turn — 1 card remains in the deck");
   });
 });
