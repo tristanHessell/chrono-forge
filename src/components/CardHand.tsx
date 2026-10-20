@@ -336,7 +336,10 @@ export function CardHand({
                   )}
                 </span>
                 {pendingCardId === card.id && (
-                  <small className={cardHandStyles.handStatus}>
+                  <small
+                    className={cardHandStyles.handStatus}
+                    data-drag-decoration
+                  >
                     {t('hand.onTable')}
                   </small>
                 )}

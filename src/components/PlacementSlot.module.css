@@ -68,6 +68,7 @@
   border-style: solid;
   box-shadow: 0 0 1.4rem rgb(var(--card-highlight-rgb), 0.8);
   color: #fff;
+  composes: card from './Card.module.css';
   display: grid;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   gap: 0.1rem 0.2rem;
