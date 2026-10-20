@@ -6,17 +6,19 @@ import ownershipStyles from './Ownership.module.css';
 import playerAvatarStyles from './PlayerAvatar.module.css';
 
 type Props = {
+  compact?: boolean;
   owner: PlayerId;
   type: PlayerType;
   name: string;
 };
 
-export function PlayerAvatar({ owner, type, name }: Props) {
+export function PlayerAvatar({ compact = false, owner, type, name }: Props) {
   return (
     <span
       aria-label={`${name}, ${type === 'computer' ? 'AI' : 'human'}`}
       className={clsx(
         playerAvatarStyles.avatar,
+        compact && playerAvatarStyles.compact,
         ownershipStyles[`owner${owner}`],
       )}
       role="img"

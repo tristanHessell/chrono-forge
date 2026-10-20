@@ -13,13 +13,13 @@ import {
 import { useIntl } from 'react-intl';
 
 import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
-import { BoardToolbar } from './components/BoardToolbar';
 import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
 import { CardEffect } from './components/CardEffect';
 import { CardEventName } from './components/CardEventName';
 import { CardHand } from './components/CardHand';
+import { ComputerPlayer } from './components/ComputerPlayer';
 import controlsStyles from './components/Controls.module.css';
 import { GameLogControls } from './components/GameLogControls';
 import { GameResults } from './components/GameResults';
@@ -117,6 +117,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const activePlayer = getPlayer(players, activeOwner);
   const isHumanTurn = activePlayer.type === 'human';
   const handOwner = isHumanTurn ? activeOwner : '0';
+  const handPlayer = getPlayer(players, handOwner);
+  const scores = calculateScores(G.played);
   const { newGame, replayPaused } = useContext(GameLogContext);
   const [computerPaused, setComputerPaused] = useState(replayPaused);
 
@@ -757,29 +759,43 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         <div className={gameBoardStyles.opponentHand}>
           {G.playerIds
             .filter((id) => id !== handOwner)
-            .map((id) => (
-              <div className={gameBoardStyles.computerHand} key={id}>
-                <CardHand
-                  activeOwner={activeOwner}
+            .map((id) => {
+              const player = getPlayer(players, id);
+
+              return player.type === 'computer' ? (
+                <ComputerPlayer
                   cards={G.hands[id]}
-                  interactive={false}
-                  isReturnTarget={
-                    draggedCard?.source === 'pending' && G.pending?.owner === id
-                  }
-                  onChoose={chooseCard}
-                  onDragEnd={finishDrag}
-                  onDragOver={allowDrop}
-                  onDragStart={(event, cardId) =>
-                    beginDrag(event, cardId, 'hand')
-                  }
-                  onDrop={returnCardToHand}
-                  owner={id}
-                  ownerName={getPlayer(players, id).name}
-                  pendingCardId={G.pending?.id}
-                  selectedCardId={selectedCardId}
+                  key={id}
+                  player={player}
+                  score={scores[id] ?? 0}
                 />
-              </div>
-            ))}
+              ) : (
+                <div className={gameBoardStyles.computerHand} key={id}>
+                  <CardHand
+                    activeOwner={activeOwner}
+                    cards={G.hands[id]}
+                    interactive={false}
+                    isReturnTarget={
+                      draggedCard?.source === 'pending' &&
+                      G.pending?.owner === id
+                    }
+                    onChoose={chooseCard}
+                    onDragEnd={finishDrag}
+                    onDragOver={allowDrop}
+                    onDragStart={(event, cardId) =>
+                      beginDrag(event, cardId, 'hand')
+                    }
+                    onDrop={returnCardToHand}
+                    owner={id}
+                    ownerName={player.name}
+                    playerType={player.type}
+                    pendingCardId={G.pending?.id}
+                    score={scores[id] ?? 0}
+                    selectedCardId={selectedCardId}
+                  />
+                </div>
+              );
+            })}
         </div>
 
         <div className={gameBoardStyles.playArea}>
@@ -834,10 +850,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 </span>
               </button>
             </div>
-            <BoardToolbar
-              playerIds={G.playerIds}
-              scores={calculateScores(G.played)}
-            />
           </div>
           <div className={gameBoardStyles.boardSurface}>
             <BoardZoomControls
@@ -1103,8 +1115,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             onDragStart={(event, cardId) => beginDrag(event, cardId, 'hand')}
             onDrop={returnCardToHand}
             owner={handOwner}
-            ownerName={getPlayer(players, handOwner).name}
+            ownerName={handPlayer.name}
+            playerType={handPlayer.type}
             pendingCardId={G.pending?.id}
+            score={scores[handOwner] ?? 0}
             selectedCardId={selectedCardId}
           />
         </div>

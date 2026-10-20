@@ -5,6 +5,7 @@ import { expect, it } from 'vitest';
 
 import { GameLogView } from './components/GameLogView';
 import logStyles from './components/GameLogView.module.css';
+import ownershipStyles from './components/Ownership.module.css';
 import setup from './fixtures/removed-time-jump.json';
 import { CardGame } from './game';
 import {
@@ -59,7 +60,11 @@ it('summarises actor, card, coordinates, refill draws, turn changes and history 
     </IntlProvider>,
   );
 
-  expect(html).toContain('Player 1');
+  expect(html).toContain('You');
+  expect(html).toContain(logStyles.logPlayerReference);
+  expect(html).toContain(ownershipStyles.owner0);
+  expect(html).toContain(ownershipStyles.owner1);
+  expect(html).not.toContain('Player 1');
   expect(html).not.toContain('Selected');
   expect(html).toContain('Confirmed');
   expect(html).toContain('Discarded');
@@ -83,7 +88,7 @@ it('shows seed, player count and an empty-state message before the first action'
   expect(summarizeGameLog(log)).toEqual([]);
   expect(html).toContain('initial-seed');
   expect(html).toContain('No actions yet.');
-  expect(html).toContain('Player 1 takes the first turn.');
+  expect(html).toContain('You</strong> takes the first turn.');
 });
 
 it.each(['time-jump', 'time-swap', 'take-control'] as const)(

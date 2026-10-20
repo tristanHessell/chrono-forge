@@ -1,0 +1,72 @@
+.computer-player {
+  display: grid;
+  flex: 1;
+  gap: 0.5rem;
+  grid-template-columns:
+    [computer-player-start] minmax(0, 1fr)
+    [computer-player-end];
+  grid-template-rows: [identity-start] auto [identity-end cards-start] auto [cards-end];
+  min-width: 0;
+  padding: 0.25rem;
+  place-items: center;
+}
+
+.identity {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  justify-content: center;
+  min-width: 0;
+}
+
+.identity > div {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.identity strong {
+  color: var(--owner-color);
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.identity span {
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.hidden-cards {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  min-height: 1.7rem;
+  min-width: 2.5rem;
+  padding-right: 0.8rem;
+  position: relative;
+}
+
+.card-back {
+  box-shadow: 0.15rem 0.15rem 0 rgb(0 0 0 / 20%);
+  composes: card-back from './CardBack.module.css';
+  display: grid;
+  flex: 0 0 auto;
+  height: 1.7rem;
+  place-items: center;
+  width: 2.5rem;
+}
+
+.card-back + .card-back {
+  margin-left: -1.7rem;
+}
+
+.card-count {
+  color: #f7f2e8;
+  font-size: 0.9rem;
+  line-height: 1;
+  z-index: 1;
+}

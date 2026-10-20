@@ -21,3 +21,13 @@
   stroke-width: 3;
   width: 2rem;
 }
+
+.compact {
+  height: 2rem;
+  width: 2rem;
+}
+
+.compact svg {
+  height: 1.3rem;
+  width: 1.3rem;
+}

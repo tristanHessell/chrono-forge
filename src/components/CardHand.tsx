@@ -10,17 +10,21 @@ import {
   restoreHandOrder,
 } from '../handOrder';
 import { useMessages } from '../i18n/useMessages';
+import type { PlayerType } from '../playerSetup';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
 import { CardEventName } from './CardEventName';
 import cardHandStyles from './CardHand.module.css';
+import { PlayerAvatar } from './PlayerAvatar';
 
 type CardHandProps = {
   interactive?: boolean;
   cards: Card[];
   owner: Exclude<CardOwner, 'neutral'>;
   ownerName: string;
+  playerType: PlayerType;
+  score: number;
   activeOwner: Exclude<CardOwner, 'neutral'>;
   pendingCardId: string | undefined;
   isReturnTarget: boolean;
@@ -38,6 +42,8 @@ export function CardHand({
   cards,
   owner,
   ownerName,
+  playerType,
+  score,
   activeOwner,
   pendingCardId,
   isReturnTarget,
@@ -136,11 +142,22 @@ export function CardHand({
   return (
     <>
       <div className={cardHandStyles.handHeading}>
-        <p className={cardHandStyles.areaLabel}>
-          {t(owner === '0' ? 'hand.yourTitle' : 'hand.playerTitle', {
-            name: ownerName,
-          })}
-        </p>
+        <div className={cardHandStyles.handIdentity}>
+          <PlayerAvatar
+            compact
+            name={ownerName}
+            owner={owner}
+            type={playerType}
+          />
+          <div className={cardHandStyles.handIdentityText}>
+            <p className={cardHandStyles.areaLabel}>
+              {t(owner === '0' ? 'hand.yourTitle' : 'hand.playerTitle', {
+                name: ownerName,
+              })}
+            </p>
+            <span>{t('score.points', { count: score })}</span>
+          </div>
+        </div>
         <div
           className={cardHandStyles.handOrder}
           role="group"
