@@ -280,7 +280,7 @@
 
 .turn-indicator {
   align-items: center;
-  border: 1px solid var(--owner-color);
+  border: 1px solid var(--owner-foreground-color, var(--owner-color));
   border-radius: 0.25rem;
   color: var(--text);
   display: inline-flex;
@@ -301,9 +301,9 @@
 }
 
 .turn-indicator span {
-  background: var(--owner-color);
+  background: var(--owner-foreground-color, var(--owner-color));
   border-radius: 50%;
-  box-shadow: 0 0 0.7rem var(--owner-color);
+  box-shadow: 0 0 0.7rem var(--owner-foreground-color, var(--owner-color));
   height: 0.65rem;
   width: 0.65rem;
 }

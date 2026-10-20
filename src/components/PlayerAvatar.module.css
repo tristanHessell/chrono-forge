@@ -1,9 +1,13 @@
 .avatar {
   align-items: center;
-  background: color-mix(in srgb, var(--owner-color) 18%, var(--control-bg));
-  border: 2px solid var(--owner-color);
+  background: color-mix(
+    in srgb,
+    var(--owner-foreground-color, var(--owner-color)) 18%,
+    var(--control-bg)
+  );
+  border: 2px solid var(--owner-foreground-color, var(--owner-color));
   border-radius: 50%;
-  color: var(--owner-color);
+  color: var(--owner-foreground-color, var(--owner-color));
   display: inline-flex;
   flex: 0 0 auto;
   flex-wrap: nowrap;

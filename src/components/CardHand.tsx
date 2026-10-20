@@ -16,6 +16,7 @@ import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
 import { CardEventName } from './CardEventName';
 import cardHandStyles from './CardHand.module.css';
+import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
 type CardHandProps = {
@@ -150,7 +151,12 @@ export function CardHand({
             type={playerType}
           />
           <div className={cardHandStyles.handIdentityText}>
-            <p className={cardHandStyles.areaLabel}>
+            <p
+              className={clsx(
+                cardHandStyles.areaLabel,
+                ownershipStyles[`owner${owner}`],
+              )}
+            >
               {t(owner === '0' ? 'hand.yourTitle' : 'hand.playerTitle', {
                 name: ownerName,
               })}

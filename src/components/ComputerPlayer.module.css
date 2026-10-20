@@ -18,6 +18,7 @@
   gap: 0.5rem;
   justify-content: center;
   min-width: 0;
+  text-transform: uppercase;
 }
 
 .identity > div {
@@ -27,7 +28,7 @@
 }
 
 .identity strong {
-  color: var(--owner-color);
+  color: var(--owner-foreground-color, var(--owner-color));
   font-size: 0.78rem;
   overflow: hidden;
   text-overflow: ellipsis;
