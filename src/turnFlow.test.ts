@@ -154,3 +154,57 @@ it('applies draw effects immediately, then tops up the hand at turn end', () => 
   expect(client.getState()!.G.deck).toHaveLength(deck.length - 2);
   expect(client.getState()!.ctx.currentPlayer).toBe('1');
 });
+
+it('records player points for each round as turns cycle', () => {
+  const catalog = loadCardCatalog().deck;
+  const p0Cards = [1910, 1920].map((date) =>
+    catalog.find((card) => card.number === date)!,
+  );
+  const p1Cards = [1930, 1940].map((date) =>
+    catalog.find((card) => card.number === date)!,
+  );
+  const client = Client({
+    game: {
+      ...CardGame,
+      setup: (context) => ({
+        ...CardGame.setup!(context),
+        hands: {
+          ...CardGame.setup!(context).hands,
+          '0': p0Cards,
+          '1': p1Cards,
+        },
+      }),
+    },
+    numPlayers: 2,
+  });
+
+  expect(client.getState()!.G.round).toBe(1);
+  expect(client.getState()!.G.roundScores).toEqual([]);
+
+  client.moves.playCard(p0Cards[0].id, { row: 0, column: 1 });
+  client.moves.confirmPlacement();
+  client.moves.playCard(p0Cards[1].id, { row: 0, column: 2 });
+  client.moves.confirmPlacement();
+
+  expect(client.getState()!.ctx.currentPlayer).toBe('1');
+  expect(client.getState()!.G.round).toBe(1);
+  expect(client.getState()!.G.roundScores).toEqual([]);
+
+  client.moves.playCard(p1Cards[0].id, { row: 1, column: 0 });
+  client.moves.confirmPlacement();
+  client.moves.playCard(p1Cards[1].id, { row: 2, column: 0 });
+  client.moves.confirmPlacement();
+
+  const stateAfterRound1 = client.getState()!.G;
+
+  expect(stateAfterRound1.round).toBe(2);
+  expect(stateAfterRound1.roundScores).toHaveLength(1);
+  expect(stateAfterRound1.roundScores[0]).toEqual({ '0': 2, '1': 2 });
+
+  client.moves.undoTest();
+
+  const undoneState = client.getState()!.G;
+
+  expect(undoneState.round).toBe(1);
+  expect(undoneState.roundScores).toEqual([]);
+});

@@ -4,6 +4,7 @@ import { TurnOrder } from 'boardgame.io/core';
 import { loadCardCatalog } from './cardCatalog';
 import { isValidPlacement, positionKey, withPlacedEvent } from './gameRules';
 import { applyManipulation } from './manipulationRules';
+import { calculateScores } from './scoring';
 
 export {
   areAdjacent,
@@ -97,6 +98,7 @@ export type CardGameState = {
   hands: Record<string, Card[]>;
   playerIds: PlayerId[];
   round: number;
+  roundScores: Record<string, number>[];
   deck: Card[];
   played: PlacedCard[];
   pending: PlacedCard | null;
@@ -114,6 +116,7 @@ type CardGameSnapshot = {
   discarded: Card[];
   hands: Record<string, Card[]>;
   round: number;
+  roundScores: Record<string, number>[];
   deck: Card[];
   played: PlacedCard[];
   pending: PlacedCard | null;
@@ -138,6 +141,7 @@ const snapshotGame = (
     ]),
   ),
   round: G.round,
+  roundScores: (G.roundScores ?? []).map((scores) => ({ ...scores })),
   deck: G.deck.map((card) => ({ ...card })),
   played: G.played.map((card) => ({ ...card })),
   pending: G.pending ? { ...G.pending } : null,
@@ -151,6 +155,7 @@ const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
   G.discarded = snapshot.discarded;
   G.hands = snapshot.hands;
   G.round = snapshot.round;
+  G.roundScores = (snapshot.roundScores ?? []).map((scores) => ({ ...scores }));
   G.deck = snapshot.deck;
   G.played = snapshot.played;
   G.pending = snapshot.pending;
@@ -180,6 +185,12 @@ const advanceTurn = (
   if (G.playerIds.every((id) => G.hands[id].length === 0)) {
     G.roundOver = true;
 
+    const scores = calculateScores(G.played);
+
+    G.roundScores.push(
+      Object.fromEntries(G.playerIds.map((id) => [id, scores[id] ?? 0])),
+    );
+
     return;
   }
 
@@ -190,6 +201,11 @@ const advanceTurn = (
   ).find((id) => G.hands[id].length > 0)!;
 
   if (G.playerIds.indexOf(nextPlayer) <= currentIndex) {
+    const scores = calculateScores(G.played);
+
+    G.roundScores.push(
+      Object.fromEntries(G.playerIds.map((id) => [id, scores[id] ?? 0])),
+    );
     G.round += 1;
   }
 
@@ -220,6 +236,7 @@ export const CardGame: Game<CardGameState> = {
       ),
       playerIds,
       round: 1,
+      roundScores: [],
       deck,
       played: [
         {

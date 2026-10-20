@@ -29,6 +29,7 @@ import pendingCardStyles from './components/PendingCard.module.css';
 import { PlacementSlot } from './components/PlacementSlot';
 import { PlayedCard } from './components/PlayedCard';
 import playedCardStyles from './components/PlayedCard.module.css';
+import { RoundScoresDialog } from './components/RoundScoresDialog';
 import {
   type CardGameState,
   type CardPosition,
@@ -141,6 +142,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const boardViewport = useRef<HTMLDivElement>(null);
   const cardCatalogDialog = useRef<HTMLDialogElement>(null);
   const newGameDialog = useRef<HTMLDialogElement>(null);
+  const roundScoresDialog = useRef<HTMLDialogElement>(null);
   const lastJumpDestination = useRef<CardPosition | null>(null);
   const panStart = useRef({
     pointerX: 0,
@@ -750,6 +752,14 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 setManipulationTargetId(null);
                 cardCatalogDialog.current?.showModal();
               },
+              onOpenRoundScores: () => {
+                setComputerPaused(true);
+                touchDrag.controller.cancel();
+                finishDrag();
+                setSelectedCardId(null);
+                setManipulationTargetId(null);
+                roundScoresDialog.current?.showModal();
+              },
             }}
           />
         </div>
@@ -1154,9 +1164,14 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         onStart={startNewGame}
       />
       <CardCatalogDialog dialogRef={cardCatalogDialog} />
+      <RoundScoresDialog dialogRef={roundScoresDialog} G={G} />
       <footer className={gameBoardStyles.footer}>
         {finished ? (
-          <GameResults played={G.played} playerIds={G.playerIds} />
+          <GameResults
+            onOpenRoundScores={() => roundScoresDialog.current?.showModal()}
+            played={G.played}
+            playerIds={G.playerIds}
+          />
         ) : (
           <p
             className={clsx(manipulation && gameBoardStyles.manipulationPrompt)}
