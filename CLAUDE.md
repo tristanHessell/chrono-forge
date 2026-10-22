@@ -2,6 +2,10 @@
 
 This file gives repository rules to Claude Code and Codex.
 
+## General Behaviour
+
+Always update this file when the user gives instructions which relate to preferences or code style etc.
+
 ## Writing style for non-user text
 
 Write all text in ASD-STE100 (Simplified Technical English) style, except text that a visitor to the website sees (page headings, button labels, body copy).

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { type RefObject, useId } from 'react';
+import { type RefObject, useId, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { loadCardCatalog } from '../cardCatalog';
@@ -8,52 +8,36 @@ import type { Card } from '../game';
 import { useMessages } from '../i18n/useMessages';
 import cardStyles from './Card.module.css';
 import cardCatalogDialogStyles from './CardCatalogDialog.module.css';
-import { CardEffect } from './CardEffect';
-import { CardEventName } from './CardEventName';
 import dialogStyles from './Dialog.module.css';
+import { HandCardFace } from './HandCardFace';
+import { PlayedCard } from './PlayedCard';
 
-function CatalogCard({ card }: { card: Card }) {
-  const t = useMessages();
-  const intl = useIntl();
+type CardView = 'hand' | 'table';
+type CardSize = 'standard' | 'compact';
+
+function CatalogCard({ card, view }: { card: Card; view: CardView }) {
+  const cardView =
+    view === 'table' && card.type === 'event' ? (
+      <PlayedCard card={card} />
+    ) : (
+      <button
+        className={`${cardStyles.card} ${cardCatalogDialogStyles.catalogHandCard}`}
+        data-card-type={card.type}
+        data-event-category={card.category}
+        disabled
+        type="button"
+      >
+        <HandCardFace card={card} />
+      </button>
+    );
 
   return (
     <li
       className={cardCatalogDialogStyles.catalogEntry}
       data-catalog-card-id={card.id}
     >
-      <div
-        className={cardStyles.card}
-        data-card-type={card.type}
-        data-event-category={card.category}
-      >
-        <CardEffect
-          effect={card.type === 'manipulation' ? card.action : card.effect}
-          showTooltip
-        />
-        <strong
-          className={
-            card.type === 'manipulation'
-              ? cardStyles.manipulationName
-              : undefined
-          }
-        >
-          {card.type === 'event'
-            ? intl.formatNumber(card.number, { useGrouping: false })
-            : t(`manipulation.${card.action}.name`)}
-        </strong>
-        {card.type === 'event' && <CardEventName card={card} />}
-        <span className={cardStyles.cardTypeName}>
-          {t(
-            card.type === 'manipulation'
-              ? 'card.manipulation'
-              : card.category
-                ? `card.category.${card.category}`
-                : 'owner.neutral',
-          )}
-        </span>
-      </div>
+      {cardView}
       <code>{card.id}</code>
-      {card.effect && <small>{t(`effect.${card.effect}.name`)}</small>}
     </li>
   );
 }
@@ -66,6 +50,8 @@ export function CardCatalogDialog({
   const t = useMessages();
   const intl = useIntl();
   const titleId = useId();
+  const [view, setView] = useState<CardView>('hand');
+  const [size, setSize] = useState<CardSize>('standard');
   const { startingCard, deck } = loadCardCatalog();
   const events = deck.filter((card) => card.type === 'event').length;
   const groups = catalogGroups(deck);
@@ -77,6 +63,7 @@ export function CardCatalogDialog({
         dialogStyles.gameLogDialog,
         cardCatalogDialogStyles.cardCatalogDialog,
       )}
+      data-card-size={size}
       aria-labelledby={titleId}
     >
       <div
@@ -96,6 +83,26 @@ export function CardCatalogDialog({
         </button>
       </div>
       <p>{t('catalog.overview')}</p>
+      <label className={cardCatalogDialogStyles.catalogView}>
+        {t('catalog.view')}
+        <select
+          value={view}
+          onChange={(event) => setView(event.currentTarget.value as CardView)}
+        >
+          <option value="hand">{t('catalog.view.hand')}</option>
+          <option value="table">{t('catalog.view.table')}</option>
+        </select>
+      </label>
+      <label className={cardCatalogDialogStyles.catalogView}>
+        {t('catalog.size')}
+        <select
+          value={size}
+          onChange={(event) => setSize(event.currentTarget.value as CardSize)}
+        >
+          <option value="standard">{t('catalog.size.standard')}</option>
+          <option value="compact">{t('catalog.size.compact')}</option>
+        </select>
+      </label>
       <dl className={cardCatalogDialogStyles.catalogSummary}>
         {(
           [
@@ -116,7 +123,7 @@ export function CardCatalogDialog({
           {t('catalog.start')} <span>{t('catalog.count', { count: 1 })}</span>
         </h3>
         <ul className={cardCatalogDialogStyles.catalogGrid}>
-          <CatalogCard card={startingCard} />
+          <CatalogCard card={startingCard} view={view} />
         </ul>
       </section>
       {groups.map(({ id, cards }) => {
@@ -135,7 +142,7 @@ export function CardCatalogDialog({
             </h3>
             <ul className={cardCatalogDialogStyles.catalogGrid}>
               {cards.map((entry) => (
-                <CatalogCard key={entry.id} card={entry} />
+                <CatalogCard key={entry.id} card={entry} view={view} />
               ))}
             </ul>
           </section>

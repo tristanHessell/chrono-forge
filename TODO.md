@@ -1,37 +1,12 @@
 # TODO
 
-Change the card catalog to use the actual card component from the game, rather than using a component like Catalog Card.
-
-- The intent is to reduce the amount of code duplication and to ensure that there is a small number of ways to represent a card in the codebase.
-- Eventually, I want to the user to be able to use a dropdown to select how the card should be displayed - from the hand or from the table.
-- For now, just use the cards in the hand
-
----
-
-Add settings on the dialog that will allow the user to see the cards as if they were in the hand or placed on the table.
-
-- This should be a dropdown.
-
----
-
-Add settings to show the cards in the different sizes - with the intent of allowing me to check the cards to see if their contents are fitting correctly.
-
-- These changes should include naming the different sizes that are available in the theme and then having a dropdown to configure it on the card catalog page.
-
----
-
 Prompt: Dragging a command like `take control` over the card it's targetting doesn't work
 
 ---
 
-Move Game log to a place that makes it more easy to get to.
+Move Game log and Game Scores to the same area as the deck & discard.
 
-- You'll find that its hard to track what's going on against computers.
-- Move it to the same line as the deck/discard
-
----
-
-Slow down computers turns, so you can see individual moves happening.
+- this will make it easier to track what is going on in a game without having to click a couple of buttons to get there.
 
 ---
 

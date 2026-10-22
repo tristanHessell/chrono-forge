@@ -3,7 +3,7 @@ import { type CSSProperties, type ReactNode, useContext } from 'react';
 import { useIntl } from 'react-intl';
 
 import { eventCardNameMessageId } from '../eventCardName';
-import type { PlacedCard } from '../game';
+import type { EventCard, PlacedCard } from '../game';
 import { positionKey } from '../gameRules';
 import { useMessages } from '../i18n/useMessages';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
@@ -14,10 +14,10 @@ import ownershipStyles from './Ownership.module.css';
 import playedCardStyles from './PlayedCard.module.css';
 
 type PlayedCardProps = {
-  card: PlacedCard;
-  style: CSSProperties;
-  links: ReactNode;
-  isLatest: boolean;
+  card: PlacedCard | EventCard;
+  style?: CSSProperties;
+  links?: ReactNode;
+  isLatest?: boolean;
   onTarget?: () => void;
   selected?: boolean;
 };
@@ -33,14 +33,13 @@ export function PlayedCard({
   const t = useMessages();
   const intl = useIntl();
   const players = useContext(PlayerSetupContext);
+  const owner = 'owner' in card ? card.owner : 'neutral';
   const ownerName =
-    card.owner === 'neutral'
-      ? t('owner.neutral')
-      : getPlayer(players, card.owner).name;
+    owner === 'neutral' ? t('owner.neutral') : getPlayer(players, owner).name;
   const ownerDescription =
-    card.owner === 'neutral'
+    owner === 'neutral'
       ? t('card.owner.start')
-      : card.owner === '0'
+      : owner === '0'
         ? t('card.owner.you')
         : t('card.owner.player', { name: ownerName });
 
@@ -56,21 +55,22 @@ export function PlayedCard({
       className={clsx(
         cardStyles.card,
         playedCardStyles.playedCard,
-        card.owner === 'neutral'
+        owner === 'neutral'
           ? ownershipStyles.ownerNeutral
-          : ownershipStyles[`owner${card.owner}`],
+          : ownershipStyles[`owner${owner}`],
         {
           [playedCardStyles.latestCard]: isLatest,
           [playedCardStyles.manipulationTarget]: Boolean(onTarget),
           [playedCardStyles.manipulationSelected]: selected,
-          [playedCardStyles.removedCard]: card.removed,
+          [playedCardStyles.removedCard]:
+            'removed' in card && Boolean(card.removed),
         },
       )}
       data-card-type={card.type}
       data-event-category={card.category}
-      data-owner={card.owner}
-      data-position={positionKey(card)}
-      data-removed={card.removed || undefined}
+      data-owner={'owner' in card ? owner : undefined}
+      data-position={'row' in card ? positionKey(card) : undefined}
+      data-removed={'removed' in card ? card.removed || undefined : undefined}
       role={onTarget ? 'button' : 'img'}
       tabIndex={onTarget || card.effect ? 0 : undefined}
       aria-pressed={onTarget ? Boolean(selected) : undefined}
@@ -82,7 +82,7 @@ export function PlayedCard({
         }
       }}
       aria-description={
-        card.removed
+        'removed' in card && card.removed
           ? t('card.removedDescription')
           : card.effect
             ? t(`effect.${card.effect}.description`)
@@ -96,14 +96,16 @@ export function PlayedCard({
       <CardEventName card={card} />
       <span className={cardStyles.cardTypeName}>
         {t(
-          card.removed
+          'removed' in card && card.removed
             ? 'card.removed'
             : card.category
               ? `card.category.${card.category}`
               : 'card.event',
         )}
       </span>
-      <span className={cardStyles.ownerBadge}>{ownerName}</span>
+      {'owner' in card && (
+        <span className={cardStyles.ownerBadge}>{ownerName}</span>
+      )}
     </div>
   );
 }

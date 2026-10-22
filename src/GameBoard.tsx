@@ -22,6 +22,7 @@ import { CardHand } from './components/CardHand';
 import { ComputerPlayer } from './components/ComputerPlayer';
 import controlsStyles from './components/Controls.module.css';
 import { GameLogControls } from './components/GameLogControls';
+import { GameMenu } from './components/GameMenu';
 import { GameResults } from './components/GameResults';
 import { NewGameDialog } from './components/NewGameDialog';
 import ownershipStyles from './components/Ownership.module.css';
@@ -761,33 +762,15 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               {t('computer.resume')}
             </button>
           )}
-          <GameLogControls
-            G={G}
-            currentPlayer={ctx.currentPlayer}
-            onOpen={() => {
+          <GameMenu
+            onNewGame={() => newGameDialog.current?.showModal()}
+            onOpenCatalog={() => {
               setComputerPaused(true);
+              touchDrag.controller.cancel();
               finishDrag();
               setSelectedCardId(null);
               setManipulationTargetId(null);
-            }}
-            menuProps={{
-              onNewGame: () => newGameDialog.current?.showModal(),
-              onOpenCatalog: () => {
-                setComputerPaused(true);
-                touchDrag.controller.cancel();
-                finishDrag();
-                setSelectedCardId(null);
-                setManipulationTargetId(null);
-                cardCatalogDialog.current?.showModal();
-              },
-              onOpenRoundScores: () => {
-                setComputerPaused(true);
-                touchDrag.controller.cancel();
-                finishDrag();
-                setSelectedCardId(null);
-                setManipulationTargetId(null);
-                roundScoresDialog.current?.showModal();
-              },
+              cardCatalogDialog.current?.showModal();
             }}
           />
         </div>
@@ -838,7 +821,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
         <div className={gameBoardStyles.playArea}>
           <div className={gameBoardStyles.areaHeading}>
-            <div className={gameBoardStyles.areaTitleWithDeck}>
+            <div className={gameBoardStyles.areaControls}>
               <div
                 aria-label={t('deck.label', { count: G.deck.length })}
                 className={gameBoardStyles.deckDisplay}
@@ -886,6 +869,30 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                     {t('discard.count', { count: G.discarded.length })}
                   </small>
                 </span>
+              </button>
+              <GameLogControls
+                G={G}
+                currentPlayer={ctx.currentPlayer}
+                onOpen={() => {
+                  setComputerPaused(true);
+                  finishDrag();
+                  setSelectedCardId(null);
+                  setManipulationTargetId(null);
+                }}
+              />
+              <button
+                className={controlsStyles.historyButton}
+                type="button"
+                onClick={() => {
+                  setComputerPaused(true);
+                  touchDrag.controller.cancel();
+                  finishDrag();
+                  setSelectedCardId(null);
+                  setManipulationTargetId(null);
+                  roundScoresDialog.current?.showModal();
+                }}
+              >
+                {t('roundScores.title')}
               </button>
             </div>
           </div>
@@ -1196,11 +1203,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       <RoundScoresDialog dialogRef={roundScoresDialog} G={G} />
       <footer className={gameBoardStyles.footer}>
         {finished ? (
-          <GameResults
-            onOpenRoundScores={() => roundScoresDialog.current?.showModal()}
-            played={G.played}
-            playerIds={G.playerIds}
-          />
+          <GameResults played={G.played} playerIds={G.playerIds} />
         ) : (
           <p
             className={clsx(manipulation && gameBoardStyles.manipulationPrompt)}

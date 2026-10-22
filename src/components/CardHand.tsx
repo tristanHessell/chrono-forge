@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import { type CSSProperties, type DragEvent, useState } from 'react';
-import { useIntl } from 'react-intl';
 
 import type { Card, CardOwner } from '../game';
 import {
@@ -13,9 +12,8 @@ import { useMessages } from '../i18n/useMessages';
 import type { PlayerType } from '../playerSetup';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
 import cardStyles from './Card.module.css';
-import { CardEffect } from './CardEffect';
-import { CardEventName } from './CardEventName';
 import cardHandStyles from './CardHand.module.css';
+import { HandCardFace } from './HandCardFace';
 import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
@@ -57,7 +55,6 @@ export function CardHand({
   touchDrag,
 }: CardHandProps) {
   const t = useMessages();
-  const intl = useIntl();
   const isOpponent = owner !== '0';
   const [order, setOrder] = useState<HandOrder | null>(null);
   const [manualIds, setManualIds] = useState<string[]>([]);
@@ -308,39 +305,7 @@ export function CardHand({
                 }}
                 type="button"
               >
-                <CardEffect
-                  effect={
-                    card.type === 'manipulation' ? card.action : card.effect
-                  }
-                  showTooltip={!touchDrag?.preview}
-                />
-                {card.type === 'event' && (
-                  <span
-                    className={cardHandStyles.handCornerNumber}
-                    aria-hidden="true"
-                  >
-                    {intl.formatNumber(card.number, { useGrouping: false })}
-                  </span>
-                )}
-                <strong
-                  className={clsx(
-                    card.type === 'manipulation' && cardStyles.manipulationName,
-                  )}
-                >
-                  {card.type === 'event'
-                    ? intl.formatNumber(card.number, { useGrouping: false })
-                    : t(`manipulation.${card.action}.name`)}
-                </strong>
-                {card.type === 'event' && <CardEventName card={card} />}
-                <span className={cardStyles.cardTypeName}>
-                  {t(
-                    card.type === 'manipulation'
-                      ? 'card.manipulation'
-                      : card.category
-                        ? `card.category.${card.category}`
-                        : 'card.event',
-                  )}
-                </span>
+                <HandCardFace card={card} showTooltip={!touchDrag?.preview} />
                 {pendingCardId === card.id && (
                   <small
                     className={cardHandStyles.handStatus}
