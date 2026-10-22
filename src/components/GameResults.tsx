@@ -1,7 +1,7 @@
 import { useContext } from 'react';
+import { useIntl } from 'react-intl';
 
 import type { PlacedCard, PlayerId } from '../game';
-import { useMessages } from '../i18n/useMessages';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import { calculateScoreBreakdown } from '../scoring';
 import gameResultsStyles from './GameResults.module.css';
@@ -14,7 +14,7 @@ export function GameResults({
   played: PlacedCard[];
   playerIds?: PlayerId[];
 }) {
-  const t = useMessages();
+  const intl = useIntl();
   const players = useContext(PlayerSetupContext);
   const scores = calculateScoreBreakdown(played);
   const highest = Math.max(...playerIds.map((id) => scores[id]?.total ?? 0));
@@ -27,23 +27,45 @@ export function GameResults({
       <div className={gameResultsStyles.headerRow}>
         <strong className={gameResultsStyles.resultTitle}>
           {winners.length === 1
-            ? t(winners[0] === '0' ? 'score.youWin' : 'score.playerWins', {
-                name: getPlayer(players, winners[0]).name,
-              })
-            : t('score.tie', {
-                players: winners
-                  .map((id) => getPlayer(players, id).name)
-                  .join(', '),
-              })}
+            ? intl.formatMessage(
+                winners[0] === '0'
+                  ? {
+                      id: 'score.youWin',
+                      defaultMessage: 'Game over — you win!',
+                    }
+                  : {
+                      id: 'score.playerWins',
+                      defaultMessage: 'Game over — {name} wins!',
+                    },
+                { name: getPlayer(players, winners[0]).name },
+              )
+            : intl.formatMessage(
+                {
+                  id: 'score.tie',
+                  defaultMessage: "Game over — it's a tie! ({players})",
+                },
+                {
+                  players: winners
+                    .map((id) => getPlayer(players, id).name)
+                    .join(', '),
+                },
+              )}
         </strong>
       </div>
       <div className={gameResultsStyles.scoreBreakdown}>
         {playerIds.map((owner) => (
           <span className={ownershipStyles[`owner${owner}`]} key={owner}>
-            {t('score.breakdown', {
-              name: getPlayer(players, owner).name,
-              ...(scores[owner] ?? { base: 0, bonus: 0, total: 0 }),
-            })}
+            {intl.formatMessage(
+              {
+                id: 'score.breakdown',
+                defaultMessage:
+                  '{name}: {base, plural, one {# card point} other {# card points}} + {bonus, plural, one {# bonus point} other {# bonus points}} = {total, number} total',
+              },
+              {
+                name: getPlayer(players, owner).name,
+                ...(scores[owner] ?? { base: 0, bonus: 0, total: 0 }),
+              },
+            )}
           </span>
         ))}
       </div>

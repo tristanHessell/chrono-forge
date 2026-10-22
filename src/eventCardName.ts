@@ -1,6 +1,9 @@
 import type { EventCard } from './game';
-import type { MessageId } from './i18n/useMessages';
+import {
+  eventNameMessages,
+  startingEventNameMessage,
+} from './i18n/messageDescriptors';
 
-export function eventCardNameMessageId(card: EventCard): MessageId {
-  return card.name ? `card.name.${card.name}` : 'card.event';
+export function eventCardNameMessage(card: EventCard) {
+  return card.name ? eventNameMessages[card.name] : startingEventNameMessage;
 }

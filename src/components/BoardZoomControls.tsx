@@ -1,6 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import { useMessages } from '../i18n/useMessages';
 import boardZoomControlsStyles from './BoardZoomControls.module.css';
 
 type Props = {
@@ -14,17 +13,22 @@ export function BoardZoomControls({
   onZoomChange,
   onResetZoom,
 }: Props) {
-  const t = useMessages();
   const intl = useIntl();
 
   return (
     <div
       className={boardZoomControlsStyles.zoomControls}
       role="group"
-      aria-label={t('zoom.label')}
+      aria-label={intl.formatMessage({
+        id: 'zoom.label',
+        defaultMessage: 'Board zoom controls',
+      })}
     >
       <button
-        aria-label={t('zoom.out')}
+        aria-label={intl.formatMessage({
+          id: 'zoom.out',
+          defaultMessage: 'Zoom out',
+        })}
         disabled={boardZoom <= 0.6}
         onClick={(event) => {
           if (event.detail === 0) {
@@ -40,7 +44,10 @@ export function BoardZoomControls({
         −
       </button>
       <button
-        aria-label={t('zoom.reset')}
+        aria-label={intl.formatMessage({
+          id: 'zoom.reset',
+          defaultMessage: 'Reset board zoom',
+        })}
         className={boardZoomControlsStyles.zoomValue}
         onClick={(event) => {
           if (event.detail === 0) {
@@ -59,7 +66,10 @@ export function BoardZoomControls({
         })}
       </button>
       <button
-        aria-label={t('zoom.in')}
+        aria-label={intl.formatMessage({
+          id: 'zoom.in',
+          defaultMessage: 'Zoom in',
+        })}
         disabled={boardZoom >= 1.6}
         onClick={(event) => {
           if (event.detail === 0) {

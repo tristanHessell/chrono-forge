@@ -4,7 +4,10 @@ import { useIntl } from 'react-intl';
 
 import type { Card, CardPosition } from '../game';
 import { positionKey } from '../gameRules';
-import { useMessages } from '../i18n/useMessages';
+import {
+  categoryMessages,
+  startingEventNameMessage,
+} from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
 import { CardEventName } from './CardEventName';
@@ -39,7 +42,6 @@ export function PlacementSlot({
   onDragOver,
   onDrop,
 }: PlacementSlotProps) {
-  const t = useMessages();
   const intl = useIntl();
 
   return (
@@ -70,21 +72,38 @@ export function PlacementSlot({
           </strong>
           <CardEventName card={draggedCard} />
           <span className={cardStyles.cardTypeName}>
-            {t(
+            {intl.formatMessage(
               draggedCard.category
-                ? `card.category.${draggedCard.category}`
-                : 'card.event',
+                ? categoryMessages[draggedCard.category]
+                : startingEventNameMessage,
             )}
           </span>
           <small className={placementSlotStyles.releaseLabel}>
-            {t('placement.release')}
+            {intl.formatMessage({
+              id: 'placement.release',
+              defaultMessage: 'Release to place',
+            })}
           </small>
         </>
       ) : (
         <>
           <span>+</span>
-          {overwrite && <small>{t('placement.overwrite')}</small>}
-          {initial && <small>{t('placement.first')}</small>}
+          {overwrite && (
+            <small>
+              {intl.formatMessage({
+                id: 'placement.overwrite',
+                defaultMessage: 'Overwrite',
+              })}
+            </small>
+          )}
+          {initial && (
+            <small>
+              {intl.formatMessage({
+                id: 'placement.first',
+                defaultMessage: 'Drop first card',
+              })}
+            </small>
+          )}
         </>
       )}
     </button>

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { useIntl } from 'react-intl';
 
-import { useMessages } from '../i18n/useMessages';
 import { CardPatternsToggle } from './CardPatternsToggle';
 import controlsStyles from './Controls.module.css';
 import gameMenuStyles from './GameMenu.module.css';
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
-  const t = useMessages();
+  const intl = useIntl();
   const menu = useRef<HTMLDetailsElement>(null);
   const trigger = useRef<HTMLElement>(null);
   const closeMenu = (restoreFocus = false) => {
@@ -55,14 +55,21 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
       <summary
         className={controlsStyles.historyButton}
         ref={trigger}
-        aria-label={t('menu.title')}
+        aria-label={intl.formatMessage({
+          id: 'menu.title',
+          defaultMessage: 'Game menu',
+        })}
       >
-        <span aria-hidden="true">☰</span> {t('menu.toggle')}
+        <span aria-hidden="true">☰</span>{' '}
+        {intl.formatMessage({ id: 'menu.toggle', defaultMessage: 'Menu' })}
       </summary>
       <div
         className={gameMenuStyles.gameMenuPanel}
         role="group"
-        aria-label={t('menu.title')}
+        aria-label={intl.formatMessage({
+          id: 'menu.title',
+          defaultMessage: 'Game menu',
+        })}
       >
         <button
           className={controlsStyles.historyButton}
@@ -72,7 +79,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
             onNewGame();
           }}
         >
-          {t('game.new')}
+          {intl.formatMessage({ id: 'game.new', defaultMessage: 'New game' })}
         </button>
         <ThemeToggle />
         <CardPatternsToggle />
@@ -84,7 +91,10 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
             onOpenCatalog();
           }}
         >
-          {t('catalog.title')}
+          {intl.formatMessage({
+            id: 'catalog.title',
+            defaultMessage: 'All cards',
+          })}
         </button>
       </div>
     </details>

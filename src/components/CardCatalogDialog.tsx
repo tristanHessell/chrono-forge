@@ -5,7 +5,11 @@ import { useIntl } from 'react-intl';
 import { loadCardCatalog } from '../cardCatalog';
 import { catalogGroups } from '../catalogGroups';
 import type { Card } from '../game';
-import { useMessages } from '../i18n/useMessages';
+import {
+  categoryMessages,
+  manipulationNameMessages,
+  startingEventNameMessage,
+} from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
 import cardCatalogDialogStyles from './CardCatalogDialog.module.css';
 import dialogStyles from './Dialog.module.css';
@@ -47,7 +51,6 @@ export function CardCatalogDialog({
 }: {
   dialogRef: RefObject<HTMLDialogElement>;
 }) {
-  const t = useMessages();
   const intl = useIntl();
   const titleId = useId();
   const [view, setView] = useState<CardView>('hand');
@@ -72,55 +75,110 @@ export function CardCatalogDialog({
           cardCatalogDialogStyles.cardCatalogHeader,
         )}
       >
-        <h2 id={titleId}>{t('catalog.title')}</h2>
+        <h2 id={titleId}>
+          {intl.formatMessage({
+            id: 'catalog.title',
+            defaultMessage: 'All cards',
+          })}
+        </h2>
         <button
           className={dialogStyles.gameLogClose}
           type="button"
-          aria-label={t('catalog.close')}
+          aria-label={intl.formatMessage({
+            id: 'catalog.close',
+            defaultMessage: 'Close card catalog',
+          })}
           onClick={() => dialogRef.current?.close()}
         >
           <span aria-hidden="true">×</span>
         </button>
       </div>
-      <p>{t('catalog.overview')}</p>
+      <p>
+        {intl.formatMessage({
+          id: 'catalog.overview',
+          defaultMessage:
+            'The complete configured deck, not just the cards remaining in this game. Every copy is shown. Hover over or focus an effect icon for its explanation.',
+        })}
+      </p>
       <label className={cardCatalogDialogStyles.catalogView}>
-        {t('catalog.view')}
+        {intl.formatMessage({
+          id: 'catalog.view',
+          defaultMessage: 'Display cards',
+        })}
         <select
           value={view}
           onChange={(event) => setView(event.currentTarget.value as CardView)}
         >
-          <option value="hand">{t('catalog.view.hand')}</option>
-          <option value="table">{t('catalog.view.table')}</option>
+          <option value="hand">
+            {intl.formatMessage({
+              id: 'catalog.view.hand',
+              defaultMessage: 'In hand',
+            })}
+          </option>
+          <option value="table">
+            {intl.formatMessage({
+              id: 'catalog.view.table',
+              defaultMessage: 'On table',
+            })}
+          </option>
         </select>
       </label>
       <label className={cardCatalogDialogStyles.catalogView}>
-        {t('catalog.size')}
+        {intl.formatMessage({
+          id: 'catalog.size',
+          defaultMessage: 'Card size',
+        })}
         <select
           value={size}
           onChange={(event) => setSize(event.currentTarget.value as CardSize)}
         >
-          <option value="standard">{t('catalog.size.standard')}</option>
-          <option value="compact">{t('catalog.size.compact')}</option>
+          <option value="standard">
+            {intl.formatMessage({
+              id: 'catalog.size.standard',
+              defaultMessage: 'Standard (124 × 88 px)',
+            })}
+          </option>
+          <option value="compact">
+            {intl.formatMessage({
+              id: 'catalog.size.compact',
+              defaultMessage: 'Compact (104 × 72 px)',
+            })}
+          </option>
         </select>
       </label>
       <dl className={cardCatalogDialogStyles.catalogSummary}>
         {(
           [
-            ['catalog.deck', deck.length],
-            ['card.event', events],
-            ['card.manipulation', deck.length - events],
-            ['catalog.start', 1],
+            [{ id: 'catalog.deck', defaultMessage: 'Deck cards' }, deck.length],
+            [startingEventNameMessage, events],
+            [
+              { id: 'card.manipulation', defaultMessage: 'Command' },
+              deck.length - events,
+            ],
+            [{ id: 'catalog.start', defaultMessage: 'Starting card' }, 1],
           ] as const
         ).map(([label, count]) => (
-          <div key={label}>
-            <dt>{t(label)}</dt>
+          <div key={label.id}>
+            <dt>{intl.formatMessage(label)}</dt>
             <dd>{intl.formatNumber(count)}</dd>
           </div>
         ))}
       </dl>
       <section className={cardCatalogDialogStyles.catalogGroup}>
         <h3>
-          {t('catalog.start')} <span>{t('catalog.count', { count: 1 })}</span>
+          {intl.formatMessage({
+            id: 'catalog.start',
+            defaultMessage: 'Starting card',
+          })}{' '}
+          <span>
+            {intl.formatMessage(
+              {
+                id: 'catalog.count',
+                defaultMessage: '{count, plural, one {# card} other {# cards}}',
+              },
+              { count: 1 },
+            )}
+          </span>
         </h3>
         <ul className={cardCatalogDialogStyles.catalogGrid}>
           <CatalogCard card={startingCard} view={view} />
@@ -131,14 +189,27 @@ export function CardCatalogDialog({
         const label =
           card.type === 'event'
             ? card.category
-              ? t(`card.category.${card.category}`)
-              : t('card.event')
-            : t(`manipulation.${card.action}.name`);
+              ? intl.formatMessage(categoryMessages[card.category])
+              : intl.formatMessage({
+                  id: 'card.event',
+                  defaultMessage: 'Event',
+                })
+            : intl.formatMessage(manipulationNameMessages[card.action]);
 
         return (
           <section className={cardCatalogDialogStyles.catalogGroup} key={id}>
             <h3>
-              {label} <span>{t('catalog.count', { count: cards.length })}</span>
+              {label}{' '}
+              <span>
+                {intl.formatMessage(
+                  {
+                    id: 'catalog.count',
+                    defaultMessage:
+                      '{count, plural, one {# card} other {# cards}}',
+                  },
+                  { count: cards.length },
+                )}
+              </span>
             </h3>
             <ul className={cardCatalogDialogStyles.catalogGrid}>
               {cards.map((entry) => (

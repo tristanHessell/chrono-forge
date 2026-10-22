@@ -1,4 +1,5 @@
 import { useContext, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import type { CardGameState } from '../game';
 import {
@@ -8,7 +9,6 @@ import {
   replayGameLog,
 } from '../gameLog';
 import { GameLogContext } from '../gameLogContext';
-import { useMessages } from '../i18n/useMessages';
 import controlsStyles from './Controls.module.css';
 import dialogStyles from './Dialog.module.css';
 import gameLogControlsStyles from './GameLogControls.module.css';
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
-  const t = useMessages();
+  const intl = useIntl();
   const { seed, loadLog } = useContext(GameLogContext);
   const dialog = useRef<HTMLDialogElement>(null);
   const [text, setText] = useState('');
@@ -48,9 +48,12 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
       loadLog(log, count);
     } catch (error) {
       setStatus(
-        t('log.error', {
-          reason: error instanceof Error ? error.message : String(error),
-        }),
+        intl.formatMessage(
+          { id: 'log.error', defaultMessage: 'Could not load log: {reason}' },
+          {
+            reason: error instanceof Error ? error.message : String(error),
+          },
+        ),
       );
     }
   };
@@ -62,7 +65,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
         type="button"
         onClick={open}
       >
-        {t('log.title')}
+        {intl.formatMessage({ id: 'log.title', defaultMessage: 'Game Log' })}
       </button>
       <dialog
         ref={dialog}
@@ -70,17 +73,31 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
         aria-labelledby="game-log-title"
       >
         <div className={dialogStyles.gameLogHeader}>
-          <h2 id="game-log-title">{t('log.title')}</h2>
+          <h2 id="game-log-title">
+            {intl.formatMessage({
+              id: 'log.title',
+              defaultMessage: 'Game Log',
+            })}
+          </h2>
           <button
             className={dialogStyles.gameLogClose}
             type="button"
-            aria-label={t('log.close')}
+            aria-label={intl.formatMessage({
+              id: 'log.close',
+              defaultMessage: 'Close',
+            })}
             onClick={() => dialog.current?.close()}
           >
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <p>{t('log.overview')}</p>
+        <p>
+          {intl.formatMessage({
+            id: 'log.overview',
+            defaultMessage:
+              'Card uses are listed in order. Undo removes a card use and redo restores it; neither is a log entry. Computers stay paused while you inspect the log.',
+          })}
+        </p>
         <div className={gameLogControlsStyles.gameLogActions}>
           <button
             type="button"
@@ -91,7 +108,10 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               setStatus('');
             }}
           >
-            {t('log.import')}
+            {intl.formatMessage({
+              id: 'log.import',
+              defaultMessage: 'Import JSON',
+            })}
           </button>
           <button
             type="button"
@@ -102,7 +122,10 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               setStatus('');
             }}
           >
-            {t('log.export')}
+            {intl.formatMessage({
+              id: 'log.export',
+              defaultMessage: 'Export JSON',
+            })}
           </button>
           {mode !== 'log' && (
             <button
@@ -112,15 +135,29 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
                 setStatus('');
               }}
             >
-              {t('log.back')}
+              {intl.formatMessage({
+                id: 'log.back',
+                defaultMessage: 'Back to log',
+              })}
             </button>
           )}
         </div>
         {mode === 'log' && snapshot && <GameLogView log={snapshot} />}
         {mode !== 'log' && (
           <>
-            <p>{t('log.help')}</p>
-            <label htmlFor="game-log-text">{t('log.text')}</label>
+            <p>
+              {intl.formatMessage({
+                id: 'log.help',
+                defaultMessage:
+                  'The JSON log includes the initial seed, player count, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order.',
+              })}
+            </p>
+            <label htmlFor="game-log-text">
+              {intl.formatMessage({
+                id: 'log.text',
+                defaultMessage: 'Game log JSON',
+              })}
+            </label>
             <textarea
               id="game-log-text"
               value={text}
@@ -130,14 +167,22 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
             />
             {mode === 'import' && (
               <>
-                <label htmlFor="game-log-steps">{t('log.steps')}</label>
+                <label htmlFor="game-log-steps">
+                  {intl.formatMessage({
+                    id: 'log.steps',
+                    defaultMessage: 'Replay first N actions (optional)',
+                  })}
+                </label>
                 <input
                   id="game-log-steps"
                   type="number"
                   min="0"
                   step="1"
                   value={steps}
-                  placeholder={t('log.all')}
+                  placeholder={intl.formatMessage({
+                    id: 'log.all',
+                    defaultMessage: 'All actions',
+                  })}
                   onChange={(event) => setSteps(event.target.value)}
                 />
               </>
@@ -150,18 +195,35 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
                   onClick={async () => {
                     try {
                       await navigator.clipboard.writeText(text);
-                      setStatus(t('log.copied'));
+                      setStatus(
+                        intl.formatMessage({
+                          id: 'log.copied',
+                          defaultMessage: 'Log copied.',
+                        }),
+                      );
                     } catch {
-                      setStatus(t('log.copyFallback'));
+                      setStatus(
+                        intl.formatMessage({
+                          id: 'log.copyFallback',
+                          defaultMessage:
+                            'Clipboard unavailable. Select and copy the text above.',
+                        }),
+                      );
                     }
                   }}
                 >
-                  {t('log.copy')}
+                  {intl.formatMessage({
+                    id: 'log.copy',
+                    defaultMessage: 'Copy log',
+                  })}
                 </button>
               )}
               {mode === 'import' && (
                 <button type="button" onClick={replay}>
-                  {t('log.replay')}
+                  {intl.formatMessage({
+                    id: 'log.replay',
+                    defaultMessage: 'Load replay',
+                  })}
                 </button>
               )}
             </div>

@@ -1,17 +1,20 @@
 import clsx from 'clsx';
 import { useContext, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card, PlayerId } from '../game';
 import type { GameLog } from '../gameLog';
 import { summarizeGameLog } from '../gameLogSummary';
-import { useMessages } from '../i18n/useMessages';
+import {
+  categoryMessages,
+  manipulationNameMessages,
+} from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import gameLogViewStyles from './GameLogView.module.css';
 import ownershipStyles from './Ownership.module.css';
 
 export function GameLogView({ log }: { log: GameLog }) {
-  const t = useMessages();
+  const intl = useIntl();
   const players = useContext(PlayerSetupContext);
   const items = useMemo(() => summarizeGameLog(log), [log]);
   const playerReference = (id: string) => {
@@ -30,18 +33,27 @@ export function GameLogView({ log }: { log: GameLog }) {
   };
   const cardName = (card?: Card): string => {
     if (!card) {
-      return t('log.unknownCard');
+      return intl.formatMessage({
+        id: 'log.unknownCard',
+        defaultMessage: 'a card',
+      });
     }
     if (card.type === 'manipulation') {
-      return t(`manipulation.${card.action}.name`);
+      return intl.formatMessage(manipulationNameMessages[card.action]);
     }
 
-    return t('log.eventCard', {
-      date: String(card.number),
-      category: card.category
-        ? t(`card.category.${card.category}`)
-        : t('owner.neutral'),
-    });
+    return intl.formatMessage(
+      { id: 'log.eventCard', defaultMessage: '{date} {category} Event' },
+      {
+        date: String(card.number),
+        category: card.category
+          ? intl.formatMessage(categoryMessages[card.category])
+          : intl.formatMessage({
+              id: 'owner.neutral',
+              defaultMessage: 'Start',
+            }),
+      },
+    );
   };
   const cardReference = (card?: Card) => (
     <strong
@@ -56,28 +68,47 @@ export function GameLogView({ log }: { log: GameLog }) {
   return (
     <section
       className={gameLogViewStyles.gameLogReadable}
-      aria-label={t('log.history')}
+      aria-label={intl.formatMessage({
+        id: 'log.history',
+        defaultMessage: 'Game action history',
+      })}
     >
       <dl className={gameLogViewStyles.gameLogMetadata}>
         <div>
-          <dt>{t('log.seed')}</dt>
+          <dt>
+            {intl.formatMessage({
+              id: 'log.seed',
+              defaultMessage: 'Initial seed',
+            })}
+          </dt>
           <dd>
             <code>{log.seed}</code>
           </dd>
         </div>
         <div>
-          <dt>{t('game.players')}</dt>
+          <dt>
+            {intl.formatMessage({
+              id: 'game.players',
+              defaultMessage: 'Players',
+            })}
+          </dt>
           <dd>{log.numPlayers}</dd>
         </div>
       </dl>
       <p>
         <FormattedMessage
           id="log.started"
+          defaultMessage="Game started. {player} takes the first turn."
           values={{ player: playerReference('0') }}
         />
       </p>
       {items.length === 0 ? (
-        <p>{t('log.empty')}</p>
+        <p>
+          {intl.formatMessage({
+            id: 'log.empty',
+            defaultMessage: 'No actions yet.',
+          })}
+        </p>
       ) : (
         <ol className={gameLogViewStyles.gameLogEntries}>
           {items.map((item) => {
@@ -92,23 +123,61 @@ export function GameLogView({ log }: { log: GameLog }) {
             const description = (() => {
               switch (item.move) {
                 case 'playEvent':
-                  return 'log.action.confirm';
+                  return {
+                    id: 'log.action.confirm',
+                    defaultMessage:
+                      'Confirmed {card} at row {row}, column {column}.',
+                  };
                 case 'confirmPlacement':
-                  return 'log.action.confirm';
+                  return {
+                    id: 'log.action.confirm',
+                    defaultMessage:
+                      'Confirmed {card} at row {row}, column {column}.',
+                  };
                 case 'replacePendingCard':
-                  return 'log.action.replace';
+                  return {
+                    id: 'log.action.replace',
+                    defaultMessage:
+                      'Replaced the unconfirmed card with {card}.',
+                  };
                 case 'movePendingCard':
-                  return 'log.action.move';
+                  return {
+                    id: 'log.action.move',
+                    defaultMessage:
+                      'Moved unconfirmed {card} to row {row}, column {column}.',
+                  };
                 case 'returnPendingCard':
-                  return 'log.action.return';
+                  return {
+                    id: 'log.action.return',
+                    defaultMessage: 'Returned unconfirmed {card} to hand.',
+                  };
                 case 'discardCard':
-                  return 'log.action.discard';
+                  return {
+                    id: 'log.action.discard',
+                    defaultMessage: 'Discarded {card}.',
+                  };
                 case 'manipulate':
                   return item.card?.type === 'manipulation'
-                    ? `log.action.${item.card.action}`
-                    : 'log.action.other';
+                    ? {
+                        id: `log.action.${item.card.action}`,
+                        defaultMessage:
+                          item.card.action === 'time-jump'
+                            ? 'Used {card} to move {target} to row {row}, column {column}.'
+                            : item.card.action === 'time-swap'
+                              ? 'Used {card} to swap {target} with {second}.'
+                              : item.card.action === 'take-control'
+                                ? 'Used {card} to gain ownership of {target}.'
+                                : 'Used {card} to remove {target} from scoring.',
+                      }
+                    : {
+                        id: 'log.action.other',
+                        defaultMessage: 'Debug event: {action}.',
+                      };
                 default:
-                  return 'log.action.other';
+                  return {
+                    id: 'log.action.other',
+                    defaultMessage: 'Debug event: {action}.',
+                  };
               }
             })();
 
@@ -117,6 +186,7 @@ export function GameLogView({ log }: { log: GameLog }) {
                 <small>
                   <FormattedMessage
                     id="log.entry"
+                    defaultMessage="Turn {count} · {player}"
                     values={{
                       player: playerReference(item.player),
                       count: item.turn,
@@ -124,12 +194,13 @@ export function GameLogView({ log }: { log: GameLog }) {
                   />
                 </small>
                 <span>
-                  <FormattedMessage id={description} values={values} />
+                  <FormattedMessage {...description} values={values} />
                 </span>
                 {item.nextPlayer && (
                   <small>
                     <FormattedMessage
                       id="log.nextPlayer"
+                      defaultMessage="Next turn: {player}."
                       values={{ player: playerReference(item.nextPlayer) }}
                     />
                   </small>

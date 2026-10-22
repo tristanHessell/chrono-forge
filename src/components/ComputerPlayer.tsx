@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import type { Card } from '../game';
-import { useMessages } from '../i18n/useMessages';
 import type { PlayerSetup } from '../playerSetup';
 import computerPlayerStyles from './ComputerPlayer.module.css';
 import ownershipStyles from './Ownership.module.css';
@@ -15,15 +14,21 @@ type Props = {
 };
 
 export function ComputerPlayer({ cards, player, score }: Props) {
-  const t = useMessages();
   const intl = useIntl();
 
   return (
     <section
-      aria-label={t('computer.summary', {
-        name: player.name,
-        count: score,
-      })}
+      aria-label={intl.formatMessage(
+        {
+          id: 'computer.summary',
+          defaultMessage:
+            '{name}, {count, plural, one {# point} other {# points}}',
+        },
+        {
+          name: player.name,
+          count: score,
+        },
+      )}
       className={clsx(
         computerPlayerStyles.computerPlayer,
         ownershipStyles[`owner${player.id}`],
@@ -33,11 +38,27 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         <PlayerAvatar compact {...player} owner={player.id} />
         <div>
           <strong>{player.name}</strong>
-          <span>{t('score.points', { count: score })}</span>
+          <span>
+            {intl.formatMessage(
+              {
+                id: 'score.points',
+                defaultMessage:
+                  '{count, plural, one {# point} other {# points}}',
+              },
+              { count: score },
+            )}
+          </span>
         </div>
       </div>
       <div
-        aria-label={t('computer.hiddenCards', { count: cards.length })}
+        aria-label={intl.formatMessage(
+          {
+            id: 'computer.hiddenCards',
+            defaultMessage:
+              '{count, plural, one {# face-down card} other {# face-down cards}}',
+          },
+          { count: cards.length },
+        )}
         className={computerPlayerStyles.hiddenCards}
         role="img"
       >
