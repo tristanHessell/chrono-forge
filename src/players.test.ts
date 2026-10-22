@@ -1,7 +1,12 @@
 import { Client } from 'boardgame.io/client';
 import { describe, expect, it } from 'vitest';
 
-import { CardGame, type CardGameState, type PlayerId } from './game';
+import {
+  canUndoMove,
+  CardGame,
+  type CardGameState,
+  type PlayerId,
+} from './game';
 import { calculateScoreBreakdown } from './scoring';
 
 describe.each([3, 4])('%i-player games', (numPlayers) => {
@@ -38,14 +43,11 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
     const after = client.getState()!.G;
 
+    expect(canUndoMove(after)).toBe(false);
     client.moves.undoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe(String(numPlayers - 1));
-    expect(client.getState()!.G.round).toBe(1);
-    expect(client.getState()!.G.actionsThisTurn).toBe(1);
+    expect(client.getState()!.G).toEqual(after);
     client.moves.redoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe('0');
-    expect(client.getState()!.G.round).toBe(2);
-    expect(client.getState()!.G.hands).toEqual(after.hands);
+    expect(client.getState()!.G).toEqual(after);
   });
 
   it('skips empty seats and waits for every hand before ending', () => {
@@ -134,9 +136,11 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
       calculateScoreBreakdown(client.getState()!.G.played)[owner].total,
     ).toBe(1);
     expect(client.getState()!.G.hands['0']).toEqual(before.hands['0']);
+
+    const after = client.getState()!;
+
+    expect(canUndoMove(after.G)).toBe(false);
     client.moves.undoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe(owner);
-    expect(client.getState()!.G.hands).toEqual(before.hands);
-    expect(client.getState()!.G.deck).toEqual(before.deck);
+    expect(client.getState()!.G).toEqual(after.G);
   });
 });

@@ -32,6 +32,7 @@ import { PlayedCard } from './components/PlayedCard';
 import playedCardStyles from './components/PlayedCard.module.css';
 import { RoundScoresDialog } from './components/RoundScoresDialog';
 import {
+  canUndoMove,
   type CardGameState,
   type CardPosition,
   getAvailablePositions,
@@ -753,16 +754,16 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             className={gameBoardStyles.historyControls}
             aria-label={intl.formatMessage({
               id: 'history.label',
-              defaultMessage: 'Test history controls',
+              defaultMessage: 'Move history controls',
             })}
           >
             <button
               aria-label={intl.formatMessage({
                 id: 'history.undoLabel',
-                defaultMessage: 'Undo last action',
+                defaultMessage: 'Undo your last move',
               })}
               className={controlsStyles.historyButton}
-              disabled={G.testHistory.length === 0}
+              disabled={!canUndoMove(G)}
               onClick={() => {
                 setComputerPaused(true);
                 finishDrag();

@@ -4,13 +4,6 @@ Prompt: Dragging a command like `take control` over the card it's targetting doe
 
 ---
 
-Change the string internationalisation to use `defaultMessage` in addition to the `id` field.
-
-- The intent is to make it easy to read & search the code for specific strings while reading the actual file.
-- This change should involve removing `useMessages` and using the `react-intl` hooks & components directly
-
----
-
 Randomise the turn order
 
 ---
@@ -52,8 +45,6 @@ Secret Roles - 8 overall, get 1 at the start
 - Biggest local group?
 - Longest road?
 - Most of the Event types on board (1 point for each you have the most?)
-
-Move card descriptions out of README
 
 Warn on ambiguous characters in code
 

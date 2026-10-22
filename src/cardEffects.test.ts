@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
 import type { Card } from './game';
-import { CardGame } from './game';
+import { canUndoMove, CardGame } from './game';
 
 const event = (id: string) =>
   loadCardCatalog().deck.find((card) => card.id === id)!;
@@ -72,18 +72,11 @@ describe('draw one effect', () => {
       expect(after.ctx.currentPlayer).toBe(player);
       expect(after.G.actionsThisTurn).toBe(1);
 
+      expect(canUndoMove(after.G)).toBe(false);
       client.moves.undoTest();
-      expect(client.getState()!.ctx.currentPlayer).toBe(player);
-      expect(client.getState()!.G.deck).toEqual(before.deck);
-      expect(client.getState()!.G.hands['0']).toEqual(before.hands['0']);
-      expect(client.getState()!.G.hands['1']).toEqual(before.hands['1']);
+      expect(client.getState()!.G).toEqual(after.G);
       client.moves.redoTest();
-      expect(client.getState()!.ctx.currentPlayer).toBe(
-        after.ctx.currentPlayer,
-      );
-      expect(client.getState()!.G.deck).toEqual(after.G.deck);
-      expect(client.getState()!.G.hands['0']).toEqual(after.G.hands['0']);
-      expect(client.getState()!.G.hands['1']).toEqual(after.G.hands['1']);
+      expect(client.getState()!.G).toEqual(after.G);
     },
   );
 

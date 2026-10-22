@@ -2,7 +2,7 @@ import { Client } from 'boardgame.io/client';
 import { describe, expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
-import { CardGame, type PlacedCard } from './game';
+import { canUndoMove, CardGame, type PlacedCard } from './game';
 import { calculateScoreBreakdown, calculateScores } from './scoring';
 
 function placed(
@@ -151,9 +151,8 @@ describe('1900 timeline bonus', () => {
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
     client.moves.confirmPlacement();
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(4);
+    expect(canUndoMove(client.getState()!.G)).toBe(false);
     client.moves.undoTest();
-    expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
-    client.moves.redoTest();
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(4);
   });
 });

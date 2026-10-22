@@ -146,6 +146,8 @@ describe('card game state transitions', () => {
     nextPlacementOrder: 1,
     testHistory: [],
     testFuture: [],
+    moveUndoHistory: [],
+    undoBlocked: false,
     pendingSnapshot: null,
     hands: {
       '0': [

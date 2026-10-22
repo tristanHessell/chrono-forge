@@ -201,10 +201,9 @@ it('records player points for each round as turns cycle', () => {
   expect(stateAfterRound1.roundScores).toHaveLength(1);
   expect(stateAfterRound1.roundScores[0]).toEqual({ '0': 2, '1': 2 });
 
+  const after = client.getState()!;
+
   client.moves.undoTest();
 
-  const undoneState = client.getState()!.G;
-
-  expect(undoneState.round).toBe(1);
-  expect(undoneState.roundScores).toEqual([]);
+  expect(client.getState()!.G).toEqual(after.G);
 });

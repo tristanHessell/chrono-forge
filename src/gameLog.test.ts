@@ -2,7 +2,7 @@ import { Client } from 'boardgame.io/client';
 import { describe, expect, it } from 'vitest';
 
 import { chooseComputerAction } from './computer';
-import { CardGame } from './game';
+import { canUndoMove, CardGame } from './game';
 import { exportGameLog, parseGameLog, replayGameLog } from './gameLog';
 import { getAvailablePositions } from './gameRules';
 
@@ -90,7 +90,7 @@ it('rejects malformed or incompatible logs and unknown actions', () => {
   expect(() => replayGameLog(valid, 0.5)).toThrow();
 });
 
-it('removes undone uses, restores redone uses and drops abandoned branches', () => {
+it('keeps confirmed actions in the exported replay', () => {
   const seed = 'card-use-history';
   const client = Client({ game: { ...CardGame, seed }, debug: false });
   const first = client.getState()!.G.hands['0'][0].id;
@@ -100,48 +100,10 @@ it('removes undone uses, restores redone uses and drops abandoned branches', () 
   client.moves.discardCard(first);
   client.moves.discardCard(second);
   expect(exported().actions).toHaveLength(2);
+  expect(canUndoMove(client.getState()!.G)).toBe(false);
   client.moves.undoTest();
-
-  const undone = exported();
-  const replay = replayGameLog(undone);
-
-  expect(undone.actions).toHaveLength(1);
-  expect(undone.actions[0].payload.args).toEqual([first]);
-  expect(replay.getState()!.G.hands).toEqual(client.getState()!.G.hands);
-  expect(replay.getState()!.G.discarded).toEqual(
-    client.getState()!.G.discarded,
-  );
-  expect(replay.getState()!.ctx.currentPlayer).toBe(
-    client.getState()!.ctx.currentPlayer,
-  );
-  client.moves.redoTest();
-  expect(exported().actions.map((action) => action.payload.type)).toEqual([
-    'discardCard',
-    'discardCard',
-  ]);
-  client.moves.undoTest();
-
-  const replacement = client
-    .getState()!
-    .G.hands['0'].find((card) => card.id !== second)!.id;
-
-  client.moves.discardCard(replacement);
-  client.moves.redoTest();
-
-  const branch = exported();
-  const branchReplay = replayGameLog(branch);
-
-  expect(branch.actions.map((action) => action.payload.args)).toEqual([
-    [first],
-    [replacement],
-  ]);
-  expect(branchReplay.getState()!.G.hands).toEqual(client.getState()!.G.hands);
-  expect(branchReplay.getState()!.G.discarded).toEqual(
-    client.getState()!.G.discarded,
-  );
+  expect(exported().actions).toHaveLength(2);
   client.stop();
-  replay.stop();
-  branchReplay.stop();
 });
 
 it('omits draft activity and records only the final confirmed card and position', () => {
