@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { chooseComputerAction } from './computer';
 import {
+  canUndoMove,
   CardGame,
   type CardGameState,
   type ManipulationAction,
@@ -217,17 +218,12 @@ describe('Take Control and Remove Event', () => {
 
     client.moves.manipulate('manipulation', 'bonus');
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
+    expect(canUndoMove(client.getState()!.G)).toBe(false);
+
+    const after = client.getState()!.G;
+
     client.moves.undoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe('0');
-    expect(client.getState()!.G.actionsThisTurn).toBe(1);
-    expect(
-      client.getState()!.G.played.find((card) => card.id === 'bonus')?.removed,
-    ).toBeUndefined();
-    client.moves.redoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe('1');
-    expect(
-      client.getState()!.G.played.find((card) => card.id === 'bonus')?.removed,
-    ).toBe(true);
+    expect(client.getState()!.G).toEqual(after);
   });
 });
 
@@ -282,13 +278,9 @@ describe('overwriting removed Events', () => {
         ].map((card) => card.id),
       ).size,
     ).toBe(8);
+    expect(canUndoMove(after)).toBe(false);
     client.moves.undoTest();
-    expect(client.getState()!.G.played).toEqual(before.played);
-    expect(client.getState()!.G.hands).toEqual(before.hands);
-    expect(client.getState()!.G.deck).toEqual(before.deck);
-    client.moves.redoTest();
-    expect(client.getState()!.G.played).toEqual(after.played);
-    expect(client.getState()!.G.discarded).toEqual(after.discarded);
+    expect(client.getState()!.G).toEqual(after);
   });
 
   it('cancels an unconfirmed overwrite without discarding the old Event', () => {
@@ -358,10 +350,10 @@ describe('overwriting removed Events', () => {
       });
       expect(after.discarded.map((card) => card.id)).toEqual(['source']);
       expect(isValidBoard(after.played)).toBe(true);
+
+      expect(canUndoMove(after)).toBe(false);
       client.moves.undoTest();
-      expect(client.getState()!.G.played).toEqual(played);
-      client.moves.redoTest();
-      expect(client.getState()!.G.played).toEqual(after.played);
+      expect(client.getState()!.G).toEqual(after);
     },
   );
 

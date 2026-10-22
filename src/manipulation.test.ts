@@ -285,21 +285,19 @@ describe('Manipulation game moves', () => {
     },
   );
 
-  it('refills and passes the turn after a second-action manipulation, with history restoring control', () => {
+  it('blocks undo when a second-action manipulation refills the hand', () => {
     const client = clientFor('time-jump', { actionsThisTurn: 1 });
-    const before = client.getState()!;
 
     client.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.hands['0']).toHaveLength(2);
     expect(client.getState()!.G.deck).toEqual([]);
+    expect(client.getState()!.G.undoBlocked).toBe(true);
+
+    const after = client.getState()!.G;
+
     client.moves.undoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe('0');
-    expect(client.getState()!.G.actionsThisTurn).toBe(1);
-    expect(client.getState()!.G.hands['0']).toEqual(before.G.hands['0']);
-    expect(client.getState()!.G.played).toEqual(before.G.played);
-    client.moves.redoTest();
-    expect(client.getState()!.ctx.currentPlayer).toBe('1');
+    expect(client.getState()!.G).toEqual(after);
   });
 
   it('rejects invalid targets, wrong card kinds, wrong action arguments and other hands without spending an action', () => {

@@ -1,4 +1,4 @@
-import type { Game } from 'boardgame.io';
+import type { Game, MoveFn } from 'boardgame.io';
 import { TurnOrder } from 'boardgame.io/core';
 
 import { loadCardCatalog } from './cardCatalog';
@@ -107,8 +107,13 @@ export type CardGameState = {
   nextPlacementOrder: number;
   testHistory: CardGameSnapshot[];
   testFuture: CardGameSnapshot[];
+  moveUndoHistory: CardGameSnapshot[];
+  undoBlocked: boolean;
   pendingSnapshot: CardGameSnapshot | null;
 };
+
+export const canUndoMove = (G: CardGameState) =>
+  !G.pending && !G.undoBlocked && G.moveUndoHistory.length > 0;
 
 type CardGameSnapshot = {
   actionsThisTurn: number;
@@ -164,6 +169,30 @@ const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
   G.nextPlacementOrder = snapshot.nextPlacementOrder;
 };
 
+const clearMoveHistory = (G: CardGameState) => {
+  G.testFuture = [];
+  G.moveUndoHistory = [];
+  G.undoBlocked = true;
+};
+
+const recordMoveForUndo = (
+  G: CardGameState,
+  currentPlayer: string,
+  snapshot: CardGameSnapshot,
+) => {
+  G.testFuture = [];
+  G.testHistory.push(snapshot);
+
+  if (currentPlayer !== '0') {
+    clearMoveHistory(G);
+
+    return;
+  }
+
+  G.moveUndoHistory.push(snapshot);
+  G.undoBlocked = false;
+};
+
 const advanceTurn = (
   G: CardGameState,
   currentPlayer: string,
@@ -178,8 +207,16 @@ const advanceTurn = (
   }
 
   const drawCount = Math.max(0, HAND_SIZE - hand.length);
+  const drawnCards = G.deck.splice(0, drawCount);
 
-  hand.push(...G.deck.splice(0, drawCount));
+  hand.push(...drawnCards);
+
+  if (drawnCards.length > 0) {
+    clearMoveHistory(G);
+  } else {
+    G.undoBlocked = false;
+  }
+
   G.actionsThisTurn = 0;
 
   if (G.playerIds.every((id) => G.hands[id].length === 0)) {
@@ -210,6 +247,52 @@ const advanceTurn = (
   }
 
   endTurn({ next: nextPlayer });
+};
+
+const undoMove: MoveFn<CardGameState> = ({ G, ctx, events }) => {
+  if (!canUndoMove(G)) {
+    return;
+  }
+
+  const previous = G.moveUndoHistory.pop();
+
+  if (!previous) {
+    return;
+  }
+
+  G.testFuture.unshift(snapshotGame(G, ctx.currentPlayer));
+  G.testHistory.pop();
+  restoreSnapshot(G, previous);
+  G.undoBlocked = false;
+  G.pendingSnapshot = null;
+
+  if (previous.currentPlayer !== ctx.currentPlayer) {
+    events.endTurn({ next: previous.currentPlayer });
+  }
+};
+
+const redoMove: MoveFn<CardGameState> = ({ G, ctx, events }) => {
+  if (G.pending) {
+    return;
+  }
+
+  const next = G.testFuture.shift();
+
+  if (!next) {
+    return;
+  }
+
+  const snapshot = snapshotGame(G, ctx.currentPlayer);
+
+  G.testHistory.push(snapshot);
+  G.moveUndoHistory.push(snapshot);
+  restoreSnapshot(G, next);
+  G.undoBlocked = false;
+  G.pendingSnapshot = null;
+
+  if (next.currentPlayer !== ctx.currentPlayer) {
+    events.endTurn({ next: next.currentPlayer });
+  }
 };
 
 export const CardGame: Game<CardGameState> = {
@@ -253,6 +336,8 @@ export const CardGame: Game<CardGameState> = {
       nextPlacementOrder: 1,
       testHistory: [],
       testFuture: [],
+      moveUndoHistory: [],
+      undoBlocked: false,
       pendingSnapshot: null,
     };
   },
@@ -288,8 +373,11 @@ export const CardGame: Game<CardGameState> = {
         return;
       }
 
-      G.testHistory.push(snapshotGame(G, ctx.currentPlayer));
-      G.testFuture = [];
+      recordMoveForUndo(
+        G,
+        ctx.currentPlayer,
+        snapshotGame(G, ctx.currentPlayer),
+      );
       for (const overwritten of G.played.filter(
         (existing) => !played.some((card) => card.id === existing.id),
       )) {
@@ -330,8 +418,7 @@ export const CardGame: Game<CardGameState> = {
       G.discarded.push(card);
       G.pending = null;
       G.pendingSnapshot = null;
-      G.testHistory.push(beforeDiscard);
-      G.testFuture = [];
+      recordMoveForUndo(G, ctx.currentPlayer, beforeDiscard);
       advanceTurn(G, ctx.currentPlayer, events.endTurn);
     },
     playCard: ({ G, ctx }, cardId: string, position: CardPosition) => {
@@ -351,6 +438,7 @@ export const CardGame: Game<CardGameState> = {
 
       G.pendingSnapshot = snapshotGame(G, ctx.currentPlayer);
       G.testFuture = [];
+
       G.pending = {
         ...card,
         row: position.row,
@@ -464,8 +552,7 @@ export const CardGame: Game<CardGameState> = {
       G.played = withPlacedEvent(G.played, playedCard);
       G.pending = null;
       G.nextPlacementOrder += 1;
-      G.testHistory.push(beforePlay);
-      G.testFuture = [];
+      recordMoveForUndo(G, ctx.currentPlayer, beforePlay);
       G.pendingSnapshot = null;
 
       if (playedCard.effect === 'draw-one') {
@@ -475,46 +562,29 @@ export const CardGame: Game<CardGameState> = {
           const hand = G.hands[activeOwner];
 
           hand.push(drawnCard);
+          G.testFuture = [];
+          G.moveUndoHistory = [];
+          G.undoBlocked = true;
         }
       }
 
       advanceTurn(G, ctx.currentPlayer, events.endTurn);
     },
 
-    undoTest: ({ G, ctx, events }) => {
-      const previous = G.testHistory.pop();
-
-      if (!previous) {
-        return;
-      }
-
-      G.testFuture.unshift(snapshotGame(G, ctx.currentPlayer));
-      restoreSnapshot(G, previous);
-      G.pendingSnapshot = null;
-
-      if (previous.currentPlayer !== ctx.currentPlayer) {
-        events.endTurn({ next: previous.currentPlayer });
-      }
-    },
-
-    redoTest: ({ G, ctx, events }) => {
-      const next = G.testFuture.shift();
-
-      if (!next) {
-        return;
-      }
-
-      G.testHistory.push(snapshotGame(G, ctx.currentPlayer));
-      restoreSnapshot(G, next);
-      G.pendingSnapshot = null;
-
-      if (next.currentPlayer !== ctx.currentPlayer) {
-        events.endTurn({ next: next.currentPlayer });
-      }
-    },
+    undoTest: undoMove,
+    redoTest: redoMove,
   },
 
   turn: {
     order: TurnOrder.DEFAULT,
+    activePlayers: { currentPlayer: 'normal', others: 'undoWindow' },
+    stages: {
+      normal: {},
+      undoWindow: {
+        moves: { redoTest: redoMove, undoTest: undoMove },
+      },
+    },
   },
 };
+
+CardGame.turn!.stages!.undoWindow.moves = CardGame.moves;

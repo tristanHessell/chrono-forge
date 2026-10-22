@@ -291,9 +291,9 @@ The played-card board has its own scrollable viewport and can be zoomed from
 Hold the left mouse button on
 empty board space and drag to pan the board in any direction.
 
-The top-right Undo and Redo controls are test-history tools: after a confirmed
-play, Undo removes that played card and restores the active player, hand, and draw deck, while
-Redo restores the play.
+Use Undo to reverse your own moves before a card draw or an opponent move adds
+new information. Undo is unavailable while an Event is pending. Redo restores
+your last undone move until you make another move or new information appears.
 
 The New game control fully resets the deck, board, hands, and starting player.
 Turns advance automatically after two actions, and refills use the remaining
