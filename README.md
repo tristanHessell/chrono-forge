@@ -300,3 +300,6 @@ Turns advance automatically after two actions, and refills use the remaining
 deck while preserving the played board.
 
 See [CLAUDE.md](./CLAUDE.md#architecture) for the source module map and test guidance.
+
+Read the [game rules](./docs/game-rules.md), [Manipulation rules](./docs/manipulations.md),
+and [computer opponent notes](./docs/computer-opponent.md) for detailed gameplay guidance.
