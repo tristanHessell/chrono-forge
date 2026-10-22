@@ -4,12 +4,6 @@ Prompt: Dragging a command like `take control` over the card it's targetting doe
 
 ---
 
-Move Game log and Game Scores to the same area as the deck & discard.
-
-- this will make it easier to track what is going on in a game without having to click a couple of buttons to get there.
-
----
-
 Change the string internationalisation to use `defaultMessage` in addition to the `id` field.
 
 - The intent is to make it easy to read & search the code for specific strings while reading the actual file.
