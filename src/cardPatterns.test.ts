@@ -22,10 +22,10 @@ beforeEach(() => {
 
 afterEach(() => vi.unstubAllGlobals());
 
-it('enables patterns by default', () => {
-  expect(savedCardPatterns()).toBe(true);
+it('disables patterns by default', () => {
+  expect(savedCardPatterns()).toBe(false);
   initializeCardPatterns();
-  expect(dataset.cardPatterns).toBe('on');
+  expect(dataset.cardPatterns).toBe('off');
 });
 
 it.each([true, false])('persists and restores patterns: %s', (enabled) => {
@@ -41,7 +41,7 @@ it.each([true, false])('persists and restores patterns: %s', (enabled) => {
 
 it('uses the default for an invalid preference', () => {
   values.set(cardPatternsStorageKey, 'invalid');
-  expect(savedCardPatterns()).toBe(true);
+  expect(savedCardPatterns()).toBe(false);
 });
 
 it('still toggles patterns when storage is unavailable', () => {

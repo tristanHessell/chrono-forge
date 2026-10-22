@@ -20,6 +20,6 @@ it.each(['on', 'off', null])(
 
     expect(html).toContain('Colour-independent backgrounds');
     expect(html).toContain('type="checkbox"');
-    expect(html.includes('checked=""')).toBe(value !== 'off');
+    expect(html.includes('checked=""')).toBe(value === 'on');
   },
 );
