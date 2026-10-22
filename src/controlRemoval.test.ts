@@ -365,11 +365,11 @@ describe('overwriting removed Events', () => {
     },
   );
 
-  it('still counts removed dates and spaces in adjacency and square constraints', () => {
+  it('keeps removed Events in date checks but treats their positions as open for squares', () => {
     const removed = applyManipulation(board(), 'remove-event', 'source', '0')!;
     const event = { id: 'new', type: 'event' as const, number: 1990 };
 
-    expect(isValidPlacement(removed, { row: 1, column: 1 }, event)).toBe(false);
+    expect(isValidPlacement(removed, { row: 1, column: 1 }, event)).toBe(true);
     expect(
       isValidPlacement(
         removed,
@@ -379,22 +379,60 @@ describe('overwriting removed Events', () => {
     ).toBe(false);
   });
 
-  it('blocks empty positions touching a removed Event, but keeps overwrites and existing links valid', () => {
+  it('allows placements beside removed Events while keeping overwrites and existing links valid', () => {
     const played = applyManipulation(board(), 'remove-event', 'source', '0')!;
     const event = { id: 'new', type: 'event' as const, number: 1940 };
     const position = { row: -1, column: 1 };
 
     expect(isValidPlacement(board(), position, event)).toBe(true);
-    expect(isValidPlacement(played, position, event)).toBe(false);
-    expect(isValidPlacement(played, position)).toBe(false);
-    expect(getAvailablePositions(played, event)).not.toContainEqual(position);
-    expect(getAvailablePositions(played)).not.toContainEqual(position);
+    expect(isValidPlacement(played, position, event)).toBe(true);
+    expect(isValidPlacement(played, position)).toBe(true);
+    expect(getAvailablePositions(played, event)).toContainEqual(position);
+    expect(getAvailablePositions(played)).toContainEqual(position);
     expect(isValidPlacement(played, { row: 0, column: 1 }, event)).toBe(true);
     expect(isValidPlacement(played, { row: -1, column: 0 }, event)).toBe(true);
     expect(isValidBoard(played)).toBe(true);
   });
 
-  it('rejects empty placements even if they also touch an active Event', () => {
+  it('allows a card beside the 1900 Event beside a removed 1920 Event', () => {
+    const played: PlacedCard[] = [
+      {
+        id: 'start',
+        type: 'event',
+        number: 0,
+        row: 0,
+        column: 0,
+        owner: 'neutral',
+        placedAt: 0,
+      },
+      {
+        id: 'event-1900',
+        type: 'event',
+        number: 1900,
+        row: -1,
+        column: 0,
+        owner: '0',
+        placedAt: 1,
+      },
+      {
+        id: 'event-1920',
+        type: 'event',
+        number: 1920,
+        row: 0,
+        column: -1,
+        owner: '1',
+        placedAt: 2,
+        removed: true,
+      },
+    ];
+    const position = { row: -1, column: -1 };
+    const event = { id: 'event-1940', type: 'event' as const, number: 1940 };
+
+    expect(isValidPlacement(played, position, event)).toBe(true);
+    expect(getAvailablePositions(played, event)).toContainEqual(position);
+  });
+
+  it('allows empty placements beside a removed Event when they also touch an active Event', () => {
     const played = board()
       .slice(0, 2)
       .map((card) =>
@@ -408,9 +446,14 @@ describe('overwriting removed Events', () => {
     const client = clientFor('take-control', played);
     const before = client.getState()!.G;
 
-    expect(isValidPlacement(played, position, event)).toBe(false);
+    expect(isValidPlacement(played, position, event)).toBe(true);
     client.moves.playCard('replacement', position);
-    expect(client.getState()!.G).toEqual(before);
+    expect(client.getState()!.G.pending).toMatchObject({
+      id: 'replacement',
+      row: -1,
+      column: 1,
+    });
+    expect(client.getState()!.G.played).toEqual(before.played);
   });
 });
 

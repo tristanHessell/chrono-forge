@@ -232,10 +232,9 @@ the move restores the hands; after a move, the camera centers the moved Event.
 Either player's Events can be targeted, but the neutral starting card cannot move.
 The entire resulting board must obey the existing date, adjacency, square, and
 arrow-direction rules. Ownership and removed status are preserved. Original
-placement order is preserved for active Events moved to empty spaces. A removed
-Event jumping to an empty space can establish new links after the existing Events,
-so it can connect to a card played after its original placement (provided its
-date is later). It remains removed and earns no points. When Time Jump overwrites a removed Event,
+placement order is preserved when it keeps the new links valid. Otherwise, the
+Event reconnects after existing Events when its date allows it. A removed Event
+jumping to an empty space remains removed and earns no points. When Time Jump overwrites a removed Event,
 the moved Event inherits that destination's link directions and placement order,
 and the overwritten Event enters the discard pile. Removing the source must not
 disconnect the remaining timeline.
@@ -253,17 +252,17 @@ placement order, and removed status, and does not trigger play effects again.
 **Remove Event** marks an Event as removed instead of deleting it. Removed Events
 are crossed out and labelled on the board; they earn no points or bonuses, and a
 removed 1900 cannot qualify a 1990 for its bonus. They still retain their dates,
-links, and occupied positions for placement rules, and can still be moved,
-swapped, or taken over. Removal cannot target the starting card or an already
-removed Event.
+links, and can still be moved, swapped, or taken over. Their positions do not
+block adjacent placements or count as occupied when checking for a square.
+Removal cannot target the starting card or an already removed Event.
 
 A removed Event can be overwritten by a valid Event from your hand, using the
 normal select/drag and confirmation flow. Valid destinations show **Overwrite**.
-Empty positions adjacent to a removed Event cannot receive a new Event, even
-when they also touch an active Event. Existing neighboring Events remain valid.
-The replacement inherits the position's existing link directions: it must be
-later than upstream neighbors and earlier than downstream neighbors. The whole
-board must stay legal, including square, direction, and connectivity rules.
+Empty positions adjacent to a removed Event can receive a new Event when it
+follows the date rules. Existing neighboring Events remain valid. The replacement
+inherits the position's existing link directions: it must be later than upstream
+neighbors and earlier than downstream neighbors. The whole board must stay
+legal, including square, direction, and connectivity rules.
 On confirmation the old Event enters the discard pile, the new Event
 earns its own points and triggers its play effect, and one action is spent.
 Cancelling an unconfirmed overwrite leaves the old removed Event unchanged.

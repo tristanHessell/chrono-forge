@@ -70,7 +70,6 @@ const isValidEventPlacement = (
   played: PlacedCard[],
   position: CardPosition,
   card?: Card,
-  existingBoard = false,
 ) => {
   if (card && card.type !== 'event') {
     return false;
@@ -114,17 +113,16 @@ const isValidEventPlacement = (
   );
 
   const valid =
-    (existingBoard ||
-      !remaining.some(
-        (neighbor) => neighbor.removed && areAdjacent(neighbor, position),
-      )) &&
     (!card ||
       remaining.every(
         (neighbor) =>
           !areAdjacent(neighbor, position) || neighbor.number < card.number,
       )) &&
     (remaining.length === 0 || positionIsAdjacent) &&
-    !wouldCreateSquare(remaining, position) &&
+    !wouldCreateSquare(
+      remaining.filter((neighbor) => !neighbor.removed),
+      position,
+    ) &&
     !wouldCreateHeadToHeadMerge(remaining, position);
 
   return Boolean(valid);
@@ -163,9 +161,7 @@ export function isValidBoard(played: PlacedCard[]): boolean {
 
   return ordered.every(
     (card, index) =>
-      // Removal blocks future placements, not Events already linked to it.
-      index === 0 ||
-      isValidEventPlacement(ordered.slice(0, index), card, card, true),
+      index === 0 || isValidEventPlacement(ordered.slice(0, index), card, card),
   );
 }
 

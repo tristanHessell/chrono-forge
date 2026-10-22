@@ -98,12 +98,12 @@ export function applyTimeJump(
   if (isValidBoard(result)) {
     return result;
   }
-  if (!target.removed || occupying) {
+  if (occupying) {
     return null;
   }
 
-  // Keep already-valid links where possible, but let a removed Event reconnect
-  // as a new endpoint instead of being constrained by its original play order.
+  // Reconnect after existing Events when preserving play order reverses a new
+  // link. The date rules still determine whether the new links are valid.
   const reconnected = result.map((card) =>
     card.id === targetId
       ? {

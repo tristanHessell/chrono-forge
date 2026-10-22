@@ -174,7 +174,7 @@ describe('touch destinations', () => {
     );
   });
 
-  it('supports valid overwrites but not empty positions beside removed cards', () => {
+  it('supports valid overwrites and empty positions beside removed cards', () => {
     const board: PlacedCard[] = [
       ...played,
       { ...card, row: -1, column: 0, placedAt: 1, owner: '0', removed: true },
@@ -184,8 +184,8 @@ describe('touch destinations', () => {
       row: -1,
       column: 0,
     });
-    expect(
-      touchDropPosition(board, { ...card, number: 1950 }, '-2:0'),
-    ).toBeNull();
+    expect(touchDropPosition(board, { ...card, number: 1950 }, '-2:0')).toEqual(
+      { row: -2, column: 0 },
+    );
   });
 });
