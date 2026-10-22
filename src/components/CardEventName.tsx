@@ -1,14 +1,15 @@
-import { eventCardNameMessageId } from '../eventCardName';
+import { useIntl } from 'react-intl';
+
+import { eventCardNameMessage } from '../eventCardName';
 import type { EventCard } from '../game';
-import { useMessages } from '../i18n/useMessages';
 import cardStyles from './Card.module.css';
 
 export function CardEventName({ card }: { card: EventCard }) {
-  const t = useMessages();
+  const intl = useIntl();
 
   return (
     <small className={cardStyles.cardEventName}>
-      {t(eventCardNameMessageId(card))}
+      {intl.formatMessage(eventCardNameMessage(card))}
     </small>
   );
 }

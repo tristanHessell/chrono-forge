@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 
-import { useMessages } from '../i18n/useMessages';
+import { themeMessages } from '../i18n/messageDescriptors';
 import { parseTheme, savedTheme, saveTheme, type Theme } from '../theme';
 import themeToggleStyles from './ThemeToggle.module.css';
 
 export function ThemeToggle() {
-  const t = useMessages();
+  const intl = useIntl();
   const [theme, setTheme] = useState<Theme>(
     () => parseTheme(document.documentElement.dataset.theme) ?? 'light',
   );
@@ -28,9 +29,12 @@ export function ThemeToggle() {
 
   return (
     <label className={themeToggleStyles.themeChoice}>
-      {t('theme.label')}
+      {intl.formatMessage({ id: 'theme.label', defaultMessage: 'Theme' })}
       <select
-        aria-label={t('theme.label')}
+        aria-label={intl.formatMessage({
+          id: 'theme.label',
+          defaultMessage: 'Theme',
+        })}
         value={theme}
         onChange={(event) => {
           const next = parseTheme(event.target.value);
@@ -44,7 +48,7 @@ export function ThemeToggle() {
         {(['light', 'dark', 'greyscale-light', 'greyscale-dark'] as const).map(
           (value) => (
             <option key={value} value={value}>
-              {t(`theme.${value}`)}
+              {intl.formatMessage(themeMessages[value])}
             </option>
           ),
         )}

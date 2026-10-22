@@ -2,7 +2,11 @@ import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 
 import type { Card } from '../game';
-import { useMessages } from '../i18n/useMessages';
+import {
+  categoryMessages,
+  manipulationNameMessages,
+  startingEventNameMessage,
+} from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
 import { CardEventName } from './CardEventName';
@@ -14,7 +18,6 @@ export function HandCardFace({
   card: Card;
   showTooltip?: boolean;
 }) {
-  const t = useMessages();
   const intl = useIntl();
 
   return (
@@ -35,16 +38,16 @@ export function HandCardFace({
       >
         {card.type === 'event'
           ? intl.formatNumber(card.number, { useGrouping: false })
-          : t(`manipulation.${card.action}.name`)}
+          : intl.formatMessage(manipulationNameMessages[card.action])}
       </strong>
       {card.type === 'event' && <CardEventName card={card} />}
       <span className={cardStyles.cardTypeName}>
-        {t(
+        {intl.formatMessage(
           card.type === 'manipulation'
-            ? 'card.manipulation'
+            ? { id: 'card.manipulation', defaultMessage: 'Command' }
             : card.category
-              ? `card.category.${card.category}`
-              : 'card.event',
+              ? categoryMessages[card.category]
+              : startingEventNameMessage,
         )}
       </span>
     </>

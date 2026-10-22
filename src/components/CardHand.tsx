@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { type CSSProperties, type DragEvent, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import type { Card, CardOwner } from '../game';
 import {
@@ -8,7 +9,10 @@ import {
   orderHand,
   restoreHandOrder,
 } from '../handOrder';
-import { useMessages } from '../i18n/useMessages';
+import {
+  effectDescriptionMessages,
+  manipulationDescriptionMessages,
+} from '../i18n/messageDescriptors';
 import type { PlayerType } from '../playerSetup';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
 import cardStyles from './Card.module.css';
@@ -54,7 +58,7 @@ export function CardHand({
   onDrop,
   touchDrag,
 }: CardHandProps) {
-  const t = useMessages();
+  const intl = useIntl();
   const isOpponent = owner !== '0';
   const [order, setOrder] = useState<HandOrder | null>(null);
   const [manualIds, setManualIds] = useState<string[]>([]);
@@ -154,18 +158,35 @@ export function CardHand({
                 ownershipStyles[`owner${owner}`],
               )}
             >
-              {t(owner === '0' ? 'hand.yourTitle' : 'hand.playerTitle', {
-                name: ownerName,
-              })}
+              {intl.formatMessage(
+                owner === '0'
+                  ? { id: 'hand.yourTitle', defaultMessage: 'You' }
+                  : { id: 'hand.playerTitle', defaultMessage: "{name}'s hand" },
+                { name: ownerName },
+              )}
             </p>
-            <span>{t('score.points', { count: score })}</span>
+            <span>
+              {intl.formatMessage(
+                {
+                  id: 'score.points',
+                  defaultMessage:
+                    '{count, plural, one {# point} other {# points}}',
+                },
+                { count: score },
+              )}
+            </span>
           </div>
         </div>
         <div
           className={cardHandStyles.handOrder}
           role="group"
-          aria-label={t(
-            owner === '0' ? 'hand.yourOrderLabel' : 'hand.orderLabel',
+          aria-label={intl.formatMessage(
+            owner === '0'
+              ? { id: 'hand.yourOrderLabel', defaultMessage: 'Order your hand' }
+              : {
+                  id: 'hand.orderLabel',
+                  defaultMessage: "Order {name}'s hand",
+                },
             { name: ownerName },
           )}
         >
@@ -180,17 +201,29 @@ export function CardHand({
                 setFocusedCardId(null);
               }}
             >
-              {t('hand.orderDate')}
+              {intl.formatMessage({
+                id: 'hand.orderDate',
+                defaultMessage: 'Date',
+              })}
             </button>
           ))}
         </div>
       </div>
       <div
-        aria-label={t(owner === '0' ? 'hand.yourDropArea' : 'hand.dropArea', {
-          name: ownerName,
-        })}
+        aria-label={intl.formatMessage(
+          owner === '0'
+            ? { id: 'hand.yourDropArea', defaultMessage: 'Your hand drop area' }
+            : {
+                id: 'hand.dropArea',
+                defaultMessage: "{name}'s hand drop area",
+              },
+          { name: ownerName },
+        )}
         data-hand-owner={owner}
-        data-return-label={t('hand.return')}
+        data-return-label={intl.formatMessage({
+          id: 'hand.return',
+          defaultMessage: 'Drop here to return',
+        })}
         className={clsx(
           cardHandStyles.cardRow,
           isOpponent && cardHandStyles.opponentCardRow,
@@ -227,10 +260,18 @@ export function CardHand({
                 }
                 aria-description={[
                   card.type === 'manipulation'
-                    ? t(`manipulation.${card.action}.description`)
+                    ? intl.formatMessage(
+                        manipulationDescriptionMessages[card.action],
+                      )
                     : '',
-                  card.effect ? t(`effect.${card.effect}.description`) : '',
-                  t('hand.reorderHint'),
+                  card.effect
+                    ? intl.formatMessage(effectDescriptionMessages[card.effect])
+                    : '',
+                  intl.formatMessage({
+                    id: 'hand.reorderHint',
+                    defaultMessage:
+                      'Drag within your hand to reorder, or use Alt + Left or Right arrow while focused.',
+                  }),
                 ]
                   .filter(Boolean)
                   .join(' ')}
@@ -311,7 +352,10 @@ export function CardHand({
                     className={cardHandStyles.handStatus}
                     data-drag-decoration
                   >
-                    {t('hand.onTable')}
+                    {intl.formatMessage({
+                      id: 'hand.onTable',
+                      defaultMessage: 'On table',
+                    })}
                   </small>
                 )}
               </button>

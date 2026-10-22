@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import { type FormEvent, type RefObject, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import type { PlayerId } from '../game';
-import { useMessages } from '../i18n/useMessages';
 import {
   createDefaultPlayers,
   type PlayerSetup,
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
-  const t = useMessages();
+  const intl = useIntl();
   const [players, setPlayers] = useState(initialPlayers);
   const addPlayer = () => {
     const next = createDefaultPlayers((players.length + 1) as 3 | 4);
@@ -57,11 +57,25 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
           )}
         >
           <div>
-            <h2 id="new-game-title">{t('newGame.title')}</h2>
-            <p>{t('newGame.description')}</p>
+            <h2 id="new-game-title">
+              {intl.formatMessage({
+                id: 'newGame.title',
+                defaultMessage: 'New game',
+              })}
+            </h2>
+            <p>
+              {intl.formatMessage({
+                id: 'newGame.description',
+                defaultMessage:
+                  'Player 1 is always human. Add up to four players and choose who controls each other seat.',
+              })}
+            </p>
           </div>
           <button
-            aria-label={t('newGame.close')}
+            aria-label={intl.formatMessage({
+              id: 'newGame.close',
+              defaultMessage: 'Close new game dialog',
+            })}
             className={dialogStyles.gameLogClose}
             onClick={() => dialogRef.current?.close()}
             type="button"
@@ -75,37 +89,78 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
               <PlayerAvatar {...player} owner={player.id} />
               <div className={newGameDialogStyles.playerDetails}>
                 <strong>{player.name}</strong>
-                <small>{t('newGame.playerNumber', { count: index + 1 })}</small>
+                <small>
+                  {intl.formatMessage(
+                    {
+                      id: 'newGame.playerNumber',
+                      defaultMessage: 'Player {count, number}',
+                    },
+                    { count: index + 1 },
+                  )}
+                </small>
               </div>
               {index === 0 ? (
                 <span className={newGameDialogStyles.fixedType}>
-                  {t('newGame.human')}
+                  {intl.formatMessage({
+                    id: 'newGame.human',
+                    defaultMessage: 'Human',
+                  })}
                 </span>
               ) : (
                 <label className={newGameDialogStyles.playerType}>
-                  <span>{t('newGame.playerType')}</span>
-                  <select
-                    aria-label={t('newGame.playerTypeFor', {
-                      name: player.name,
+                  <span>
+                    {intl.formatMessage({
+                      id: 'newGame.playerType',
+                      defaultMessage: 'Controller',
                     })}
+                  </span>
+                  <select
+                    aria-label={intl.formatMessage(
+                      {
+                        id: 'newGame.playerTypeFor',
+                        defaultMessage: 'Controller for {name}',
+                      },
+                      {
+                        name: player.name,
+                      },
+                    )}
                     onChange={(event) =>
                       setPlayerType(player.id, event.target.value as PlayerType)
                     }
                     value={player.type}
                   >
-                    <option value="computer">{t('newGame.computer')}</option>
-                    <option value="human">{t('newGame.human')}</option>
+                    <option value="computer">
+                      {intl.formatMessage({
+                        id: 'newGame.computer',
+                        defaultMessage: 'AI',
+                      })}
+                    </option>
+                    <option value="human">
+                      {intl.formatMessage({
+                        id: 'newGame.human',
+                        defaultMessage: 'Human',
+                      })}
+                    </option>
                   </select>
                 </label>
               )}
               {index > 1 && index === players.length - 1 && (
                 <button
-                  aria-label={t('newGame.removePlayer', { name: player.name })}
+                  aria-label={intl.formatMessage(
+                    {
+                      id: 'newGame.removePlayer',
+                      defaultMessage: 'Remove {name}',
+                    },
+                    { name: player.name },
+                  )}
                   className={controlsStyles.historyButton}
                   onClick={() => removePlayer(player.id)}
                   type="button"
                 >
-                  {t('newGame.remove')}
+                  {intl.formatMessage({
+                    id: 'newGame.remove',
+                    defaultMessage: 'Remove',
+                  })}
                 </button>
               )}
             </div>
@@ -118,11 +173,17 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
               onClick={addPlayer}
               type="button"
             >
-              {t('newGame.addPlayer')}
+              {intl.formatMessage({
+                id: 'newGame.addPlayer',
+                defaultMessage: 'Add player',
+              })}
             </button>
           )}
           <button className={controlsStyles.historyButton} type="submit">
-            {t('newGame.start')}
+            {intl.formatMessage({
+              id: 'newGame.start',
+              defaultMessage: 'Start game',
+            })}
           </button>
         </div>
       </form>

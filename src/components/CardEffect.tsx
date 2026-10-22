@@ -1,8 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useIntl } from 'react-intl';
 
 import type { CardEffect as Effect, ManipulationAction } from '../game';
-import { useMessages } from '../i18n/useMessages';
+import {
+  effectDescriptionMessages,
+  effectNameMessages,
+  manipulationDescriptionMessages,
+  manipulationNameMessages,
+} from '../i18n/messageDescriptors';
 import cardEffectStyles from './CardEffect.module.css';
 import { listenForEffectTooltip } from './effectTooltip';
 
@@ -13,18 +19,18 @@ export function CardEffect({
   effect?: Effect | ManipulationAction;
   showTooltip?: boolean;
 }) {
-  const t = useMessages();
-  const nameId =
+  const intl = useIntl();
+  const nameMessage =
     effect === 'draw-one' || effect === 'timeline-1900-bonus'
-      ? (`effect.${effect}.name` as const)
+      ? effectNameMessages[effect]
       : effect
-        ? (`manipulation.${effect}.name` as const)
+        ? manipulationNameMessages[effect]
         : null;
-  const descriptionId =
+  const descriptionMessage =
     effect === 'draw-one' || effect === 'timeline-1900-bonus'
-      ? (`effect.${effect}.description` as const)
+      ? effectDescriptionMessages[effect]
       : effect
-        ? (`manipulation.${effect}.description` as const)
+        ? manipulationDescriptionMessages[effect]
         : null;
   const icon = useRef<HTMLSpanElement>(null);
   const tooltipId = useId();
@@ -59,7 +65,7 @@ export function CardEffect({
     return listenForEffectTooltip(target, card, window, show, hide);
   }, [effect, showTooltip]);
 
-  if (!effect || !nameId || !descriptionId) {
+  if (!effect || !nameMessage || !descriptionMessage) {
     return null;
   }
 
@@ -71,7 +77,7 @@ export function CardEffect({
         role="img"
         tabIndex={showTooltip ? 0 : undefined}
         data-tooltip-enabled={showTooltip || undefined}
-        aria-label={t(nameId)}
+        aria-label={intl.formatMessage(nameMessage)}
         aria-describedby={showTooltip && anchor ? tooltipId : undefined}
       >
         <svg
@@ -117,8 +123,8 @@ export function CardEffect({
               transform: anchor.above ? 'translateY(-100%)' : undefined,
             }}
           >
-            <strong>{t(nameId)}</strong>
-            <p>{t(descriptionId)}</p>
+            <strong>{intl.formatMessage(nameMessage)}</strong>
+            <p>{intl.formatMessage(descriptionMessage)}</p>
           </div>,
           anchor.container,
         )}

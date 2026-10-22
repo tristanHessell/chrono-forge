@@ -2,10 +2,14 @@ import clsx from 'clsx';
 import { type CSSProperties, type ReactNode, useContext } from 'react';
 import { useIntl } from 'react-intl';
 
-import { eventCardNameMessageId } from '../eventCardName';
+import { eventCardNameMessage } from '../eventCardName';
 import type { EventCard, PlacedCard } from '../game';
 import { positionKey } from '../gameRules';
-import { useMessages } from '../i18n/useMessages';
+import {
+  categoryMessages,
+  effectDescriptionMessages,
+  startingEventNameMessage,
+} from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
@@ -30,28 +34,45 @@ export function PlayedCard({
   onTarget,
   selected,
 }: PlayedCardProps) {
-  const t = useMessages();
   const intl = useIntl();
   const players = useContext(PlayerSetupContext);
   const owner = 'owner' in card ? card.owner : 'neutral';
   const ownerName =
-    owner === 'neutral' ? t('owner.neutral') : getPlayer(players, owner).name;
+    owner === 'neutral'
+      ? intl.formatMessage({ id: 'owner.neutral', defaultMessage: 'Start' })
+      : getPlayer(players, owner).name;
   const ownerDescription =
     owner === 'neutral'
-      ? t('card.owner.start')
+      ? intl.formatMessage({
+          id: 'card.owner.start',
+          defaultMessage: 'starting card',
+        })
       : owner === '0'
-        ? t('card.owner.you')
-        : t('card.owner.player', { name: ownerName });
+        ? intl.formatMessage({
+            id: 'card.owner.you',
+            defaultMessage: 'placed by you',
+          })
+        : intl.formatMessage(
+            { id: 'card.owner.player', defaultMessage: 'placed by {name}' },
+            { name: ownerName },
+          );
 
   return (
     <div
-      aria-label={t('card.label', {
-        name: t(eventCardNameMessageId(card)),
-        number: card.number,
-        category: card.category ?? 'neutral',
-        owner: ownerDescription,
-        latest: isLatest ? 'yes' : 'no',
-      })}
+      aria-label={intl.formatMessage(
+        {
+          id: 'card.label',
+          defaultMessage:
+            '{name}, {category, select, political {Politics} technological {Tech} environmental {Nature} other {Event}} card {number, number, ::group-off}, {owner}{latest, select, yes {, latest played card} other {}}',
+        },
+        {
+          name: intl.formatMessage(eventCardNameMessage(card)),
+          number: card.number,
+          category: card.category ?? 'neutral',
+          owner: ownerDescription,
+          latest: isLatest ? 'yes' : 'no',
+        },
+      )}
       className={clsx(
         cardStyles.card,
         playedCardStyles.playedCard,
@@ -83,9 +104,13 @@ export function PlayedCard({
       }}
       aria-description={
         'removed' in card && card.removed
-          ? t('card.removedDescription')
+          ? intl.formatMessage({
+              id: 'card.removedDescription',
+              defaultMessage:
+                'Removed Event: scores no points and does not qualify for bonuses. It still has its date and links, can be moved or swapped, and can be overwritten by a valid Event.',
+            })
           : card.effect
-            ? t(`effect.${card.effect}.description`)
+            ? intl.formatMessage(effectDescriptionMessages[card.effect])
             : undefined
       }
       style={style}
@@ -95,12 +120,12 @@ export function PlayedCard({
       <strong>{intl.formatNumber(card.number, { useGrouping: false })}</strong>
       <CardEventName card={card} />
       <span className={cardStyles.cardTypeName}>
-        {t(
+        {intl.formatMessage(
           'removed' in card && card.removed
-            ? 'card.removed'
+            ? { id: 'card.removed', defaultMessage: 'Removed' }
             : card.category
-              ? `card.category.${card.category}`
-              : 'card.event',
+              ? categoryMessages[card.category]
+              : startingEventNameMessage,
         )}
       </span>
       {'owner' in card && (

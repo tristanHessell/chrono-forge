@@ -1,16 +1,19 @@
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { saveCardPatterns, savedCardPatterns } from '../cardPatterns';
-import { useMessages } from '../i18n/useMessages';
 import cardPatternsToggleStyles from './CardPatternsToggle.module.css';
 
 export function CardPatternsToggle() {
-  const t = useMessages();
+  const intl = useIntl();
   const [enabled, setEnabled] = useState(savedCardPatterns);
 
   return (
     <label className={cardPatternsToggleStyles.cardPatternsChoice}>
-      {t('patterns.label')}
+      {intl.formatMessage({
+        id: 'patterns.label',
+        defaultMessage: 'Colour-independent backgrounds',
+      })}
       <input
         type="checkbox"
         checked={enabled}

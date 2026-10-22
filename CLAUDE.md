@@ -147,7 +147,8 @@ The UI uses `react-intl`.
 English browser locales determine number formatting.
 Other languages currently use English.
 
-- Use the typed `useMessages` hook for UI text and accessibility labels.
+- Use `react-intl` hooks and components directly for UI text and accessibility labels.
+- Add a readable `defaultMessage` beside each message `id` in the source.
 - Use `useIntl` for numbers and percentages.
 - Keep card IDs, state types, and move names independent of the locale.
 - Preserve message IDs and ICU placeholders when translating the catalog.
