@@ -57,6 +57,15 @@
   pointer-events: none;
 }
 
+.hand-card-number {
+  font-size: 0.65rem;
+  font-weight: 800;
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: start;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .card small,
 .card-type-name {
   align-self: center;

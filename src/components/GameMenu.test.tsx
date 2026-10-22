@@ -13,12 +13,7 @@ vi.mock('./ThemeToggle', () => ({
 it('keeps all settings inside a closed menu', () => {
   const html = renderToStaticMarkup(
     <IntlProvider locale="en" messages={messages}>
-      <GameMenu
-        onNewGame={() => {}}
-        onOpenLog={() => {}}
-        onOpenCatalog={() => {}}
-        onOpenRoundScores={() => {}}
-      />
+      <GameMenu onNewGame={() => {}} onOpenCatalog={() => {}} />
     </IntlProvider>,
   );
 
@@ -26,25 +21,9 @@ it('keeps all settings inside a closed menu', () => {
   expect(html).not.toContain('open=""');
   expect(html).toContain('aria-label="Game menu"');
   expect(html).toContain('>New game</button>');
-  expect(html).toContain('>Game Log</button>');
   expect(html).toContain('>All cards</button>');
   expect(html).toContain('>Theme toggle</button>');
   expect(html).toContain('Colour-independent backgrounds');
   expect(html).toContain('type="checkbox"');
   expect(html).not.toContain('role="menu"');
-});
-
-it('includes the round scores button when requested', () => {
-  const html = renderToStaticMarkup(
-    <IntlProvider locale="en" messages={messages}>
-      <GameMenu
-        onNewGame={() => {}}
-        onOpenCatalog={() => {}}
-        onOpenLog={() => {}}
-        onOpenRoundScores={() => {}}
-      />
-    </IntlProvider>,
-  );
-
-  expect(html).toContain('>Round scores</button>');
 });

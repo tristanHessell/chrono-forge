@@ -1,4 +1,4 @@
-import { type ComponentProps, useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 
 import type { CardGameState } from '../game';
 import {
@@ -13,21 +13,14 @@ import controlsStyles from './Controls.module.css';
 import dialogStyles from './Dialog.module.css';
 import gameLogControlsStyles from './GameLogControls.module.css';
 import { GameLogView } from './GameLogView';
-import { GameMenu } from './GameMenu';
 
 type Props = {
   G: CardGameState;
   currentPlayer: string;
   onOpen: () => void;
-  menuProps?: Omit<ComponentProps<typeof GameMenu>, 'onOpenLog'>;
 };
 
-export function GameLogControls({
-  G,
-  currentPlayer,
-  onOpen,
-  menuProps,
-}: Props) {
+export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
   const t = useMessages();
   const { seed, loadLog } = useContext(GameLogContext);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -64,17 +57,13 @@ export function GameLogControls({
 
   return (
     <>
-      {menuProps ? (
-        <GameMenu {...menuProps} onOpenLog={open} />
-      ) : (
-        <button
-          className={controlsStyles.historyButton}
-          type="button"
-          onClick={open}
-        >
-          {t('log.title')}
-        </button>
-      )}
+      <button
+        className={controlsStyles.historyButton}
+        type="button"
+        onClick={open}
+      >
+        {t('log.title')}
+      </button>
       <dialog
         ref={dialog}
         className={dialogStyles.gameLogDialog}
