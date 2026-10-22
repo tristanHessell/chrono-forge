@@ -691,13 +691,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     >
       <header className={gameBoardStyles.header}>
         <div className={gameBoardStyles.topActions}>
-          <div
-            className={gameBoardStyles.gameBrand}
-            aria-label={t('brand.label')}
-          >
+          <div className={gameBoardStyles.gameBrand}>
             <span aria-hidden="true">⬡</span>
             <div>
-              NEXUS<small>{t('brand.tagline')}</small>
+              Chrono-Forge<small>{t('brand.tagline')}</small>
             </div>
           </div>
           <p
