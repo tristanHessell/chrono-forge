@@ -27,7 +27,7 @@ function createSession(options: Omit<Session, 'CardGameClient'>): Session {
       game: { ...CardGame, seed: options.seed },
       board: GameBoard,
       numPlayers: options.numPlayers,
-      debug: import.meta.env.DEV ? { collapseOnLoad: true } : false,
+      debug: false,
     }),
   };
 }

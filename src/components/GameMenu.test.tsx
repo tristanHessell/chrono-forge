@@ -17,6 +17,7 @@ it('keeps all settings inside a closed menu', () => {
         onNewGame={() => {}}
         onOpenLog={() => {}}
         onOpenCatalog={() => {}}
+        onOpenRoundScores={() => {}}
       />
     </IntlProvider>,
   );

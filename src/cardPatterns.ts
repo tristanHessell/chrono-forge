@@ -2,7 +2,7 @@ export const cardPatternsStorageKey = 'card-table-patterns';
 
 export function savedCardPatterns(): boolean {
   try {
-    return localStorage.getItem(cardPatternsStorageKey) !== 'off';
+    return localStorage.getItem(cardPatternsStorageKey) === 'on';
   } catch {
     return true;
   }

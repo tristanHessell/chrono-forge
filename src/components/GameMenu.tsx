@@ -11,7 +11,7 @@ type Props = {
   onNewGame: () => void;
   onOpenLog: () => void;
   onOpenCatalog: () => void;
-  onOpenRoundScores?: () => void;
+  onOpenRoundScores: () => void;
 };
 
 export function GameMenu({
@@ -103,18 +103,16 @@ export function GameMenu({
         >
           {t('log.title')}
         </button>
-        {onOpenRoundScores && (
-          <button
-            className={controlsStyles.historyButton}
-            type="button"
-            onClick={() => {
-              closeMenu(true);
-              onOpenRoundScores();
-            }}
-          >
-            {t('roundScores.title')}
-          </button>
-        )}
+        <button
+          className={controlsStyles.historyButton}
+          type="button"
+          onClick={() => {
+            closeMenu(true);
+            onOpenRoundScores();
+          }}
+        >
+          {t('roundScores.title')}
+        </button>
       </div>
     </details>
   );

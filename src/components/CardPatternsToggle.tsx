@@ -10,6 +10,7 @@ export function CardPatternsToggle() {
 
   return (
     <label className={cardPatternsToggleStyles.cardPatternsChoice}>
+      {t('patterns.label')}
       <input
         type="checkbox"
         checked={enabled}
@@ -20,7 +21,6 @@ export function CardPatternsToggle() {
           setEnabled(next);
         }}
       />
-      {t('patterns.label')}
     </label>
   );
 }

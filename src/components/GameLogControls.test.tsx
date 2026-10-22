@@ -23,6 +23,7 @@ it('supports a menu trigger while keeping the dialog outside the menu', () => {
         menuProps={{
           onNewGame: () => {},
           onOpenCatalog: () => {},
+          onOpenRoundScores: () => {},
         }}
       />
     </IntlProvider>,
