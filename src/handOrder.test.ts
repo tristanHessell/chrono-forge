@@ -4,10 +4,10 @@ import type { Card } from './game';
 import { moveHandCard, orderHand, restoreHandOrder } from './handOrder';
 
 const cards: Card[] = [
-  { id: 'event-a-1950', type: 'event', number: 1950 },
-  { id: 'event-c-1990', type: 'event', number: 1990 },
-  { id: 'event-b-1900', type: 'event', number: 1900 },
-  { id: 'event-c-1900', type: 'event', number: 1900 },
+  { id: 'event-a-1950', type: 'event', name: 'timeline-origin', number: 1950 },
+  { id: 'event-c-1990', type: 'event', name: 'timeline-origin', number: 1990 },
+  { id: 'event-b-1900', type: 'event', name: 'timeline-origin', number: 1900 },
+  { id: 'event-c-1900', type: 'event', name: 'timeline-origin', number: 1900 },
 ];
 
 describe('hand ordering', () => {

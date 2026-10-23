@@ -2,13 +2,11 @@ import clsx from 'clsx';
 import { useContext, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { eventCardNameMessage } from '../eventCardName';
 import type { Card, PlayerId } from '../game';
 import type { GameLog } from '../gameLog';
 import { summarizeGameLog } from '../gameLogSummary';
-import {
-  categoryMessages,
-  manipulationNameMessages,
-} from '../i18n/messageDescriptors';
+import { manipulationNameMessages } from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import gameLogViewStyles from './GameLogView.module.css';
 import ownershipStyles from './Ownership.module.css';
@@ -42,18 +40,7 @@ export function GameLogView({ log }: { log: GameLog }) {
       return intl.formatMessage(manipulationNameMessages[card.action]);
     }
 
-    return intl.formatMessage(
-      { id: 'log.eventCard', defaultMessage: '{date} {category} Event' },
-      {
-        date: String(card.number),
-        category: card.category
-          ? intl.formatMessage(categoryMessages[card.category])
-          : intl.formatMessage({
-              id: 'owner.neutral',
-              defaultMessage: 'Start',
-            }),
-      },
-    );
+    return intl.formatMessage(eventCardNameMessage(card));
   };
   const cardReference = (card?: Card) => (
     <strong

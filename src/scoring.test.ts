@@ -15,6 +15,7 @@ function placed(
   return {
     id: `${row}:${column}`,
     type: 'event',
+    name: 'timeline-origin',
     number,
     row,
     column,

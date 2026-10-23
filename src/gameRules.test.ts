@@ -25,6 +25,7 @@ type HistoryMove = ConfirmMove;
 
 const card = (id: string, row: number, column: number): PlacedCard => ({
   id,
+  name: 'timeline-origin',
   number: 1,
   type: 'event',
   row,
@@ -43,12 +44,18 @@ describe('placement rules', () => {
         isValidPlacement(played, position, {
           id: 'red',
           type: 'event',
+          name: 'timeline-origin',
           number,
         }),
       ).toBe(false);
     }
 
-    const later = { id: 'red', type: 'event' as const, number: 1960 };
+    const later = {
+      id: 'red',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1960,
+    };
 
     expect(isValidPlacement(played, position, later)).toBe(true);
 
@@ -130,7 +137,14 @@ describe('card game state transitions', () => {
   const makeState = (): CardGameState => ({
     actionsThisTurn: 0,
     discarded: [],
-    deck: [{ id: 'event-c-3', number: 3, type: 'event' as const }],
+    deck: [
+      {
+        id: 'event-c-3',
+        number: 3,
+        name: 'timeline-origin',
+        type: 'event' as const,
+      },
+    ],
     played: [
       {
         ...card('start', 0, 0),
@@ -151,8 +165,18 @@ describe('card game state transitions', () => {
     pendingSnapshot: null,
     hands: {
       '0': [
-        { id: 'event-a-1', number: 1, type: 'event' as const },
-        { id: 'event-b-2', number: 2, type: 'event' as const },
+        {
+          id: 'event-a-1',
+          number: 1,
+          name: 'timeline-origin',
+          type: 'event' as const,
+        },
+        {
+          id: 'event-b-2',
+          number: 2,
+          name: 'timeline-origin',
+          type: 'event' as const,
+        },
       ],
       '1': [] as Card[],
     },
@@ -221,8 +245,12 @@ describe('card game state transitions', () => {
     const G = makeState();
 
     G.deck = [];
-    G.hands['0'] = [{ id: 'event-a-1', number: 1, type: 'event' }];
-    G.hands['1'] = [{ id: 'event-b-2', number: 2, type: 'event' }];
+    G.hands['0'] = [
+      { id: 'event-a-1', number: 1, name: 'timeline-origin', type: 'event' },
+    ];
+    G.hands['1'] = [
+      { id: 'event-b-2', number: 2, name: 'timeline-origin', type: 'event' },
+    ];
 
     const playCard = CardGame.moves!.playCard as unknown as PlayCardMove;
     const confirmPlacement = CardGame.moves!

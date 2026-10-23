@@ -128,11 +128,17 @@ describe('touch card dragging', () => {
 });
 
 describe('touch destinations', () => {
-  const card: EventCard = { id: '1940', type: 'event', number: 1940 };
+  const card: EventCard = {
+    id: '1940',
+    type: 'event',
+    name: 'timeline-origin',
+    number: 1940,
+  };
   const played: PlacedCard[] = [
     {
       id: 'start',
       type: 'event',
+      name: 'timeline-origin',
       number: 0,
       row: 0,
       column: 0,

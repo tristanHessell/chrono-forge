@@ -25,6 +25,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'start',
     type: 'event',
+    name: 'timeline-origin',
     number: 0,
     row: 0,
     column: 0,
@@ -34,6 +35,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'source',
     type: 'event',
+    name: 'timeline-origin',
     number: 1900,
     row: 0,
     column: 1,
@@ -43,6 +45,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'bonus',
     type: 'event',
+    name: 'timeline-origin',
     number: 1990,
     effect: 'timeline-1900-bonus',
     row: 0,
@@ -53,6 +56,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'draw',
     type: 'event',
+    name: 'timeline-origin',
     number: 1940,
     effect: 'draw-one',
     row: 1,
@@ -82,15 +86,30 @@ function clientFor(
             {
               id: 'replacement',
               type: 'event',
+              name: 'timeline-origin',
               number: replacementNumber,
               effect: 'draw-one',
             },
           ],
-          '1': [{ id: 'other', type: 'event', number: 1950 }],
+          '1': [
+            {
+              id: 'other',
+              type: 'event',
+              name: 'timeline-origin',
+              number: 1950,
+            },
+          ],
           '2': [],
           '3': [],
         },
-        deck: [{ id: 'drawn', type: 'event', number: 1980 }],
+        deck: [
+          {
+            id: 'drawn',
+            type: 'event',
+            name: 'timeline-origin',
+            number: 1980,
+          },
+        ],
       }),
     },
     numPlayers: 4,
@@ -296,7 +315,12 @@ describe('overwriting removed Events', () => {
   });
 
   it('rejects occupied active cards and overwrites with invalid upstream or downstream dates', () => {
-    const event = { id: 'new', type: 'event' as const, number: 1990 };
+    const event = {
+      id: 'new',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1990,
+    };
     const bridge = board()
       .slice(0, 3)
       .map((card) =>
@@ -359,7 +383,12 @@ describe('overwriting removed Events', () => {
 
   it('keeps removed Events in date checks but treats their positions as open for squares', () => {
     const removed = applyManipulation(board(), 'remove-event', 'source', '0')!;
-    const event = { id: 'new', type: 'event' as const, number: 1990 };
+    const event = {
+      id: 'new',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1990,
+    };
 
     expect(isValidPlacement(removed, { row: 1, column: 1 }, event)).toBe(true);
     expect(
@@ -373,7 +402,12 @@ describe('overwriting removed Events', () => {
 
   it('allows placements beside removed Events while keeping overwrites and existing links valid', () => {
     const played = applyManipulation(board(), 'remove-event', 'source', '0')!;
-    const event = { id: 'new', type: 'event' as const, number: 1940 };
+    const event = {
+      id: 'new',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1940,
+    };
     const position = { row: -1, column: 1 };
 
     expect(isValidPlacement(board(), position, event)).toBe(true);
@@ -391,6 +425,7 @@ describe('overwriting removed Events', () => {
       {
         id: 'start',
         type: 'event',
+        name: 'timeline-origin',
         number: 0,
         row: 0,
         column: 0,
@@ -400,6 +435,7 @@ describe('overwriting removed Events', () => {
       {
         id: 'event-1900',
         type: 'event',
+        name: 'timeline-origin',
         number: 1900,
         row: -1,
         column: 0,
@@ -409,6 +445,7 @@ describe('overwriting removed Events', () => {
       {
         id: 'event-1920',
         type: 'event',
+        name: 'timeline-origin',
         number: 1920,
         row: 0,
         column: -1,
@@ -418,7 +455,12 @@ describe('overwriting removed Events', () => {
       },
     ];
     const position = { row: -1, column: -1 };
-    const event = { id: 'event-1940', type: 'event' as const, number: 1940 };
+    const event = {
+      id: 'event-1940',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1940,
+    };
 
     expect(isValidPlacement(played, position, event)).toBe(true);
     expect(getAvailablePositions(played, event)).toContainEqual(position);
@@ -433,7 +475,12 @@ describe('overwriting removed Events', () => {
 
     played.push({ ...board()[2], row: -1, column: 0, number: 1910 });
 
-    const event = { id: 'new', type: 'event' as const, number: 1940 };
+    const event = {
+      id: 'new',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1940,
+    };
     const position = { row: -1, column: 1 };
     const client = clientFor('take-control', played);
     const before = client.getState()!.G;

@@ -7,8 +7,8 @@ import messages from '../i18n/en.json';
 import { ComputerPlayer } from './ComputerPlayer';
 
 const cards = [
-  { id: 'hidden-1', type: 'event', number: 1900 },
-  { id: 'hidden-2', type: 'event', number: 1910 },
+  { id: 'hidden-1', type: 'event', name: 'timeline-origin', number: 1900 },
+  { id: 'hidden-2', type: 'event', name: 'timeline-origin', number: 1910 },
 ] satisfies Card[];
 
 it('shows computer identity and score without revealing its cards', () => {

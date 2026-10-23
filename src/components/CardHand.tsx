@@ -158,12 +158,18 @@ export function CardHand({
                 ownershipStyles[`owner${owner}`],
               )}
             >
-              {intl.formatMessage(
-                owner === '0'
-                  ? { id: 'hand.yourTitle', defaultMessage: 'You' }
-                  : { id: 'hand.playerTitle', defaultMessage: "{name}'s hand" },
-                { name: ownerName },
-              )}
+              {owner === '0'
+                ? intl.formatMessage({
+                    id: 'hand.yourTitle',
+                    defaultMessage: 'You',
+                  })
+                : intl.formatMessage(
+                    {
+                      id: 'hand.playerTitle',
+                      defaultMessage: "{name}'s hand",
+                    },
+                    { name: ownerName },
+                  )}
             </p>
             <span>
               {intl.formatMessage(
@@ -180,15 +186,20 @@ export function CardHand({
         <div
           className={cardHandStyles.handOrder}
           role="group"
-          aria-label={intl.formatMessage(
+          aria-label={
             owner === '0'
-              ? { id: 'hand.yourOrderLabel', defaultMessage: 'Order your hand' }
-              : {
-                  id: 'hand.orderLabel',
-                  defaultMessage: "Order {name}'s hand",
-                },
-            { name: ownerName },
-          )}
+              ? intl.formatMessage({
+                  id: 'hand.yourOrderLabel',
+                  defaultMessage: 'Order your hand',
+                })
+              : intl.formatMessage(
+                  {
+                    id: 'hand.orderLabel',
+                    defaultMessage: "Order {name}'s hand",
+                  },
+                  { name: ownerName },
+                )
+          }
         >
           {(['date'] as const).map((value) => (
             <button
@@ -210,15 +221,20 @@ export function CardHand({
         </div>
       </div>
       <div
-        aria-label={intl.formatMessage(
+        aria-label={
           owner === '0'
-            ? { id: 'hand.yourDropArea', defaultMessage: 'Your hand drop area' }
-            : {
-                id: 'hand.dropArea',
-                defaultMessage: "{name}'s hand drop area",
-              },
-          { name: ownerName },
-        )}
+            ? intl.formatMessage({
+                id: 'hand.yourDropArea',
+                defaultMessage: 'Your hand drop area',
+              })
+            : intl.formatMessage(
+                {
+                  id: 'hand.dropArea',
+                  defaultMessage: "{name}'s hand drop area",
+                },
+                { name: ownerName },
+              )
+        }
         data-hand-owner={owner}
         data-return-label={intl.formatMessage({
           id: 'hand.return',

@@ -60,10 +60,10 @@ function readCard(definition: {
   return {
     id: card.id,
     number: card.number!,
-    type: definition.type,
+    type: 'event',
+    name: name as EventName,
     ...(category ? { category } : {}),
     ...(effect ? { effect } : {}),
-    ...(name ? { name: name as EventName } : {}),
   };
 }
 

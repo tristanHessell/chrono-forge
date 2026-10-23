@@ -21,6 +21,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'start',
     type: 'event',
+    name: 'timeline-origin',
     number: 0,
     row: 0,
     column: 0,
@@ -30,6 +31,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'a',
     type: 'event',
+    name: 'timeline-origin',
     number: 1900,
     row: 0,
     column: 1,
@@ -39,6 +41,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'b',
     type: 'event',
+    name: 'timeline-origin',
     number: 1900,
     row: 1,
     column: 0,
@@ -48,6 +51,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'c',
     type: 'event',
+    name: 'timeline-origin',
     number: 1940,
     effect: 'draw-one',
     row: 0,
@@ -58,6 +62,7 @@ const board = (): PlacedCard[] => [
   {
     id: 'd',
     type: 'event',
+    name: 'timeline-origin',
     number: 1990,
     effect: 'timeline-1900-bonus',
     row: 2,
@@ -83,13 +88,35 @@ function clientFor(
       setup: (context): CardGameState => ({
         ...CardGame.setup!(context),
         played: board(),
-        deck: [{ id: 'draw', type: 'event', number: 1920 }],
+        deck: [
+          {
+            id: 'draw',
+            type: 'event',
+            name: 'timeline-origin',
+            number: 1920,
+          },
+        ],
         nextPlacementOrder: 5,
         ...overrides,
         hands: {
           ...CardGame.setup!(context).hands,
-          '0': [manipulation, { id: 'spare', type: 'event', number: 1950 }],
-          '1': [{ id: 'other', type: 'event', number: 1960 }],
+          '0': [
+            manipulation,
+            {
+              id: 'spare',
+              type: 'event',
+              name: 'timeline-origin',
+              number: 1950,
+            },
+          ],
+          '1': [
+            {
+              id: 'other',
+              type: 'event',
+              name: 'timeline-origin',
+              number: 1960,
+            },
+          ],
         },
       }),
     },
