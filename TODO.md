@@ -60,6 +60,6 @@ Event Effects:
 - Sequential cards of the same colour & owner are locked.
 - Free action
 
-Linting: Strong typing types to ensure no explicit/implicit anys
+Linting: Strong typing types to ensure no explicit/implicit any
 Linting: strings are no concatenated.
 Linting: ICU strings are valid etc
