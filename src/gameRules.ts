@@ -134,7 +134,7 @@ export const isValidPlacement = (
   card?: Card,
 ) => isValidEventPlacement(played, position, card);
 
-export function withPlacedEvent(
+export function withPlacedEvent (
   played: PlacedCard[],
   card: PlacedCard,
 ): PlacedCard[] {
@@ -148,7 +148,7 @@ export function withPlacedEvent(
   ];
 }
 
-export function isValidBoard(played: PlacedCard[]): boolean {
+export function isValidBoard (played: PlacedCard[]): boolean {
   const ordered = [...played].sort((a, b) => a.placedAt - b.placedAt);
 
   if (

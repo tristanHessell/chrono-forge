@@ -84,6 +84,7 @@ it.each([0, 1, 2])(
     const deck: Card[] = Array.from({ length: count }, (_, index) => ({
       id: `last-${index}`,
       type: 'event',
+      name: 'timeline-origin',
       number: 1900,
     }));
     const client = Client({

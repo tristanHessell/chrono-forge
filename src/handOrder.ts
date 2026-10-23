@@ -2,7 +2,7 @@ import type { Card } from './game';
 
 export type HandOrder = 'date';
 
-export function orderHand(cards: Card[], order: HandOrder | null): Card[] {
+export function orderHand (cards: Card[], order: HandOrder | null): Card[] {
   if (!order) {
     return [...cards];
   }
@@ -12,7 +12,7 @@ export function orderHand(cards: Card[], order: HandOrder | null): Card[] {
   );
 }
 
-export function restoreHandOrder(cards: Card[], ids: string[]): Card[] {
+export function restoreHandOrder (cards: Card[], ids: string[]): Card[] {
   const remaining = new Map(cards.map((card) => [card.id, card]));
   const ordered: Card[] = [];
 
@@ -28,7 +28,7 @@ export function restoreHandOrder(cards: Card[], ids: string[]): Card[] {
   return [...ordered, ...remaining.values()];
 }
 
-export function moveHandCard(
+export function moveHandCard (
   cards: Card[],
   sourceId: string,
   targetId: string,

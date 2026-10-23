@@ -14,7 +14,7 @@ export type GameLog = {
   actions: LogEntry['action'][];
 };
 
-export function currentGameLog(
+export function currentGameLog (
   seed: string,
   G: CardGameState,
   currentPlayer: string,
@@ -101,7 +101,7 @@ const draftMoves = [
   'returnPendingCard',
 ];
 
-export function applyGameLogAction(
+export function applyGameLogAction (
   client: ReplayClient,
   action: LogEntry['action'],
 ) {
@@ -134,7 +134,7 @@ export function applyGameLogAction(
   }
 }
 
-function confirmedActions(
+function confirmedActions (
   seed: string,
   numPlayers: PlayerCount,
   actions: LogEntry['action'][],
@@ -228,7 +228,7 @@ function confirmedActions(
   }
 }
 
-export function exportGameLog(
+export function exportGameLog (
   seed: string,
   numPlayers: PlayerCount,
   entries: readonly LogEntry[] = [],
@@ -277,7 +277,7 @@ export function exportGameLog(
   );
 }
 
-export function parseGameLog(text: string): GameLog {
+export function parseGameLog (text: string): GameLog {
   if (text.length > 2_000_000) {
     throw new Error('The game log is too large.');
   }
@@ -346,7 +346,7 @@ export function parseGameLog(text: string): GameLog {
   };
 }
 
-export function replayGameLog(log: GameLog, steps = log.actions.length) {
+export function replayGameLog (log: GameLog, steps = log.actions.length) {
   if (!Number.isInteger(steps) || steps < 0 || steps > log.actions.length) {
     throw new Error('Choose a valid action number.');
   }

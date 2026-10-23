@@ -1,6 +1,6 @@
 export const cardPatternsStorageKey = 'card-table-patterns';
 
-export function savedCardPatterns(): boolean {
+export function savedCardPatterns (): boolean {
   try {
     return localStorage.getItem(cardPatternsStorageKey) === 'on';
   } catch {
@@ -8,7 +8,7 @@ export function savedCardPatterns(): boolean {
   }
 }
 
-export function saveCardPatterns(enabled: boolean) {
+export function saveCardPatterns (enabled: boolean) {
   const value = enabled ? 'on' : 'off';
 
   document.documentElement.dataset.cardPatterns = value;
@@ -19,7 +19,7 @@ export function saveCardPatterns(enabled: boolean) {
   }
 }
 
-export function initializeCardPatterns() {
+export function initializeCardPatterns () {
   document.documentElement.dataset.cardPatterns = savedCardPatterns()
     ? 'on'
     : 'off';

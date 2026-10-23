@@ -60,7 +60,7 @@ export type EventCard = {
   /**
    * The id for the intl message corresponding to this event's name.
    */
-  name?: EventName;
+  name: EventName;
   number: number;
   effect?: CardEffect;
 };
@@ -381,10 +381,11 @@ export const CardGame: Game<CardGameState> = {
       for (const overwritten of G.played.filter(
         (existing) => !played.some((card) => card.id === existing.id),
       )) {
-        const { id, type, number, category, effect } = overwritten;
+        const { id, name, type, number, category, effect } = overwritten;
 
         G.discarded.push({
           id,
+          name,
           type,
           number,
           ...(category ? { category } : {}),
@@ -538,11 +539,12 @@ export const CardGame: Game<CardGameState> = {
       );
 
       if (overwritten) {
-        const { id, type, number, category, effect } = overwritten;
+        const { id, name, type, number, category, effect } = overwritten;
 
         G.discarded.push({
           id,
           type,
+          name,
           number,
           ...(category ? { category } : {}),
           ...(effect ? { effect } : {}),

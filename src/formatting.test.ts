@@ -123,7 +123,7 @@ describe('required braces', () => {
   });
 });
 
-async function spacingErrors(code: string, extension = 'ts') {
+async function spacingErrors (code: string, extension = 'ts') {
   const [result] = await eslint.lintText(code, {
     filePath: `src/formatting-fixture.${extension}`,
   });

@@ -59,7 +59,7 @@ server.on('exit', (code) => {
   }
 });
 
-function request(command, args) {
+function request (command, args) {
   const seq = ++sequence;
 
   return new Promise((resolve, reject) => {
@@ -70,7 +70,7 @@ function request(command, args) {
   });
 }
 
-async function checkNavigation() {
+async function checkNavigation () {
   await request('open', {
     file,
     fileContent: source,

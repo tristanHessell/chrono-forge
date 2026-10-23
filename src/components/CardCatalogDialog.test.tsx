@@ -7,7 +7,7 @@ import { loadCardCatalog } from '../cardCatalog';
 import messages from '../i18n/en.json';
 import { CardCatalogDialog } from './CardCatalogDialog';
 
-function renderCatalog() {
+function renderCatalog () {
   return renderToStaticMarkup(
     <IntlProvider locale="en" messages={messages}>
       <CardCatalogDialog dialogRef={createRef<HTMLDialogElement>()} />

@@ -1,8 +1,8 @@
-export function changeBoardZoom(current: number, change: number) {
+export function changeBoardZoom (current: number, change: number) {
   return Math.min(1.6, Math.max(0.6, Math.round((current + change) * 10) / 10));
 }
 
-export function listenForBoardWheel(
+export function listenForBoardWheel (
   viewport: EventTarget,
   onZoomChange: (change: number) => void,
 ) {

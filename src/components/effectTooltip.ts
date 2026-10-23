@@ -1,6 +1,6 @@
 export const effectTooltipDelay = 1000;
 
-export function listenForEffectTooltip(
+export function listenForEffectTooltip (
   icon: EventTarget,
   card: EventTarget,
   view: EventTarget,

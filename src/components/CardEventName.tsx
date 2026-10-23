@@ -4,7 +4,7 @@ import { eventCardNameMessage } from '../eventCardName';
 import type { EventCard } from '../game';
 import cardStyles from './Card.module.css';
 
-export function CardEventName({ card }: { card: EventCard }) {
+export function CardEventName ({ card }: { card: EventCard }) {
   const intl = useIntl();
 
   return (

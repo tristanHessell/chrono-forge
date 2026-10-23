@@ -5,7 +5,7 @@ import { themeMessages } from '../i18n/messageDescriptors';
 import { parseTheme, savedTheme, saveTheme, type Theme } from '../theme';
 import themeToggleStyles from './ThemeToggle.module.css';
 
-export function ThemeToggle() {
+export function ThemeToggle () {
   const intl = useIntl();
   const [theme, setTheme] = useState<Theme>(
     () => parseTheme(document.documentElement.dataset.theme) ?? 'light',

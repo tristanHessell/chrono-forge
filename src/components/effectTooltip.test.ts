@@ -5,7 +5,7 @@ import { effectTooltipDelay, listenForEffectTooltip } from './effectTooltip';
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
-function setup() {
+function setup () {
   const icon = new EventTarget();
   const card = new EventTarget();
   const view = new EventTarget();

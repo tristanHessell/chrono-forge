@@ -7,7 +7,7 @@ import {
   type TouchDragCallbacks,
 } from './touchCardDrag';
 
-export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
+export function useTouchCardDrag (callbacks: TouchDragCallbacks) {
   const [preview, setPreview] = useState<DragPoint | null>(null);
   const [controller] = useState(() => new TouchCardDrag(callbacks));
 

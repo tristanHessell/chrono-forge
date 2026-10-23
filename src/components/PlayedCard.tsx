@@ -26,7 +26,7 @@ type PlayedCardProps = {
   selected?: boolean;
 };
 
-export function PlayedCard({
+export function PlayedCard ({
   card,
   style,
   links,

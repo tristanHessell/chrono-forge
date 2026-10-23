@@ -2,7 +2,7 @@ export type Theme = 'light' | 'dark' | 'greyscale-light' | 'greyscale-dark';
 
 export const storageKey = 'card-table-theme';
 
-export function parseTheme(value: unknown): Theme | null {
+export function parseTheme (value: unknown): Theme | null {
   if (value === 'grayscale' || value === 'greyscale') {
     return 'greyscale-dark';
   }
@@ -15,7 +15,7 @@ export function parseTheme(value: unknown): Theme | null {
     : null;
 }
 
-export function saveTheme(theme: Theme) {
+export function saveTheme (theme: Theme) {
   document.documentElement.dataset.theme = theme;
   try {
     localStorage.setItem(storageKey, theme);
@@ -24,7 +24,7 @@ export function saveTheme(theme: Theme) {
   }
 }
 
-export function savedTheme(): Theme | null {
+export function savedTheme (): Theme | null {
   try {
     const value = localStorage.getItem(storageKey);
 
@@ -34,7 +34,7 @@ export function savedTheme(): Theme | null {
   }
 }
 
-export function initializeTheme() {
+export function initializeTheme () {
   const theme =
     savedTheme() ??
     (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');

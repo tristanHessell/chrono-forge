@@ -65,7 +65,14 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
                 id,
                 id === '1'
                   ? []
-                  : [{ id: `last-${id}`, type: 'event', number: 1900 }],
+                  : [
+                      {
+                        id: `last-${id}`,
+                        type: 'event',
+                        name: 'timeline-origin',
+                        number: 1900,
+                      },
+                    ],
               ]),
             ),
           };
@@ -105,13 +112,26 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
                 {
                   id: 'effect',
                   type: 'event',
+                  name: 'timeline-origin',
                   number: 1940,
                   effect: 'draw-one',
                 },
-                { id: 'spare', type: 'event', number: 1950 },
+                {
+                  id: 'spare',
+                  type: 'event',
+                  name: 'timeline-origin',
+                  number: 1950,
+                },
               ],
             },
-            deck: [{ id: 'drawn', type: 'event', number: 1960 }],
+            deck: [
+              {
+                id: 'drawn',
+                type: 'event',
+                name: 'timeline-origin',
+                number: 1960,
+              },
+            ],
           };
         },
       },

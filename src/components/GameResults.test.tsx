@@ -23,6 +23,7 @@ it.each(['0', '1', '2', '3'] as const)(
     const card: PlacedCard = {
       id: 'test',
       type: 'event',
+      name: 'timeline-origin',
       number: 1900,
       row: 0,
       column: 0,
@@ -48,6 +49,7 @@ it('names only the tied leaders in a four-player game', () => {
   const played: PlacedCard[] = (['2', '3'] as const).map((owner) => ({
     id: owner,
     type: 'event',
+    name: 'timeline-origin',
     number: 1900,
     row: 0,
     column: Number(owner),

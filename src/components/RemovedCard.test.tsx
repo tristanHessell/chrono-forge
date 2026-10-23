@@ -13,6 +13,7 @@ it('visually and accessibly marks a removed Event and its overwrite target', () 
         card={{
           id: 'removed',
           type: 'event',
+          name: 'timeline-origin',
           number: 1990,
           row: 0,
           column: 1,

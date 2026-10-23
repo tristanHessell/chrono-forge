@@ -39,7 +39,7 @@ type MatchResult = {
   moves: RecordedMove[];
 };
 
-function playMatch(game: number, seed: string): MatchResult {
+function playMatch (game: number, seed: string): MatchResult {
   const started = performance.now();
   const client = Client({ game: { ...CardGame, seed }, numPlayers });
   const expectedCount = loadCardCatalog().deck.length + 1;

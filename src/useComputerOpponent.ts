@@ -15,7 +15,7 @@ type ComputerMoves = {
   confirmPlacement: () => void;
 };
 
-export function useComputerOpponent(
+export function useComputerOpponent (
   G: CardGameState,
   currentPlayer: string,
   players: PlayerSetup[],

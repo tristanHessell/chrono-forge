@@ -1,7 +1,7 @@
 import type { Card, PlacedCard } from './game';
 import { getAvailablePositions, positionKey } from './gameRules';
 
-export function touchDropPosition(
+export function touchDropPosition (
   played: PlacedCard[],
   card: Card | undefined,
   key: string | undefined,
@@ -55,23 +55,23 @@ export class TouchCardDrag {
   } | null = null;
   private suppressClick = false;
 
-  constructor(private callbacks: TouchDragCallbacks) {}
+  constructor (private callbacks: TouchDragCallbacks) {}
 
-  updateCallbacks(callbacks: TouchDragCallbacks) {
+  updateCallbacks (callbacks: TouchDragCallbacks) {
     this.callbacks = callbacks;
   }
 
-  get tracking() {
+  get tracking () {
     return this.session !== null;
   }
 
-  resetClickSuppression() {
+  resetClickSuppression () {
     if (!this.session) {
       this.suppressClick = false;
     }
   }
 
-  consumeClick() {
+  consumeClick () {
     const suppress = this.suppressClick;
 
     this.suppressClick = false;
@@ -79,7 +79,7 @@ export class TouchCardDrag {
     return suppress;
   }
 
-  start(event: DragPointer, cardId: string, source: DragSource = 'hand') {
+  start (event: DragPointer, cardId: string, source: DragSource = 'hand') {
     if (
       this.session ||
       !['touch', 'pen'].includes(event.pointerType) ||
@@ -100,7 +100,7 @@ export class TouchCardDrag {
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
-  move(event: DragPointer) {
+  move (event: DragPointer) {
     const session = this.session;
     const point = { x: event.clientX, y: event.clientY };
 
@@ -123,7 +123,7 @@ export class TouchCardDrag {
     this.callbacks.onMove(point);
   }
 
-  end(event: DragPointer) {
+  end (event: DragPointer) {
     const session = this.session;
 
     if (!session || session.id !== event.pointerId) {
@@ -140,7 +140,7 @@ export class TouchCardDrag {
     this.cancel(event.pointerId);
   }
 
-  cancel(pointerId?: number) {
+  cancel (pointerId?: number) {
     const session = this.session;
 
     if (!session || (pointerId !== undefined && session.id !== pointerId)) {

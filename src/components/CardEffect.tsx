@@ -12,7 +12,7 @@ import {
 import cardEffectStyles from './CardEffect.module.css';
 import { listenForEffectTooltip } from './effectTooltip';
 
-export function CardEffect({
+export function CardEffect ({
   effect,
   showTooltip = false,
 }: {

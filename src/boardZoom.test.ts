@@ -2,7 +2,7 @@ import { expect, it, vi } from 'vitest';
 
 import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
 
-function wheel(deltaY: number, ctrlKey = false) {
+function wheel (deltaY: number, ctrlKey = false) {
   return Object.assign(
     new Event('wheel', { bubbles: true, cancelable: true }),
     {

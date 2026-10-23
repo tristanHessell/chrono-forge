@@ -12,7 +12,7 @@ type Props = {
   name: string;
 };
 
-export function PlayerAvatar({ compact = false, owner, type, name }: Props) {
+export function PlayerAvatar ({ compact = false, owner, type, name }: Props) {
   return (
     <span
       aria-label={`${name}, ${type === 'computer' ? 'AI' : 'human'}`}

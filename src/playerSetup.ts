@@ -13,7 +13,7 @@ export type PlayerSetup = {
 
 const playerNames = ['You', 'Sally', 'Barry', 'Morgan'] as const;
 
-export function createDefaultPlayers(count: PlayerCount = 2): PlayerSetup[] {
+export function createDefaultPlayers (count: PlayerCount = 2): PlayerSetup[] {
   return playerNames.slice(0, count).map((name, index) => ({
     id: String(index) as PlayerId,
     name,
@@ -21,7 +21,7 @@ export function createDefaultPlayers(count: PlayerCount = 2): PlayerSetup[] {
   }));
 }
 
-export function getPlayer(players: PlayerSetup[], id: PlayerId): PlayerSetup {
+export function getPlayer (players: PlayerSetup[], id: PlayerId): PlayerSetup {
   const defaults = createDefaultPlayers(4);
 
   return (

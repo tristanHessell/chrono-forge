@@ -1,4 +1,4 @@
-import type { MessageDescriptor } from 'react-intl';
+import { defineMessages, type MessageDescriptor } from 'react-intl';
 
 import type {
   CardEffect,
@@ -10,36 +10,37 @@ import type { Theme } from '../theme';
 
 type DescriptorMap<Key extends string> = Record<Key, MessageDescriptor>;
 
-export const categoryMessages: DescriptorMap<EventCategory> = {
+export const categoryMessages: DescriptorMap<EventCategory> = defineMessages({
   environmental: {
     id: 'card.category.environmental',
     defaultMessage: 'Nature',
   },
   political: { id: 'card.category.political', defaultMessage: 'Politics' },
   technological: { id: 'card.category.technological', defaultMessage: 'Tech' },
-};
+});
 
-export const manipulationNameMessages: DescriptorMap<ManipulationAction> = {
-  'remove-event': {
-    id: 'manipulation.remove-event.name',
-    defaultMessage: 'Remove Event',
-  },
-  'take-control': {
-    id: 'manipulation.take-control.name',
-    defaultMessage: 'Take Control',
-  },
-  'time-jump': {
-    id: 'manipulation.time-jump.name',
-    defaultMessage: 'Time Jump',
-  },
-  'time-swap': {
-    id: 'manipulation.time-swap.name',
-    defaultMessage: 'Time Swap',
-  },
-};
+export const manipulationNameMessages: DescriptorMap<ManipulationAction> =
+  defineMessages({
+    'remove-event': {
+      id: 'manipulation.remove-event.name',
+      defaultMessage: 'Remove Event',
+    },
+    'take-control': {
+      id: 'manipulation.take-control.name',
+      defaultMessage: 'Take Control',
+    },
+    'time-jump': {
+      id: 'manipulation.time-jump.name',
+      defaultMessage: 'Time Jump',
+    },
+    'time-swap': {
+      id: 'manipulation.time-swap.name',
+      defaultMessage: 'Time Swap',
+    },
+  });
 
 export const manipulationDescriptionMessages: DescriptorMap<ManipulationAction> =
-  {
+  defineMessages({
     'remove-event': {
       id: 'manipulation.remove-event.description',
       defaultMessage:
@@ -60,30 +61,31 @@ export const manipulationDescriptionMessages: DescriptorMap<ManipulationAction> 
       defaultMessage:
         'Swap two Event cards while keeping the board legal. The starting card cannot be swapped.',
     },
-  };
+  });
 
-export const effectNameMessages: DescriptorMap<CardEffect> = {
+export const effectNameMessages: DescriptorMap<CardEffect> = defineMessages({
   'draw-one': { id: 'effect.draw-one.name', defaultMessage: 'Draw one card' },
   'timeline-1900-bonus': {
     id: 'effect.timeline-1900-bonus.name',
     defaultMessage: '1900 timeline bonus',
   },
-};
+});
 
-export const effectDescriptionMessages: DescriptorMap<CardEffect> = {
-  'draw-one': {
-    id: 'effect.draw-one.description',
-    defaultMessage:
-      'When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.',
-  },
-  'timeline-1900-bonus': {
-    id: 'effect.timeline-1900-bonus.description',
-    defaultMessage:
-      'Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.',
-  },
-};
+export const effectDescriptionMessages: DescriptorMap<CardEffect> =
+  defineMessages({
+    'draw-one': {
+      id: 'effect.draw-one.description',
+      defaultMessage:
+        'When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.',
+    },
+    'timeline-1900-bonus': {
+      id: 'effect.timeline-1900-bonus.description',
+      defaultMessage:
+        'Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.',
+    },
+  });
 
-export const eventNameMessages: DescriptorMap<EventName> = {
+export const eventNameMessages: DescriptorMap<EventName> = defineMessages({
   'assembly-lines': {
     id: 'card.name.assembly-lines',
     defaultMessage: 'Assembly Lines',
@@ -175,14 +177,16 @@ export const eventNameMessages: DescriptorMap<EventName> = {
     id: 'card.name.wildlife-refuges',
     defaultMessage: 'Wildlife Refuges',
   },
-};
+});
 
-export const startingEventNameMessage: MessageDescriptor = {
-  id: 'card.event',
-  defaultMessage: 'Event',
-};
+export const startingEventNameMessage: MessageDescriptor = defineMessages({
+  startingEventNameMessage: {
+    id: 'card.event',
+    defaultMessage: 'Event',
+  },
+}).startingEventNameMessage;
 
-export const themeMessages: DescriptorMap<Theme> = {
+export const themeMessages: DescriptorMap<Theme> = defineMessages({
   dark: { id: 'theme.dark', defaultMessage: 'Dark' },
   'greyscale-dark': {
     id: 'theme.greyscale-dark',
@@ -193,4 +197,4 @@ export const themeMessages: DescriptorMap<Theme> = {
     defaultMessage: 'Greyscale Light',
   },
   light: { id: 'theme.light', defaultMessage: 'Light' },
-};
+});

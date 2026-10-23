@@ -16,10 +16,20 @@ it.each(['0', '1', '2', '3'])(
 
 it('counts explicit discards, including unused Manipulations, but excludes used cards and overwritten Events', () => {
   const discarded: Card[] = [
-    { id: 'discarded-event', type: 'event', number: 1900 },
+    {
+      id: 'discarded-event',
+      type: 'event',
+      name: 'timeline-origin',
+      number: 1900,
+    },
     { id: 'unused-manipulation', type: 'manipulation', action: 'time-swap' },
     { id: 'used-manipulation', type: 'manipulation', action: 'remove-event' },
-    { id: 'overwritten-event', type: 'event', number: 1910 },
+    {
+      id: 'overwritten-event',
+      type: 'event',
+      name: 'timeline-origin',
+      number: 1910,
+    },
   ];
   const actions: ComputerAction[] = [
     { type: 'discard', cardId: 'discarded-event' },
@@ -43,7 +53,9 @@ it('counts explicit discards, including unused Manipulations, but excludes used 
 });
 
 it('does not double-count duplicate discard attempts or count attempts that never reached the pile', () => {
-  const discarded: Card[] = [{ id: 'one', type: 'event', number: 1900 }];
+  const discarded: Card[] = [
+    { id: 'one', type: 'event', name: 'timeline-origin', number: 1900 },
+  ];
   const actions: ComputerAction[] = [
     { type: 'discard', cardId: 'one' },
     { type: 'discard', cardId: 'one' },

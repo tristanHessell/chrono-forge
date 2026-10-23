@@ -15,7 +15,7 @@ export type ComputerAction =
   | { type: 'confirm' };
 
 // Uses only the public board and this player's hand, never the other hand or deck order.
-export function chooseComputerAction(
+export function chooseComputerAction (
   G: CardGameState,
   owner: PlayerId = '1',
 ): ComputerAction | null {

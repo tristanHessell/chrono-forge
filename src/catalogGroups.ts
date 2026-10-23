@@ -1,6 +1,6 @@
 import type { Card } from './game';
 
-export function catalogGroups(deck: Card[]) {
+export function catalogGroups (deck: Card[]) {
   const groups = new Map<string, Card[]>();
 
   for (const card of deck) {

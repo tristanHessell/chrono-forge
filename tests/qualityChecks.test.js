@@ -25,6 +25,15 @@ it('checks staged files without automatic fixes or simulated games', () => {
   expect(config['package.json']()).toBe('npm run lint:package');
   expect(JSON.stringify(config)).not.toMatch(/--fix|--write|test:simulation/);
   expect(manifest.scripts.prepare).toBe('husky && npm run css:types');
+  expect(manifest.scripts.dev).toBe('vite');
+  expect(manifest.scripts.build).toBe('npm run typecheck && vite build');
+  expect(manifest.scripts['messages:check']).toBe(
+    'node scripts/check-message-catalog.ts',
+  );
+  expect(manifest.scripts.messages).toContain('formatjs extract');
+  expect(readFileSync(join(root, '.husky/pre-commit'), 'utf8')).toContain(
+    'npm run messages:check',
+  );
   expect(manifest.scripts.check).toBe(
     'npm run lint && npm run format:check && npm run spellcheck && npm test && npm run build',
   );
@@ -42,6 +51,7 @@ it('runs the full checks on pull requests with limited permissions', () => {
   expect(workflow).toContain('persist-credentials: false');
   expect(workflow).toContain('node-version-file: .nvmrc');
   expect(workflow).toContain('run: npm ci');
+  expect(workflow).toContain('run: npm run messages:check');
   expect(workflow).toContain('run: npm run check');
   expect(workflow).not.toContain('pull_request_target');
   expect(workflow.match(/uses: actions\/[\w-]+@[a-f0-9]{40}/g)).toHaveLength(2);
@@ -75,10 +85,13 @@ it('blocks invalid staged files and preserves unstaged changes during a valid co
       'cspell.json',
       '.prettierrc.json',
       '.npmpackagejsonlintrc.json',
-      '.husky/pre-commit',
     ]) {
       copyFileSync(join(root, file), join(directory, file));
     }
+    writeFileSync(
+      join(directory, '.husky/pre-commit'),
+      'npm run lint:staged\n',
+    );
     writeFileSync(join(directory, '.gitignore'), 'node_modules/\n.husky/_/\n');
     writeFileSync(
       join(directory, 'package.json'),
@@ -90,6 +103,7 @@ it('blocks invalid staged files and preserves unstaged changes during a valid co
           scripts: {
             'lint:staged': manifest.scripts['lint:staged'],
             'lint:package': manifest.scripts['lint:package'],
+            'messages:check': 'true',
           },
         },
         null,
@@ -112,12 +126,7 @@ it('blocks invalid staged files and preserves unstaged changes during a valid co
       writeFileSync(sample, invalid);
       succeed(git('add', 'sample file.ts'));
 
-      const result = git(
-        'commit',
-        '--quiet',
-        '-m',
-        'test: reject invalid code',
-      );
+      const result = git('commit', '-m', 'test: reject invalid code');
 
       expect(result.status).not.toBe(0);
       expect(`${result.stdout}\n${result.stderr}`).toMatch(/eslint|prettier/);
