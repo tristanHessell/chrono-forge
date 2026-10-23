@@ -113,7 +113,7 @@ const linkDirections = [
   },
 ] as const;
 
-function setCardDragImage (event: DragEvent<HTMLElement>) {
+function setCardDragImage(event: DragEvent<HTMLElement>) {
   const preview = event.currentTarget.cloneNode(true) as HTMLElement;
 
   preview.className = cardStyles.card;
@@ -142,7 +142,7 @@ function setCardDragImage (event: DragEvent<HTMLElement>) {
   window.setTimeout(() => preview.remove(), 0);
 }
 
-export function GameBoard ({ G, ctx, moves }: BoardProps<CardGameState>) {
+export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const intl = useIntl();
   const gameMoves = moves as CardGameMoves;
   const finished = Boolean(ctx.gameover) || G.roundOver;

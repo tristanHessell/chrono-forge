@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import config from '../.npmpackagejsonlintrc.json';
 import manifest from '../package.json';
 
-function lintManifest (packageJsonObject) {
+function lintManifest(packageJsonObject) {
   return new NpmPackageJsonLint({
     packageJsonObject,
     packageJsonFilePath: 'package.json',

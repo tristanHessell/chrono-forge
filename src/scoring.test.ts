@@ -5,7 +5,7 @@ import { loadCardCatalog } from './cardCatalog';
 import { canUndoMove, CardGame, type PlacedCard } from './game';
 import { calculateScoreBreakdown, calculateScores } from './scoring';
 
-function placed (
+function placed(
   number: number,
   row: number,
   column: number,

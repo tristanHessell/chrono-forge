@@ -28,7 +28,7 @@ type PlacementSlotProps = {
   onDrop: (event: DragEvent<HTMLElement>) => void;
 };
 
-export function PlacementSlot ({
+export function PlacementSlot({
   ariaLabel,
   position,
   initial = false,

@@ -7,7 +7,7 @@ import { calculateScoreBreakdown } from '../scoring';
 import gameResultsStyles from './GameResults.module.css';
 import ownershipStyles from './Ownership.module.css';
 
-export function GameResults ({
+export function GameResults({
   played,
   playerIds = ['0', '1'],
 }: {

@@ -8,7 +8,7 @@ type Props = {
   onResetZoom: () => void;
 };
 
-export function BoardZoomControls ({
+export function BoardZoomControls({
   boardZoom,
   onZoomChange,
   onResetZoom,

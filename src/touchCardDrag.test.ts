@@ -7,7 +7,7 @@ import {
   touchDropPosition,
 } from './touchCardDrag';
 
-function setup () {
+function setup() {
   const callbacks = {
     onStart: vi.fn(),
     onMove: vi.fn(),

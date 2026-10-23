@@ -66,7 +66,7 @@ const board = (): PlacedCard[] => [
   },
 ];
 
-function clientFor (
+function clientFor(
   action: ManipulationAction,
   played = board(),
   actionsThisTurn = 0,

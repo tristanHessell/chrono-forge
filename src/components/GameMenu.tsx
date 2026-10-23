@@ -12,7 +12,7 @@ type Props = {
   onOpenCatalog: () => void;
 };
 
-export function GameMenu ({ onNewGame, onOpenCatalog }: Props) {
+export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
   const intl = useIntl();
   const menu = useRef<HTMLDetailsElement>(null);
   const trigger = useRef<HTMLElement>(null);

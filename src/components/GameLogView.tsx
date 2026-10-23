@@ -6,14 +6,12 @@ import { eventCardNameMessage } from '../eventCardName';
 import type { Card, PlayerId } from '../game';
 import type { GameLog } from '../gameLog';
 import { summarizeGameLog } from '../gameLogSummary';
-import {
-  manipulationNameMessages,
-} from '../i18n/messageDescriptors';
+import { manipulationNameMessages } from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import gameLogViewStyles from './GameLogView.module.css';
 import ownershipStyles from './Ownership.module.css';
 
-export function GameLogView ({ log }: { log: GameLog }) {
+export function GameLogView({ log }: { log: GameLog }) {
   const intl = useIntl();
   const players = useContext(PlayerSetupContext);
   const items = useMemo(() => summarizeGameLog(log), [log]);
@@ -148,20 +146,20 @@ export function GameLogView ({ log }: { log: GameLog }) {
                 case 'manipulate':
                   return item.card?.type === 'manipulation'
                     ? {
-                      id: `log.action.${item.card.action}`,
-                      defaultMessage:
-                        item.card.action === 'time-jump'
-                          ? 'Used {card} to move {target} to row {row}, column {column}.'
-                          : item.card.action === 'time-swap'
-                            ? 'Used {card} to swap {target} with {second}.'
-                            : item.card.action === 'take-control'
-                              ? 'Used {card} to gain ownership of {target}.'
-                              : 'Used {card} to remove {target} from scoring.',
-                    }
+                        id: `log.action.${item.card.action}`,
+                        defaultMessage:
+                          item.card.action === 'time-jump'
+                            ? 'Used {card} to move {target} to row {row}, column {column}.'
+                            : item.card.action === 'time-swap'
+                              ? 'Used {card} to swap {target} with {second}.'
+                              : item.card.action === 'take-control'
+                                ? 'Used {card} to gain ownership of {target}.'
+                                : 'Used {card} to remove {target} from scoring.',
+                      }
                     : {
-                      id: 'log.action.other',
-                      defaultMessage: 'Debug event: {action}.',
-                    };
+                        id: 'log.action.other',
+                        defaultMessage: 'Debug event: {action}.',
+                      };
                 default:
                   return {
                     id: 'log.action.other',

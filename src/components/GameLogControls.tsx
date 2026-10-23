@@ -20,7 +20,7 @@ type Props = {
   onOpen: () => void;
 };
 
-export function GameLogControls ({ G, currentPlayer, onOpen }: Props) {
+export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
   const intl = useIntl();
   const { seed, loadLog } = useContext(GameLogContext);
   const dialog = useRef<HTMLDialogElement>(null);

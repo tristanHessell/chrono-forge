@@ -11,7 +11,7 @@ const generatedHeader = '// Generated CSS module types. Do not edit.\n';
 
 type ClassPosition = { line: number; column: number; length: number };
 
-async function listFiles (directory: string): Promise<string[]> {
+async function listFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { withFileTypes: true });
   const groups = await Promise.all(
     entries.map((entry) => {
@@ -24,7 +24,7 @@ async function listFiles (directory: string): Promise<string[]> {
   return groups.flat().sort();
 }
 
-function classPositions (css: string, file: string): Map<string, ClassPosition> {
+function classPositions(css: string, file: string): Map<string, ClassPosition> {
   const positions = new Map<string, ClassPosition>();
   const root = postcss.parse(css, { from: file });
 
@@ -71,7 +71,7 @@ function classPositions (css: string, file: string): Map<string, ClassPosition> 
   return positions;
 }
 
-async function writeIfChanged (file: string, content: string) {
+async function writeIfChanged(file: string, content: string) {
   const previous = await readFile(file, 'utf8').catch(() => null);
 
   if (previous !== content) {
@@ -79,7 +79,7 @@ async function writeIfChanged (file: string, content: string) {
   }
 }
 
-export async function generateCssModuleTypes (
+export async function generateCssModuleTypes(
   config: ResolvedConfig,
   directory = path.join(config.root, 'src'),
 ) {
@@ -147,10 +147,10 @@ export async function generateCssModuleTypes (
   }
 }
 
-export function cssModuleTypesPlugin (): Plugin {
+export function cssModuleTypesPlugin(): Plugin {
   return {
     name: 'css-module-types',
-    async configureServer (server) {
+    async configureServer(server) {
       let pending = Promise.resolve();
 
       await generateCssModuleTypes(server.config);

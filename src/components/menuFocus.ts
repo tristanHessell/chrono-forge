@@ -1,4 +1,4 @@
-export function focusMovedOutside (
+export function focusMovedOutside(
   container: Pick<HTMLElement, 'contains'>,
   nextTarget: EventTarget | null,
 ): boolean {

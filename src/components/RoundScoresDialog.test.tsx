@@ -7,7 +7,7 @@ import { CardGame, type CardGameState } from '../game';
 import messages from '../i18n/en.json';
 import { RoundScoresDialog } from './RoundScoresDialog';
 
-function shuffle<T> (cards: T[]): T[] {
+function shuffle<T>(cards: T[]): T[] {
   return cards;
 }
 

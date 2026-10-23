@@ -21,7 +21,7 @@ type RoundRow = {
   roundScores: Record<string, number>;
 };
 
-function formatRoundPoints (value: number, intl: ReturnType<typeof useIntl>) {
+function formatRoundPoints(value: number, intl: ReturnType<typeof useIntl>) {
   if (value > 0) {
     return `+${intl.formatNumber(value)}`;
   }
@@ -29,7 +29,7 @@ function formatRoundPoints (value: number, intl: ReturnType<typeof useIntl>) {
   return intl.formatNumber(value);
 }
 
-export function RoundScoresDialog ({ dialogRef, G }: Props) {
+export function RoundScoresDialog({ dialogRef, G }: Props) {
   const intl = useIntl();
   const titleId = useId();
   const [viewMode, setViewMode] = useState<'round' | 'total'>('round');

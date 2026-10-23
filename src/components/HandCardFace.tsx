@@ -11,7 +11,7 @@ import cardStyles from './Card.module.css';
 import { CardEffect } from './CardEffect';
 import { CardEventName } from './CardEventName';
 
-export function HandCardFace ({
+export function HandCardFace({
   card,
   showTooltip = true,
 }: {
@@ -42,11 +42,14 @@ export function HandCardFace ({
       </strong>
       {card.type === 'event' && <CardEventName card={card} />}
       <span className={cardStyles.cardTypeName}>
-        {card.type === 'manipulation' ? intl.formatMessage(
-          { id: 'card.manipulation', defaultMessage: 'Command' }
-        ) : card.category ?
-          intl.formatMessage(categoryMessages[card.category])
-          : intl.formatMessage(startingEventNameMessage)}
+        {card.type === 'manipulation'
+          ? intl.formatMessage({
+              id: 'card.manipulation',
+              defaultMessage: 'Command',
+            })
+          : card.category
+            ? intl.formatMessage(categoryMessages[card.category])
+            : intl.formatMessage(startingEventNameMessage)}
       </span>
     </>
   );

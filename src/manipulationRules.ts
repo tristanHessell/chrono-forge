@@ -15,7 +15,7 @@ import {
 // This preserves arrow/date rules and keeps every timeline connected to the start.
 export { isValidBoard } from './gameRules';
 
-export function applyManipulation (
+export function applyManipulation(
   played: PlacedCard[],
   action: ManipulationAction,
   targetId: string,
@@ -52,7 +52,7 @@ export function applyManipulation (
   );
 }
 
-export function applyTimeJump (
+export function applyTimeJump(
   played: PlacedCard[],
   targetId: string,
   destination: CardPosition,
@@ -116,7 +116,7 @@ export function applyTimeJump (
   return isValidBoard(reconnected) ? reconnected : null;
 }
 
-export function applyTimeSwap (
+export function applyTimeSwap(
   played: PlacedCard[],
   firstId: string,
   secondId: string,
@@ -145,7 +145,7 @@ export function applyTimeSwap (
   return isValidBoard(result) ? result : null;
 }
 
-export function getTimeJumpPositions (
+export function getTimeJumpPositions(
   played: PlacedCard[],
   targetId: string,
 ): CardPosition[] {

@@ -19,7 +19,7 @@ type Props = {
   onStart: (players: PlayerSetup[]) => void;
 };
 
-export function NewGameDialog ({ dialogRef, initialPlayers, onStart }: Props) {
+export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
   const intl = useIntl();
   const [players, setPlayers] = useState(initialPlayers);
   const addPlayer = () => {

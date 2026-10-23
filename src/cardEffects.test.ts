@@ -8,7 +8,7 @@ import { canUndoMove, CardGame } from './game';
 const event = (id: string) =>
   loadCardCatalog().deck.find((card) => card.id === id)!;
 
-function effectClient (
+function effectClient(
   player: '0' | '1' = '0',
   deck: Card[] = [event('event-1900-1')],
   extraCard = false,

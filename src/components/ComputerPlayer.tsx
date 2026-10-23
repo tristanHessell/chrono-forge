@@ -13,7 +13,7 @@ type Props = {
   score: number;
 };
 
-export function ComputerPlayer ({ cards, player, score }: Props) {
+export function ComputerPlayer({ cards, player, score }: Props) {
   const intl = useIntl();
 
   return (

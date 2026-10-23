@@ -20,7 +20,7 @@ type Session = {
   CardGameClient: ReturnType<typeof Client<CardGameState>>;
 };
 
-function createSession (options: Omit<Session, 'CardGameClient'>): Session {
+function createSession(options: Omit<Session, 'CardGameClient'>): Session {
   return {
     ...options,
     CardGameClient: Client({
@@ -32,7 +32,7 @@ function createSession (options: Omit<Session, 'CardGameClient'>): Session {
   };
 }
 
-function GameSession ({ CardGameClient, players, replay }: Session) {
+function GameSession({ CardGameClient, players, replay }: Session) {
   const ref = useRef<InstanceType<typeof CardGameClient>>(null);
   const replayed = useRef(false);
 
@@ -54,7 +54,7 @@ function GameSession ({ CardGameClient, players, replay }: Session) {
   );
 }
 
-export function App () {
+export function App() {
   const [session, setSession] = useState<Session>(() =>
     createSession({
       seed: crypto.randomUUID(),

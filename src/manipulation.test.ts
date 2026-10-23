@@ -72,7 +72,7 @@ const board = (): PlacedCard[] => [
   },
 ];
 
-function clientFor (
+function clientFor(
   action: 'time-jump' | 'time-swap',
   overrides: Partial<CardGameState> = {},
 ) {

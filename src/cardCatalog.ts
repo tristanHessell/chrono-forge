@@ -1,7 +1,7 @@
 import definitions from './cards';
 import type { Card, EventName, ManipulationAction } from './game';
 
-function readCard (definition: {
+function readCard(definition: {
   id: string;
   type: string;
   number?: number;
@@ -67,7 +67,7 @@ function readCard (definition: {
   };
 }
 
-export function loadCardCatalog () {
+export function loadCardCatalog() {
   const startingCard = readCard(definitions.startingCard);
 
   if (startingCard.type !== 'event') {

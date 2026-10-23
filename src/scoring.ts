@@ -1,7 +1,7 @@
 import type { PlacedCard } from './game';
 import { areAdjacent } from './gameRules';
 
-export function timelineIncludes1900 (
+export function timelineIncludes1900(
   card: PlacedCard,
   played: PlacedCard[],
 ): boolean {
@@ -35,7 +35,7 @@ export function timelineIncludes1900 (
   return false;
 }
 
-export function calculateScoreBreakdown (played: PlacedCard[]) {
+export function calculateScoreBreakdown(played: PlacedCard[]) {
   const scores: Record<string, { base: number; bonus: number; total: number }> =
     {
       '0': { base: 0, bonus: 0, total: 0 },
@@ -64,7 +64,7 @@ export function calculateScoreBreakdown (played: PlacedCard[]) {
   return scores;
 }
 
-export function calculateScores (played: PlacedCard[]) {
+export function calculateScores(played: PlacedCard[]) {
   const scores = calculateScoreBreakdown(played);
 
   return Object.fromEntries(

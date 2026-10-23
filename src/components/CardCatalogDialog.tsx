@@ -19,7 +19,7 @@ import { PlayedCard } from './PlayedCard';
 type CardView = 'hand' | 'table';
 type CardSize = 'standard' | 'compact';
 
-function CatalogCard ({ card, view }: { card: Card; view: CardView }) {
+function CatalogCard({ card, view }: { card: Card; view: CardView }) {
   const cardView =
     view === 'table' && card.type === 'event' ? (
       <PlayedCard card={card} />
@@ -46,7 +46,7 @@ function CatalogCard ({ card, view }: { card: Card; view: CardView }) {
   );
 }
 
-export function CardCatalogDialog ({
+export function CardCatalogDialog({
   dialogRef,
 }: {
   dialogRef: RefObject<HTMLDialogElement>;
@@ -149,13 +149,28 @@ export function CardCatalogDialog ({
       <dl className={cardCatalogDialogStyles.catalogSummary}>
         {(
           [
-            [intl.formatMessage({ id: 'catalog.deck', defaultMessage: 'Deck cards' }, { count: deck.length }), deck.length],
+            [
+              intl.formatMessage(
+                { id: 'catalog.deck', defaultMessage: 'Deck cards' },
+                { count: deck.length },
+              ),
+              deck.length,
+            ],
             [intl.formatMessage(startingEventNameMessage), events],
             [
-              intl.formatMessage({ id: 'card.manipulation', defaultMessage: 'Command' }),
+              intl.formatMessage({
+                id: 'card.manipulation',
+                defaultMessage: 'Command',
+              }),
               deck.length - events,
             ],
-            [intl.formatMessage({ id: 'catalog.start', defaultMessage: 'Starting card' }), 1],
+            [
+              intl.formatMessage({
+                id: 'catalog.start',
+                defaultMessage: 'Starting card',
+              }),
+              1,
+            ],
           ] as const
         ).map(([label, count]) => (
           <div key={label}>

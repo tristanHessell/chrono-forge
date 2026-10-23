@@ -14,7 +14,7 @@ export type GameLogItem = {
   nextPlayer?: string;
 };
 
-export function summarizeGameLog (log: GameLog): GameLogItem[] {
+export function summarizeGameLog(log: GameLog): GameLogItem[] {
   const client = replayGameLog(log, 0);
 
   try {

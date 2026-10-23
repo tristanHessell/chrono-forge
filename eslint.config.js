@@ -41,7 +41,6 @@ export default tseslint.config(
           prev: ['if'],
         },
       ],
-      "@stylistic/space-before-function-paren": ["error", "always"],
     },
   },
   {

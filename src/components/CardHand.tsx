@@ -40,7 +40,7 @@ type CardHandProps = {
   touchDrag?: TouchCardDragHandlers;
 };
 
-export function CardHand ({
+export function CardHand({
   interactive = true,
   cards,
   owner,
