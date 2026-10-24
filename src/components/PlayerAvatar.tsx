@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useIntl } from 'react-intl';
 
 import type { PlayerId } from '../game';
 import type { PlayerType } from '../playerSetup';
@@ -13,9 +14,17 @@ type Props = {
 };
 
 export function PlayerAvatar({ compact = false, owner, type, name }: Props) {
+  const intl = useIntl();
+
   return (
     <span
-      aria-label={`${name}, ${type === 'computer' ? 'AI' : 'human'}`}
+      aria-label={intl.formatMessage(
+        {
+          id: 'player.avatar.label',
+          defaultMessage: '{name}, {type, select, computer {AI} other {human}}',
+        },
+        { name, type },
+      )}
       className={clsx(
         playerAvatarStyles.avatar,
         compact && playerAvatarStyles.compact,

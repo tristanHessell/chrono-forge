@@ -80,7 +80,9 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
             onClick={() => dialogRef.current?.close()}
             type="button"
           >
-            <span aria-hidden="true">×</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
           </button>
         </div>
         <div className={newGameDialogStyles.playerList}>

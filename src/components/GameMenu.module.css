@@ -4,8 +4,21 @@
 }
 
 .game-menu > summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
   list-style: '';
   white-space: nowrap;
+}
+
+.game-menu > summary svg {
+  fill: none;
+  height: 1rem;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-width: 2;
+  width: 1rem;
 }
 
 .game-menu > summary::-webkit-details-marker {

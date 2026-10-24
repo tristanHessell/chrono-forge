@@ -41,7 +41,9 @@ export function BoardZoomControls({
         }}
         type="button"
       >
-        −
+        <svg aria-hidden="true" viewBox="0 0 16 16">
+          <path d="M3 8h10" />
+        </svg>
       </button>
       <button
         aria-label={intl.formatMessage({
@@ -82,7 +84,9 @@ export function BoardZoomControls({
         }}
         type="button"
       >
-        +
+        <svg aria-hidden="true" viewBox="0 0 16 16">
+          <path d="M8 3v10M3 8h10" />
+        </svg>
       </button>
     </div>
   );

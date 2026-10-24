@@ -37,6 +37,16 @@
   opacity: 0.35;
 }
 
+.zoom-controls button svg {
+  display: block;
+  fill: none;
+  height: 1rem;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-width: 2;
+  width: 1rem;
+}
+
 .zoom-controls .zoom-value {
   font-size: 0.72rem;
   min-width: 3.5rem;

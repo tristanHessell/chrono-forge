@@ -90,7 +90,9 @@ export function CardCatalogDialog({
           })}
           onClick={() => dialogRef.current?.close()}
         >
-          <span aria-hidden="true">×</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m6 6 12 12M18 6 6 18" />
+          </svg>
         </button>
       </div>
       <p>
@@ -154,10 +156,10 @@ export function CardCatalogDialog({
         {(
           [
             [
-              intl.formatMessage(
-                { id: 'catalog.deck', defaultMessage: 'Deck cards' },
-                { count: deck.length },
-              ),
+              intl.formatMessage({
+                id: 'catalog.deck',
+                defaultMessage: 'Deck cards',
+              }),
               deck.length,
             ],
             [intl.formatMessage(startingEventNameMessage), events],
@@ -188,7 +190,7 @@ export function CardCatalogDialog({
           {intl.formatMessage({
             id: 'catalog.start',
             defaultMessage: 'Starting card',
-          })}{' '}
+          })}
           <span>
             {intl.formatMessage(
               {
@@ -218,7 +220,7 @@ export function CardCatalogDialog({
         return (
           <section className={cardCatalogDialogStyles.catalogGroup} key={id}>
             <h3>
-              {label}{' '}
+              {label}
               <span>
                 {intl.formatMessage(
                   {

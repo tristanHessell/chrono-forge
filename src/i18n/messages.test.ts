@@ -1,3 +1,4 @@
+/* eslint-disable formatjs/enforce-default-message -- TODO this file will likely be removed */
 import { createIntl } from 'react-intl';
 import { describe, expect, it } from 'vitest';
 
@@ -39,6 +40,7 @@ describe('English messages', () => {
           name: 'Sample Event',
           latest: 'yes',
           theme: 'dark',
+          type: 'computer',
         },
       );
 

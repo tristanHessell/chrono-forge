@@ -40,6 +40,16 @@
   z-index: 5;
 }
 
+.pending-confirm svg {
+  fill: none;
+  height: 0.9rem;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  width: 0.9rem;
+}
+
 .pending-confirm:focus-visible {
   background: var(--card-cream);
   outline: 2px solid var(--card-cream);
