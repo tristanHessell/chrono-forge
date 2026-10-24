@@ -20,5 +20,7 @@ export function listenForBoardWheel(
   // React's passive wheel listeners cannot cancel page scrolling or browser zoom.
   viewport.addEventListener('wheel', zoomWithWheel, { passive: false });
 
-  return () => viewport.removeEventListener('wheel', zoomWithWheel);
+  return () => {
+    viewport.removeEventListener('wheel', zoomWithWheel);
+  };
 }

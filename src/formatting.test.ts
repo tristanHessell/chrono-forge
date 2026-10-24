@@ -22,6 +22,7 @@ describe('import ordering', () => {
         ),
       ).toHaveLength(1);
     },
+    30_000,
   );
 
   it('automatically sorts packages, local modules, named imports and type imports', async () => {

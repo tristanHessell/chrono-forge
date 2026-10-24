@@ -118,7 +118,8 @@ it('lists four of each Manipulation without Event dates or categories', () => {
   }
   expect(
     cards.every(
-      (card) => card.number === undefined && card.category === undefined,
+      (card) =>
+        !Object.hasOwn(card, 'number') && !Object.hasOwn(card, 'category'),
     ),
   ).toBe(true);
 });

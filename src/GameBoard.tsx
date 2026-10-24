@@ -139,7 +139,9 @@ function setCardDragImage(event: DragEvent<HTMLElement>) {
     preview.offsetWidth / 2,
     preview.offsetHeight / 2,
   );
-  window.setTimeout(() => preview.remove(), 0);
+  window.setTimeout(() => {
+    preview.remove();
+  }, 0);
 }
 
 export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
@@ -671,7 +673,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         [gameBoardStyles.choosingJumpDestination]: choosingJumpDestination,
       })}
       data-touch-dragging={Boolean(touchDrag.preview)}
-      onPointerDownCapture={() => touchDrag.controller.resetClickSuppression()}
+      onPointerDownCapture={() => {
+        touchDrag.controller.resetClickSuppression();
+      }}
       onClickCapture={(event) => {
         if (touchDrag.controller.consumeClick()) {
           event.preventDefault();
@@ -802,7 +806,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             <button
               className={controlsStyles.historyButton}
               type="button"
-              onClick={() => setComputerPaused(false)}
+              onClick={() => {
+                setComputerPaused(false);
+              }}
             >
               {intl.formatMessage({
                 id: 'computer.resume',
@@ -857,9 +863,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                     onChoose={chooseCard}
                     onDragEnd={finishDrag}
                     onDragOver={allowDrop}
-                    onDragStart={(event, cardId) =>
-                      beginDrag(event, cardId, 'hand')
-                    }
+                    onDragStart={(event, cardId) => {
+                      beginDrag(event, cardId, 'hand');
+                    }}
                     onDrop={returnCardToHand}
                     owner={id}
                     ownerName={player.name}
@@ -994,7 +1000,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           <div className={gameBoardStyles.boardSurface}>
             <BoardZoomControls
               boardZoom={boardZoom}
-              onResetZoom={() => setBoardZoom(1)}
+              onResetZoom={() => {
+                setBoardZoom(1);
+              }}
               onZoomChange={adjustBoardZoom}
             />
             <div
@@ -1028,12 +1036,16 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                     isPreview={Boolean(
                       draggedCardDetails && isSnappedTo({ row: 0, column: 0 }),
                     )}
-                    onClick={() => placeSelectedCard({ row: 0, column: 0 })}
-                    onDragEnter={(event) =>
-                      snapToPosition(event, { row: 0, column: 0 })
-                    }
+                    onClick={() => {
+                      placeSelectedCard({ row: 0, column: 0 });
+                    }}
+                    onDragEnter={(event) => {
+                      snapToPosition(event, { row: 0, column: 0 });
+                    }}
                     onDragOver={allowDrop}
-                    onDrop={(event) => dropCard(event, { row: 0, column: 0 })}
+                    onDrop={(event) => {
+                      dropCard(event, { row: 0, column: 0 });
+                    }}
                   />
                 ) : (
                   <>
@@ -1152,13 +1164,13 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         onPointerUp={touchDrag.onPointerUp}
                         onPointerCancel={touchDrag.onPointerCancel}
                         onLostPointerCapture={touchDrag.onLostPointerCapture}
-                        onDragEnter={(event) =>
-                          snapToPosition(event, G.pending!)
-                        }
+                        onDragEnter={(event) => {
+                          snapToPosition(event, G.pending!);
+                        }}
                         onDragOver={allowDrop}
-                        onDragStart={(event) =>
-                          beginDrag(event, G.pending!.id, 'pending')
-                        }
+                        onDragStart={(event) => {
+                          beginDrag(event, G.pending!.id, 'pending');
+                        }}
                         onDrop={dropOnPendingCard}
                         role="region"
                         style={positionStyle(G.pending)}
@@ -1207,7 +1219,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                             event.stopPropagation();
                             gameMoves.confirmPlacement();
                           }}
-                          onPointerDown={(event) => event.stopPropagation()}
+                          onPointerDown={(event) => {
+                            event.stopPropagation();
+                          }}
                           title={intl.formatMessage({
                             id: 'placement.confirm',
                             defaultMessage: 'Confirm',
@@ -1251,12 +1265,16 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                               draggedCardDetails && isSnappedTo(position),
                             )}
                             key={positionKey(position)}
-                            onClick={() => placeSelectedCard(position)}
-                            onDragEnter={(event) =>
-                              snapToPosition(event, position)
-                            }
+                            onClick={() => {
+                              placeSelectedCard(position);
+                            }}
+                            onDragEnter={(event) => {
+                              snapToPosition(event, position);
+                            }}
                             onDragOver={allowDrop}
-                            onDrop={(event) => dropCard(event, position)}
+                            onDrop={(event) => {
+                              dropCard(event, position);
+                            }}
                             style={positionStyle(position)}
                           />
                         ))}
@@ -1279,7 +1297,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             onChoose={chooseCard}
             onDragEnd={finishDrag}
             onDragOver={allowDrop}
-            onDragStart={(event, cardId) => beginDrag(event, cardId, 'hand')}
+            onDragStart={(event, cardId) => {
+              beginDrag(event, cardId, 'hand');
+            }}
             onDrop={returnCardToHand}
             owner={handOwner}
             ownerName={handPlayer.name}

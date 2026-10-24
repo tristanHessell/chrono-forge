@@ -153,7 +153,7 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
       'drawn',
     ]);
     expect(
-      calculateScoreBreakdown(client.getState()!.G.played)[owner].total,
+      calculateScoreBreakdown(client.getState()!.G.played)[owner]?.total ?? 0,
     ).toBe(1);
     expect(client.getState()!.G.hands['0']).toEqual(before.hands['0']);
 

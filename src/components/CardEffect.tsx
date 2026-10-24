@@ -60,7 +60,9 @@ export function CardEffect({
         container: card.closest('dialog') ?? document.body,
       });
     };
-    const hide = () => setAnchor(null);
+    const hide = () => {
+      setAnchor(null);
+    };
 
     return listenForEffectTooltip(target, card, window, show, hide);
   }, [effect, showTooltip]);

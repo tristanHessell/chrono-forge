@@ -8,14 +8,6 @@ Randomise the turn order
 
 ---
 
-Use the real card name in the game log
-
----
-
-Allow you to undo you own moves as long as new information (such as a card being drawn) hasn't occurred.
-
----
-
 Add a rules section to the menu
 
 ---
@@ -60,6 +52,5 @@ Event Effects:
 - Sequential cards of the same colour & owner are locked.
 - Free action
 
-Linting: Strong typing types to ensure no explicit/implicit any
 Linting: strings are no concatenated.
 Linting: ICU strings are valid etc

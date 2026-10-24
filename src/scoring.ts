@@ -1,4 +1,4 @@
-import type { PlacedCard } from './game';
+import type { PlacedCard, PlayerId } from './game';
 import { areAdjacent } from './gameRules';
 
 export function timelineIncludes1900(
@@ -35,36 +35,41 @@ export function timelineIncludes1900(
   return false;
 }
 
-export function calculateScoreBreakdown(played: PlacedCard[]) {
-  const scores: Record<string, { base: number; bonus: number; total: number }> =
-    {
-      '0': { base: 0, bonus: 0, total: 0 },
-      '1': { base: 0, bonus: 0, total: 0 },
-    };
+export function calculateScoreBreakdown(
+  played: PlacedCard[],
+): Partial<Record<PlayerId, { base: number; bonus: number; total: number }>> {
+  const scores: Partial<
+    Record<PlayerId, { base: number; bonus: number; total: number }>
+  > = {
+    '0': { base: 0, bonus: 0, total: 0 },
+    '1': { base: 0, bonus: 0, total: 0 },
+  };
 
   for (const card of played) {
     if (card.owner === 'neutral' || card.removed) {
       continue;
     }
 
-    scores[card.owner] ??= { base: 0, bonus: 0, total: 0 };
-    scores[card.owner].base += 1;
+    const score = (scores[card.owner] ??= { base: 0, bonus: 0, total: 0 });
+
+    score.base += 1;
 
     if (
       card.effect === 'timeline-1900-bonus' &&
       timelineIncludes1900(card, played)
     ) {
-      scores[card.owner].bonus += 1;
+      score.bonus += 1;
     }
 
-    scores[card.owner].total =
-      scores[card.owner].base + scores[card.owner].bonus;
+    score.total = score.base + score.bonus;
   }
 
   return scores;
 }
 
-export function calculateScores(played: PlacedCard[]) {
+export function calculateScores(
+  played: PlacedCard[],
+): Partial<Record<PlayerId, number>> {
   const scores = calculateScoreBreakdown(played);
 
   return Object.fromEntries(

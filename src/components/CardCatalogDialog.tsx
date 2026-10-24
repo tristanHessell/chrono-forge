@@ -107,7 +107,9 @@ export function CardCatalogDialog({
         })}
         <select
           value={view}
-          onChange={(event) => setView(event.currentTarget.value as CardView)}
+          onChange={(event) => {
+            setView(event.currentTarget.value as CardView);
+          }}
         >
           <option value="hand">
             {intl.formatMessage({
@@ -130,7 +132,9 @@ export function CardCatalogDialog({
         })}
         <select
           value={size}
-          onChange={(event) => setSize(event.currentTarget.value as CardSize)}
+          onChange={(event) => {
+            setSize(event.currentTarget.value as CardSize);
+          }}
         >
           <option value="standard">
             {intl.formatMessage({

@@ -14,6 +14,7 @@ function shuffle<T>(cards: T[]): T[] {
 describe('RoundScoresDialog', () => {
   const setupGame = (): CardGameState => ({
     ...CardGame.setup!({
+      ctx: { numPlayers: 2 },
       random: { Shuffle: shuffle },
     } as never),
     roundScores: [
@@ -73,6 +74,7 @@ describe('RoundScoresDialog', () => {
   it('shows an in-progress row at the start of round 1', () => {
     const G: CardGameState = {
       ...CardGame.setup!({
+        ctx: { numPlayers: 2 },
         random: { Shuffle: shuffle },
       } as never),
       roundScores: [],

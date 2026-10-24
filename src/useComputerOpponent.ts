@@ -45,7 +45,9 @@ export function useComputerOpponent(
       }
     }, 600);
 
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [
     G,
     currentPlayer,

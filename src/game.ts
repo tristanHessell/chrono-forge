@@ -146,7 +146,7 @@ const snapshotGame = (
     ]),
   ),
   round: G.round,
-  roundScores: (G.roundScores ?? []).map((scores) => ({ ...scores })),
+  roundScores: G.roundScores.map((scores) => ({ ...scores })),
   deck: G.deck.map((card) => ({ ...card })),
   played: G.played.map((card) => ({ ...card })),
   pending: G.pending ? { ...G.pending } : null,
@@ -160,7 +160,7 @@ const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
   G.discarded = snapshot.discarded;
   G.hands = snapshot.hands;
   G.round = snapshot.round;
-  G.roundScores = (snapshot.roundScores ?? []).map((scores) => ({ ...scores }));
+  G.roundScores = snapshot.roundScores.map((scores) => ({ ...scores }));
   G.deck = snapshot.deck;
   G.played = snapshot.played;
   G.pending = snapshot.pending;
@@ -303,7 +303,7 @@ export const CardGame: Game<CardGameState> = {
   setup: ({ random, ctx }) => {
     const catalog = loadCardCatalog();
     const deck = random.Shuffle(catalog.deck);
-    const numPlayers = ctx?.numPlayers ?? 2;
+    const numPlayers = ctx.numPlayers;
 
     if (!Number.isInteger(numPlayers) || numPlayers < 2 || numPlayers > 4) {
       throw new Error('Choose between two and four players.');
@@ -355,9 +355,14 @@ export const CardGame: Game<CardGameState> = {
 
       const hand = G.hands[ctx.currentPlayer];
       const index = hand.findIndex((card) => card.id === cardId);
+
+      if (index < 0) {
+        return;
+      }
+
       const card = hand[index];
 
-      if (card?.type !== 'manipulation') {
+      if (card.type !== 'manipulation') {
         return;
       }
 
@@ -398,7 +403,9 @@ export const CardGame: Game<CardGameState> = {
         ...played.map((event) => event.placedAt + 1),
       );
       G.discarded.push(...hand.splice(index, 1));
-      advanceTurn(G, ctx.currentPlayer, events.endTurn);
+      advanceTurn(G, ctx.currentPlayer, (options) => {
+        events.endTurn(options);
+      });
     },
     discardCard: ({ G, ctx, events }, cardId: string) => {
       if (G.roundOver) {
@@ -420,7 +427,9 @@ export const CardGame: Game<CardGameState> = {
       G.pending = null;
       G.pendingSnapshot = null;
       recordMoveForUndo(G, ctx.currentPlayer, beforeDiscard);
-      advanceTurn(G, ctx.currentPlayer, events.endTurn);
+      advanceTurn(G, ctx.currentPlayer, (options) => {
+        events.endTurn(options);
+      });
     },
     playCard: ({ G, ctx }, cardId: string, position: CardPosition) => {
       const owner = ctx.currentPlayer as PlayerId;
@@ -570,7 +579,9 @@ export const CardGame: Game<CardGameState> = {
         }
       }
 
-      advanceTurn(G, ctx.currentPlayer, events.endTurn);
+      advanceTurn(G, ctx.currentPlayer, (options) => {
+        events.endTurn(options);
+      });
     },
 
     undoTest: undoMove,

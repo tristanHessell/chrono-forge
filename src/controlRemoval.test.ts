@@ -135,7 +135,7 @@ describe('Take Control and Remove Event', () => {
       expect(after.deck).toEqual(before.deck);
       expect(after.discarded.map((card) => card.id)).toEqual(['manipulation']);
       expect(after.actionsThisTurn).toBe(1);
-      expect(calculateScoreBreakdown(after.played)['0'].total).toBe(
+      expect(calculateScoreBreakdown(after.played)['0']?.total ?? 0).toBe(
         target === 'bonus' ? 2 : 1,
       );
       client.moves.undoTest();

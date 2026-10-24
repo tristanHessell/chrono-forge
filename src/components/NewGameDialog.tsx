@@ -124,9 +124,12 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                         name: player.name,
                       },
                     )}
-                    onChange={(event) =>
-                      setPlayerType(player.id, event.target.value as PlayerType)
-                    }
+                    onChange={(event) => {
+                      setPlayerType(
+                        player.id,
+                        event.target.value as PlayerType,
+                      );
+                    }}
                     value={player.type}
                   >
                     <option value="computer">
@@ -154,7 +157,9 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                     { name: player.name },
                   )}
                   className={controlsStyles.historyButton}
-                  onClick={() => removePlayer(player.id)}
+                  onClick={() => {
+                    removePlayer(player.id);
+                  }}
                   type="button"
                 >
                   {intl.formatMessage({

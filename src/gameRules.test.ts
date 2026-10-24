@@ -104,6 +104,7 @@ describe('placement rules', () => {
 describe('card game state transitions', () => {
   it('deals five cards to each player and leaves thirty-six in the deck', () => {
     const G = CardGame.setup!({
+      ctx: { numPlayers: 2 },
       random: { Shuffle: <T>(cards: T[]) => cards },
     } as never);
 

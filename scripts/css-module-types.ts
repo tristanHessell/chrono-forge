@@ -11,10 +11,14 @@ const generatedHeader = '// Generated CSS module types. Do not edit.\n';
 
 type ClassPosition = { line: number; column: number; length: number };
 
+function isMissingFileError(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
+}
+
 async function listFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { withFileTypes: true });
   const groups = await Promise.all(
-    entries.map((entry) => {
+    entries.map(async (entry) => {
       const file = path.join(directory, entry.name);
 
       return entry.isDirectory() ? listFiles(file) : [file];
@@ -72,7 +76,13 @@ function classPositions(css: string, file: string): Map<string, ClassPosition> {
 }
 
 async function writeIfChanged(file: string, content: string) {
-  const previous = await readFile(file, 'utf8').catch(() => null);
+  const previous = await readFile(file, 'utf8').catch((error: unknown) => {
+    if (isMissingFileError(error)) {
+      return null;
+    }
+
+    throw error;
+  });
 
   if (previous !== content) {
     await writeFile(file, content);
@@ -138,8 +148,8 @@ export async function generateCssModuleTypes(
 
     if (!modules.includes(source) && declaration.startsWith(generatedHeader)) {
       await unlink(file);
-      await unlink(`${file}.map`).catch((error: NodeJS.ErrnoException) => {
-        if (error.code !== 'ENOENT') {
+      await unlink(`${file}.map`).catch((error: unknown) => {
+        if (!isMissingFileError(error)) {
           throw error;
         }
       });
@@ -162,7 +172,11 @@ export function cssModuleTypesPlugin(): Plugin {
 
         pending = pending
           .then(() => generateCssModuleTypes(server.config))
-          .catch((error: Error) => server.config.logger.error(error.message));
+          .catch((error: unknown) => {
+            server.config.logger.error(
+              error instanceof Error ? error.message : String(error),
+            );
+          });
       };
       const stop = () => {
         server.watcher.off('add', update);

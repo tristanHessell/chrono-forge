@@ -74,11 +74,7 @@ const isValidEventPlacement = (
   if (card && card.type !== 'event') {
     return false;
   }
-  if (
-    !position ||
-    !Number.isInteger(position.row) ||
-    !Number.isInteger(position.column)
-  ) {
+  if (!Number.isInteger(position.row) || !Number.isInteger(position.column)) {
     return false;
   }
 
@@ -125,7 +121,7 @@ const isValidEventPlacement = (
     ) &&
     !wouldCreateHeadToHeadMerge(remaining, position);
 
-  return Boolean(valid);
+  return valid;
 };
 
 export const isValidPlacement = (
