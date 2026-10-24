@@ -52,6 +52,30 @@ These placement rules also apply when a player moves or replaces an unconfirmed
 Event. See [Manipulations](./manipulations.md) for how board changes affect
 existing links.
 
+## Add an Event effect
+
+An Event can have one optional effect. Define when the effect runs before you
+add it. Effects can run when a player confirms an Event or can change scoring.
+
+1. Add a stable effect ID to `CardEffect` in `src/game.ts`. Do not use a
+   translated label as the ID.
+2. Allow the ID in `src/cardCatalog.ts`.
+3. Add the effect to the relevant Event definitions in `src/cards/events/`.
+   Keep each card ID unique.
+4. Implement the behavior in the correct rule path. Use the Event confirmation
+   move in `src/game.ts` for a one-time effect. Use `src/scoring.ts` or a shared
+   rule module for scoring or board rules.
+5. Add the effect name and description to
+   `src/i18n/messageDescriptors.ts` and `src/i18n/en.json`. Update
+   `src/components/CardEffect.tsx` if the effect needs its own icon.
+6. Update `src/computer.ts` if the effect changes which move the computer
+   should choose. Use only the computer's hand and the public board.
+7. Add tests for the catalog and each behavior. Cover confirmation, scoring,
+   discard, undo, and replay behavior when they apply.
+8. Increment `rulesVersion` in `src/gameLog.ts` if old logs cannot replay under
+   the new rules.
+9. Add an entry to [Event effect additions](./event-effect-additions.md).
+
 ## Draws and discards
 
 All 1940 Events have the `draw-one` effect. Confirming one draws a card into the

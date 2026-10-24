@@ -46,7 +46,8 @@ For a continuation, keep the task's existing branch unless the user requests a n
 3. Fetch `origin` before creating a task branch.
    If the fetch fails, report that the latest `main` is not verified.
 4. Create the new task branch from `origin/main`.
-   Use the `codex/` prefix for Codex branches unless the user specifies another name.
+   Use the harness name as the prefix, such as `codex/` for Codex or
+   `copilot/` for Copilot, unless the user specifies another name.
 5. Verify that the branch contains the fetched `origin/main` before starting the task.
 
 ## Commit message format
