@@ -1,9 +1,9 @@
 import js from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
-import { defineConfig } from 'eslint/config';
+import perfectionist from 'eslint-plugin-perfectionist';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -18,10 +18,24 @@ export default defineConfig(
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     plugins: {
       '@stylistic': stylistic,
-      'simple-import-sort': simpleImportSort,
+      perfectionist,
     },
     rules: {
-      'simple-import-sort/imports': 'error',
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          groups: [
+            ['side-effect', 'side-effect-style'],
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+          newlinesBetween: 1,
+          fallbackSort: { type: 'type-import-first' },
+        },
+      ],
+      'perfectionist/sort-named-imports': 'error',
       curly: ['error', 'all'],
       '@stylistic/padding-line-between-statements': [
         'error',

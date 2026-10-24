@@ -207,7 +207,7 @@ Repository administrators can require this check through branch protection.
 - ESLint 9 uses the flat config in `eslint.config.js` with `typescript-eslint`.
   React Hooks and React Refresh rules check the React code.
   `@stylistic` checks blank lines.
-  `eslint-plugin-simple-import-sort` checks import order.
+  `eslint-plugin-perfectionist` checks import order.
 - Prettier uses `.prettierrc.json`.
   ESLint and Prettier both contribute to the formatting checks.
 - CSpell uses `cspell.json` with English and British English dictionaries.
