@@ -140,15 +140,16 @@ Its counts come from the configured deck, not the remaining cards in the current
 Choose 2, 3, or 4 players with the Players selector (this starts a new game).
 Player 0 is you; the other seats are computers, with visible hands and individually
 labelled cards and scores. Each player starts with five cards, takes two actions,
-and refills to five from the shared 46-card deck. Turns rotate through the seats;
-empty hands are skipped, and the game ends only when every hand and the deck are empty.
+and refills to five from the shared 46-card deck. A confirmed 1910 Event does not
+use an action. Turns rotate through the seats; empty hands are skipped, and the
+game ends only when every hand and the deck are empty.
 
-Each computer evaluates legal placements for points, draw
-effects, and future plays; if no placement is possible, it discards. Decisions
+Each computer evaluates legal placements for points, free-action effects, draw
+effects, and future plays. If no placement is possible, it discards. Decisions
 use only its hand and the public board, not your hand or the deck order. Its hand
 remains visible for this prototype. Computer moves run locally after a short
-delay. Undo/redo pauses the computer so restored positions can be inspected;
-click Resume computer to continue. New game resumes normal computer play.
+delay. Undo/redo pauses the computer so restored positions can be inspected.
+Click Resume computer to continue. New game resumes normal computer play.
 
 Event categories are Politics (red border), Tech (yellow border), and Nature (green border).
 Each decade has one card from each category.
@@ -277,8 +278,9 @@ cards score no points. Totals include base points plus valid bonuses and update
 with undo/redo. At game end, the result shows every player's breakdown and announces the
 winner or a tie.
 The game initially deals five cards to each player. Each turn consists of two
-actions: confirm an Event on the board, use a Manipulation, or discard a card. Selecting, moving, or
-replacing an unconfirmed card does not use an action. After the second action,
+actions: confirm an Event on the board, use a Manipulation, or discard a card.
+A confirmed 1910 Event does not count toward these two actions. Selecting,
+moving, or replacing an unconfirmed card does not use an action. After the second action,
 draw enough cards to refill the active player's hand to five, then pass the turn.
 Draw effects happen immediately and count toward that refill. If a player runs
 out of cards before the second action, their turn ends early and refills.

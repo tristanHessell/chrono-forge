@@ -23,6 +23,17 @@ const state = (): CardGameState =>
   } as never);
 
 describe('computer opponent', () => {
+  it('prioritizes a free action so the computer can use another card', () => {
+    const G = state();
+
+    G.hands['1'] = [event('event-1900-1'), event('event-1910-1')];
+
+    expect(chooseComputerAction(G)).toMatchObject({
+      type: 'play',
+      cardId: 'event-1910-1',
+    });
+  });
+
   it('prefers a placement that earns the valid 1990 bonus', () => {
     const G = state();
 

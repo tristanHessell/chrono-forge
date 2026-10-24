@@ -106,3 +106,69 @@ describe('draw one effect', () => {
     expect(client.getState()!.G.hands['0']).toEqual([event('event-1950-1')]);
   });
 });
+
+describe('free action effect', () => {
+  it('is defined on all three 1910 cards and no other cards', () => {
+    const cards = loadCardCatalog().deck;
+
+    expect(cards.filter((card) => card.effect === 'free-action')).toHaveLength(
+      3,
+    );
+    for (const card of cards) {
+      expect(card.effect === 'free-action').toBe(card.number === 1910);
+    }
+  });
+
+  it('allows two other actions and supports undo and redo', () => {
+    const catalog = loadCardCatalog().deck;
+    const hand = ['event-1910-1', 'event-1920-1', 'event-1930-1'].map((id) =>
+      catalog.find((card) => card.id === id)!,
+    );
+    const otherHand = [event('event-1950-1')];
+    const reservedIds = new Set([...hand, ...otherHand].map((card) => card.id));
+    const deck = catalog.filter((card) => !reservedIds.has(card.id));
+    const client = Client({
+      game: {
+        ...CardGame,
+        setup: (context) => {
+          const initial = CardGame.setup!(context);
+
+          return {
+            ...initial,
+            deck,
+            hands: { ...initial.hands, '0': hand, '1': otherHand },
+          };
+        },
+      },
+      numPlayers: 2,
+    });
+
+    client.moves.playCard(hand[0].id, { row: 0, column: 1 });
+    client.moves.confirmPlacement();
+
+    const afterFreeAction = client.getState()!;
+
+    expect(afterFreeAction.ctx.currentPlayer).toBe('0');
+    expect(afterFreeAction.G.actionsThisTurn).toBe(0);
+    expect(canUndoMove(afterFreeAction.G)).toBe(true);
+    client.moves.undoTest();
+    expect(client.getState()!.G.hands['0']).toEqual(hand);
+    expect(client.getState()!.G.actionsThisTurn).toBe(0);
+    client.moves.redoTest();
+    expect(client.getState()!.G).toEqual(afterFreeAction.G);
+
+    client.moves.playCard(hand[1].id, { row: 0, column: 2 });
+    client.moves.confirmPlacement();
+    expect(client.getState()!.ctx.currentPlayer).toBe('0');
+    expect(client.getState()!.G.actionsThisTurn).toBe(1);
+
+    client.moves.playCard(hand[2].id, { row: 0, column: 3 });
+    client.moves.confirmPlacement();
+
+    const afterTurn = client.getState()!;
+
+    expect(afterTurn.ctx.currentPlayer).toBe('1');
+    expect(afterTurn.G.actionsThisTurn).toBe(0);
+    expect(afterTurn.G.played).toHaveLength(4);
+  });
+});

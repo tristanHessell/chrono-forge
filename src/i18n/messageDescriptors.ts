@@ -65,6 +65,10 @@ export const manipulationDescriptionMessages: DescriptorMap<ManipulationAction> 
 
 export const effectNameMessages: DescriptorMap<CardEffect> = defineMessages({
   'draw-one': { id: 'effect.draw-one.name', defaultMessage: 'Draw one card' },
+  'free-action': {
+    id: 'effect.free-action.name',
+    defaultMessage: 'Free action',
+  },
   'timeline-1900-bonus': {
     id: 'effect.timeline-1900-bonus.name',
     defaultMessage: '1900 timeline bonus',
@@ -77,6 +81,11 @@ export const effectDescriptionMessages: DescriptorMap<CardEffect> =
       id: 'effect.draw-one.description',
       defaultMessage:
         'When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.',
+    },
+    'free-action': {
+      id: 'effect.free-action.description',
+      defaultMessage:
+        'When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.',
     },
     'timeline-1900-bonus': {
       id: 'effect.timeline-1900-bonus.description',

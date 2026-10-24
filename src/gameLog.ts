@@ -9,7 +9,7 @@ import {
 } from './game';
 import type { PlayerCount } from './playerCount';
 
-const RULES_VERSION = 3;
+const RULES_VERSION = 4;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -105,7 +105,7 @@ export function currentGameLog(
 
   return {
     version: 2,
-    rulesVersion: RULES_VERSION,
+    rulesVersion: G.freeActionsEnabled ? RULES_VERSION : 2,
     seed,
     numPlayers: G.playerIds.length as PlayerCount,
     startingPlayer: G.startingPlayer,
@@ -161,9 +161,10 @@ function confirmedActions(
   numPlayers: PlayerCount,
   actions: LogEntry['action'][],
   startingPlayer: PlayerId,
+  rulesVersion: GameLog['rulesVersion'] = RULES_VERSION,
 ): LogEntry['action'][] {
   const client = Client({
-    game: { ...createCardGame(startingPlayer), seed },
+    game: { ...createCardGame(startingPlayer, rulesVersion !== 2), seed },
     numPlayers,
     debug: false,
   });
@@ -256,6 +257,7 @@ export function exportGameLog(
   numPlayers: PlayerCount,
   entries: readonly LogEntry[] = [],
   startingPlayer: PlayerId = '0',
+  rulesVersion: GameLog['rulesVersion'] = RULES_VERSION,
 ): string {
   // A move and its triggered events share a state ID. The move recreates
   // those events during replay, so retain only the first entry per ID.
@@ -291,11 +293,17 @@ export function exportGameLog(
   return JSON.stringify(
     {
       version: 2,
-      rulesVersion: RULES_VERSION,
+      rulesVersion,
       seed,
       numPlayers,
       startingPlayer,
-      actions: confirmedActions(seed, numPlayers, actions, startingPlayer),
+      actions: confirmedActions(
+        seed,
+        numPlayers,
+        actions,
+        startingPlayer,
+        rulesVersion,
+      ),
     } satisfies GameLog,
     null,
     2,
@@ -333,6 +341,7 @@ export function parseGameLog(text: string): GameLog {
   }
 
   const numPlayers = parsed.numPlayers;
+  const rulesVersion = parsed.rulesVersion;
   const startingPlayer =
     parsed.rulesVersion === 2 ? '0' : (parsed.startingPlayer as PlayerId);
   const playerIds = Array.from({ length: numPlayers }, (_, index) =>
@@ -394,11 +403,17 @@ export function parseGameLog(text: string): GameLog {
 
   return {
     version: 2,
-    rulesVersion: RULES_VERSION,
+    rulesVersion,
     seed: parsed.seed,
     numPlayers,
     startingPlayer,
-    actions: confirmedActions(parsed.seed, numPlayers, actions, startingPlayer),
+    actions: confirmedActions(
+      parsed.seed,
+      numPlayers,
+      actions,
+      startingPlayer,
+      rulesVersion,
+    ),
   };
 }
 
@@ -408,7 +423,10 @@ export function replayGameLog(log: GameLog, steps = log.actions.length) {
   }
 
   const client = Client({
-    game: { ...createCardGame(log.startingPlayer), seed: log.seed },
+    game: {
+      ...createCardGame(log.startingPlayer, log.rulesVersion !== 2),
+      seed: log.seed,
+    },
     numPlayers: log.numPlayers,
     debug: false,
   });

@@ -140,6 +140,7 @@ describe('card game state transitions', () => {
   const makeState = (): CardGameState => ({
     actionsThisTurn: 0,
     discarded: [],
+    freeActionsEnabled: true,
     deck: [
       {
         id: 'event-c-3',

@@ -80,6 +80,7 @@ it('rejects malformed or incompatible logs and unknown actions', () => {
     'null',
     '{}',
     JSON.stringify({ ...valid, version: 99 }),
+    JSON.stringify({ ...valid, rulesVersion: 3 }),
     JSON.stringify({ ...valid, numPlayers: 5 }),
     JSON.stringify({ ...valid, actions: [{ type: 'RESET' }] }),
   ]) {

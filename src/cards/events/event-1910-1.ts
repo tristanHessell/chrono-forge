@@ -6,4 +6,5 @@ export default {
   name: 'global-conflict',
   number: 1910,
   category: 'political',
+  effect: 'free-action',
 } as const satisfies EventCard;

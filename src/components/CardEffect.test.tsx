@@ -21,3 +21,13 @@ it.each([true, false])(
     expect(html).not.toContain('role="tooltip"');
   },
 );
+
+it('shows the free action label', () => {
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <CardEffect effect="free-action" />
+    </IntlProvider>,
+  );
+
+  expect(html).toContain('aria-label="Free action"');
+});

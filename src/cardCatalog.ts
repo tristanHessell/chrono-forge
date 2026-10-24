@@ -41,6 +41,7 @@ function readCard(definition: {
   if (
     definition.effect !== undefined &&
     definition.effect !== 'draw-one' &&
+    definition.effect !== 'free-action' &&
     definition.effect !== 'timeline-1900-bonus'
   ) {
     throw new Error(`Unknown card effect: ${definition.effect}`);
