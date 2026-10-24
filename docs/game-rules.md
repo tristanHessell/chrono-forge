@@ -21,8 +21,10 @@ player and does not score. Each player's first Event must touch this card.
 ## Turns and actions
 
 Each turn has up to two actions. A player can confirm an Event, use a
-Manipulation, or discard a card for each action. Selecting, moving, or replacing
-an unconfirmed Event does not use an action.
+Manipulation, or discard a card for each action. Confirming a `free-action`
+Event does not use one of these actions. A player can still take up to two
+other actions that turn. Selecting, moving, or replacing an unconfirmed Event
+does not use an action.
 
 After the second action, the active player draws cards until their hand has five
 cards, then the next player takes a turn. If a player has no cards before their
@@ -78,6 +80,10 @@ add it. Effects can run when a player confirms an Event or can change scoring.
 9. Add an entry to [Event effect additions](./event-effect-additions.md).
 
 ## Draws and discards
+
+All 1910 Events have the `free-action` effect. Confirming one does not count
+toward the player's two actions. The Event still uses its card. Discarding does
+not trigger this effect.
 
 All 1940 Events have the `draw-one` effect. Confirming one draws a card into the
 active player's hand before turn progression. The draw counts toward the next

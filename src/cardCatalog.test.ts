@@ -63,6 +63,11 @@ it('includes one card per category for every decade and keeps the start neutral'
   }
   expect(
     deck
+      .filter((card) => card.number === 1910)
+      .every((card) => card.effect === 'free-action'),
+  ).toBe(true);
+  expect(
+    deck
       .filter((card) => card.number === 1940)
       .every((card) => card.effect === 'draw-one'),
   ).toBe(true);

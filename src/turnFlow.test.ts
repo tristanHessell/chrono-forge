@@ -80,7 +80,7 @@ it('counts a confirmed play and a discard as the two actions', () => {
 
 it('allows two confirmed plays before handing control to the opponent', () => {
   const catalog = loadCardCatalog().deck;
-  const hand = [1900, 1910, 1920, 1930, 1950].map((date) =>
+  const hand = [1900, 1920, 1930, 1950, 1960].map((date) =>
     catalog.find((card) => card.number === date)!,
   );
   const client = Client({
@@ -186,10 +186,10 @@ it('applies draw effects immediately, then tops up the hand at turn end', () => 
 
 it('records player points for each round as turns cycle', () => {
   const catalog = loadCardCatalog().deck;
-  const p0Cards = [1910, 1920].map((date) =>
+  const p0Cards = [1920, 1930].map((date) =>
     catalog.find((card) => card.number === date)!,
   );
-  const p1Cards = [1930, 1940].map((date) =>
+  const p1Cards = [1950, 1960].map((date) =>
     catalog.find((card) => card.number === date)!,
   );
   const client = Client({

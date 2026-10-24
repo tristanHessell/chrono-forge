@@ -15,7 +15,7 @@ export {
   wouldCreateSquare,
 } from './gameRules';
 
-export type CardEffect = 'draw-one' | 'timeline-1900-bonus';
+export type CardEffect = 'draw-one' | 'free-action' | 'timeline-1900-bonus';
 export type EventCategory = 'political' | 'technological' | 'environmental';
 export type EventName =
   | 'assembly-lines'
@@ -95,6 +95,7 @@ export type CardPosition = {
 export type CardGameState = {
   actionsThisTurn: number;
   discarded: Card[];
+  freeActionsEnabled: boolean;
   hands: Record<string, Card[]>;
   playerIds: PlayerId[];
   round: number;
@@ -119,6 +120,7 @@ type CardGameSnapshot = {
   actionsThisTurn: number;
   currentPlayer: string;
   discarded: Card[];
+  freeActionsEnabled: boolean;
   hands: Record<string, Card[]>;
   round: number;
   roundScores: Record<string, number>[];
@@ -139,6 +141,7 @@ const snapshotGame = (
   actionsThisTurn: G.actionsThisTurn,
   currentPlayer,
   discarded: G.discarded.map((card) => ({ ...card })),
+  freeActionsEnabled: G.freeActionsEnabled,
   hands: Object.fromEntries(
     Object.entries(G.hands).map(([id, hand]) => [
       id,
@@ -158,6 +161,7 @@ const snapshotGame = (
 const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
   G.actionsThisTurn = snapshot.actionsThisTurn;
   G.discarded = snapshot.discarded;
+  G.freeActionsEnabled = snapshot.freeActionsEnabled;
   G.hands = snapshot.hands;
   G.round = snapshot.round;
   G.roundScores = snapshot.roundScores.map((scores) => ({ ...scores }));
@@ -197,8 +201,11 @@ const advanceTurn = (
   G: CardGameState,
   currentPlayer: string,
   endTurn: (options?: { next: string }) => void,
+  countsAsAction = true,
 ) => {
-  G.actionsThisTurn += 1;
+  if (countsAsAction) {
+    G.actionsThisTurn += 1;
+  }
 
   const hand = G.hands[currentPlayer];
 
@@ -320,6 +327,7 @@ export const CardGame: Game<CardGameState> = {
     return {
       actionsThisTurn: 0,
       discarded: [],
+      freeActionsEnabled: true,
       hands: Object.fromEntries(
         playerIds.map((id) => [id, deck.splice(0, HAND_SIZE)]),
       ),
@@ -585,9 +593,14 @@ export const CardGame: Game<CardGameState> = {
         }
       }
 
-      advanceTurn(G, ctx.currentPlayer, (options) => {
-        events.endTurn(options);
-      });
+      advanceTurn(
+        G,
+        ctx.currentPlayer,
+        (options) => {
+          events.endTurn(options);
+        },
+        playedCard.effect !== 'free-action' || !G.freeActionsEnabled,
+      );
     },
 
     undoTest: undoMove,
@@ -611,12 +624,16 @@ export const CardGame: Game<CardGameState> = {
 
 CardGame.turn!.stages!.undoWindow.moves = CardGame.moves;
 
-export function createCardGame(startingPlayer: PlayerId): Game<CardGameState> {
+export function createCardGame(
+  startingPlayer: PlayerId,
+  freeActionsEnabled = true,
+): Game<CardGameState> {
   return {
     ...CardGame,
     setup: (context) => ({
       ...CardGame.setup!(context),
       startingPlayer,
+      freeActionsEnabled,
     }),
   };
 }

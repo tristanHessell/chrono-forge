@@ -21,13 +21,17 @@ export function CardEffect({
 }) {
   const intl = useIntl();
   const nameMessage =
-    effect === 'draw-one' || effect === 'timeline-1900-bonus'
+    effect === 'draw-one' ||
+    effect === 'free-action' ||
+    effect === 'timeline-1900-bonus'
       ? effectNameMessages[effect]
       : effect
         ? manipulationNameMessages[effect]
         : null;
   const descriptionMessage =
-    effect === 'draw-one' || effect === 'timeline-1900-bonus'
+    effect === 'draw-one' ||
+    effect === 'free-action' ||
+    effect === 'timeline-1900-bonus'
       ? effectDescriptionMessages[effect]
       : effect
         ? manipulationDescriptionMessages[effect]
@@ -93,6 +97,8 @@ export function CardEffect({
         >
           {effect === 'draw-one' ? (
             <path d="M5 5V3h12v3M3 8h12v13H3zM18 9v8m-4-4h8" />
+          ) : effect === 'free-action' ? (
+            <path d="m14 2-9 12h7l-2 8 9-12h-7z" />
           ) : effect === 'time-jump' ? (
             <path d="M4 12h16m-6-6 6 6-6 6M4 5v14" />
           ) : effect === 'time-swap' ? (

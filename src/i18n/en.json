@@ -66,6 +66,8 @@
   "discard.title": "Discard",
   "effect.draw-one.description": "When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.",
   "effect.draw-one.name": "Draw one card",
+  "effect.free-action.description": "When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.",
+  "effect.free-action.name": "Free action",
   "effect.timeline-1900-bonus.description": "Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.",
   "effect.timeline-1900-bonus.name": "1900 timeline bonus",
   "game.new": "New game",

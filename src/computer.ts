@@ -112,9 +112,11 @@ export function chooseComputerAction(
         (candidate) => getAvailablePositions(played, candidate).length > 0,
       ).length;
       const drawValue = card.effect === 'draw-one' && G.deck.length > 0 ? 3 : 0;
+      const freeActionValue = card.effect === 'free-action' ? 3 : 0;
       const value =
         points * 10 +
         drawValue +
+        freeActionValue +
         futurePlays * 2 -
         (card.number - 1900) / 100 -
         (Math.abs(position.row) + Math.abs(position.column)) * 0.01;

@@ -83,7 +83,7 @@ it.each([
     expect(client.getState()!.G.played).toEqual(after.G.played);
 
     const replay = replayGameLog(
-      parseGameLog(exportGameLog(setup.seed, 2, client.log)),
+      parseGameLog(exportGameLog(setup.seed, 2, client.log, '0', 2)),
     );
 
     expect(replay.getState()!.G.played).toEqual(after.G.played);
