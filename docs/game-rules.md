@@ -6,7 +6,8 @@ See [Manipulations](./manipulations.md) for the four command cards.
 ## Players and setup
 
 The game supports two to four players. Player 0 is human. The other seats use
-computer players. Each player starts with five cards.
+computer players. The game selects a random starting player for each new game.
+Each player starts with five cards.
 
 The shared deck has 46 cards:
 

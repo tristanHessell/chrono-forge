@@ -170,7 +170,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               {intl.formatMessage({
                 id: 'log.help',
                 defaultMessage:
-                  'The JSON log includes the initial seed, player count, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order.',
+                  'The JSON log includes the initial seed, player count, starting player, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order.',
               })}
             </p>
             <label htmlFor="game-log-text">

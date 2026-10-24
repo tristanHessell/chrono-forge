@@ -62,6 +62,7 @@ Write each commit message in the Conventional Commits format: `type(scope): desc
   Write the body in the ASD-STE100 style above, and explain why the change was made, not just what changed.
 - Add an attribution footer to every commit that an agent contributes to.
   For Codex, use `Co-Authored-By: Codex <noreply@openai.com>`.
+  For Copilot, use `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`.
   For Claude, keep the attribution footer from its system instructions, for example `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`.
   Separate the footer from the body with a blank line.
   Keep the attribution footer as the last line.
@@ -136,6 +137,8 @@ Do not show drawn cards in the human-readable log.
 
 Replays require matching rules and card definitions.
 Increment `rulesVersion` in `src/gameLog.ts` for incompatible changes.
+Store the starting player in each game log.
+Use player 0 when an older log has no starting player.
 Validate an imported log before replacing the current session.
 Keep computers paused during log inspection and after import.
 

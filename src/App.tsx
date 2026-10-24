@@ -1,12 +1,13 @@
 import { Client } from 'boardgame.io/react';
 import { useEffect, useRef, useState } from 'react';
 
-import { CardGame, type CardGameState } from './game';
+import { type CardGameState, createCardGame, type PlayerId } from './game';
 import { GameBoard } from './GameBoard';
 import { applyGameLogAction, type GameLog } from './gameLog';
 import { GameLogContext } from './gameLogContext';
 import type { PlayerCount } from './playerCount';
 import {
+  chooseStartingPlayer,
   createDefaultPlayers,
   type PlayerSetup,
   PlayerSetupContext,
@@ -15,6 +16,7 @@ import {
 type Session = {
   seed: string;
   numPlayers: PlayerCount;
+  startingPlayer: PlayerId;
   players: PlayerSetup[];
   replay?: { log: GameLog; steps: number };
   CardGameClient: ReturnType<typeof Client<CardGameState>>;
@@ -24,7 +26,7 @@ function createSession(options: Omit<Session, 'CardGameClient'>): Session {
   return {
     ...options,
     CardGameClient: Client({
-      game: { ...CardGame, seed: options.seed },
+      game: { ...createCardGame(options.startingPlayer), seed: options.seed },
       board: GameBoard,
       numPlayers: options.numPlayers,
       debug: false,
@@ -59,6 +61,7 @@ export function App() {
     createSession({
       seed: crypto.randomUUID(),
       numPlayers: 2,
+      startingPlayer: chooseStartingPlayer(2),
       players: createDefaultPlayers(),
     }),
   );
@@ -71,6 +74,7 @@ export function App() {
     replaceSession({
       seed: crypto.randomUUID(),
       numPlayers: players.length as PlayerCount,
+      startingPlayer: chooseStartingPlayer(players.length as PlayerCount),
       players,
     });
   };
@@ -85,6 +89,7 @@ export function App() {
           replaceSession({
             seed: log.seed,
             numPlayers: log.numPlayers,
+            startingPlayer: log.startingPlayer,
             players: createDefaultPlayers(log.numPlayers),
             replay: { log, steps },
           });
