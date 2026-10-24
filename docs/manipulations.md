@@ -12,6 +12,34 @@ bonuses after each command.
 See [Game rules](./game-rules.md) for placement, arrows, square limits, and
 scoring.
 
+## Add a Command card
+
+The code calls Command cards Manipulations. Follow the existing names in the
+source files.
+
+1. Define the command's valid targets, arguments, and effects. Decide whether
+   it can target the starting card or a removed Event.
+2. Add an action ID to `ManipulationAction` in `src/game.ts`.
+3. Add one card definition per copy in `src/cards/manipulations/`. Give every
+   copy a unique ID.
+4. Import each definition in `src/cards/index.ts` and add it to the deck.
+   Keep the existing card order so seeded games remain compatible.
+5. Allow the action ID in `src/cardCatalog.ts`. Update the catalog tests for
+   the new cards and copy count.
+6. Implement validation and the board change in
+   `src/manipulationRules.ts`. Add destination discovery when the command needs
+   a position or a second target.
+7. Update `src/GameBoard.tsx` for target selection, destinations, and prompts.
+   Update `src/computer.ts` so the computer can choose legal uses.
+8. Add the command name and description to
+   `src/i18n/messageDescriptors.ts` and `src/i18n/en.json`. Update
+   `src/components/CardEffect.tsx` if the command needs its own icon.
+9. Add tests for legal and illegal uses, undo, the computer, and replay.
+   Update game-log handling if it needs new command arguments. Increment
+   `rulesVersion` in `src/gameLog.ts` if old logs cannot replay.
+10. Add an entry to
+    [Command card additions](./command-card-additions.md).
+
 ## Time Jump
 
 Move an Event to a highlighted empty position or overwrite a removed Event. The

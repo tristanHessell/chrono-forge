@@ -1,10 +1,8 @@
 # TODO
 
-Prompt: Dragging a command like `take control` over the card it's targetting doesn't work
-
 ---
 
-Randomise the turn order
+Prompt: Dragging a command like `take control` over the card it's targetting doesn't work
 
 ---
 
@@ -19,18 +17,13 @@ Rename category `Technological` -> `Tech`
 
 Change the Event cards to have the colour stripe on the right (where the category is), rather than around the card
 
-Add Technology Effects
+Add Technology (yellow) Effects
 
-Add Political Effects
+Add Political (red) Effects
 
-Add Environmental Effects
+Add Environmental (green) Effects
 
-More Command Cards
-
-- Overwrite a card
-- Temporal Echo: Copy a card
-- Temporal Shield: Stop all manipulations
-- Restore an event? Should be a modal effect
+---
 
 Secret Roles - 8 overall, get 1 at the start
 
@@ -38,19 +31,31 @@ Secret Roles - 8 overall, get 1 at the start
 - Longest road?
 - Most of the Event types on board (1 point for each you have the most?)
 
+---
+
 Warn on ambiguous characters in code
+
+---
 
 Move map output files to a different location
 
+---
+
 Comment through functions
+
+---
 
 Should a removed event invalidate any of the events that are no longer connected to the timeline?
 
-Event Effects:
+---
 
-- Extra points if X cards are touching?
-- Sequential cards of the same colour & owner are locked.
-- Free action
+- [Track Event effect additions](docs/event-effect-additions.md)
+
+---
+
+- [Track Command card additions](docs/command-card-additions.md)
+
+---
 
 Linting: strings are no concatenated.
 Linting: ICU strings are valid etc
