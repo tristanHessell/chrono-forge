@@ -58,8 +58,13 @@ export function GameResults({
             {intl.formatMessage(
               {
                 id: 'score.breakdown',
-                defaultMessage:
-                  '{name}: {base, plural, one {# card point} other {# card points}} + {bonus, plural, one {# bonus point} other {# bonus points}} = {total, number} total',
+                defaultMessage: `{name}: {base, plural,
+                    one {# card point}
+                    other {# card points}
+                  } + {bonus, plural,
+                    one {# bonus point}
+                    other {# bonus points}
+                  } = {total, number} total`,
               },
               {
                 name: getPlayer(players, owner).name,

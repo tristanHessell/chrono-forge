@@ -700,9 +700,14 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       <header className={gameBoardStyles.header}>
         <div className={gameBoardStyles.topActions}>
           <div className={gameBoardStyles.gameBrand}>
-            <span aria-hidden="true">⬡</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m12 2 9 5v10l-9 5-9-5V7z" />
+            </svg>
             <div>
-              Chrono-Forge
+              {intl.formatMessage({
+                id: 'brand.name',
+                defaultMessage: 'Chrono-Forge',
+              })}
               <small>
                 {intl.formatMessage({
                   id: 'brand.tagline',
@@ -951,7 +956,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   }
                 }}
               >
-                <span aria-hidden="true">⇣</span>
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
+                </svg>
                 <span>
                   {intl.formatMessage({
                     id: 'discard.title',
@@ -1228,7 +1235,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           })}
                           type="button"
                         >
-                          <span aria-hidden="true">✓</span>
+                          <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="m5 12 5 5L20 7" />
+                          </svg>
                         </button>
                       </div>
                     )}

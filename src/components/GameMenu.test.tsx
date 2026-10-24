@@ -7,7 +7,7 @@ import { GameMenu } from './GameMenu';
 import styles from './GameMenu.module.css';
 
 vi.mock('./ThemeToggle', () => ({
-  ThemeToggle: () => <button type="button">Theme toggle</button>,
+  ThemeToggle: () => <button type="button">{messages['theme.label']}</button>,
 }));
 
 it('keeps all settings inside a closed menu', () => {
@@ -22,7 +22,7 @@ it('keeps all settings inside a closed menu', () => {
   expect(html).toContain('aria-label="Game menu"');
   expect(html).toContain('>New game</button>');
   expect(html).toContain('>All cards</button>');
-  expect(html).toContain('>Theme toggle</button>');
+  expect(html).toContain('>Theme</button>');
   expect(html).toContain('Colour-independent backgrounds');
   expect(html).toContain('type="checkbox"');
   expect(html).not.toContain('role="menu"');

@@ -105,7 +105,9 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
           })}
           onClick={() => dialogRef.current?.close()}
         >
-          <span aria-hidden="true">×</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m6 6 12 12M18 6 6 18" />
+          </svg>
         </button>
       </div>
       <p>

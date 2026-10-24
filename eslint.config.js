@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
+import formatjs from 'eslint-plugin-formatjs';
 import perfectionist from 'eslint-plugin-perfectionist';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -74,6 +75,7 @@ export default defineConfig(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      formatjs: formatjs,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -83,6 +85,39 @@ export default defineConfig(
         'warn',
         { allowConstantExport: true },
       ],
+      'formatjs/no-offset': 'error',
+      'formatjs/enforce-id': 'error',
+      'formatjs/enforce-default-message': ['error', 'literal'],
+      // We don't need descriptions at the moment, to enable if l10n becomes a priority
+      'formatjs/enforce-description': 'off',
+      'formatjs/enforce-placeholders': 'error',
+      'formatjs/enforce-plural-rules': ['error', { other: true }],
+      'formatjs/no-multiple-whitespaces': 'error',
+      // This rule warns when you have plurals next to each other - not a problem for this codebase.
+      'formatjs/no-multiple-plurals': 'off',
+      'formatjs/no-complex-selectors': ['error', { limit: 20 }],
+      'formatjs/no-useless-message': 'error',
+      'formatjs/prefer-pound-in-plural': 'error',
+      'formatjs/no-missing-icu-plural-one-placeholders': 'error',
+      'formatjs/enforce-plural-rules': [
+        'error',
+        {
+          one: true,
+          other: true,
+        },
+      ],
+      'formatjs/no-literal-string-in-jsx': [
+        'error',
+        {
+          props: {
+            include: [['*', '{label,placeholder,title}']],
+          },
+        },
+      ],
+      'formatjs/no-literal-string-in-object': 'error',
+      'formatjs/prefer-full-sentence': 'error',
+      'formatjs/prefer-formatted-message': 'off',
+      'formatjs/no-invalid-icu': 'error',
     },
   },
   {

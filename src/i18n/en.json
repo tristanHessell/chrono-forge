@@ -1,5 +1,6 @@
 {
   "board.label": "Pannable and zoomable played-card board",
+  "brand.name": "Chrono-Forge",
   "brand.tagline": "Tactical card system",
   "card.category.environmental": "Nature",
   "card.category.political": "Politics",
@@ -146,6 +147,7 @@
   "placement.pending": "Unconfirmed card replacement position",
   "placement.release": "Release to place",
   "placement.target": "{pending, select, yes {Move pending card} other {Place selected card}} to row {row, number}, column {column, number}",
+  "player.avatar.label": "{name}, {type, select, computer {AI} other {human}}",
   "roundScores.close": "Close round scores dialog",
   "roundScores.empty": "No rounds played yet.",
   "roundScores.inProgress": "(in progress)",
@@ -159,7 +161,7 @@
   "roundScores.total": "Total",
   "roundScores.totalHint": "total: {count, number}",
   "roundScores.viewLabel": "Score display mode",
-  "score.breakdown": "{name}: {base, plural, one {# card point} other {# card points}} + {bonus, plural, one {# bonus point} other {# bonus points}} = {total, number} total",
+  "score.breakdown": "{name}: {base, plural, one {# card point} other {# card points} } + {bonus, plural, one {# bonus point} other {# bonus points} } = {total, number} total",
   "score.points": "{count, plural, one {# point} other {# points}}",
   "score.tie": "Game over — it's a tie! ({players})",
   "status.dragging": "Drop the card on a highlighted position.",

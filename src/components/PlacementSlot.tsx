@@ -87,7 +87,9 @@ export function PlacementSlot({
         </>
       ) : (
         <>
-          <span>+</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 4v16M4 12h16" />
+          </svg>
           {overwrite && (
             <small>
               {intl.formatMessage({

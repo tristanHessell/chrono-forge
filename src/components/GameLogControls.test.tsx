@@ -8,7 +8,7 @@ import dialogStyles from './Dialog.module.css';
 import { GameLogControls } from './GameLogControls';
 
 vi.mock('./ThemeToggle', () => ({
-  ThemeToggle: () => <button type="button">Theme toggle</button>,
+  ThemeToggle: () => <button type="button">{messages['theme.label']}</button>,
 }));
 
 it('renders the game log trigger beside its dialog', () => {
@@ -43,7 +43,7 @@ it('provides a labelled corner close icon instead of a text Close button', () =>
   expect(html).toContain(`class="${dialogStyles.gameLogHeader}"`);
   expect(html).toContain(`class="${dialogStyles.gameLogClose}"`);
   expect(html).toContain('aria-label="Close"');
-  expect(html).toContain('<span aria-hidden="true">×</span>');
+  expect(html).toContain('<svg aria-hidden="true"');
   expect(html).not.toContain('>Close</button>');
   client.stop();
 });

@@ -62,7 +62,9 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
           defaultMessage: 'Game menu',
         })}
       >
-        <span aria-hidden="true">☰</span>{' '}
+        <svg aria-hidden="true" viewBox="0 0 16 16">
+          <path d="M2 3h12M2 8h12M2 13h12" />
+        </svg>
         {intl.formatMessage({ id: 'menu.toggle', defaultMessage: 'Menu' })}
       </summary>
       <div

@@ -26,6 +26,15 @@
   line-height: 1;
 }
 
+.placement-slot > svg {
+  fill: none;
+  height: 1.5rem;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-width: 2;
+  width: 1.5rem;
+}
+
 .placement-slot small {
   font-size: 0.58rem;
   font-weight: 800;

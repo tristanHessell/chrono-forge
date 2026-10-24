@@ -263,10 +263,13 @@
   text-transform: uppercase;
 }
 
-.game-brand > span {
+.game-brand > svg {
   color: var(--accent-text);
-  font-size: 2rem;
-  line-height: 1;
+  fill: none;
+  height: 2rem;
+  stroke: currentcolor;
+  stroke-width: 1.5;
+  width: 2rem;
 }
 
 .game-brand small {
@@ -309,8 +312,15 @@
   width: 0.65rem;
 }
 
-.discard-pile > span:first-child {
-  font-size: 1.5rem;
+.discard-pile > svg {
+  fill: none;
+  flex-shrink: 0;
+  height: 1.5rem;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+  width: 1.5rem;
 }
 
 @media (hover: hover) {
