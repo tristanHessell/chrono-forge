@@ -67,12 +67,13 @@ export function App() {
     setSession(createSession(next));
     setRevision((value) => value + 1);
   };
-  const newGame = (players: PlayerSetup[]) =>
+  const newGame = (players: PlayerSetup[]) => {
     replaceSession({
       seed: crypto.randomUUID(),
       numPlayers: players.length as PlayerCount,
       players,
     });
+  };
 
   return (
     <GameLogContext.Provider
@@ -80,13 +81,14 @@ export function App() {
         seed: session.seed,
         replayPaused: Boolean(session.replay),
         newGame,
-        loadLog: (log, steps) =>
+        loadLog: (log, steps) => {
           replaceSession({
             seed: log.seed,
             numPlayers: log.numPlayers,
             players: createDefaultPlayers(log.numPlayers),
             replay: { log, steps },
-          }),
+          });
+        },
       }}
     >
       <GameSession key={revision} {...session} />

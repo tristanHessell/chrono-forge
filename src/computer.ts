@@ -28,7 +28,7 @@ export function chooseComputerAction(
 
   const hand = G.hands[owner];
 
-  if (!hand?.length) {
+  if (!hand.length) {
     return null;
   }
 
@@ -106,7 +106,7 @@ export function chooseComputerAction(
         owner,
         placedAt: G.nextPlacementOrder,
       });
-      const points = calculateScores(played)[owner] - before;
+      const points = (calculateScores(played)[owner] ?? 0) - before;
       const remaining = hand.filter((candidate) => candidate.id !== card.id);
       const futurePlays = remaining.filter(
         (candidate) => getAvailablePositions(played, candidate).length > 0,

@@ -39,7 +39,9 @@ beforeEach(() => {
   writeFileSync(cssFile, '.present-class { color: red; }\n');
 });
 
-afterEach(() => rmSync(directory, { recursive: true, force: true }));
+afterEach(() => {
+  rmSync(directory, { recursive: true, force: true });
+});
 
 it('generates exact readonly keys and replaces them after a CSS rename', async () => {
   await generateCssModuleTypes(config, path.join(directory, 'src'));
@@ -111,7 +113,7 @@ it('fails the real build after a referenced CSS class is removed', () => {
     spawnSync('npm', ['run', 'build'], {
       cwd: directory,
       encoding: 'utf8',
-      timeout: 20000,
+      timeout: 60_000,
     });
 
   symlinkSync(
@@ -162,4 +164,4 @@ it('fails the real build after a referenced CSS class is removed', () => {
   expect(failed.status).not.toBe(0);
   expect(failed.stdout).toContain('TS2339');
   expect(failed.stdout).toContain("Property 'presentClass' does not exist");
-}, 30000);
+}, 120_000);

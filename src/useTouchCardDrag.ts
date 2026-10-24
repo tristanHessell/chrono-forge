@@ -25,7 +25,12 @@ export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
     });
   });
 
-  useEffect(() => () => controller.cancel(), [controller]);
+  useEffect(
+    () => () => {
+      controller.cancel();
+    },
+    [controller],
+  );
 
   return {
     preview,
@@ -34,13 +39,21 @@ export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
       event: PointerEvent<HTMLElement>,
       cardId: string,
       source: DragSource = 'hand',
-    ) => controller.start(event, cardId, source),
-    onPointerMove: (event: PointerEvent<HTMLElement>) => controller.move(event),
-    onPointerUp: (event: PointerEvent<HTMLElement>) => controller.end(event),
-    onPointerCancel: (event: PointerEvent<HTMLElement>) =>
-      controller.cancel(event.pointerId),
-    onLostPointerCapture: (event: PointerEvent<HTMLElement>) =>
-      controller.cancel(event.pointerId),
+    ) => {
+      controller.start(event, cardId, source);
+    },
+    onPointerMove: (event: PointerEvent<HTMLElement>) => {
+      controller.move(event);
+    },
+    onPointerUp: (event: PointerEvent<HTMLElement>) => {
+      controller.end(event);
+    },
+    onPointerCancel: (event: PointerEvent<HTMLElement>) => {
+      controller.cancel(event.pointerId);
+    },
+    onLostPointerCapture: (event: PointerEvent<HTMLElement>) => {
+      controller.cancel(event.pointerId);
+    },
   };
 }
 

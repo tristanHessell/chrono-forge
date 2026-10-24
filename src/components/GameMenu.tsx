@@ -33,7 +33,9 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
 
     document.addEventListener('pointerdown', closeOutside);
 
-    return () => document.removeEventListener('pointerdown', closeOutside);
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside);
+    };
   }, []);
 
   return (

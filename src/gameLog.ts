@@ -6,6 +6,20 @@ import type { PlayerCount } from './playerCount';
 
 const RULES_VERSION = 2;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isCardPosition(
+  value: unknown,
+): value is { row: number; column: number } {
+  return (
+    isRecord(value) &&
+    Number.isInteger(value.row) &&
+    Number.isInteger(value.column)
+  );
+}
+
 export type GameLog = {
   version: 2;
   rulesVersion: typeof RULES_VERSION;
@@ -80,7 +94,7 @@ export function currentGameLog(
     actions.push({
       type: 'MAKE_MOVE',
       payload: { type, args, playerID: before.currentPlayer },
-    } as LogEntry['action']);
+    });
   }
 
   return {
@@ -106,14 +120,15 @@ export function applyGameLogAction(
   action: LogEntry['action'],
 ) {
   if (action.type === 'MAKE_MOVE' && action.payload.type === 'playEvent') {
-    if (
-      action.payload.playerID !== null &&
-      action.payload.playerID !== client.getState()!.ctx.currentPlayer
-    ) {
+    if (action.payload.playerID !== client.getState()!.ctx.currentPlayer) {
       throw new Error('Confirmed Event belongs to a different player turn.');
     }
 
-    const [cardId, position] = action.payload.args;
+    const [cardId, position] = action.payload.args as unknown[];
+
+    if (typeof cardId !== 'string' || !isCardPosition(position)) {
+      throw new Error('Invalid confirmed Event placement.');
+    }
 
     client.moves.playCard(cardId, position);
 
@@ -250,7 +265,7 @@ export function exportGameLog(
       ...entry.action,
       payload: {
         ...entry.action.payload,
-        playerID: entry.action.payload.playerID ?? null,
+        playerID: entry.action.payload.playerID,
         // Local replay never needs authentication credentials.
         credentials: undefined,
         ...(entry.action.type === 'GAME_EVENT'
@@ -282,40 +297,62 @@ export function parseGameLog(text: string): GameLog {
     throw new Error('The game log is too large.');
   }
 
-  const data = JSON.parse(text) as Omit<GameLog, 'version'> & {
-    version: 1 | 2;
-  };
+  const parsed: unknown = JSON.parse(text);
 
   if (
-    !data ||
-    ![1, 2].includes(data.version) ||
-    data.rulesVersion !== RULES_VERSION ||
-    typeof data.seed !== 'string' ||
-    !data.seed ||
-    data.seed.length > 200 ||
-    ![2, 3, 4].includes(data.numPlayers) ||
-    !Array.isArray(data.actions) ||
-    data.actions.length > 10_000
+    !isRecord(parsed) ||
+    (parsed.version !== 1 && parsed.version !== 2) ||
+    parsed.rulesVersion !== RULES_VERSION ||
+    typeof parsed.seed !== 'string' ||
+    !parsed.seed ||
+    parsed.seed.length > 200 ||
+    (parsed.numPlayers !== 2 &&
+      parsed.numPlayers !== 3 &&
+      parsed.numPlayers !== 4) ||
+    !Array.isArray(parsed.actions) ||
+    parsed.actions.length > 10_000
   ) {
     throw new Error('Invalid or incompatible game log.');
   }
 
-  for (const action of data.actions) {
+  const numPlayers = parsed.numPlayers;
+  const playerIds = Array.from({ length: numPlayers }, (_, index) =>
+    String(index),
+  );
+  const actions: LogEntry['action'][] = [];
+  const actionTypes = ['MAKE_MOVE', 'GAME_EVENT', 'UNDO', 'REDO'];
+
+  for (const candidate of parsed.actions as unknown[]) {
     if (
-      !action ||
-      !['MAKE_MOVE', 'GAME_EVENT', 'UNDO', 'REDO'].includes(action.type) ||
-      !action.payload ||
-      (action.payload.playerID !== null &&
-        !Array.from({ length: data.numPlayers }, (_, index) =>
-          String(index),
-        ).includes(action.payload.playerID))
+      !isRecord(candidate) ||
+      typeof candidate.type !== 'string' ||
+      !actionTypes.includes(candidate.type) ||
+      !isRecord(candidate.payload)
     ) {
       throw new Error('Invalid game log action.');
     }
+
+    const payload = candidate.payload;
+
+    if (
+      (payload.playerID !== null &&
+        payload.playerID !== undefined &&
+        (typeof payload.playerID !== 'string' ||
+          !playerIds.includes(payload.playerID))) ||
+      ((candidate.type === 'MAKE_MOVE' || candidate.type === 'GAME_EVENT') &&
+        (typeof payload.type !== 'string' || !Array.isArray(payload.args)))
+    ) {
+      throw new Error('Invalid game log action.');
+    }
+
+    actions.push(candidate as unknown as LogEntry['action']);
+  }
+
+  for (const action of actions) {
     if (action.type === 'MAKE_MOVE' || action.type === 'GAME_EVENT') {
       const names =
         action.type === 'MAKE_MOVE'
-          ? data.version === 2
+          ? parsed.version === 2
             ? ['playEvent', 'discardCard', 'manipulate', 'undoTest', 'redoTest']
             : Object.keys(CardGame.moves!)
           : [
@@ -328,10 +365,7 @@ export function parseGameLog(text: string): GameLog {
               'setActivePlayers',
             ];
 
-      if (
-        !names.includes(action.payload.type) ||
-        !Array.isArray(action.payload.args)
-      ) {
+      if (!names.includes(action.payload.type)) {
         throw new Error(
           `Unknown move or invalid arguments in game log: ${JSON.stringify(action)}.`,
         );
@@ -340,9 +374,11 @@ export function parseGameLog(text: string): GameLog {
   }
 
   return {
-    ...data,
     version: 2,
-    actions: confirmedActions(data.seed, data.numPlayers, data.actions),
+    rulesVersion: RULES_VERSION,
+    seed: parsed.seed,
+    numPlayers,
+    actions: confirmedActions(parsed.seed, numPlayers, actions),
   };
 }
 

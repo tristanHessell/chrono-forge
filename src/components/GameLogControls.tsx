@@ -57,6 +57,27 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
       );
     }
   };
+  const copyLog = () => {
+    void navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setStatus(
+          intl.formatMessage({
+            id: 'log.copied',
+            defaultMessage: 'Log copied.',
+          }),
+        );
+      })
+      .catch(() => {
+        setStatus(
+          intl.formatMessage({
+            id: 'log.copyFallback',
+            defaultMessage:
+              'Clipboard unavailable. Select and copy the text above.',
+          }),
+        );
+      });
+  };
 
   return (
     <>
@@ -163,7 +184,9 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               value={text}
               spellCheck={false}
               readOnly={mode === 'export'}
-              onChange={(event) => setText(event.target.value)}
+              onChange={(event) => {
+                setText(event.target.value);
+              }}
             />
             {mode === 'import' && (
               <>
@@ -183,35 +206,16 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
                     id: 'log.all',
                     defaultMessage: 'All actions',
                   })}
-                  onChange={(event) => setSteps(event.target.value)}
+                  onChange={(event) => {
+                    setSteps(event.target.value);
+                  }}
                 />
               </>
             )}
             <p role="status">{status}</p>
             <div className={gameLogControlsStyles.gameLogActions}>
               {mode === 'export' && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(text);
-                      setStatus(
-                        intl.formatMessage({
-                          id: 'log.copied',
-                          defaultMessage: 'Log copied.',
-                        }),
-                      );
-                    } catch {
-                      setStatus(
-                        intl.formatMessage({
-                          id: 'log.copyFallback',
-                          defaultMessage:
-                            'Clipboard unavailable. Select and copy the text above.',
-                        }),
-                      );
-                    }
-                  }}
-                >
+                <button type="button" onClick={copyLog}>
                   {intl.formatMessage({
                     id: 'log.copy',
                     defaultMessage: 'Copy log',

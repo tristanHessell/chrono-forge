@@ -24,7 +24,9 @@ export function ThemeToggle() {
 
     preference.addEventListener('change', followSystem);
 
-    return () => preference.removeEventListener('change', followSystem);
+    return () => {
+      preference.removeEventListener('change', followSystem);
+    };
   }, []);
 
   return (

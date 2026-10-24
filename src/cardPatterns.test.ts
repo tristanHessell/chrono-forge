@@ -55,6 +55,8 @@ it('still toggles patterns when storage is unavailable', () => {
   });
 
   expect(savedCardPatterns()).toBe(true);
-  expect(() => saveCardPatterns(false)).not.toThrow();
+  expect(() => {
+    saveCardPatterns(false);
+  }).not.toThrow();
   expect(dataset.cardPatterns).toBe('off');
 });

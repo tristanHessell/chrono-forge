@@ -318,7 +318,9 @@ export function CardHand({
                 disabled={!interactive || activeOwner !== owner}
                 draggable={interactive && activeOwner === owner}
                 key={card.id}
-                onClick={() => onChoose(card.id)}
+                onClick={() => {
+                  onChoose(card.id);
+                }}
                 onPointerDown={
                   card.type === 'event' && interactive && activeOwner === owner
                     ? (event) => touchDrag?.onPointerDown(event, card.id)
@@ -328,10 +330,18 @@ export function CardHand({
                 onPointerUp={touchDrag?.onPointerUp}
                 onPointerCancel={touchDrag?.onPointerCancel}
                 onLostPointerCapture={touchDrag?.onLostPointerCapture}
-                onPointerEnter={() => setHoveredCardId(card.id)}
-                onPointerLeave={() => setHoveredCardId(null)}
-                onFocus={() => setFocusedCardId(card.id)}
-                onBlur={() => setFocusedCardId(null)}
+                onPointerEnter={() => {
+                  setHoveredCardId(card.id);
+                }}
+                onPointerLeave={() => {
+                  setHoveredCardId(null);
+                }}
+                onFocus={() => {
+                  setFocusedCardId(card.id);
+                }}
+                onBlur={() => {
+                  setFocusedCardId(null);
+                }}
                 onDragEnd={finishHandDrag}
                 onDragStart={(event) => {
                   onDragStart(event, card.id);
@@ -354,10 +364,10 @@ export function CardHand({
                   event.preventDefault();
 
                   const before = event.key === 'ArrowLeft';
-                  const target = orderedCards[index + (before ? -1 : 1)];
+                  const targetIndex = index + (before ? -1 : 1);
 
-                  if (target) {
-                    reorder(card.id, target.id, before);
+                  if (targetIndex >= 0 && targetIndex < orderedCards.length) {
+                    reorder(card.id, orderedCards[targetIndex].id, before);
                   }
                 }}
                 type="button"

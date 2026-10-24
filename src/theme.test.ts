@@ -80,6 +80,8 @@ it('still applies greyscale when browser storage is unavailable', () => {
   });
 
   expect(savedTheme()).toBeNull();
-  expect(() => saveTheme('greyscale-dark')).not.toThrow();
+  expect(() => {
+    saveTheme('greyscale-dark');
+  }).not.toThrow();
   expect(dataset.theme).toBe('greyscale-dark');
 });

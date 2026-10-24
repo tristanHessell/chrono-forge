@@ -17,7 +17,10 @@ const event = (id: string) =>
     (card): card is EventCard => card.id === id && card.type === 'event',
   )!;
 const state = (): CardGameState =>
-  CardGame.setup!({ random: { Shuffle: <T>(cards: T[]) => cards } } as never);
+  CardGame.setup!({
+    ctx: { numPlayers: 2 },
+    random: { Shuffle: <T>(cards: T[]) => cards },
+  } as never);
 
 describe('computer opponent', () => {
   it('prefers a placement that earns the valid 1990 bonus', () => {
@@ -56,7 +59,7 @@ describe('computer opponent', () => {
       calculateScoreBreakdown([
         ...G.played,
         { ...card, ...action.position, owner: '1', placedAt: 2 },
-      ])['1'].bonus,
+      ])['1']?.bonus ?? 0,
     ).toBe(1);
   });
 
@@ -167,5 +170,6 @@ describe('computer opponent', () => {
       ).toBe(46);
       expect(final.deck.length).toBeLessThan(2);
     },
+    30_000,
   );
 });

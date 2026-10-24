@@ -35,7 +35,7 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
   const [viewMode, setViewMode] = useState<'round' | 'total'>('round');
   const players = useContext(PlayerSetupContext);
   const playerIds = G.playerIds;
-  const completedRounds = G.roundScores ?? [];
+  const completedRounds = G.roundScores;
   const inProgressCumulative = calculateScores(G.played);
 
   const rows: RoundRow[] = [];
@@ -139,7 +139,9 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
               )}
               type="button"
               aria-pressed={viewMode === 'round'}
-              onClick={() => setViewMode('round')}
+              onClick={() => {
+                setViewMode('round');
+              }}
             >
               {intl.formatMessage({
                 id: 'roundScores.modeRound',
@@ -154,7 +156,9 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
               )}
               type="button"
               aria-pressed={viewMode === 'total'}
-              onClick={() => setViewMode('total')}
+              onClick={() => {
+                setViewMode('total');
+              }}
             >
               {intl.formatMessage({
                 id: 'roundScores.modeTotal',
