@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { createDefaultPlayers, getPlayer } from './playerSetup';
+import {
+  chooseStartingPlayer,
+  createDefaultPlayers,
+  getPlayer,
+} from './playerSetup';
 
 describe('player setup', () => {
   it('defaults to one human and one computer', () => {
@@ -23,5 +27,15 @@ describe('player setup', () => {
       true,
     );
     expect(getPlayer(players, '2').name).toBe('Barry');
+  });
+
+  it('selects the player at the random position', () => {
+    const random = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+
+    try {
+      expect(chooseStartingPlayer(2)).toBe('1');
+    } finally {
+      random.mockRestore();
+    }
   });
 });

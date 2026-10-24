@@ -1,10 +1,15 @@
 import type { LogEntry } from 'boardgame.io';
 import { Client } from 'boardgame.io/client';
 
-import { CardGame, type CardGameState } from './game';
+import {
+  CardGame,
+  type CardGameState,
+  createCardGame,
+  type PlayerId,
+} from './game';
 import type { PlayerCount } from './playerCount';
 
-const RULES_VERSION = 2;
+const RULES_VERSION = 3;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -22,9 +27,10 @@ function isCardPosition(
 
 export type GameLog = {
   version: 2;
-  rulesVersion: typeof RULES_VERSION;
+  rulesVersion: 2 | typeof RULES_VERSION;
   seed: string;
   numPlayers: PlayerCount;
+  startingPlayer: PlayerId;
   actions: LogEntry['action'][];
 };
 
@@ -102,6 +108,7 @@ export function currentGameLog(
     rulesVersion: RULES_VERSION,
     seed,
     numPlayers: G.playerIds.length as PlayerCount,
+    startingPlayer: G.startingPlayer,
     actions,
   };
 }
@@ -153,9 +160,10 @@ function confirmedActions(
   seed: string,
   numPlayers: PlayerCount,
   actions: LogEntry['action'][],
+  startingPlayer: PlayerId,
 ): LogEntry['action'][] {
   const client = Client({
-    game: { ...CardGame, seed },
+    game: { ...createCardGame(startingPlayer), seed },
     numPlayers,
     debug: false,
   });
@@ -247,6 +255,7 @@ export function exportGameLog(
   seed: string,
   numPlayers: PlayerCount,
   entries: readonly LogEntry[] = [],
+  startingPlayer: PlayerId = '0',
 ): string {
   // A move and its triggered events share a state ID. The move recreates
   // those events during replay, so retain only the first entry per ID.
@@ -285,7 +294,8 @@ export function exportGameLog(
       rulesVersion: RULES_VERSION,
       seed,
       numPlayers,
-      actions: confirmedActions(seed, numPlayers, actions),
+      startingPlayer,
+      actions: confirmedActions(seed, numPlayers, actions, startingPlayer),
     } satisfies GameLog,
     null,
     2,
@@ -298,11 +308,18 @@ export function parseGameLog(text: string): GameLog {
   }
 
   const parsed: unknown = JSON.parse(text);
+  const isPlayerId = (value: unknown, count: unknown): value is PlayerId =>
+    typeof value === 'string' &&
+    ['0', '1', '2', '3'].includes(value) &&
+    typeof count === 'number' &&
+    Number(value) < count;
 
   if (
     !isRecord(parsed) ||
     (parsed.version !== 1 && parsed.version !== 2) ||
-    parsed.rulesVersion !== RULES_VERSION ||
+    (parsed.rulesVersion !== 2 && parsed.rulesVersion !== RULES_VERSION) ||
+    (parsed.rulesVersion === RULES_VERSION &&
+      !isPlayerId(parsed.startingPlayer, parsed.numPlayers)) ||
     typeof parsed.seed !== 'string' ||
     !parsed.seed ||
     parsed.seed.length > 200 ||
@@ -316,6 +333,8 @@ export function parseGameLog(text: string): GameLog {
   }
 
   const numPlayers = parsed.numPlayers;
+  const startingPlayer =
+    parsed.rulesVersion === 2 ? '0' : (parsed.startingPlayer as PlayerId);
   const playerIds = Array.from({ length: numPlayers }, (_, index) =>
     String(index),
   );
@@ -378,7 +397,8 @@ export function parseGameLog(text: string): GameLog {
     rulesVersion: RULES_VERSION,
     seed: parsed.seed,
     numPlayers,
-    actions: confirmedActions(parsed.seed, numPlayers, actions),
+    startingPlayer,
+    actions: confirmedActions(parsed.seed, numPlayers, actions, startingPlayer),
   };
 }
 
@@ -388,7 +408,7 @@ export function replayGameLog(log: GameLog, steps = log.actions.length) {
   }
 
   const client = Client({
-    game: { ...CardGame, seed: log.seed },
+    game: { ...createCardGame(log.startingPlayer), seed: log.seed },
     numPlayers: log.numPlayers,
     debug: false,
   });

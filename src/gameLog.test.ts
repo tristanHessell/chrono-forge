@@ -2,7 +2,7 @@ import { Client } from 'boardgame.io/client';
 import { describe, expect, it } from 'vitest';
 
 import { chooseComputerAction } from './computer';
-import { canUndoMove, CardGame } from './game';
+import { canUndoMove, CardGame, createCardGame } from './game';
 import { exportGameLog, parseGameLog, replayGameLog } from './gameLog';
 import { getAvailablePositions } from './gameRules';
 
@@ -104,6 +104,28 @@ it('keeps confirmed actions in the exported replay', () => {
   client.moves.undoTest();
   expect(exported().actions).toHaveLength(2);
   client.stop();
+});
+
+it('preserves a non-zero starting player in a replay', () => {
+  const seed = 'non-zero-starting-player';
+  const client = Client({
+    game: { ...createCardGame('1'), seed },
+    numPlayers: 2,
+    debug: false,
+  });
+
+  client.moves.discardCard(client.getState()!.G.hands['1'][0].id);
+
+  const log = parseGameLog(exportGameLog(seed, 2, client.log, '1'));
+  const replay = replayGameLog(log);
+
+  expect(log.startingPlayer).toBe('1');
+  expect(replay.getState()!.G).toEqual(client.getState()!.G);
+  expect(replay.getState()!.ctx.currentPlayer).toBe(
+    client.getState()!.ctx.currentPlayer,
+  );
+  client.stop();
+  replay.stop();
 });
 
 it('omits draft activity and records only the final confirmed card and position', () => {

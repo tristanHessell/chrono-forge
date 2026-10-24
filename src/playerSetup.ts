@@ -21,6 +21,12 @@ export function createDefaultPlayers(count: PlayerCount = 2): PlayerSetup[] {
   }));
 }
 
+export function chooseStartingPlayer(count: PlayerCount): PlayerId {
+  const playerIds = (['0', '1', '2', '3'] as PlayerId[]).slice(0, count);
+
+  return playerIds[Math.floor(Math.random() * playerIds.length)];
+}
+
 export function getPlayer(players: PlayerSetup[], id: PlayerId): PlayerSetup {
   const defaults = createDefaultPlayers(4);
 

@@ -232,12 +232,18 @@ const advanceTurn = (
   }
 
   const currentIndex = G.playerIds.indexOf(currentPlayer as PlayerId);
+  const startingIndex = G.playerIds.indexOf(G.startingPlayer);
   const nextPlayer = Array.from(
     { length: G.playerIds.length },
     (_, index) => G.playerIds[(currentIndex + index + 1) % G.playerIds.length],
   ).find((id) => G.hands[id].length > 0)!;
+  const currentTurnIndex =
+    (currentIndex - startingIndex + G.playerIds.length) % G.playerIds.length;
+  const nextTurnIndex =
+    (G.playerIds.indexOf(nextPlayer) - startingIndex + G.playerIds.length) %
+    G.playerIds.length;
 
-  if (G.playerIds.indexOf(nextPlayer) <= currentIndex) {
+  if (nextTurnIndex <= currentTurnIndex) {
     const scores = calculateScores(G.played);
 
     G.roundScores.push(
@@ -589,7 +595,10 @@ export const CardGame: Game<CardGameState> = {
   },
 
   turn: {
-    order: TurnOrder.DEFAULT,
+    order: {
+      ...TurnOrder.DEFAULT,
+      first: ({ G }) => G.playerIds.indexOf(G.startingPlayer),
+    },
     activePlayers: { currentPlayer: 'normal', others: 'undoWindow' },
     stages: {
       normal: {},
@@ -601,3 +610,13 @@ export const CardGame: Game<CardGameState> = {
 };
 
 CardGame.turn!.stages!.undoWindow.moves = CardGame.moves;
+
+export function createCardGame(startingPlayer: PlayerId): Game<CardGameState> {
+  return {
+    ...CardGame,
+    setup: (context) => ({
+      ...CardGame.setup!(context),
+      startingPlayer,
+    }),
+  };
+}

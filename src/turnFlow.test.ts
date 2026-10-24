@@ -2,7 +2,35 @@ import { Client } from 'boardgame.io/client';
 import { expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
-import { type Card, CardGame } from './game';
+import { type Card, CardGame, createCardGame } from './game';
+
+it('starts with the player selected when the game is created', () => {
+  const client = Client({
+    game: { ...createCardGame('1'), seed: 'selected-start' },
+    numPlayers: 2,
+  });
+
+  expect(client.getState()!.G.startingPlayer).toBe('1');
+  expect(client.getState()!.ctx.currentPlayer).toBe('1');
+});
+
+it('advances the round when play returns to a non-zero starting player', () => {
+  const client = Client({
+    game: { ...createCardGame('2'), seed: 'selected-round-start' },
+    numPlayers: 3,
+  });
+
+  for (const playerId of ['2', '0', '1']) {
+    expect(client.getState()!.ctx.currentPlayer).toBe(playerId);
+
+    for (let action = 0; action < 2; action += 1) {
+      client.moves.discardCard(client.getState()!.G.hands[playerId][0].id);
+    }
+  }
+
+  expect(client.getState()!.ctx.currentPlayer).toBe('2');
+  expect(client.getState()!.G.round).toBe(2);
+});
 
 it('keeps the first action on the same turn and refills only after the second', () => {
   const client = Client({
