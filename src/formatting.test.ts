@@ -18,7 +18,7 @@ describe('import ordering', () => {
 
       expect(
         result.messages.filter(
-          (message) => message.ruleId === 'simple-import-sort/imports',
+          (message) => message.ruleId === 'perfectionist/sort-imports',
         ),
       ).toHaveLength(1);
     },
@@ -57,13 +57,13 @@ describe('import ordering', () => {
       ].join('\n'),
     );
     expect(
-      checked.messages.filter(
-        (message) => message.ruleId === 'simple-import-sort/imports',
+      checked.messages.filter((message) =>
+        message.ruleId?.startsWith('perfectionist/'),
       ),
     ).toEqual([]);
     expect(
-      result.messages.filter(
-        (message) => message.ruleId === 'simple-import-sort/imports',
+      result.messages.filter((message) =>
+        message.ruleId?.startsWith('perfectionist/'),
       ),
     ).toEqual([]);
   });
