@@ -243,6 +243,64 @@ describe('Manipulation rules', () => {
     expect(isValidBoard(swapped)).toBe(true);
   });
 
+  it('reorders placement when a swap changes the valid link direction', () => {
+    const original: PlacedCard[] = [
+      {
+        id: 'start',
+        type: 'event',
+        name: 'timeline-origin',
+        number: 0,
+        row: 0,
+        column: 0,
+        owner: 'neutral',
+        placedAt: 0,
+      },
+      {
+        id: '1900',
+        type: 'event',
+        name: 'timeline-origin',
+        number: 1900,
+        row: 0,
+        column: -1,
+        owner: '0',
+        placedAt: 1,
+      },
+      {
+        id: '1990',
+        type: 'event',
+        name: 'timeline-origin',
+        number: 1990,
+        row: 0,
+        column: -2,
+        owner: '1',
+        placedAt: 2,
+      },
+      {
+        id: '1920',
+        type: 'event',
+        name: 'timeline-origin',
+        number: 1920,
+        row: 0,
+        column: 1,
+        owner: '0',
+        placedAt: 3,
+      },
+    ];
+    const swapped = applyTimeSwap(original, '1900', '1920')!;
+
+    expect(swapped.find((card) => card.id === '1900')).toMatchObject({
+      row: 0,
+      column: 1,
+      placedAt: 1,
+    });
+    expect(swapped.find((card) => card.id === '1920')).toMatchObject({
+      row: 0,
+      column: -1,
+      placedAt: 2,
+    });
+    expect(isValidBoard(swapped)).toBe(true);
+  });
+
   it.each([
     ['start', { row: -1, column: 0 }],
     ['missing', { row: -1, column: 0 }],

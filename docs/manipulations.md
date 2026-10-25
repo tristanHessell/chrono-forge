@@ -62,7 +62,8 @@ the discard pile.
 ## Time Swap
 
 Swap two Event cards. The board must stay legal after the swap. The starting
-card cannot be swapped.
+card cannot be swapped. The swap keeps the placement order when it stays legal.
+Otherwise, the game recalculates the order to match the Event dates.
 
 ## Take Control
 
