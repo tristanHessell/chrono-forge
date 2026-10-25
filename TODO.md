@@ -2,8 +2,6 @@
 
 ---
 
-Prompt: Dragging a command like `take control` over the card it's targetting doesn't work
-
 ---
 
 Add a rules section to the menu

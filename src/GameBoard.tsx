@@ -452,6 +452,54 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     event.dataTransfer.dropEffect = 'move';
   };
 
+  const allowManipulationDrop = (
+    event: DragEvent<HTMLElement>,
+    targetId: string,
+  ) => {
+    const droppedCard = readDraggedCard(event);
+
+    if (
+      manipulation &&
+      droppedCard?.source === 'hand' &&
+      droppedCard.cardId === manipulation.id &&
+      manipulationTargets.some((target) => target.id === targetId)
+    ) {
+      allowDrop(event);
+    }
+  };
+
+  const dropManipulationOnTarget = (
+    event: DragEvent<HTMLElement>,
+    targetId: string,
+  ) => {
+    event.preventDefault();
+
+    const droppedCard = readDraggedCard(event);
+
+    if (
+      !manipulation ||
+      droppedCard?.source !== 'hand' ||
+      droppedCard.cardId !== manipulation.id ||
+      !manipulationTargets.some((target) => target.id === targetId)
+    ) {
+      return;
+    }
+    if (
+      manipulation.action === 'take-control' ||
+      manipulation.action === 'remove-event'
+    ) {
+      gameMoves.manipulate(manipulation.id, targetId);
+      setSelectedCardId(null);
+      setManipulationTargetId(null);
+    } else {
+      setSelectedCardId(manipulation.id);
+      setManipulationTargetId(targetId);
+    }
+
+    setDraggedCard(null);
+    setSnapPosition(null);
+  };
+
   const snapToPosition = (
     event: DragEvent<HTMLElement>,
     position: CardPosition,
@@ -1083,6 +1131,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           selected={Boolean(
                             manipulation && manipulationTargetId === card.id,
                           )}
+                          onDragOver={(event) => {
+                            allowManipulationDrop(event, card.id);
+                          }}
+                          onDrop={(event) => {
+                            dropManipulationOnTarget(event, card.id);
+                          }}
                           onTarget={
                             (manipulation &&
                               manipulationTargetId === card.id) ||
