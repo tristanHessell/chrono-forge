@@ -142,7 +142,24 @@ export function applyTimeSwap(
         : card,
   );
 
-  return isValidBoard(result) ? result : null;
+  if (isValidBoard(result)) {
+    return result;
+  }
+
+  const ordered = [...result].sort(
+    (firstCard, secondCard) =>
+      firstCard.number - secondCard.number ||
+      firstCard.placedAt - secondCard.placedAt,
+  );
+  const placementOrder = new Map(
+    ordered.map((card, index) => [card.id, index]),
+  );
+  const reconnected = result.map((card) => ({
+    ...card,
+    placedAt: placementOrder.get(card.id)!,
+  }));
+
+  return isValidBoard(reconnected) ? reconnected : null;
 }
 
 export function getTimeJumpPositions(
