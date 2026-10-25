@@ -75,8 +75,9 @@ to the new owner. The move does not trigger its effect again.
 
 Mark an Event as removed. It stays on the board with its date and links, but it
 scores no points or bonuses. A removed 1900 cannot provide a bonus to a 1990.
-The card can still be moved, swapped, or taken over. Its position does not block
-adjacent placements or count as occupied for the 2×2 square check.
+Its date does not constrain new adjacent placements. The card can still be moved,
+swapped, or taken over. Its position does not block adjacent placements or count
+as occupied for the 2×2 square check.
 
 The command cannot target the starting card or an Event that is already removed.
 
@@ -84,8 +85,8 @@ The command cannot target the starting card or an Event that is already removed.
 
 Play a valid Event from your hand into a removed Event's position. The new Event
 must follow the position's existing link directions. It must be later than
-upstream neighbors and earlier than downstream neighbors. The full board must
-remain legal, including its links and square limits.
+upstream active neighbors and earlier than downstream active neighbors. The
+full board must remain legal, including its links and square limits.
 
 On confirmation, the removed Event enters the discard pile. The new Event scores
 as its owner and triggers its play effect. The player spends one action. If the

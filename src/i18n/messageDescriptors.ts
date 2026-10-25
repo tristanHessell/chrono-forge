@@ -44,7 +44,7 @@ export const manipulationDescriptionMessages: DescriptorMap<ManipulationAction> 
     'remove-event': {
       id: 'manipulation.remove-event.description',
       defaultMessage:
-        'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',
+        'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. Its date does not constrain new adjacent placements. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',
     },
     'take-control': {
       id: 'manipulation.take-control.description',
