@@ -19,20 +19,43 @@ import { PlayedCard } from './PlayedCard';
 type CardView = 'hand' | 'table';
 type CardSize = 'standard' | 'compact';
 
-function CatalogCard({ card, view }: { card: Card; view: CardView }) {
+function CatalogCard({
+  card,
+  view,
+  onShowDetails,
+}: {
+  card: Card;
+  view: CardView;
+  onShowDetails: (card: Card) => void;
+}) {
+  const intl = useIntl();
   const cardView =
     view === 'table' && card.type === 'event' ? (
-      <PlayedCard card={card} />
+      <PlayedCard card={card} onShowDetails={onShowDetails} />
     ) : (
-      <button
+      <div
         className={`${cardStyles.card} ${cardCatalogDialogStyles.catalogHandCard}`}
         data-card-type={card.type}
         data-event-category={card.category}
-        disabled
-        type="button"
+        role="button"
+        tabIndex={0}
+        aria-description={intl.formatMessage({
+          id: 'card.detailsHint',
+          defaultMessage:
+            'Double-click or press Alt + Enter to view card details.',
+        })}
+        onDoubleClick={() => {
+          onShowDetails(card);
+        }}
+        onKeyDown={(event) => {
+          if (event.altKey && event.key === 'Enter') {
+            event.preventDefault();
+            onShowDetails(card);
+          }
+        }}
       >
         <HandCardFace card={card} />
-      </button>
+      </div>
     );
 
   return (
@@ -48,8 +71,10 @@ function CatalogCard({ card, view }: { card: Card; view: CardView }) {
 
 export function CardCatalogDialog({
   dialogRef,
+  onShowDetails,
 }: {
   dialogRef: RefObject<HTMLDialogElement>;
+  onShowDetails: (card: Card) => void;
 }) {
   const intl = useIntl();
   const titleId = useId();
@@ -99,7 +124,7 @@ export function CardCatalogDialog({
         {intl.formatMessage({
           id: 'catalog.overview',
           defaultMessage:
-            'The complete configured deck, not just the cards remaining in this game. Every copy is shown. Hover over or focus an effect icon for its explanation.',
+            'The complete configured deck, not just the cards remaining in this game. Every copy is shown. Double-click a card to view its details and effects.',
         })}
       </p>
       <label className={cardCatalogDialogStyles.catalogView}>
@@ -202,7 +227,11 @@ export function CardCatalogDialog({
           </span>
         </h3>
         <ul className={cardCatalogDialogStyles.catalogGrid}>
-          <CatalogCard card={startingCard} view={view} />
+          <CatalogCard
+            card={startingCard}
+            onShowDetails={onShowDetails}
+            view={view}
+          />
         </ul>
       </section>
       {groups.map(({ id, cards }) => {
@@ -234,7 +263,12 @@ export function CardCatalogDialog({
             </h3>
             <ul className={cardCatalogDialogStyles.catalogGrid}>
               {cards.map((entry) => (
-                <CatalogCard key={entry.id} card={entry} view={view} />
+                <CatalogCard
+                  key={entry.id}
+                  card={entry}
+                  onShowDetails={onShowDetails}
+                  view={view}
+                />
               ))}
             </ul>
           </section>

@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useEffect, useRef } from 'react';
 import {
   type CSSProperties,
   type DragEvent,
@@ -28,6 +29,7 @@ type PlayedCardProps = {
   links?: ReactNode;
   isLatest?: boolean;
   onTarget?: () => void;
+  onShowDetails?: (card: EventCard) => void;
   onDragOver?: (event: DragEvent<HTMLDivElement>) => void;
   onDrop?: (event: DragEvent<HTMLDivElement>) => void;
   selected?: boolean;
@@ -39,10 +41,12 @@ export function PlayedCard({
   links,
   isLatest,
   onTarget,
+  onShowDetails,
   onDragOver,
   onDrop,
   selected,
 }: PlayedCardProps) {
+  const targetClickTimer = useRef<number | null>(null);
   const intl = useIntl();
   const players = useContext(PlayerSetupContext);
   const owner = 'owner' in card ? card.owner : 'neutral';
@@ -65,6 +69,15 @@ export function PlayedCard({
             { id: 'card.owner.player', defaultMessage: 'placed by {name}' },
             { name: ownerName },
           );
+
+  useEffect(
+    () => () => {
+      if (targetClickTimer.current !== null) {
+        window.clearTimeout(targetClickTimer.current);
+      }
+    },
+    [],
+  );
 
   return (
     <div
@@ -101,19 +114,62 @@ export function PlayedCard({
       data-owner={'owner' in card ? owner : undefined}
       data-position={'row' in card ? positionKey(card) : undefined}
       data-removed={'removed' in card ? card.removed || undefined : undefined}
-      role={onTarget ? 'button' : 'img'}
-      tabIndex={onTarget || card.effects?.length ? 0 : undefined}
+      role={onTarget || onShowDetails ? 'button' : 'img'}
+      tabIndex={
+        onTarget || onShowDetails || card.effects?.length ? 0 : undefined
+      }
       aria-pressed={onTarget ? Boolean(selected) : undefined}
-      onClick={onTarget}
+      onClick={(event) => {
+        if (!onTarget) {
+          return;
+        }
+
+        if (event.detail === 0) {
+          onTarget();
+
+          return;
+        }
+
+        if (targetClickTimer.current !== null) {
+          window.clearTimeout(targetClickTimer.current);
+          targetClickTimer.current = null;
+        }
+
+        if (event.detail > 1) {
+          return;
+        }
+
+        targetClickTimer.current = window.setTimeout(() => {
+          targetClickTimer.current = null;
+          onTarget();
+        }, 500);
+      }}
+      onDoubleClick={(event) => {
+        event.preventDefault();
+
+        if (targetClickTimer.current !== null) {
+          window.clearTimeout(targetClickTimer.current);
+          targetClickTimer.current = null;
+        }
+
+        onShowDetails?.(card);
+      }}
       onDragOver={onDragOver}
       onDrop={onDrop}
       onKeyDown={(event) => {
+        if (event.altKey && event.key === 'Enter') {
+          event.preventDefault();
+          onShowDetails?.(card);
+
+          return;
+        }
+
         if (onTarget && ['Enter', ' '].includes(event.key)) {
           event.preventDefault();
           onTarget();
         }
       }}
-      aria-description={
+      aria-description={[
         'removed' in card && card.removed
           ? intl.formatMessage({
               id: 'card.removedDescription',
@@ -126,8 +182,17 @@ export function PlayedCard({
                   intl.formatMessage(effectDescriptionMessages[effect]),
                 ),
               )
-            : undefined
-      }
+            : '',
+        onShowDetails
+          ? intl.formatMessage({
+              id: 'card.detailsHint',
+              defaultMessage:
+                'Double-click or press Alt + Enter to view card details.',
+            })
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={style}
     >
       {links}

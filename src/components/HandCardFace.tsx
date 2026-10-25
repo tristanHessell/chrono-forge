@@ -11,20 +11,13 @@ import cardStyles from './Card.module.css';
 import { CardEffects } from './CardEffect';
 import { CardEventName } from './CardEventName';
 
-export function HandCardFace({
-  card,
-  showTooltip = true,
-}: {
-  card: Card;
-  showTooltip?: boolean;
-}) {
+export function HandCardFace({ card }: { card: Card }) {
   const intl = useIntl();
 
   return (
     <>
       <CardEffects
         effects={card.type === 'manipulation' ? [card.action] : card.effects}
-        showTooltip={showTooltip}
       />
       {card.type === 'event' && (
         <span aria-hidden="true" className={cardStyles.handCardNumber}>

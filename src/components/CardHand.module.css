@@ -129,7 +129,7 @@
   opacity: 0.35;
 }
 
-.hand-fan .hand-card:disabled {
+.hand-fan .hand-card[aria-disabled='true'] {
   filter: saturate(0.55) brightness(0.75);
   opacity: 1;
 }
@@ -189,7 +189,7 @@
   transform: translateY(-8px) rotate(-1deg);
 }
 
-.playable:disabled {
+.playable[aria-disabled='true'] {
   cursor: not-allowed;
   filter: grayscale(0.45);
   opacity: 0.48;
@@ -246,7 +246,7 @@
     transform: translateY(-8px) rotate(-1deg);
   }
 
-  .playable:disabled:hover {
+  .playable[aria-disabled='true']:hover {
     box-shadow: 0 0.6rem 1rem rgb(0 0 0 / 20%);
     outline: none;
     transform: none;
