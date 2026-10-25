@@ -37,6 +37,7 @@ type CardHandProps = {
   onDragEnd: () => void;
   onDragOver: (event: DragEvent<HTMLElement>) => void;
   onDrop: (event: DragEvent<HTMLElement>) => void;
+  onShowDetails?: (card: Card) => void;
   touchDrag?: TouchCardDragHandlers;
 };
 
@@ -56,6 +57,7 @@ export function CardHand({
   onDragEnd,
   onDragOver,
   onDrop,
+  onShowDetails,
   touchDrag,
 }: CardHandProps) {
   const intl = useIntl();
@@ -271,6 +273,9 @@ export function CardHand({
 
             return (
               <button
+                aria-disabled={
+                  !interactive || activeOwner !== owner || undefined
+                }
                 aria-pressed={
                   selectedCardId === card.id || pendingCardId === card.id
                 }
@@ -289,6 +294,11 @@ export function CardHand({
                     id: 'hand.reorderHint',
                     defaultMessage:
                       'Drag within your hand to reorder, or use Alt + Left or Right arrow while focused.',
+                  }),
+                  intl.formatMessage({
+                    id: 'card.detailsHint',
+                    defaultMessage:
+                      'Double-click or press Alt + Enter to view card details.',
                   }),
                 ]
                   .filter(Boolean)
@@ -317,11 +327,16 @@ export function CardHand({
                 data-card-type={card.type}
                 data-hand-card
                 data-event-category={card.category}
-                disabled={!interactive || activeOwner !== owner}
                 draggable={interactive && activeOwner === owner}
                 key={card.id}
                 onClick={() => {
-                  onChoose(card.id);
+                  if (interactive && activeOwner === owner) {
+                    onChoose(card.id);
+                  }
+                }}
+                onDoubleClick={(event) => {
+                  event.preventDefault();
+                  onShowDetails?.(card);
                 }}
                 onPointerDown={
                   card.type === 'event' && interactive && activeOwner === owner
@@ -356,6 +371,17 @@ export function CardHand({
                   setDraggedId(card.id);
                 }}
                 onKeyDown={(event) => {
+                  if (event.altKey && event.key === 'Enter') {
+                    event.preventDefault();
+                    onShowDetails?.(card);
+
+                    return;
+                  }
+
+                  if (!interactive || activeOwner !== owner) {
+                    return;
+                  }
+
                   if (
                     !event.altKey ||
                     !['ArrowLeft', 'ArrowRight'].includes(event.key)
@@ -374,7 +400,7 @@ export function CardHand({
                 }}
                 type="button"
               >
-                <HandCardFace card={card} showTooltip={!touchDrag?.preview} />
+                <HandCardFace card={card} />
                 {pendingCardId === card.id && (
                   <small
                     className={cardHandStyles.handStatus}

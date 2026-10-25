@@ -10,7 +10,10 @@ import { CardCatalogDialog } from './CardCatalogDialog';
 function renderCatalog() {
   return renderToStaticMarkup(
     <IntlProvider locale="en" messages={messages}>
-      <CardCatalogDialog dialogRef={createRef<HTMLDialogElement>()} />
+      <CardCatalogDialog
+        dialogRef={createRef<HTMLDialogElement>()}
+        onShowDetails={() => {}}
+      />
     </IntlProvider>,
   );
 }

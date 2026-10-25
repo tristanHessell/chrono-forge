@@ -116,10 +116,7 @@
 
 .catalog-hand-card {
   cursor: default;
-  flex-shrink: 0;
-}
-
-.catalog-hand-card:disabled {
   filter: none;
+  flex-shrink: 0;
   opacity: 1;
 }

@@ -25,36 +25,3 @@
   height: 0.8rem;
   width: 0.8rem;
 }
-
-.card-effect[data-tooltip-enabled] {
-  cursor: help;
-  pointer-events: auto;
-}
-
-.card-effect[tabindex]:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 3px;
-}
-
-.effect-tooltip {
-  background: var(--table-bg);
-  border: 1px solid var(--accent-text);
-  border-radius: 0.3rem;
-  box-shadow: var(--table-shadow);
-  color: var(--text);
-  font-size: 0.75rem;
-  line-height: 1.5;
-  padding: 0.75rem;
-  pointer-events: none;
-  position: fixed;
-  width: min(280px, calc(100vw - 16px));
-  z-index: 1000;
-}
-
-.effect-tooltip strong {
-  color: var(--accent-text);
-}
-
-.effect-tooltip p {
-  margin: 0.3rem 0 0;
-}

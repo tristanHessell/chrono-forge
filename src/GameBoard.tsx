@@ -20,6 +20,7 @@ import {
 import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
+import { CardDetailsDialog } from './components/CardDetailsDialog';
 import { CardEffects } from './components/CardEffect';
 import { CardEventName } from './components/CardEventName';
 import { CardHand } from './components/CardHand';
@@ -37,6 +38,7 @@ import playedCardStyles from './components/PlayedCard.module.css';
 import { RoundScoresDialog } from './components/RoundScoresDialog';
 import {
   canUndoMove,
+  type Card,
   type CardGameState,
   type CardPosition,
   getAvailablePositions,
@@ -171,6 +173,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   );
 
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [detailsCard, setDetailsCard] = useState<Card | null>(null);
   const [manipulationTargetId, setManipulationTargetId] = useState<
     string | null
   >(null);
@@ -198,6 +201,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           .flat()
           .find((card) => card.id === draggedCard.cardId)
     : null;
+  const showCardDetails = (card: Card) => {
+    setDetailsCard(card);
+  };
   const placementCard =
     draggedCardDetails ??
     Object.values(G.hands)
@@ -981,6 +987,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                       beginDrag(event, cardId, 'hand');
                     }}
                     onDrop={returnCardToHand}
+                    onShowDetails={showCardDetails}
                     owner={id}
                     ownerName={player.name}
                     playerType={player.type}
@@ -1248,6 +1255,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                                 }
                               : undefined
                           }
+                          onShowDetails={showCardDetails}
                         />
                       ))}
                     {G.pending && (
@@ -1302,6 +1310,15 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           beginDrag(event, G.pending!.id, 'pending');
                         }}
                         onDrop={dropOnPendingCard}
+                        onDoubleClick={(event) => {
+                          if ((event.target as Element).closest('button')) {
+                            return;
+                          }
+
+                          if (displayedPendingCard) {
+                            showCardDetails(displayedPendingCard);
+                          }
+                        }}
                         role="region"
                         style={positionStyle(G.pending)}
                       >
@@ -1433,6 +1450,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               beginDrag(event, cardId, 'hand');
             }}
             onDrop={returnCardToHand}
+            onShowDetails={showCardDetails}
             owner={handOwner}
             ownerName={handPlayer.name}
             playerType={handPlayer.type}
@@ -1472,7 +1490,16 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         initialPlayers={players}
         onStart={startNewGame}
       />
-      <CardCatalogDialog dialogRef={cardCatalogDialog} />
+      <CardCatalogDialog
+        dialogRef={cardCatalogDialog}
+        onShowDetails={showCardDetails}
+      />
+      <CardDetailsDialog
+        card={detailsCard}
+        onClose={() => {
+          setDetailsCard(null);
+        }}
+      />
       <RoundScoresDialog dialogRef={roundScoresDialog} G={G} />
       <footer className={gameBoardStyles.footer}>
         {finished ? (
