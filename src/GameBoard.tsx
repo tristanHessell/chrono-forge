@@ -1015,19 +1015,22 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               >
                 <span>
                   <FormattedMessage id={'deck.title'} defaultMessage={'Deck'} />
-                  <small>
-                    <FormattedMessage
-                      id="deck.remaining"
-                      defaultMessage="{count, number} remaining"
-                      values={{ count: G.deck.length }}
-                    />
-                  </small>
                 </span>
                 <div
                   className={gameBoardStyles.deckCardBack}
-                  aria-hidden="true"
+                  aria-label={intl.formatMessage<{
+                    readonly count: number | bigint;
+                  }>(
+                    {
+                      id: 'deck.remaining',
+                      defaultMessage: '{count, number} cards in deck',
+                    },
+                    { count: G.deck.length },
+                  )}
                 >
-                  <strong>{intl.formatNumber(G.deck.length)}</strong>
+                  <strong aria-hidden="true">
+                    {intl.formatNumber(G.deck.length)}
+                  </strong>
                 </div>
               </div>
               <button
