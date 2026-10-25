@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useEffect, useId, useRef } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { eventCardNameMessage } from '../eventCardName';
 import type { Card } from '../game';
@@ -109,30 +109,30 @@ export function CardDetailsDialog({
           {card.type === 'event' && (
             <div>
               <dt>
-                {intl.formatMessage({
-                  id: 'card.details.year',
-                  defaultMessage: 'Year',
-                })}
+                <FormattedMessage
+                  id={'card.details.year'}
+                  defaultMessage={'Year'}
+                />
               </dt>
               <dd>{intl.formatNumber(card.number, { useGrouping: false })}</dd>
             </div>
           )}
           <div>
             <dt>
-              {intl.formatMessage({
-                id: 'card.details.type',
-                defaultMessage: 'Type',
-              })}
+              <FormattedMessage
+                id={'card.details.type'}
+                defaultMessage={'Type'}
+              />
             </dt>
             <dd>{cardType}</dd>
           </div>
         </dl>
         <section className={cardDetailsStyles.effects}>
           <h3>
-            {intl.formatMessage({
-              id: 'card.details.effects',
-              defaultMessage: 'Effects',
-            })}
+            <FormattedMessage
+              id={'card.details.effects'}
+              defaultMessage={'Effects'}
+            />
           </h3>
           {effects?.length ? (
             <ul>
@@ -145,10 +145,10 @@ export function CardDetailsDialog({
             </ul>
           ) : (
             <p>
-              {intl.formatMessage({
-                id: 'card.details.noEffects',
-                defaultMessage: 'No special effects.',
-              })}
+              <FormattedMessage
+                id={'card.details.noEffects'}
+                defaultMessage={'No special effects.'}
+              />
             </p>
           )}
         </section>

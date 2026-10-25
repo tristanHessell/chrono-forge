@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { type RefObject, useId, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { loadCardCatalog } from '../cardCatalog';
 import { catalogGroups } from '../catalogGroups';
@@ -101,10 +101,7 @@ export function CardCatalogDialog({
         )}
       >
         <h2 id={titleId}>
-          {intl.formatMessage({
-            id: 'catalog.title',
-            defaultMessage: 'All cards',
-          })}
+          <FormattedMessage id={'catalog.title'} defaultMessage={'All cards'} />
         </h2>
         <button
           className={dialogStyles.gameLogClose}
@@ -121,17 +118,18 @@ export function CardCatalogDialog({
         </button>
       </div>
       <p>
-        {intl.formatMessage({
-          id: 'catalog.overview',
-          defaultMessage:
-            'The complete configured deck, not just the cards remaining in this game. Every copy is shown. Double-click a card to view its details and effects.',
-        })}
+        <FormattedMessage
+          id={'catalog.overview'}
+          defaultMessage={
+            'The complete configured deck, not just the cards remaining in this game. Every copy is shown. Double-click a card to view its details and effects.'
+          }
+        />
       </p>
       <label className={cardCatalogDialogStyles.catalogView}>
-        {intl.formatMessage({
-          id: 'catalog.view',
-          defaultMessage: 'Display cards',
-        })}
+        <FormattedMessage
+          id={'catalog.view'}
+          defaultMessage={'Display cards'}
+        />
         <select
           value={view}
           onChange={(event) => {
@@ -139,24 +137,21 @@ export function CardCatalogDialog({
           }}
         >
           <option value="hand">
-            {intl.formatMessage({
-              id: 'catalog.view.hand',
-              defaultMessage: 'In hand',
-            })}
+            <FormattedMessage
+              id={'catalog.view.hand'}
+              defaultMessage={'In hand'}
+            />
           </option>
           <option value="table">
-            {intl.formatMessage({
-              id: 'catalog.view.table',
-              defaultMessage: 'On table',
-            })}
+            <FormattedMessage
+              id={'catalog.view.table'}
+              defaultMessage={'On table'}
+            />
           </option>
         </select>
       </label>
       <label className={cardCatalogDialogStyles.catalogView}>
-        {intl.formatMessage({
-          id: 'catalog.size',
-          defaultMessage: 'Card size',
-        })}
+        <FormattedMessage id={'catalog.size'} defaultMessage={'Card size'} />
         <select
           value={size}
           onChange={(event) => {
@@ -164,16 +159,16 @@ export function CardCatalogDialog({
           }}
         >
           <option value="standard">
-            {intl.formatMessage({
-              id: 'catalog.size.standard',
-              defaultMessage: 'Standard (124 × 88 px)',
-            })}
+            <FormattedMessage
+              id={'catalog.size.standard'}
+              defaultMessage={'Standard (124 × 88 px)'}
+            />
           </option>
           <option value="compact">
-            {intl.formatMessage({
-              id: 'catalog.size.compact',
-              defaultMessage: 'Compact (104 × 72 px)',
-            })}
+            <FormattedMessage
+              id={'catalog.size.compact'}
+              defaultMessage={'Compact (104 × 72 px)'}
+            />
           </option>
         </select>
       </label>
@@ -212,18 +207,16 @@ export function CardCatalogDialog({
       </dl>
       <section className={cardCatalogDialogStyles.catalogGroup}>
         <h3>
-          {intl.formatMessage({
-            id: 'catalog.start',
-            defaultMessage: 'Starting card',
-          })}
+          <FormattedMessage
+            id={'catalog.start'}
+            defaultMessage={'Starting card'}
+          />
           <span>
-            {intl.formatMessage(
-              {
-                id: 'catalog.count',
-                defaultMessage: '{count, plural, one {# card} other {# cards}}',
-              },
-              { count: 1 },
-            )}
+            <FormattedMessage
+              id="catalog.count"
+              defaultMessage="{count, plural, one {# card} other {# cards}}"
+              values={{ count: 1 }}
+            />
           </span>
         </h3>
         <ul className={cardCatalogDialogStyles.catalogGrid}>
@@ -251,14 +244,11 @@ export function CardCatalogDialog({
             <h3>
               {label}
               <span>
-                {intl.formatMessage(
-                  {
-                    id: 'catalog.count',
-                    defaultMessage:
-                      '{count, plural, one {# card} other {# cards}}',
-                  },
-                  { count: cards.length },
-                )}
+                <FormattedMessage
+                  id="catalog.count"
+                  defaultMessage="{count, plural, one {# card} other {# cards}}"
+                  values={{ count: cards.length }}
+                />
               </span>
             </h3>
             <ul className={cardCatalogDialogStyles.catalogGrid}>

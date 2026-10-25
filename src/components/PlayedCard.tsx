@@ -6,6 +6,7 @@ import {
   type ReactNode,
   useContext,
 } from 'react';
+import type { MessageValue } from 'react-intl';
 import { useIntl } from 'react-intl';
 
 import { eventCardNameMessage } from '../eventCardName';
@@ -65,7 +66,7 @@ export function PlayedCard({
             id: 'card.owner.you',
             defaultMessage: 'placed by you',
           })
-        : intl.formatMessage(
+        : intl.formatMessage<{ readonly name: MessageValue }>(
             { id: 'card.owner.player', defaultMessage: 'placed by {name}' },
             { name: ownerName },
           );
@@ -81,7 +82,13 @@ export function PlayedCard({
 
   return (
     <div
-      aria-label={intl.formatMessage(
+      aria-label={intl.formatMessage<{
+        readonly category: string;
+        readonly latest: string;
+        readonly name: MessageValue;
+        readonly number: number | bigint;
+        readonly owner: MessageValue;
+      }>(
         {
           id: 'card.label',
           defaultMessage:
@@ -200,13 +207,16 @@ export function PlayedCard({
       <strong>{intl.formatNumber(card.number, { useGrouping: false })}</strong>
       <CardEventName card={card} />
       <span className={cardStyles.cardTypeName}>
-        {intl.formatMessage(
-          'removed' in card && card.removed
-            ? { id: 'card.removed', defaultMessage: 'Removed' }
-            : card.category
-              ? categoryMessages[card.category]
-              : startingEventNameMessage,
-        )}
+        {'removed' in card && card.removed
+          ? intl.formatMessage({
+              id: 'card.removed',
+              defaultMessage: 'Removed',
+            })
+          : intl.formatMessage(
+              card.category
+                ? categoryMessages[card.category]
+                : startingEventNameMessage,
+            )}
       </span>
       {'owner' in card && (
         <span className={cardStyles.ownerBadge}>{ownerName}</span>

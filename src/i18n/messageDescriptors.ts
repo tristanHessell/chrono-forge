@@ -1,4 +1,4 @@
-import { defineMessages, type MessageDescriptor } from 'react-intl';
+import { defineMessages, TypedMessageDescriptor } from 'react-intl';
 
 import type {
   CardEffect,
@@ -8,62 +8,60 @@ import type {
 } from '../game';
 import type { Theme } from '../theme';
 
-type DescriptorMap<Key extends string> = Record<Key, MessageDescriptor>;
+type DescriptorMap<Key extends string> = Record<Key, TypedMessageDescriptor>;
 
-export const categoryMessages: DescriptorMap<EventCategory> = defineMessages({
+export const categoryMessages = defineMessages({
   environmental: {
     id: 'card.category.environmental',
     defaultMessage: 'Nature',
   },
   political: { id: 'card.category.political', defaultMessage: 'Politics' },
   technological: { id: 'card.category.technological', defaultMessage: 'Tech' },
-});
+}) satisfies DescriptorMap<EventCategory>;
 
-export const manipulationNameMessages: DescriptorMap<ManipulationAction> =
-  defineMessages({
-    'remove-event': {
-      id: 'manipulation.remove-event.name',
-      defaultMessage: 'Remove Event',
-    },
-    'take-control': {
-      id: 'manipulation.take-control.name',
-      defaultMessage: 'Take Control',
-    },
-    'time-jump': {
-      id: 'manipulation.time-jump.name',
-      defaultMessage: 'Time Jump',
-    },
-    'time-swap': {
-      id: 'manipulation.time-swap.name',
-      defaultMessage: 'Time Swap',
-    },
-  });
+export const manipulationNameMessages = defineMessages({
+  'remove-event': {
+    id: 'manipulation.remove-event.name',
+    defaultMessage: 'Remove Event',
+  },
+  'take-control': {
+    id: 'manipulation.take-control.name',
+    defaultMessage: 'Take Control',
+  },
+  'time-jump': {
+    id: 'manipulation.time-jump.name',
+    defaultMessage: 'Time Jump',
+  },
+  'time-swap': {
+    id: 'manipulation.time-swap.name',
+    defaultMessage: 'Time Swap',
+  },
+}) satisfies DescriptorMap<ManipulationAction>;
 
-export const manipulationDescriptionMessages: DescriptorMap<ManipulationAction> =
-  defineMessages({
-    'remove-event': {
-      id: 'manipulation.remove-event.description',
-      defaultMessage:
-        'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. Its date does not constrain new adjacent placements. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',
-    },
-    'take-control': {
-      id: 'manipulation.take-control.description',
-      defaultMessage:
-        "Gain control of another player's Event card. Its points and any valid bonus become yours. A removed Event stays removed. The starting card cannot be targeted.",
-    },
-    'time-jump': {
-      id: 'manipulation.time-jump.description',
-      defaultMessage:
-        "Move an Event card to a valid empty position or overwrite a removed Event. Empty destinations cannot touch another removed Event. A removed card can establish new links to earlier-dated active neighbors even if they were played after it. An overwrite preserves the destination's link directions and discards the replaced Event. Ownership and removed status stay with the moved card. The entire board must remain legal. The starting card cannot move.",
-    },
-    'time-swap': {
-      id: 'manipulation.time-swap.description',
-      defaultMessage:
-        'Swap two Event cards while keeping the board legal. The starting card cannot be swapped.',
-    },
-  });
+export const manipulationDescriptionMessages = defineMessages({
+  'remove-event': {
+    id: 'manipulation.remove-event.description',
+    defaultMessage:
+      'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',
+  },
+  'take-control': {
+    id: 'manipulation.take-control.description',
+    defaultMessage:
+      "Gain control of another player's Event card. Its points and any valid bonus become yours. A removed Event stays removed. The starting card cannot be targeted.",
+  },
+  'time-jump': {
+    id: 'manipulation.time-jump.description',
+    defaultMessage:
+      "Move an Event card to a valid empty position or overwrite a removed Event. Empty destinations cannot touch another removed Event. A removed card can establish new links to earlier-dated active neighbors even if they were played after it. An overwrite preserves the destination's link directions and discards the replaced Event. Ownership and removed status stay with the moved card. The entire board must remain legal. The starting card cannot move.",
+  },
+  'time-swap': {
+    id: 'manipulation.time-swap.description',
+    defaultMessage:
+      'Swap two Event cards while keeping the board legal. The starting card cannot be swapped.',
+  },
+}) satisfies DescriptorMap<ManipulationAction>;
 
-export const effectNameMessages: DescriptorMap<CardEffect> = defineMessages({
+export const effectNameMessages = defineMessages({
   'draw-one': { id: 'effect.draw-one.name', defaultMessage: 'Draw one card' },
   'free-action': {
     id: 'effect.free-action.name',
@@ -73,28 +71,27 @@ export const effectNameMessages: DescriptorMap<CardEffect> = defineMessages({
     id: 'effect.timeline-1900-bonus.name',
     defaultMessage: '1900 timeline bonus',
   },
-});
+}) satisfies DescriptorMap<CardEffect>;
 
-export const effectDescriptionMessages: DescriptorMap<CardEffect> =
-  defineMessages({
-    'draw-one': {
-      id: 'effect.draw-one.description',
-      defaultMessage:
-        'When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.',
-    },
-    'free-action': {
-      id: 'effect.free-action.description',
-      defaultMessage:
-        'When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.',
-    },
-    'timeline-1900-bonus': {
-      id: 'effect.timeline-1900-bonus.description',
-      defaultMessage:
-        'Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.',
-    },
-  });
+export const effectDescriptionMessages = defineMessages({
+  'draw-one': {
+    id: 'effect.draw-one.description',
+    defaultMessage:
+      'When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.',
+  },
+  'free-action': {
+    id: 'effect.free-action.description',
+    defaultMessage:
+      'When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.',
+  },
+  'timeline-1900-bonus': {
+    id: 'effect.timeline-1900-bonus.description',
+    defaultMessage:
+      'Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.',
+  },
+}) satisfies DescriptorMap<CardEffect>;
 
-export const eventNameMessages: DescriptorMap<EventName> = defineMessages({
+export const eventNameMessages = defineMessages({
   'assembly-lines': {
     id: 'card.name.assembly-lines',
     defaultMessage: 'Assembly Lines',
@@ -186,16 +183,16 @@ export const eventNameMessages: DescriptorMap<EventName> = defineMessages({
     id: 'card.name.wildlife-refuges',
     defaultMessage: 'Wildlife Refuges',
   },
-});
+}) satisfies DescriptorMap<EventName>;
 
-export const startingEventNameMessage: MessageDescriptor = defineMessages({
+export const startingEventNameMessage: TypedMessageDescriptor = defineMessages({
   startingEventNameMessage: {
     id: 'card.event',
     defaultMessage: 'Event',
   },
 }).startingEventNameMessage;
 
-export const themeMessages: DescriptorMap<Theme> = defineMessages({
+export const themeMessages = defineMessages({
   dark: { id: 'theme.dark', defaultMessage: 'Dark' },
   'greyscale-dark': {
     id: 'theme.greyscale-dark',
@@ -206,4 +203,4 @@ export const themeMessages: DescriptorMap<Theme> = defineMessages({
     defaultMessage: 'Greyscale Light',
   },
   light: { id: 'theme.light', defaultMessage: 'Light' },
-});
+}) satisfies DescriptorMap<Theme>;
