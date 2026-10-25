@@ -12,7 +12,11 @@ import {
 } from 'react';
 import { useIntl } from 'react-intl';
 
-import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
+import {
+  changeBoardZoom,
+  changeBoardZoomByPinch,
+  listenForBoardWheel,
+} from './boardZoom';
 import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
@@ -185,6 +189,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     scrollLeft: 0,
     scrollTop: 0,
   });
+  const touchPoints = useRef(new Map<number, { x: number; y: number }>());
+  const pinchDistance = useRef<number | null>(null);
   const draggedCardDetails = draggedCard
     ? draggedCard.source === 'pending'
       ? G.pending
@@ -655,8 +661,33 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   }, [adjustBoardZoom]);
 
   const startBoardPan = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') {
+      touchPoints.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      if (touchPoints.current.size === 2) {
+        const [first, second] = [...touchPoints.current.values()];
+        const distance = Math.hypot(first.x - second.x, first.y - second.y);
+
+        pinchDistance.current = distance || null;
+        touchDrag.controller.cancel();
+        setIsPanning(false);
+
+        return;
+      }
+      if (touchPoints.current.size > 2) {
+        pinchDistance.current = null;
+        setIsPanning(false);
+
+        return;
+      }
+    }
+
     if (
       event.button !== 0 ||
+      pinchDistance.current ||
       (event.target as Element).closest(
         '[data-card-type], [data-placement-slot]',
       )
@@ -675,6 +706,31 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   };
 
   const panBoard = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') {
+      const touchPoint = touchPoints.current.get(event.pointerId);
+
+      if (touchPoint) {
+        touchPoint.x = event.clientX;
+        touchPoint.y = event.clientY;
+
+        if (pinchDistance.current && touchPoints.current.size === 2) {
+          const [first, second] = [...touchPoints.current.values()];
+          const distance = Math.hypot(first.x - second.x, first.y - second.y);
+          const previousDistance = pinchDistance.current;
+
+          pinchDistance.current = distance;
+          setBoardZoom((current) =>
+            changeBoardZoomByPinch(current, previousDistance, distance),
+          );
+
+          return;
+        }
+      }
+      if (pinchDistance.current) {
+        return;
+      }
+    }
+
     if (!isPanning) {
       return;
     }
@@ -686,15 +742,20 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   };
 
   const stopBoardPan = (event: PointerEvent<HTMLDivElement>) => {
-    if (!isPanning) {
-      return;
+    if (event.pointerType === 'touch') {
+      touchPoints.current.delete(event.pointerId);
+
+      if (touchPoints.current.size < 2) {
+        pinchDistance.current = null;
+      }
     }
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
-
-    setIsPanning(false);
+    if (isPanning) {
+      setIsPanning(false);
+    }
   };
 
   const isSnappedTo = (position: CardPosition) =>
