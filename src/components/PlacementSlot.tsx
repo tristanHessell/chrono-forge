@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import type { CSSProperties, DragEvent } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card, CardPosition } from '../game';
 import { positionKey } from '../gameRules';
@@ -79,10 +79,7 @@ export function PlacementSlot({
             )}
           </span>
           <small className={placementSlotStyles.releaseLabel}>
-            {intl.formatMessage({
-              id: 'placement.release',
-              defaultMessage: 'Release to place',
-            })}
+            <FormattedMessage id={('placement.release')} defaultMessage={('Release to place')} />
           </small>
         </>
       ) : (
@@ -92,18 +89,12 @@ export function PlacementSlot({
           </svg>
           {overwrite && (
             <small>
-              {intl.formatMessage({
-                id: 'placement.overwrite',
-                defaultMessage: 'Overwrite',
-              })}
+              <FormattedMessage id={('placement.overwrite')} defaultMessage={('Overwrite')} />
             </small>
           )}
           {initial && (
             <small>
-              {intl.formatMessage({
-                id: 'placement.first',
-                defaultMessage: 'Drop first card',
-              })}
+              <FormattedMessage id={('placement.first')} defaultMessage={('Drop first card')} />
             </small>
           )}
         </>

@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import { useIntl } from 'react-intl';
+import type { MessageValue } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { PlacedCard, PlayerId } from '../game';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
@@ -39,7 +40,7 @@ export function GameResults({
                     },
                 { name: getPlayer(players, winners[0]).name },
               )
-            : intl.formatMessage(
+            : intl.formatMessage<{ readonly players: MessageValue }>(
                 {
                   id: 'score.tie',
                   defaultMessage: "Game over — it's a tie! ({players})",
@@ -55,22 +56,20 @@ export function GameResults({
       <div className={gameResultsStyles.scoreBreakdown}>
         {playerIds.map((owner) => (
           <span className={ownershipStyles[`owner${owner}`]} key={owner}>
-            {intl.formatMessage(
-              {
-                id: 'score.breakdown',
-                defaultMessage: `{name}: {base, plural,
-                    one {# card point}
-                    other {# card points}
-                  } + {bonus, plural,
-                    one {# bonus point}
-                    other {# bonus points}
-                  } = {total, number} total`,
-              },
-              {
+            <FormattedMessage
+              id="score.breakdown"
+              defaultMessage="{name}: {base, plural,
+                one {# card point}
+                other {# card points}
+              } + {bonus, plural,
+                one {# bonus point}
+                other {# bonus points}
+              } = {total, number} total"
+              values={{
                 name: getPlayer(players, owner).name,
                 ...(scores[owner] ?? { base: 0, bonus: 0, total: 0 }),
-              },
-            )}
+              }}
+            />
           </span>
         ))}
       </div>

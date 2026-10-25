@@ -63,10 +63,7 @@ export function GameLogView({ log }: { log: GameLog }) {
       <dl className={gameLogViewStyles.gameLogMetadata}>
         <div>
           <dt>
-            {intl.formatMessage({
-              id: 'log.seed',
-              defaultMessage: 'Initial seed',
-            })}
+            <FormattedMessage id={('log.seed')} defaultMessage={('Initial seed')} />
           </dt>
           <dd>
             <code>{log.seed}</code>
@@ -74,10 +71,7 @@ export function GameLogView({ log }: { log: GameLog }) {
         </div>
         <div>
           <dt>
-            {intl.formatMessage({
-              id: 'game.players',
-              defaultMessage: 'Players',
-            })}
+            <FormattedMessage id={('game.players')} defaultMessage={('Players')} />
           </dt>
           <dd>{log.numPlayers}</dd>
         </div>
@@ -91,10 +85,7 @@ export function GameLogView({ log }: { log: GameLog }) {
       </p>
       {items.length === 0 ? (
         <p>
-          {intl.formatMessage({
-            id: 'log.empty',
-            defaultMessage: 'No actions yet.',
-          })}
+          <FormattedMessage id={('log.empty')} defaultMessage={('No actions yet.')} />
         </p>
       ) : (
         <ol className={gameLogViewStyles.gameLogEntries}>

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { CardPatternsToggle } from './CardPatternsToggle';
 import controlsStyles from './Controls.module.css';
@@ -65,7 +65,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
         <svg aria-hidden="true" viewBox="0 0 16 16">
           <path d="M2 3h12M2 8h12M2 13h12" />
         </svg>
-        {intl.formatMessage({ id: 'menu.toggle', defaultMessage: 'Menu' })}
+        <FormattedMessage id={('menu.toggle')} defaultMessage={('Menu')} />
       </summary>
       <div
         className={gameMenuStyles.gameMenuPanel}
@@ -83,7 +83,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
             onNewGame();
           }}
         >
-          {intl.formatMessage({ id: 'game.new', defaultMessage: 'New game' })}
+          <FormattedMessage id={('game.new')} defaultMessage={('New game')} />
         </button>
         <ThemeToggle />
         <CardPatternsToggle />
@@ -95,10 +95,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
             onOpenCatalog();
           }}
         >
-          {intl.formatMessage({
-            id: 'catalog.title',
-            defaultMessage: 'All cards',
-          })}
+          <FormattedMessage id={('catalog.title')} defaultMessage={('All cards')} />
         </button>
       </div>
     </details>

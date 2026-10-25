@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { themeMessages } from '../i18n/messageDescriptors';
 import { parseTheme, savedTheme, saveTheme, type Theme } from '../theme';
@@ -31,7 +31,7 @@ export function ThemeToggle() {
 
   return (
     <label className={themeToggleStyles.themeChoice}>
-      {intl.formatMessage({ id: 'theme.label', defaultMessage: 'Theme' })}
+      <FormattedMessage id={('theme.label')} defaultMessage={('Theme')} />
       <select
         aria-label={intl.formatMessage({
           id: 'theme.label',

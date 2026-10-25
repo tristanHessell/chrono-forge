@@ -48,6 +48,7 @@
   "card.owner.player": "placed by {name}",
   "card.owner.start": "starting card",
   "card.owner.you": "placed by you",
+  "card.removed": "Removed",
   "card.removedDescription": "Removed Event: scores no points and does not qualify for bonuses. It still has its date and links, can be moved or swapped, and can be overwritten by a valid Event.",
   "catalog.close": "Close card catalog",
   "catalog.count": "{count, plural, one {# card} other {# cards}}",

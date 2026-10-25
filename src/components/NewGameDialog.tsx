@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { type FormEvent, type RefObject, useState } from 'react';
-import { useIntl } from 'react-intl';
+import type { MessageValue } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { PlayerId } from '../game';
 import {
@@ -58,17 +59,18 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
         >
           <div>
             <h2 id="new-game-title">
-              {intl.formatMessage({
-                id: 'newGame.title',
-                defaultMessage: 'New game',
-              })}
+              <FormattedMessage
+                id={'newGame.title'}
+                defaultMessage={'New game'}
+              />
             </h2>
             <p>
-              {intl.formatMessage({
-                id: 'newGame.description',
-                defaultMessage:
-                  'Player 1 is always human. Add up to four players and choose who controls each other seat.',
-              })}
+              <FormattedMessage
+                id={'newGame.description'}
+                defaultMessage={
+                  'Player 1 is always human. Add up to four players and choose who controls each other seat.'
+                }
+              />
             </p>
           </div>
           <button
@@ -92,32 +94,32 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
               <div className={newGameDialogStyles.playerDetails}>
                 <strong>{player.name}</strong>
                 <small>
-                  {intl.formatMessage(
-                    {
-                      id: 'newGame.playerNumber',
-                      defaultMessage: 'Player {count, number}',
-                    },
-                    { count: index + 1 },
-                  )}
+                  <FormattedMessage
+                    id={'newGame.playerNumber'}
+                    defaultMessage={'Player {count, number}'}
+                    values={{ count: index + 1 }}
+                  />
                 </small>
               </div>
               {index === 0 ? (
                 <span className={newGameDialogStyles.fixedType}>
-                  {intl.formatMessage({
-                    id: 'newGame.human',
-                    defaultMessage: 'Human',
-                  })}
+                  <FormattedMessage
+                    id={'newGame.human'}
+                    defaultMessage={'Human'}
+                  />
                 </span>
               ) : (
                 <label className={newGameDialogStyles.playerType}>
                   <span>
-                    {intl.formatMessage({
-                      id: 'newGame.playerType',
-                      defaultMessage: 'Controller',
-                    })}
+                    <FormattedMessage
+                      id={'newGame.playerType'}
+                      defaultMessage={'Controller'}
+                    />
                   </span>
                   <select
-                    aria-label={intl.formatMessage(
+                    aria-label={intl.formatMessage<{
+                      readonly name: MessageValue;
+                    }>(
                       {
                         id: 'newGame.playerTypeFor',
                         defaultMessage: 'Controller for {name}',
@@ -135,23 +137,25 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                     value={player.type}
                   >
                     <option value="computer">
-                      {intl.formatMessage({
-                        id: 'newGame.computer',
-                        defaultMessage: 'AI',
-                      })}
+                      <FormattedMessage
+                        id={'newGame.computer'}
+                        defaultMessage={'AI'}
+                      />
                     </option>
                     <option value="human">
-                      {intl.formatMessage({
-                        id: 'newGame.human',
-                        defaultMessage: 'Human',
-                      })}
+                      <FormattedMessage
+                        id={'newGame.human'}
+                        defaultMessage={'Human'}
+                      />
                     </option>
                   </select>
                 </label>
               )}
               {index > 1 && index === players.length - 1 && (
                 <button
-                  aria-label={intl.formatMessage(
+                  aria-label={intl.formatMessage<{
+                    readonly name: MessageValue;
+                  }>(
                     {
                       id: 'newGame.removePlayer',
                       defaultMessage: 'Remove {name}',
@@ -164,10 +168,10 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                   }}
                   type="button"
                 >
-                  {intl.formatMessage({
-                    id: 'newGame.remove',
-                    defaultMessage: 'Remove',
-                  })}
+                  <FormattedMessage
+                    id={'newGame.remove'}
+                    defaultMessage={'Remove'}
+                  />
                 </button>
               )}
             </div>
@@ -180,17 +184,17 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
               onClick={addPlayer}
               type="button"
             >
-              {intl.formatMessage({
-                id: 'newGame.addPlayer',
-                defaultMessage: 'Add player',
-              })}
+              <FormattedMessage
+                id={'newGame.addPlayer'}
+                defaultMessage={'Add player'}
+              />
             </button>
           )}
           <button className={controlsStyles.historyButton} type="submit">
-            {intl.formatMessage({
-              id: 'newGame.start',
-              defaultMessage: 'Start game',
-            })}
+            <FormattedMessage
+              id={'newGame.start'}
+              defaultMessage={'Start game'}
+            />
           </button>
         </div>
       </form>

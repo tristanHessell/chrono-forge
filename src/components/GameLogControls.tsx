@@ -1,5 +1,6 @@
 import { useContext, useRef, useState } from 'react';
-import { useIntl } from 'react-intl';
+import type {MessageValue} from "react-intl";
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { CardGameState } from '../game';
 import {
@@ -48,7 +49,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
       loadLog(log, count);
     } catch (error) {
       setStatus(
-        intl.formatMessage(
+        intl.formatMessage<{ readonly "reason": MessageValue }>(
           { id: 'log.error', defaultMessage: 'Could not load log: {reason}' },
           {
             reason: error instanceof Error ? error.message : String(error),
@@ -106,10 +107,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
       >
         <div className={dialogStyles.gameLogHeader}>
           <h2 id="game-log-title">
-            {intl.formatMessage({
-              id: 'log.title',
-              defaultMessage: 'Game Log',
-            })}
+            <FormattedMessage id={('log.title')} defaultMessage={('Game Log')} />
           </h2>
           <button
             className={dialogStyles.gameLogClose}
@@ -126,11 +124,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
           </button>
         </div>
         <p>
-          {intl.formatMessage({
-            id: 'log.overview',
-            defaultMessage:
-              'Card uses are listed in order. Undo removes a card use and redo restores it; neither is a log entry. Computers stay paused while you inspect the log.',
-          })}
+          <FormattedMessage id={('log.overview')} defaultMessage={('Card uses are listed in order. Undo removes a card use and redo restores it; neither is a log entry. Computers stay paused while you inspect the log.')} />
         </p>
         <div className={gameLogControlsStyles.gameLogActions}>
           <button
@@ -142,10 +136,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               setStatus('');
             }}
           >
-            {intl.formatMessage({
-              id: 'log.import',
-              defaultMessage: 'Import JSON',
-            })}
+            <FormattedMessage id={('log.import')} defaultMessage={('Import JSON')} />
           </button>
           <button
             type="button"
@@ -156,10 +147,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               setStatus('');
             }}
           >
-            {intl.formatMessage({
-              id: 'log.export',
-              defaultMessage: 'Export JSON',
-            })}
+            <FormattedMessage id={('log.export')} defaultMessage={('Export JSON')} />
           </button>
           {mode !== 'log' && (
             <button
@@ -169,10 +157,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
                 setStatus('');
               }}
             >
-              {intl.formatMessage({
-                id: 'log.back',
-                defaultMessage: 'Back to log',
-              })}
+              <FormattedMessage id={('log.back')} defaultMessage={('Back to log')} />
             </button>
           )}
         </div>
@@ -180,17 +165,10 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
         {mode !== 'log' && (
           <>
             <p>
-              {intl.formatMessage({
-                id: 'log.help',
-                defaultMessage:
-                  'The JSON log includes the initial seed, player count, starting player, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order.',
-              })}
+              <FormattedMessage id={('log.help')} defaultMessage={('The JSON log includes the initial seed, player count, starting player, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order.')} />
             </p>
             <label htmlFor="game-log-text">
-              {intl.formatMessage({
-                id: 'log.text',
-                defaultMessage: 'Game log JSON',
-              })}
+              <FormattedMessage id={('log.text')} defaultMessage={('Game log JSON')} />
             </label>
             <textarea
               id="game-log-text"
@@ -204,10 +182,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
             {mode === 'import' && (
               <>
                 <label htmlFor="game-log-steps">
-                  {intl.formatMessage({
-                    id: 'log.steps',
-                    defaultMessage: 'Replay first N actions (optional)',
-                  })}
+                  <FormattedMessage id={('log.steps')} defaultMessage={('Replay first N actions (optional)')} />
                 </label>
                 <input
                   id="game-log-steps"
@@ -229,18 +204,12 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
             <div className={gameLogControlsStyles.gameLogActions}>
               {mode === 'export' && (
                 <button type="button" onClick={copyLog}>
-                  {intl.formatMessage({
-                    id: 'log.copy',
-                    defaultMessage: 'Copy log',
-                  })}
+                  <FormattedMessage id={('log.copy')} defaultMessage={('Copy log')} />
                 </button>
               )}
               {mode === 'import' && (
                 <button type="button" onClick={replay}>
-                  {intl.formatMessage({
-                    id: 'log.replay',
-                    defaultMessage: 'Load replay',
-                  })}
+                  <FormattedMessage id={('log.replay')} defaultMessage={('Load replay')} />
                 </button>
               )}
             </div>

@@ -90,7 +90,8 @@ export default defineConfig(
       'formatjs/enforce-default-message': ['error', 'literal'],
       // We don't need descriptions at the moment, to enable if l10n becomes a priority
       'formatjs/enforce-description': 'off',
-      'formatjs/enforce-placeholders': 'error',
+      'formatjs/enforce-placeholders': 'off',
+      'formatjs/enforce-message-types': ['error', {generateTypes: true}],
       'formatjs/enforce-plural-rules': ['error', { other: true }],
       'formatjs/no-multiple-whitespaces': 'error',
       // This rule warns when you have plurals next to each other - not a problem for this codebase.
@@ -116,7 +117,7 @@ export default defineConfig(
       ],
       'formatjs/no-literal-string-in-object': 'error',
       'formatjs/prefer-full-sentence': 'error',
-      'formatjs/prefer-formatted-message': 'off',
+      'formatjs/prefer-formatted-message': 'error',
       'formatjs/no-invalid-icu': 'error',
     },
   },

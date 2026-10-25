@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { type RefObject, useContext, useId, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { CardGameState } from '../game';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
@@ -91,10 +91,10 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
     >
       <div className={dialogStyles.gameLogHeader}>
         <h2 id={titleId}>
-          {intl.formatMessage({
-            id: 'roundScores.title',
-            defaultMessage: 'Round scores',
-          })}
+          <FormattedMessage
+            id={'roundScores.title'}
+            defaultMessage={'Round scores'}
+          />
         </h2>
         <button
           className={dialogStyles.gameLogClose}
@@ -111,17 +111,17 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
         </button>
       </div>
       <p>
-        {intl.formatMessage({
-          id: 'roundScores.overview',
-          defaultMessage: 'Points for each player across rounds.',
-        })}
+        <FormattedMessage
+          id={'roundScores.overview'}
+          defaultMessage={'Points for each player across rounds.'}
+        />
       </p>
       {rows.length === 0 ? (
         <p className={roundScoresDialogStyles.emptyMessage}>
-          {intl.formatMessage({
-            id: 'roundScores.empty',
-            defaultMessage: 'No rounds played yet.',
-          })}
+          <FormattedMessage
+            id={'roundScores.empty'}
+            defaultMessage={'No rounds played yet.'}
+          />
         </p>
       ) : (
         <>
@@ -145,10 +145,10 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                 setViewMode('round');
               }}
             >
-              {intl.formatMessage({
-                id: 'roundScores.modeRound',
-                defaultMessage: 'Round points',
-              })}
+              <FormattedMessage
+                id={'roundScores.modeRound'}
+                defaultMessage={'Round points'}
+              />
             </button>
             <button
               className={clsx(
@@ -162,10 +162,10 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                 setViewMode('total');
               }}
             >
-              {intl.formatMessage({
-                id: 'roundScores.modeTotal',
-                defaultMessage: 'Cumulative',
-              })}
+              <FormattedMessage
+                id={'roundScores.modeTotal'}
+                defaultMessage={'Cumulative'}
+              />
             </button>
           </div>
           <div className={roundScoresDialogStyles.tableWrapper}>
@@ -176,10 +176,10 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                     className={roundScoresDialogStyles.headerCell}
                     scope="col"
                   >
-                    {intl.formatMessage({
-                      id: 'roundScores.round',
-                      defaultMessage: 'Round',
-                    })}
+                    <FormattedMessage
+                      id={'roundScores.round'}
+                      defaultMessage={'Round'}
+                    />
                   </th>
                   {playerIds.map((id) => (
                     <th
@@ -208,19 +208,17 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                       className={roundScoresDialogStyles.roundCell}
                       scope="row"
                     >
-                      {intl.formatMessage(
-                        {
-                          id: 'roundScores.roundNumber',
-                          defaultMessage: 'Round {count, number}',
-                        },
-                        { count: row.roundNumber },
-                      )}
+                      <FormattedMessage
+                        id="roundScores.roundNumber"
+                        defaultMessage="Round {count, number}"
+                        values={{ count: row.roundNumber }}
+                      />
                       {row.isInProgress && (
                         <span className={roundScoresDialogStyles.currentBadge}>
-                          {intl.formatMessage({
-                            id: 'roundScores.inProgress',
-                            defaultMessage: '(in progress)',
-                          })}
+                          <FormattedMessage
+                            id={'roundScores.inProgress'}
+                            defaultMessage={'(in progress)'}
+                          />
                         </span>
                       )}
                     </th>
@@ -247,7 +245,9 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                               className={roundScoresDialogStyles.secondaryScore}
                             >
                               {viewMode === 'round'
-                                ? intl.formatMessage(
+                                ? intl.formatMessage<{
+                                    readonly count: number | bigint;
+                                  }>(
                                     {
                                       id: 'roundScores.totalHint',
                                       defaultMessage: 'total: {count, number}',
@@ -256,7 +256,9 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                                       count: cumulative,
                                     },
                                   )
-                                : intl.formatMessage(
+                                : intl.formatMessage<{
+                                    readonly count: number | bigint;
+                                  }>(
                                     {
                                       id: 'roundScores.roundHint',
                                       defaultMessage: 'round: {count, number}',
@@ -276,10 +278,10 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
               <tfoot>
                 <tr className={roundScoresDialogStyles.totalRow}>
                   <th className={roundScoresDialogStyles.roundCell} scope="row">
-                    {intl.formatMessage({
-                      id: 'roundScores.total',
-                      defaultMessage: 'Total',
-                    })}
+                    <FormattedMessage
+                      id={'roundScores.total'}
+                      defaultMessage={'Total'}
+                    />
                   </th>
                   {playerIds.map((id) => (
                     <td className={roundScoresDialogStyles.numberCell} key={id}>

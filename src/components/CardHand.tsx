@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { type CSSProperties, type DragEvent, useState } from 'react';
-import { useIntl } from 'react-intl';
+import type { MessageValue } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card, CardOwner } from '../game';
 import {
@@ -165,7 +166,7 @@ export function CardHand({
                     id: 'hand.yourTitle',
                     defaultMessage: 'You',
                   })
-                : intl.formatMessage(
+                : intl.formatMessage<{ readonly name: MessageValue }>(
                     {
                       id: 'hand.playerTitle',
                       defaultMessage: "{name}'s hand",
@@ -174,14 +175,13 @@ export function CardHand({
                   )}
             </p>
             <span>
-              {intl.formatMessage(
-                {
-                  id: 'score.points',
-                  defaultMessage:
-                    '{count, plural, one {# point} other {# points}}',
-                },
-                { count: score },
-              )}
+              <FormattedMessage
+                id="score.points"
+                defaultMessage="{count, plural, one {# point} other {# points}}"
+                values={{
+                  count: score,
+                }}
+              />
             </span>
           </div>
         </div>
@@ -194,7 +194,7 @@ export function CardHand({
                   id: 'hand.yourOrderLabel',
                   defaultMessage: 'Order your hand',
                 })
-              : intl.formatMessage(
+              : intl.formatMessage<{ readonly name: MessageValue }>(
                   {
                     id: 'hand.orderLabel',
                     defaultMessage: "Order {name}'s hand",
@@ -214,10 +214,7 @@ export function CardHand({
                 setFocusedCardId(null);
               }}
             >
-              {intl.formatMessage({
-                id: 'hand.orderDate',
-                defaultMessage: 'Date',
-              })}
+              <FormattedMessage id={'hand.orderDate'} defaultMessage={'Date'} />
             </button>
           ))}
         </div>
@@ -229,7 +226,7 @@ export function CardHand({
                 id: 'hand.yourDropArea',
                 defaultMessage: 'Your hand drop area',
               })
-            : intl.formatMessage(
+            : intl.formatMessage<{ readonly name: MessageValue }>(
                 {
                   id: 'hand.dropArea',
                   defaultMessage: "{name}'s hand drop area",
@@ -406,10 +403,10 @@ export function CardHand({
                     className={cardHandStyles.handStatus}
                     data-drag-decoration
                   >
-                    {intl.formatMessage({
-                      id: 'hand.onTable',
-                      defaultMessage: 'On table',
-                    })}
+                    <FormattedMessage
+                      id={'hand.onTable'}
+                      defaultMessage={'On table'}
+                    />
                   </small>
                 )}
               </button>
