@@ -1,15 +1,29 @@
+.card-effects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  grid-area: 2 / 1 / -1 / 2;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .card-effect {
   background: var(--effect-icon-background);
   border: 1px solid rgb(255 255 255 / 65%);
   border-radius: 0.2rem;
   color: #fff;
   display: grid;
-  grid-area: 3 / 1;
-  height: 1.4rem;
+  height: 0.85rem;
   place-items: center;
   pointer-events: none;
-  width: 1.4rem;
+  width: 0.85rem;
   z-index: 2;
+}
+
+.card-effect svg {
+  height: 0.65rem;
+  width: 0.65rem;
 }
 
 .card-effect[data-tooltip-enabled] {

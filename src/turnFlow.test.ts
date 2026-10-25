@@ -66,7 +66,9 @@ it('counts a confirmed play and a discard as the two actions', () => {
   });
   const card = client
     .getState()!
-    .G.hands['0'].find((card) => card.type === 'event' && !card.effect)!;
+    .G.hands['0'].find(
+      (card) => card.type === 'event' && !card.effects?.length,
+    )!;
 
   client.moves.playCard(card.id, { row: 0, column: 1 });
   expect(client.getState()!.G.actionsThisTurn).toBe(0);

@@ -5,6 +5,6 @@ export default {
   type: 'event',
   name: 'green-revolution',
   number: 1940,
-  effect: 'draw-one',
+  effects: ['draw-one'],
   category: 'environmental',
 } as const satisfies EventCard;

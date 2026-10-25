@@ -5,6 +5,6 @@ export default {
   type: 'event',
   name: 'european-union',
   number: 1990,
-  effect: 'timeline-1900-bonus',
+  effects: ['timeline-1900-bonus'],
   category: 'political',
 } as const satisfies EventCard;

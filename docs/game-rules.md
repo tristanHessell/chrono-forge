@@ -57,7 +57,7 @@ existing links.
 
 ## Add an Event effect
 
-An Event can have one optional effect. Define when the effect runs before you
+An Event can have up to three effects. Define when each effect runs before you
 add it. Effects can run when a player confirms an Event or can change scoring.
 
 1. Add a stable effect ID to `CardEffect` in `src/game.ts`. Do not use a

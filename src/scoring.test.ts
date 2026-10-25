@@ -21,7 +21,7 @@ function placed(
     column,
     placedAt,
     owner,
-    ...(number === 1990 ? { effect: 'timeline-1900-bonus' as const } : {}),
+    ...(number === 1990 ? { effects: ['timeline-1900-bonus'] as const } : {}),
   };
 }
 
@@ -86,9 +86,9 @@ describe('1900 timeline bonus', () => {
     const cards = loadCardCatalog().deck.filter((card) => card.number === 1990);
 
     expect(cards).toHaveLength(3);
-    expect(cards.every((card) => card.effect === 'timeline-1900-bonus')).toBe(
-      true,
-    );
+    expect(
+      cards.every((card) => card.effects?.includes('timeline-1900-bonus')),
+    ).toBe(true);
   });
 
   it('scores a direct or indirect timeline connection for the 1990 owner', () => {
@@ -125,6 +125,19 @@ describe('1900 timeline bonus', () => {
     ];
 
     expect(calculateScores(two1900)['0']).toBe(4);
+  });
+
+  it('applies each bonus effect on a qualifying Event', () => {
+    const played = [
+      start,
+      placed(1900, 0, 1, 1),
+      {
+        ...placed(1990, 0, 2, 2),
+        effects: ['timeline-1900-bonus', 'timeline-1900-bonus'] as const,
+      },
+    ];
+
+    expect(calculateScores(played)['0']).toBe(4);
   });
 
   it('updates the bonus after confirmation, undo, and redo', () => {

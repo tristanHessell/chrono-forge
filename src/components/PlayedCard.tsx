@@ -17,7 +17,7 @@ import {
 } from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import cardStyles from './Card.module.css';
-import { CardEffect } from './CardEffect';
+import { CardEffects } from './CardEffect';
 import { CardEventName } from './CardEventName';
 import ownershipStyles from './Ownership.module.css';
 import playedCardStyles from './PlayedCard.module.css';
@@ -102,7 +102,7 @@ export function PlayedCard({
       data-position={'row' in card ? positionKey(card) : undefined}
       data-removed={'removed' in card ? card.removed || undefined : undefined}
       role={onTarget ? 'button' : 'img'}
-      tabIndex={onTarget || card.effect ? 0 : undefined}
+      tabIndex={onTarget || card.effects?.length ? 0 : undefined}
       aria-pressed={onTarget ? Boolean(selected) : undefined}
       onClick={onTarget}
       onDragOver={onDragOver}
@@ -120,14 +120,18 @@ export function PlayedCard({
               defaultMessage:
                 'Removed Event: scores no points and does not qualify for bonuses. It still has its date and links, can be moved or swapped, and can be overwritten by a valid Event.',
             })
-          : card.effect
-            ? intl.formatMessage(effectDescriptionMessages[card.effect])
+          : card.effects?.length
+            ? intl.formatList(
+                card.effects.map((effect) =>
+                  intl.formatMessage(effectDescriptionMessages[effect]),
+                ),
+              )
             : undefined
       }
       style={style}
     >
       {links}
-      <CardEffect effect={card.effect} />
+      <CardEffects effects={card.effects} />
       <strong>{intl.formatNumber(card.number, { useGrouping: false })}</strong>
       <CardEventName card={card} />
       <span className={cardStyles.cardTypeName}>

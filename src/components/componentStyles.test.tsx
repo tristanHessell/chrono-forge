@@ -23,7 +23,7 @@ const card: Event = {
   category: 'technological',
   name: 'atomic-age',
   number: 1940,
-  effect: 'draw-one',
+  effects: ['draw-one'],
   owner: '0',
   row: 0,
   column: 1,
@@ -76,6 +76,25 @@ it('renders board card states and effect icons with their scoped classes', () =>
   expect(html).toContain(effectStyles.cardEffect);
   expect(html).toContain(cardStyles.cardEventName);
   expect(html).toContain('Atomic Age');
+});
+
+it('renders three card effects in a vertical stack', () => {
+  const html = renderToStaticMarkup(
+    <IntlProvider locale="en" messages={messages}>
+      <PlayedCard
+        card={{
+          ...card,
+          effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
+        }}
+        style={{}}
+        links={null}
+        isLatest={false}
+      />
+    </IntlProvider>,
+  );
+
+  expect(html).toContain(effectStyles.cardEffects);
+  expect(html.match(new RegExp(effectStyles.cardEffect, 'g'))).toHaveLength(3);
 });
 
 it.each(['0', '1', '2', '3', 'neutral'] as const)(

@@ -54,11 +54,10 @@ export function calculateScoreBreakdown(
 
     score.base += 1;
 
-    if (
-      card.effect === 'timeline-1900-bonus' &&
-      timelineIncludes1900(card, played)
-    ) {
-      score.bonus += 1;
+    if (timelineIncludes1900(card, played)) {
+      score.bonus +=
+        card.effects?.filter((effect) => effect === 'timeline-1900-bonus')
+          .length ?? 0;
     }
 
     score.total = score.base + score.bonus;

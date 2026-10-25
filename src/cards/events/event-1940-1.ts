@@ -5,6 +5,6 @@ export default {
   type: 'event',
   name: 'united-nations',
   number: 1940,
-  effect: 'draw-one',
+  effects: ['draw-one'],
   category: 'political',
 } as const satisfies EventCard;

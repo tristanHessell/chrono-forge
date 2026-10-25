@@ -11,7 +11,7 @@ it('lets the human undo a move until new information appears', () => {
   const card = client
     .getState()!
     .G.hands['0'].find(
-      (candidate) => candidate.type === 'event' && !candidate.effect,
+      (candidate) => candidate.type === 'event' && !candidate.effects?.length,
     )!;
 
   client.moves.playCard(card.id, { row: 0, column: 1 });

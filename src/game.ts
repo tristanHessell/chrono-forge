@@ -62,7 +62,7 @@ export type EventCard = {
    */
   name: EventName;
   number: number;
-  effect?: CardEffect;
+  effects?: readonly CardEffect[];
 };
 
 export type ManipulationCard = {
@@ -71,7 +71,7 @@ export type ManipulationCard = {
   action: ManipulationAction;
   number?: never;
   category?: never;
-  effect?: never;
+  effects?: never;
 };
 
 export type Card = EventCard | ManipulationCard;
@@ -400,7 +400,7 @@ export const CardGame: Game<CardGameState> = {
       for (const overwritten of G.played.filter(
         (existing) => !played.some((card) => card.id === existing.id),
       )) {
-        const { id, name, type, number, category, effect } = overwritten;
+        const { id, name, type, number, category, effects } = overwritten;
 
         G.discarded.push({
           id,
@@ -408,7 +408,7 @@ export const CardGame: Game<CardGameState> = {
           type,
           number,
           ...(category ? { category } : {}),
-          ...(effect ? { effect } : {}),
+          ...(effects ? { effects } : {}),
         });
       }
       G.played = played;
@@ -562,7 +562,7 @@ export const CardGame: Game<CardGameState> = {
       );
 
       if (overwritten) {
-        const { id, name, type, number, category, effect } = overwritten;
+        const { id, name, type, number, category, effects } = overwritten;
 
         G.discarded.push({
           id,
@@ -570,7 +570,7 @@ export const CardGame: Game<CardGameState> = {
           name,
           number,
           ...(category ? { category } : {}),
-          ...(effect ? { effect } : {}),
+          ...(effects ? { effects } : {}),
         });
       }
 
@@ -580,16 +580,16 @@ export const CardGame: Game<CardGameState> = {
       recordMoveForUndo(G, ctx.currentPlayer, beforePlay);
       G.pendingSnapshot = null;
 
-      if (playedCard.effect === 'draw-one') {
-        const drawnCard = G.deck.shift();
+      for (const effect of playedCard.effects ?? []) {
+        if (effect === 'draw-one') {
+          const drawnCard = G.deck.shift();
 
-        if (drawnCard) {
-          const hand = G.hands[activeOwner];
-
-          hand.push(drawnCard);
-          G.testFuture = [];
-          G.moveUndoHistory = [];
-          G.undoBlocked = true;
+          if (drawnCard) {
+            G.hands[activeOwner].push(drawnCard);
+            G.testFuture = [];
+            G.moveUndoHistory = [];
+            G.undoBlocked = true;
+          }
         }
       }
 
@@ -599,7 +599,7 @@ export const CardGame: Game<CardGameState> = {
         (options) => {
           events.endTurn(options);
         },
-        playedCard.effect !== 'free-action' || !G.freeActionsEnabled,
+        !playedCard.effects?.includes('free-action') || !G.freeActionsEnabled,
       );
     },
 

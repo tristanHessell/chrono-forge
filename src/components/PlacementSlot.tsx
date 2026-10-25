@@ -9,7 +9,7 @@ import {
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
-import { CardEffect } from './CardEffect';
+import { CardEffects } from './CardEffect';
 import { CardEventName } from './CardEventName';
 import placementSlotStyles from './PlacementSlot.module.css';
 
@@ -66,7 +66,7 @@ export function PlacementSlot({
     >
       {isPreview && draggedCard?.type === 'event' ? (
         <>
-          <CardEffect effect={draggedCard.effect} />
+          <CardEffects effects={draggedCard.effects} />
           <strong>
             {intl.formatNumber(draggedCard.number, { useGrouping: false })}
           </strong>

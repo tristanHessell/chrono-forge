@@ -47,7 +47,8 @@ export function CardEffect({
 
   useEffect(() => {
     const target = icon.current;
-    const card = target?.parentElement;
+    const card =
+      target?.closest<HTMLElement>('[data-card-type]') ?? target?.parentElement;
 
     if (!target || !card || !effect || !showTooltip) {
       return;
@@ -137,5 +138,29 @@ export function CardEffect({
           anchor.container,
         )}
     </>
+  );
+}
+
+export function CardEffects({
+  effects,
+  showTooltip = false,
+}: {
+  effects?: readonly (Effect | ManipulationAction)[];
+  showTooltip?: boolean;
+}) {
+  if (!effects?.length) {
+    return null;
+  }
+
+  return (
+    <span className={cardEffectStyles.cardEffects}>
+      {effects.map((effect, index) => (
+        <CardEffect
+          effect={effect}
+          key={`${effect}-${index}`}
+          showTooltip={showTooltip}
+        />
+      ))}
+    </span>
   );
 }

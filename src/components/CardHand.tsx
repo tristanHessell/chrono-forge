@@ -280,9 +280,11 @@ export function CardHand({
                         manipulationDescriptionMessages[card.action],
                       )
                     : '',
-                  card.effect
-                    ? intl.formatMessage(effectDescriptionMessages[card.effect])
-                    : '',
+                  ...(card.type === 'event'
+                    ? (card.effects?.map((effect) =>
+                        intl.formatMessage(effectDescriptionMessages[effect]),
+                      ) ?? [])
+                    : []),
                   intl.formatMessage({
                     id: 'hand.reorderHint',
                     defaultMessage:
