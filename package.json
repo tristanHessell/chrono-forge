@@ -27,6 +27,53 @@
     "preview": "vite preview",
     "check": "npm run lint && npm run format:check && npm run spellcheck && npm test && npm run build"
   },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog",
+      "types": {
+        "feat": {
+          "description": "A new feature",
+          "title": "Features"
+        },
+        "fix": {
+          "description": "A bug fix",
+          "title": "Bug Fixes"
+        },
+        "docs": {
+          "description": "Documentation only changes",
+          "title": "Documentation"
+        },
+        "style": {
+          "description": "Changes that do not affect code meaning",
+          "title": "Styles"
+        },
+        "refactor": {
+          "description": "A code change that neither fixes a bug nor adds a feature",
+          "title": "Code Refactoring"
+        },
+        "perf": {
+          "description": "A code change that improves performance",
+          "title": "Performance Improvements"
+        },
+        "test": {
+          "description": "Adding or correcting tests",
+          "title": "Tests"
+        },
+        "build": {
+          "description": "Changes to the build system or dependencies",
+          "title": "Builds"
+        },
+        "ci": {
+          "description": "Changes to CI configuration",
+          "title": "Continuous Integration"
+        },
+        "chore": {
+          "description": "Other changes that do not modify source or test files",
+          "title": "Chores"
+        }
+      }
+    }
+  },
   "dependencies": {
     "boardgame.io": "0.50.2",
     "clsx": "2.1.1",
@@ -35,6 +82,8 @@
     "react-intl": "12.1.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
     "@eslint/js": "9.39.5",
     "@formatjs/cli": "6.16.32",
     "@stylistic/eslint-plugin": "5.10.0",
@@ -42,7 +91,9 @@
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "5.2.0",
+    "commitizen": "4.3.2",
     "cspell": "10.4.0",
+    "cz-conventional-changelog": "3.3.0",
     "eslint": "9.39.5",
     "eslint-plugin-formatjs": "8.1.2",
     "eslint-plugin-perfectionist": "5.13.0",
