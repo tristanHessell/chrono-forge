@@ -84,9 +84,20 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
       <button
         className={controlsStyles.historyButton}
         type="button"
+        aria-label={intl.formatMessage({
+          id: 'log.title',
+          defaultMessage: 'Game Log',
+        })}
+        title={intl.formatMessage({
+          id: 'log.title',
+          defaultMessage: 'Game Log',
+        })}
+        data-icon-button
         onClick={open}
       >
-        {intl.formatMessage({ id: 'log.title', defaultMessage: 'Game Log' })}
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" />
+        </svg>
       </button>
       <dialog
         ref={dialog}
