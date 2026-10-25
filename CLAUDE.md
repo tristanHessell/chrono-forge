@@ -200,6 +200,9 @@ The pre-commit hook checks staged files with ESLint, Prettier, and CSpell.
 It also checks `package.json` when that file changes.
 The checks do not fix files automatically.
 Partially staged files keep their unstaged changes.
+Commitizen prompts for a Conventional Commit message when you run `git commit`.
+Commitlint rejects commit messages and pull request titles that do not use an allowed type.
+The Quality checks workflow validates pull request titles with the same rules.
 Fix failures before staging the corrected files.
 
 The **Quality checks** workflow also supports manual runs.
