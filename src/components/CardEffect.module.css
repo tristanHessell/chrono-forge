@@ -14,16 +14,16 @@
   border-radius: 0.2rem;
   color: #fff;
   display: grid;
-  height: 0.85rem;
+  height: 1rem;
   place-items: center;
   pointer-events: none;
-  width: 0.85rem;
+  width: 1rem;
   z-index: 2;
 }
 
 .card-effect svg {
-  height: 0.65rem;
-  width: 0.65rem;
+  height: 0.8rem;
+  width: 0.8rem;
 }
 
 .card-effect[data-tooltip-enabled] {
