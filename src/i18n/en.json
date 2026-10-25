@@ -120,7 +120,7 @@
   "manipulation.choose": "Choose an Event card on the board. The starting card cannot be targeted.",
   "manipulation.jumpDestination": "Choose a highlighted empty position or removed Event to complete Time Jump.",
   "manipulation.noTargets": "No legal targets for this card. Select another card or discard it.",
-  "manipulation.remove-event.description": "Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.",
+  "manipulation.remove-event.description": "Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. Its date does not constrain new adjacent placements. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.",
   "manipulation.remove-event.name": "Remove Event",
   "manipulation.swapDestination": "Choose a highlighted second Event card to complete Time Swap.",
   "manipulation.take-control.description": "Gain control of another player's Event card. Its points and any valid bonus become yours. A removed Event stays removed. The starting card cannot be targeted.",

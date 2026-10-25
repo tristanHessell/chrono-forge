@@ -381,7 +381,7 @@ describe('overwriting removed Events', () => {
     },
   );
 
-  it('keeps removed Events in date checks but treats their positions as open for squares', () => {
+  it('ignores removed Events in date checks but treats their positions as open for squares', () => {
     const removed = applyManipulation(board(), 'remove-event', 'source', '0')!;
     const event = {
       id: 'new',
@@ -397,7 +397,43 @@ describe('overwriting removed Events', () => {
         { row: -1, column: 1 },
         { ...event, number: 1900 },
       ),
-    ).toBe(false);
+    ).toBe(true);
+  });
+
+  it('allows a 1970 Event below New Deal beside a removed 1990 Event', () => {
+    const played = board().map((card) =>
+      card.id === 'start'
+        ? { ...card, row: 0, column: -2 }
+        : card.id === 'source'
+          ? {
+              ...card,
+              name: 'new-deal' as const,
+              number: 1930,
+              row: 1,
+              column: -2,
+            }
+          : card.id === 'draw'
+            ? { ...card, number: 1950, row: 1, column: -1, placedAt: 2 }
+            : { ...card, row: 2, column: -1, placedAt: 3, removed: true },
+    );
+    const position = { row: 2, column: -2 };
+
+    const event = {
+      id: 'event-1970',
+      type: 'event' as const,
+      name: 'timeline-origin' as const,
+      number: 1970,
+    };
+
+    expect(isValidBoard(played)).toBe(true);
+    expect(isValidPlacement(played, position, event)).toBe(true);
+    expect(getAvailablePositions(played, event)).toContainEqual(position);
+    expect(
+      isValidBoard([
+        ...played,
+        { ...event, ...position, owner: '0' as const, placedAt: 4 },
+      ]),
+    ).toBe(true);
   });
 
   it('allows placements beside removed Events while keeping overwrites and existing links valid', () => {

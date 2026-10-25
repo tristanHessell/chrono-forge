@@ -40,9 +40,10 @@ empty.
 Place an Event in an empty position that touches at least one card above, below,
 to the left, or to the right. Diagonal contact does not count.
 
-The new Event must have a later date than every orthogonal neighbor. Equal dates
-cannot touch. When a move changes existing links, the full board must still
-follow these date rules.
+The new Event must have a later date than every active orthogonal neighbor.
+Removed Events do not constrain new placements. Equal dates cannot touch. When
+a move changes existing links, the full board must still follow these date
+rules.
 
 A move is illegal if it completes a 2×2 square of four orthogonally adjacent
 cards. Removed Events do not count as occupied cards for this square check.

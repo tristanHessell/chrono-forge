@@ -195,9 +195,10 @@ Drag a hand card or an unconfirmed card onto the Discard area beside the deck to
 discard it as one of your two actions. You can also select a card and click
 Discard. The discard pile is retained throughout the game and supports undo/redo.
 
-Each new card must have a later date than every orthogonally adjacent card,
-following the existing arrow directions. Equal dates cannot touch. The same
-rules apply when moving or replacing a pending card.
+Each new card must have a later date than every active orthogonally adjacent
+card, following the existing arrow directions. Removed cards do not constrain
+new placements. Equal dates cannot touch. The same rules apply when moving or
+replacing a pending card.
 
 Connections show an arrow on the newer card pointing from the older linked card
 toward it. Paths can merge when their incoming links are perpendicular, but
@@ -261,9 +262,10 @@ its base point and any valid bonus. It preserves the Event's date, position,
 placement order, and removed status, and does not trigger play effects again.
 **Remove Event** marks an Event as removed instead of deleting it. Removed Events
 are crossed out and labelled on the board; they earn no points or bonuses, and a
-removed 1900 cannot qualify a 1990 for its bonus. They still retain their dates,
-links, and can still be moved, swapped, or taken over. Their positions do not
-block adjacent placements or count as occupied when checking for a square.
+removed 1900 cannot qualify a 1990 for its bonus. They retain their dates and
+existing links, and can still be moved, swapped, or taken over. Their dates do
+not constrain new adjacent placements. Their positions do not block adjacent
+placements or count as occupied when checking for a square.
 Removal cannot target the starting card or an already removed Event.
 
 A removed Event can be overwritten by a valid Event from your hand, using the
@@ -271,8 +273,8 @@ normal select/drag and confirmation flow. Valid destinations show **Overwrite**.
 Empty positions adjacent to a removed Event can receive a new Event when it
 follows the date rules. Existing neighboring Events remain valid. The replacement
 inherits the position's existing link directions: it must be later than upstream
-neighbors and earlier than downstream neighbors. The whole board must stay
-legal, including square, direction, and connectivity rules.
+active neighbors and earlier than downstream active neighbors. The whole board
+must stay legal, including square, direction, and connectivity rules.
 On confirmation the old Event enters the discard pile, the new Event
 earns its own points and triggers its play effect, and one action is spent.
 Cancelling an unconfirmed overwrite leaves the old removed Event unchanged.

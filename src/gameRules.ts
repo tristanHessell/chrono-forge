@@ -112,7 +112,9 @@ const isValidEventPlacement = (
     (!card ||
       remaining.every(
         (neighbor) =>
-          !areAdjacent(neighbor, position) || neighbor.number < card.number,
+          neighbor.removed ||
+          !areAdjacent(neighbor, position) ||
+          neighbor.number < card.number,
       )) &&
     (remaining.length === 0 || positionIsAdjacent) &&
     !wouldCreateSquare(
