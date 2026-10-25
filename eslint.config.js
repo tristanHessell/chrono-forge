@@ -91,7 +91,7 @@ export default defineConfig(
       // We don't need descriptions at the moment, to enable if l10n becomes a priority
       'formatjs/enforce-description': 'off',
       'formatjs/enforce-placeholders': 'off',
-      'formatjs/enforce-message-types': ['error', {generateTypes: true}],
+      'formatjs/enforce-message-types': ['error', { generateTypes: true }],
       'formatjs/enforce-plural-rules': ['error', { other: true }],
       'formatjs/no-multiple-whitespaces': 'error',
       // This rule warns when you have plurals next to each other - not a problem for this codebase.

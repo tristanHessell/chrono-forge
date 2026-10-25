@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type {MessageValue} from "react-intl";
+import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card } from '../game';
@@ -19,7 +19,10 @@ export function ComputerPlayer({ cards, player, score }: Props) {
 
   return (
     <section
-      aria-label={intl.formatMessage<{ readonly "count": number | bigint; readonly "name": MessageValue }>(
+      aria-label={intl.formatMessage<{
+        readonly count: number | bigint;
+        readonly name: MessageValue;
+      }>(
         {
           id: 'computer.summary',
           defaultMessage:
@@ -42,8 +45,7 @@ export function ComputerPlayer({ cards, player, score }: Props) {
           <span>
             <FormattedMessage
               id="score.points"
-              defaultMessage=
-                '{count, plural, one {# point} other {# points}}'
+              defaultMessage="{count, plural, one {# point} other {# points}}"
               values={{
                 count: score,
               }}
@@ -52,7 +54,7 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         </div>
       </div>
       <div
-        aria-label={intl.formatMessage<{ readonly "count": number | bigint }>(
+        aria-label={intl.formatMessage<{ readonly count: number | bigint }>(
           {
             id: 'computer.hiddenCards',
             defaultMessage:

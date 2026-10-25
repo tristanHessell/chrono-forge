@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type {MessageValue} from "react-intl";
+import type { MessageValue } from 'react-intl';
 import { useIntl } from 'react-intl';
 
 import type { PlayerId } from '../game';
@@ -19,7 +19,10 @@ export function PlayerAvatar({ compact = false, owner, type, name }: Props) {
 
   return (
     <span
-      aria-label={intl.formatMessage<{ readonly "name": MessageValue; readonly "type": string }>(
+      aria-label={intl.formatMessage<{
+        readonly name: MessageValue;
+        readonly type: string;
+      }>(
         {
           id: 'player.avatar.label',
           defaultMessage: '{name}, {type, select, computer {AI} other {human}}',

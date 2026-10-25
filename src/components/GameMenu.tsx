@@ -65,7 +65,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
         <svg aria-hidden="true" viewBox="0 0 16 16">
           <path d="M2 3h12M2 8h12M2 13h12" />
         </svg>
-        <FormattedMessage id={('menu.toggle')} defaultMessage={('Menu')} />
+        <FormattedMessage id={'menu.toggle'} defaultMessage={'Menu'} />
       </summary>
       <div
         className={gameMenuStyles.gameMenuPanel}
@@ -83,7 +83,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
             onNewGame();
           }}
         >
-          <FormattedMessage id={('game.new')} defaultMessage={('New game')} />
+          <FormattedMessage id={'game.new'} defaultMessage={'New game'} />
         </button>
         <ThemeToggle />
         <CardPatternsToggle />
@@ -95,7 +95,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
             onOpenCatalog();
           }}
         >
-          <FormattedMessage id={('catalog.title')} defaultMessage={('All cards')} />
+          <FormattedMessage id={'catalog.title'} defaultMessage={'All cards'} />
         </button>
       </div>
     </details>

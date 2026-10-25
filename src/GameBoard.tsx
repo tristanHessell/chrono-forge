@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import type {MessageValue} from "react-intl";
+import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import {
@@ -820,9 +820,15 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               <path d="m12 2 9 5v10l-9 5-9-5V7z" />
             </svg>
             <div>
-              <FormattedMessage id={('brand.name')} defaultMessage={('Chrono-Forge')} />
+              <FormattedMessage
+                id={'brand.name'}
+                defaultMessage={'Chrono-Forge'}
+              />
               <small>
-                <FormattedMessage id={('brand.tagline')} defaultMessage={('Tactical card system')} />
+                <FormattedMessage
+                  id={'brand.tagline'}
+                  defaultMessage={'Tactical card system'}
+                />
               </small>
             </div>
           </div>
@@ -856,7 +862,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                       id: 'turn.you',
                       defaultMessage: 'Your turn',
                     })
-                  : intl.formatMessage<{ readonly "name": MessageValue }>(
+                  : intl.formatMessage<{ readonly name: MessageValue }>(
                       { id: 'turn.player', defaultMessage: "{name}'s turn" },
                       { name: activePlayer.name },
                     )}
@@ -892,7 +898,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               }}
               type="button"
             >
-              <FormattedMessage id={('history.undo')} defaultMessage={('Undo')} />
+              <FormattedMessage id={'history.undo'} defaultMessage={'Undo'} />
             </button>
             <button
               aria-label={intl.formatMessage({
@@ -909,7 +915,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               }}
               type="button"
             >
-              <FormattedMessage id={('history.redo')} defaultMessage={('Redo')} />
+              <FormattedMessage id={'history.redo'} defaultMessage={'Redo'} />
             </button>
           </div>
           {computerPaused && !finished && activePlayer.type === 'computer' && (
@@ -920,7 +926,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 setComputerPaused(false);
               }}
             >
-              <FormattedMessage id={('computer.resume')} defaultMessage={('Resume computer')} />
+              <FormattedMessage
+                id={'computer.resume'}
+                defaultMessage={'Resume computer'}
+              />
             </button>
           )}
           <GameMenu
@@ -991,7 +1000,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           <div className={gameBoardStyles.areaHeading}>
             <div className={gameBoardStyles.areaControls}>
               <div
-                aria-label={intl.formatMessage<{ readonly "count": number | bigint }>(
+                aria-label={intl.formatMessage<{
+                  readonly count: number | bigint;
+                }>(
                   {
                     id: 'deck.label',
                     defaultMessage:
@@ -1003,7 +1014,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 role="status"
               >
                 <span>
-                  <FormattedMessage id={('deck.title')} defaultMessage={('Deck')} />
+                  <FormattedMessage id={'deck.title'} defaultMessage={'Deck'} />
                   <small>
                     <FormattedMessage
                       id="deck.remaining"
@@ -1025,7 +1036,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 className={clsx(gameBoardStyles.discardPile, {
                   [gameBoardStyles.discardReady]: draggedCard && !finished,
                 })}
-                aria-label={intl.formatMessage<{ readonly "count": number | bigint }>(
+                aria-label={intl.formatMessage<{
+                  readonly count: number | bigint;
+                }>(
                   {
                     id: 'discard.label',
                     defaultMessage:
@@ -1058,7 +1071,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
                 </svg>
                 <span>
-                  <FormattedMessage id={('discard.title')} defaultMessage={('Discard')} />
+                  <FormattedMessage
+                    id={'discard.title'}
+                    defaultMessage={'Discard'}
+                  />
                   <small>
                     <FormattedMessage
                       id="discard.count"
@@ -1373,7 +1389,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                                 card.removed &&
                                 positionKey(card) === positionKey(position),
                             )}
-                            ariaLabel={intl.formatMessage<{ readonly "column": number | bigint; readonly "pending": string; readonly "row": number | bigint }>(
+                            ariaLabel={intl.formatMessage<{
+                              readonly column: number | bigint;
+                              readonly pending: string;
+                              readonly row: number | bigint;
+                            }>(
                               {
                                 id: 'placement.target',
                                 defaultMessage:
@@ -1528,7 +1548,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           'Choose a slot above, below, or beside a card.',
                       })
                     : activeOwner === '0'
-                      ? intl.formatMessage<{ readonly "count": number | bigint }>(
+                      ? intl.formatMessage<{ readonly count: number | bigint }>(
                           {
                             id: 'status.yourTurn',
                             defaultMessage:
@@ -1536,7 +1556,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           },
                           { count: G.deck.length },
                         )
-                      : intl.formatMessage<{ readonly "count": number | bigint; readonly "name": MessageValue }>(
+                      : intl.formatMessage<{
+                          readonly count: number | bigint;
+                          readonly name: MessageValue;
+                        }>(
                           {
                             id: 'status.playerTurn',
                             defaultMessage:

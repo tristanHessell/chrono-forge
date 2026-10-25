@@ -9,7 +9,10 @@ export function CardPatternsToggle() {
 
   return (
     <label className={cardPatternsToggleStyles.cardPatternsChoice}>
-      <FormattedMessage id={('patterns.label')} defaultMessage={('Colour-independent backgrounds')} />
+      <FormattedMessage
+        id={'patterns.label'}
+        defaultMessage={'Colour-independent backgrounds'}
+      />
       <input
         type="checkbox"
         checked={enabled}

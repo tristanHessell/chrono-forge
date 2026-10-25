@@ -79,7 +79,10 @@ export function PlacementSlot({
             )}
           </span>
           <small className={placementSlotStyles.releaseLabel}>
-            <FormattedMessage id={('placement.release')} defaultMessage={('Release to place')} />
+            <FormattedMessage
+              id={'placement.release'}
+              defaultMessage={'Release to place'}
+            />
           </small>
         </>
       ) : (
@@ -89,12 +92,18 @@ export function PlacementSlot({
           </svg>
           {overwrite && (
             <small>
-              <FormattedMessage id={('placement.overwrite')} defaultMessage={('Overwrite')} />
+              <FormattedMessage
+                id={'placement.overwrite'}
+                defaultMessage={'Overwrite'}
+              />
             </small>
           )}
           {initial && (
             <small>
-              <FormattedMessage id={('placement.first')} defaultMessage={('Drop first card')} />
+              <FormattedMessage
+                id={'placement.first'}
+                defaultMessage={'Drop first card'}
+              />
             </small>
           )}
         </>
