@@ -1,6 +1,10 @@
 import { expect, it, vi } from 'vitest';
 
-import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
+import {
+  changeBoardZoom,
+  changeBoardZoomByPinch,
+  listenForBoardWheel,
+} from './boardZoom';
 
 function wheel(deltaY: number, ctrlKey = false) {
   return Object.assign(
@@ -38,6 +42,20 @@ it.each([
     expect(stopPropagation).toHaveBeenCalledOnce();
     expect(zoom).toBe(expected);
     cleanup();
+  },
+);
+
+it.each([
+  [1, 100, 120, 1.2],
+  [1, 100, 80, 0.8],
+  [1.6, 200, 190, 1.5],
+  [0.7, 100, 50, 0.6],
+])(
+  'scales board zoom from pinch movement at zoom %s',
+  (currentZoom, previousDistance, distance, expected) => {
+    expect(
+      changeBoardZoomByPinch(currentZoom, previousDistance, distance),
+    ).toBe(expected);
   },
 );
 
