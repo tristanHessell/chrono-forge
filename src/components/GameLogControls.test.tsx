@@ -23,8 +23,11 @@ it('renders the game log trigger beside its dialog', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('>Game Log</button><dialog');
-  expect(html.match(/>Game Log<\/button>/g)).toHaveLength(1);
+  expect(html).toContain('aria-label="Game Log"');
+  expect(html).toContain('title="Game Log"');
+  expect(html).toContain('data-icon-button="true"');
+  expect(html).toContain('<svg aria-hidden="true" viewBox="0 0 24 24">');
+  expect(html).toContain('</button><dialog');
   client.stop();
 });
 

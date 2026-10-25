@@ -60,7 +60,7 @@
   "computer.summary": "{name}, {count, plural, one {# point} other {# points}}",
   "deck.label": "{count, plural, one {# card remaining in the deck} other {# cards remaining in the deck}}",
   "deck.remaining": "{count, number} remaining",
-  "deck.title": "Draw deck",
+  "deck.title": "Deck",
   "discard.count": "{count, number} discarded",
   "discard.hint": "Drag a card here, or select a card and click here. Discarding uses one of your two actions.",
   "discard.label": "Discard pile: {count, plural, one {# card} other {# cards}}. Drop a card here or click to discard your selected card. This uses one of your two actions.",
