@@ -49,6 +49,12 @@ For a continuation, keep the task's existing branch unless the user requests a n
    Use the harness name as the prefix, such as `codex/` for Codex or
    `copilot/` for Copilot, unless the user specifies another name.
 5. Verify that the branch contains the fetched `origin/main` before starting the task.
+6. When the work and checks are complete, commit and push the task branch.
+   Then create or update its pull request unless the user says not to.
+7. Do not force-push.
+   If a push or pull request is blocked, report the blocker and keep the changes.
+
+Use the `publish-branch-pr` skill for the publishing steps.
 
 ## Commit message format
 
@@ -204,6 +210,7 @@ Commitizen prompts for a Conventional Commit message when you run `git commit`.
 Commitlint rejects commit messages and pull request titles that do not use an allowed type.
 The Quality checks workflow validates pull request commits and titles with the same rules.
 Fix failures before staging the corrected files.
+Use the pull request template in `.github/PULL_REQUEST_TEMPLATE.md`.
 
 The **Quality checks** workflow also supports manual runs.
 It uses a read-only token and action versions pinned to commit IDs.

@@ -44,6 +44,11 @@ allowed type.
 The pre-commit hook checks staged files without automatic changes.
 The **Quality checks** workflow checks pull request commits and titles.
 It also runs the full checks on pull requests and pushes to `main`.
+Use the [pull request template](./.github/PULL_REQUEST_TEMPLATE.md) when you
+open a pull request.
+Agents use the
+[publish-branch-pr skill](./.github/skills/publish-branch-pr/SKILL.md) to push
+task branches and create or update pull requests.
 See [CLAUDE.md](./CLAUDE.md#commit-and-pull-request-checks) for hook setup and workflow details.
 
 ## Styling
