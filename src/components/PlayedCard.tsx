@@ -1,5 +1,10 @@
 import clsx from 'clsx';
-import { type CSSProperties, type ReactNode, useContext } from 'react';
+import {
+  type CSSProperties,
+  type DragEvent,
+  type ReactNode,
+  useContext,
+} from 'react';
 import { useIntl } from 'react-intl';
 
 import { eventCardNameMessage } from '../eventCardName';
@@ -23,6 +28,8 @@ type PlayedCardProps = {
   links?: ReactNode;
   isLatest?: boolean;
   onTarget?: () => void;
+  onDragOver?: (event: DragEvent<HTMLDivElement>) => void;
+  onDrop?: (event: DragEvent<HTMLDivElement>) => void;
   selected?: boolean;
 };
 
@@ -32,6 +39,8 @@ export function PlayedCard({
   links,
   isLatest,
   onTarget,
+  onDragOver,
+  onDrop,
   selected,
 }: PlayedCardProps) {
   const intl = useIntl();
@@ -96,6 +105,8 @@ export function PlayedCard({
       tabIndex={onTarget || card.effect ? 0 : undefined}
       aria-pressed={onTarget ? Boolean(selected) : undefined}
       onClick={onTarget}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
       onKeyDown={(event) => {
         if (onTarget && ['Enter', ' '].includes(event.key)) {
           event.preventDefault();
