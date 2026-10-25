@@ -38,8 +38,12 @@ See [CLAUDE.md](./CLAUDE.md) for repository rules, architecture, and contributor
 
 ### Commit and pull request checks
 
+Commitizen prompts for a Conventional Commit message when you run `git commit`.
+Commitlint rejects commit messages and pull request titles that do not use an
+allowed type.
 The pre-commit hook checks staged files without automatic changes.
-The **Quality checks** workflow runs the full checks on pull requests and pushes to `main`.
+The **Quality checks** workflow checks pull request commits and titles.
+It also runs the full checks on pull requests and pushes to `main`.
 See [CLAUDE.md](./CLAUDE.md#commit-and-pull-request-checks) for hook setup and workflow details.
 
 ## Styling

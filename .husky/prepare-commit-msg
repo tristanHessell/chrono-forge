@@ -1,0 +1,3 @@
+if true 2>/dev/null < /dev/tty; then
+  npx --no-install cz --hook < /dev/tty
+fi
