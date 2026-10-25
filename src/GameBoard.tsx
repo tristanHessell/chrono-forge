@@ -947,16 +947,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 className={gameBoardStyles.deckDisplay}
                 role="status"
               >
-                <div
-                  className={gameBoardStyles.deckCardBack}
-                  aria-hidden="true"
-                >
-                  <strong>{intl.formatNumber(G.deck.length)}</strong>
-                </div>
                 <span>
                   {intl.formatMessage({
                     id: 'deck.title',
-                    defaultMessage: 'Draw deck',
+                    defaultMessage: 'Deck',
                   })}
                   <small>
                     {intl.formatMessage(
@@ -968,6 +962,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                     )}
                   </small>
                 </span>
+                <div
+                  className={gameBoardStyles.deckCardBack}
+                  aria-hidden="true"
+                >
+                  <strong>{intl.formatNumber(G.deck.length)}</strong>
+                </div>
               </div>
               <button
                 type="button"
@@ -1036,6 +1036,15 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               <button
                 className={controlsStyles.historyButton}
                 type="button"
+                aria-label={intl.formatMessage({
+                  id: 'roundScores.title',
+                  defaultMessage: 'Round scores',
+                })}
+                title={intl.formatMessage({
+                  id: 'roundScores.title',
+                  defaultMessage: 'Round scores',
+                })}
+                data-icon-button
                 onClick={() => {
                   setComputerPaused(true);
                   touchDrag.controller.cancel();
@@ -1045,10 +1054,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   roundScoresDialog.current?.showModal();
                 }}
               >
-                {intl.formatMessage({
-                  id: 'roundScores.title',
-                  defaultMessage: 'Round scores',
-                })}
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M4 20h16M6 16v-5h4v5m2 0V5h4v11m2 0V9h4v7" />
+                </svg>
               </button>
             </div>
           </div>
