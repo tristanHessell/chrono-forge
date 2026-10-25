@@ -16,7 +16,7 @@ import { changeBoardZoom, listenForBoardWheel } from './boardZoom';
 import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
-import { CardEffect } from './components/CardEffect';
+import { CardEffects } from './components/CardEffect';
 import { CardEventName } from './components/CardEventName';
 import { CardHand } from './components/CardHand';
 import { ComputerPlayer } from './components/ComputerPlayer';
@@ -1237,7 +1237,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         style={positionStyle(G.pending)}
                       >
                         {renderLinkDirections(G.pending)}
-                        <CardEffect effect={displayedPendingCard?.effect} />
+                        <CardEffects effects={displayedPendingCard?.effects} />
                         <strong>
                           {displayedPendingCard &&
                             intl.formatNumber(displayedPendingCard.number, {
@@ -1382,7 +1382,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           data-event-category={draggedCardDetails.category}
           style={{ left: touchDrag.preview.x, top: touchDrag.preview.y }}
         >
-          <CardEffect effect={draggedCardDetails.effect} />
+          <CardEffects effects={draggedCardDetails.effects} />
           <strong>
             {intl.formatNumber(draggedCardDetails.number, {
               useGrouping: false,

@@ -2,11 +2,18 @@ import { Client } from 'boardgame.io/client';
 import { describe, expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
-import type { Card } from './game';
+import type { Card, EventCard, PlacedCard } from './game';
 import { canUndoMove, CardGame } from './game';
 
-const event = (id: string) =>
-  loadCardCatalog().deck.find((card) => card.id === id)!;
+const event = (id: string): EventCard => {
+  const card = loadCardCatalog().deck.find((card) => card.id === id)!;
+
+  if (card.type !== 'event') {
+    throw new Error(`Card ${id} is not an Event.`);
+  }
+
+  return card;
+};
 
 function effectClient(
   player: '0' | '1' = '0',
@@ -43,9 +50,13 @@ describe('draw one effect', () => {
   it('is defined on all three 1940 cards and no other cards', () => {
     const cards = loadCardCatalog().deck;
 
-    expect(cards.filter((card) => card.effect === 'draw-one')).toHaveLength(3);
+    expect(
+      cards.filter((card) => card.effects?.includes('draw-one')),
+    ).toHaveLength(3);
     for (const card of cards) {
-      expect(card.effect === 'draw-one').toBe(card.number === 1940);
+      expect(Boolean(card.effects?.includes('draw-one'))).toBe(
+        card.number === 1940,
+      );
     }
   });
 
@@ -111,11 +122,13 @@ describe('free action effect', () => {
   it('is defined on all three 1910 cards and no other cards', () => {
     const cards = loadCardCatalog().deck;
 
-    expect(cards.filter((card) => card.effect === 'free-action')).toHaveLength(
-      3,
-    );
+    expect(
+      cards.filter((card) => card.effects?.includes('free-action')),
+    ).toHaveLength(3);
     for (const card of cards) {
-      expect(card.effect === 'free-action').toBe(card.number === 1910);
+      expect(Boolean(card.effects?.includes('free-action'))).toBe(
+        card.number === 1910,
+      );
     }
   });
 
@@ -171,4 +184,57 @@ describe('free action effect', () => {
     expect(afterTurn.G.actionsThisTurn).toBe(0);
     expect(afterTurn.G.played).toHaveLength(4);
   });
+});
+
+it('applies three different effects from one Event card', () => {
+  const cards = loadCardCatalog();
+  const playedCard = {
+    ...event('event-1990-1'),
+    effects: ['draw-one', 'free-action', 'timeline-1900-bonus'] as const,
+  };
+  const earlierCard: PlacedCard = {
+    ...event('event-1900-1'),
+    row: 0,
+    column: 1,
+    owner: '1',
+    placedAt: 1,
+  };
+  const startingCard: PlacedCard = {
+    ...cards.startingCard,
+    row: 0,
+    column: 0,
+    owner: 'neutral' as const,
+    placedAt: 0,
+  };
+  const drawnCard = event('event-1920-1');
+  const client = Client({
+    game: {
+      ...CardGame,
+      setup: (context) => {
+        const initial = CardGame.setup!(context);
+
+        return {
+          ...initial,
+          deck: [drawnCard],
+          played: [startingCard, earlierCard],
+          nextPlacementOrder: 2,
+          hands: {
+            ...initial.hands,
+            '0': [playedCard],
+          },
+        };
+      },
+    },
+    numPlayers: 2,
+  });
+
+  client.moves.playCard(playedCard.id, { row: 0, column: 2 });
+  client.moves.confirmPlacement();
+
+  const after = client.getState()!;
+
+  expect(after.G.hands['0']).toEqual([drawnCard]);
+  expect(after.G.actionsThisTurn).toBe(0);
+  expect(after.ctx.currentPlayer).toBe('0');
+  expect(after.G.played.at(-1)?.effects).toEqual(playedCard.effects);
 });

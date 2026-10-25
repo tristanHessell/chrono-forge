@@ -1,9 +1,27 @@
 import { expect, it } from 'vitest';
 
-import { loadCardCatalog } from './cardCatalog';
+import { loadCardCatalog, readEffects } from './cardCatalog';
 import definitions from './cards';
 import type { Card } from './game';
 import messages from './i18n/en.json';
+
+it('accepts no more than three known effects per Event', () => {
+  expect(
+    readEffects(
+      ['draw-one', 'free-action', 'timeline-1900-bonus'],
+      'test-event',
+    ),
+  ).toEqual(['draw-one', 'free-action', 'timeline-1900-bonus']);
+  expect(() =>
+    readEffects(
+      ['draw-one', 'free-action', 'timeline-1900-bonus', 'draw-one'],
+      'test-event',
+    ),
+  ).toThrow('Invalid effects for Event card: test-event');
+  expect(() => readEffects(['unknown'], 'test-event')).toThrow(
+    'Invalid effects for Event card: test-event',
+  );
+});
 
 it('registers every individual card file exactly once', () => {
   const modules = import.meta.glob<{ default: Card }>(
@@ -64,17 +82,17 @@ it('includes one card per category for every decade and keeps the start neutral'
   expect(
     deck
       .filter((card) => card.number === 1910)
-      .every((card) => card.effect === 'free-action'),
+      .every((card) => card.effects?.includes('free-action')),
   ).toBe(true);
   expect(
     deck
       .filter((card) => card.number === 1940)
-      .every((card) => card.effect === 'draw-one'),
+      .every((card) => card.effects?.includes('draw-one')),
   ).toBe(true);
   expect(
     deck
       .filter((card) => card.number === 1990)
-      .every((card) => card.effect === 'timeline-1900-bonus'),
+      .every((card) => card.effects?.includes('timeline-1900-bonus')),
   ).toBe(true);
 });
 

@@ -8,7 +8,7 @@ import {
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
-import { CardEffect } from './CardEffect';
+import { CardEffects } from './CardEffect';
 import { CardEventName } from './CardEventName';
 
 export function HandCardFace({
@@ -22,8 +22,8 @@ export function HandCardFace({
 
   return (
     <>
-      <CardEffect
-        effect={card.type === 'manipulation' ? card.action : card.effect}
+      <CardEffects
+        effects={card.type === 'manipulation' ? [card.action] : card.effects}
         showTooltip={showTooltip}
       />
       {card.type === 'event' && (

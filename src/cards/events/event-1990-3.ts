@@ -5,6 +5,6 @@ export default {
   type: 'event',
   name: 'climate-summit',
   number: 1990,
-  effect: 'timeline-1900-bonus',
+  effects: ['timeline-1900-bonus'],
   category: 'environmental',
 } as const satisfies EventCard;

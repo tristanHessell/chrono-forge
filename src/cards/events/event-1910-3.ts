@@ -6,5 +6,5 @@ export default {
   name: 'national-parks',
   number: 1910,
   category: 'environmental',
-  effect: 'free-action',
+  effects: ['free-action'],
 } as const satisfies EventCard;

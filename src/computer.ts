@@ -111,8 +111,12 @@ export function chooseComputerAction(
       const futurePlays = remaining.filter(
         (candidate) => getAvailablePositions(played, candidate).length > 0,
       ).length;
-      const drawValue = card.effect === 'draw-one' && G.deck.length > 0 ? 3 : 0;
-      const freeActionValue = card.effect === 'free-action' ? 3 : 0;
+      const drawValue =
+        Math.min(
+          G.deck.length,
+          card.effects?.filter((effect) => effect === 'draw-one').length ?? 0,
+        ) * 3;
+      const freeActionValue = card.effects?.includes('free-action') ? 3 : 0;
       const value =
         points * 10 +
         drawValue +

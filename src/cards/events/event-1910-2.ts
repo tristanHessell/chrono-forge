@@ -6,5 +6,5 @@ export default {
   name: 'assembly-lines',
   number: 1910,
   category: 'technological',
-  effect: 'free-action',
+  effects: ['free-action'],
 } as const satisfies EventCard;

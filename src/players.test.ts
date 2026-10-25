@@ -114,7 +114,7 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
                   type: 'event',
                   name: 'timeline-origin',
                   number: 1940,
-                  effect: 'draw-one',
+                  effects: ['draw-one'],
                 },
                 {
                   id: 'spare',

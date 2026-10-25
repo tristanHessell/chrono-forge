@@ -1,5 +1,5 @@
 import definitions from './cards';
-import type { Card, EventName, ManipulationAction } from './game';
+import type { Card, CardEffect, EventName, ManipulationAction } from './game';
 
 function readCard(definition: {
   id: string;
@@ -7,7 +7,7 @@ function readCard(definition: {
   number?: number;
   action?: string;
   category?: string;
-  effect?: string;
+  effects?: unknown;
   name?: string;
 }): Card {
   if (definition.type === 'manipulation') {
@@ -18,7 +18,7 @@ function readCard(definition: {
       ) ||
       definition.category !== undefined ||
       definition.number !== undefined ||
-      definition.effect !== undefined ||
+      definition.effects !== undefined ||
       definition.name !== undefined
     ) {
       throw new Error(`Invalid Manipulation card: ${definition.id}`);
@@ -38,16 +38,10 @@ function readCard(definition: {
   ) {
     throw new Error(`Invalid card definition: ${definition.id}`);
   }
-  if (
-    definition.effect !== undefined &&
-    definition.effect !== 'draw-one' &&
-    definition.effect !== 'free-action' &&
-    definition.effect !== 'timeline-1900-bonus'
-  ) {
-    throw new Error(`Unknown card effect: ${definition.effect}`);
-  }
 
-  const { effect, category, name, ...card } = definition;
+  const effects = readEffects(definition.effects, definition.id);
+
+  const { category, name, ...card } = definition;
 
   if (
     category !== undefined &&
@@ -64,8 +58,33 @@ function readCard(definition: {
     type: 'event',
     name: name as EventName,
     ...(category ? { category } : {}),
-    ...(effect ? { effect } : {}),
+    ...(effects?.length ? { effects } : {}),
   };
+}
+
+export function readEffects(
+  value: unknown,
+  cardId: string,
+): CardEffect[] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Array.isArray(value) || value.length > 3) {
+    throw new Error(`Invalid effects for Event card: ${cardId}`);
+  }
+
+  const effects = value.filter(
+    (effect: unknown): effect is CardEffect =>
+      effect === 'draw-one' ||
+      effect === 'free-action' ||
+      effect === 'timeline-1900-bonus',
+  );
+
+  if (effects.length !== value.length) {
+    throw new Error(`Invalid effects for Event card: ${cardId}`);
+  }
+
+  return effects;
 }
 
 export function loadCardCatalog() {

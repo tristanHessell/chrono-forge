@@ -5,6 +5,6 @@ export default {
   type: 'event',
   name: 'internet-expansion',
   number: 1990,
-  effect: 'timeline-1900-bonus',
+  effects: ['timeline-1900-bonus'],
   category: 'technological',
 } as const satisfies EventCard;

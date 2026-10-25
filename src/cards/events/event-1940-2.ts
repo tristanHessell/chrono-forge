@@ -5,6 +5,6 @@ export default {
   type: 'event',
   name: 'atomic-age',
   number: 1940,
-  effect: 'draw-one',
+  effects: ['draw-one'],
   category: 'technological',
 } as const satisfies EventCard;
