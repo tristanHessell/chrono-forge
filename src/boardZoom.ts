@@ -1,5 +1,39 @@
+export const maximumBoardZoom = 2;
+export const minimumBoardZoom = 0.2;
+
 export function changeBoardZoom(current: number, change: number) {
-  return Math.min(1.6, Math.max(0.6, Math.round((current + change) * 10) / 10));
+  return Math.min(
+    maximumBoardZoom,
+    Math.max(minimumBoardZoom, Math.round((current + change) * 10) / 10),
+  );
+}
+
+export function fitBoardZoom(
+  currentZoom: number,
+  contentWidth: number,
+  contentHeight: number,
+  viewportWidth: number,
+  viewportHeight: number,
+) {
+  if (
+    contentWidth <= 0 ||
+    contentHeight <= 0 ||
+    viewportWidth <= 0 ||
+    viewportHeight <= 0
+  ) {
+    return currentZoom;
+  }
+
+  const fitRatio = Math.min(
+    1,
+    viewportWidth / contentWidth,
+    viewportHeight / contentHeight,
+  );
+
+  return Math.max(
+    minimumBoardZoom,
+    Math.floor(currentZoom * fitRatio * 10) / 10,
+  );
 }
 
 export function changeBoardZoomByPinch(

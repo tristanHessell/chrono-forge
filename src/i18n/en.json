@@ -185,6 +185,7 @@
   "turn.action": "{count, number} / 2",
   "turn.player": "{name}'s turn",
   "turn.you": "Your turn",
+  "zoom.fitAll": "Fit all",
   "zoom.in": "Zoom in",
   "zoom.label": "Board zoom controls",
   "zoom.out": "Zoom out",

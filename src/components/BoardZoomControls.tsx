@@ -1,15 +1,18 @@
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
+import { maximumBoardZoom, minimumBoardZoom } from '../boardZoom';
 import boardZoomControlsStyles from './BoardZoomControls.module.css';
 
 type Props = {
   boardZoom: number;
+  onFitAll: () => void;
   onZoomChange: (change: number) => void;
   onResetZoom: () => void;
 };
 
 export function BoardZoomControls({
   boardZoom,
+  onFitAll,
   onZoomChange,
   onResetZoom,
 }: Props) {
@@ -29,7 +32,7 @@ export function BoardZoomControls({
           id: 'zoom.out',
           defaultMessage: 'Zoom out',
         })}
-        disabled={boardZoom <= 0.6}
+        disabled={boardZoom <= minimumBoardZoom}
         onClick={(event) => {
           if (event.detail === 0) {
             onZoomChange(-0.1);
@@ -69,10 +72,28 @@ export function BoardZoomControls({
       </button>
       <button
         aria-label={intl.formatMessage({
+          id: 'zoom.fitAll',
+          defaultMessage: 'Fit all',
+        })}
+        onClick={(event) => {
+          if (event.detail === 0) {
+            onFitAll();
+          }
+        }}
+        onMouseDown={(event) => {
+          event.preventDefault();
+          onFitAll();
+        }}
+        type="button"
+      >
+        <FormattedMessage id="zoom.fitAll" defaultMessage="Fit all" />
+      </button>
+      <button
+        aria-label={intl.formatMessage({
           id: 'zoom.in',
           defaultMessage: 'Zoom in',
         })}
-        disabled={boardZoom >= 1.6}
+        disabled={boardZoom >= maximumBoardZoom}
         onClick={(event) => {
           if (event.detail === 0) {
             onZoomChange(0.1);
