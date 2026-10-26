@@ -654,6 +654,19 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     newGame(nextPlayers);
   };
 
+  const requestNewGame = () => {
+    if (
+      window.confirm(
+        intl.formatMessage({
+          id: 'newGame.confirmCurrent',
+          defaultMessage: 'Your current game will be lost. Start a new game?',
+        }),
+      )
+    ) {
+      newGameDialog.current?.showModal();
+    }
+  };
+
   const adjustBoardZoom = useCallback((change: number) => {
     setBoardZoom((current) => changeBoardZoom(current, change));
   }, []);
@@ -972,7 +985,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             </button>
           )}
           <GameMenu
-            onNewGame={() => newGameDialog.current?.showModal()}
+            onNewGame={requestNewGame}
             onOpenCatalog={() => {
               setComputerPaused(true);
               touchDrag.controller.cancel();

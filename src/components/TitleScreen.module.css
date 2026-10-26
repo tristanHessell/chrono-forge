@@ -1,0 +1,57 @@
+.title-screen {
+  display: grid;
+  min-height: 100dvh;
+  padding: 1.5rem;
+  place-items: center;
+}
+
+.title-card {
+  background:
+    linear-gradient(145deg, transparent, rgb(102 229 245 / 4%)), var(--table-bg);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--table-shadow);
+  padding: clamp(2.5rem, 8vw, 5rem);
+  text-align: center;
+  width: min(100%, 42rem);
+}
+
+.title-card h1 {
+  color: var(--accent-text);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  letter-spacing: -0.06em;
+  margin: 0 0 2rem;
+}
+
+.tagline {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+}
+
+.start-button {
+  background: var(--accent-text);
+  border: 1px solid var(--accent-text);
+  border-radius: 0.5rem;
+  color: var(--board-bg);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 0.9rem 1.25rem;
+  text-transform: uppercase;
+}
+
+.start-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .start-button:hover {
+    filter: brightness(1.1);
+  }
+}

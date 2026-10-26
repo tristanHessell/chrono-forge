@@ -1,6 +1,7 @@
 import { Client } from 'boardgame.io/react';
 import { useEffect, useRef, useState } from 'react';
 
+import { TitleScreen } from './components/TitleScreen';
 import { type CardGameState, createCardGame, type PlayerId } from './game';
 import { GameBoard } from './GameBoard';
 import { applyGameLogAction, type GameLog } from './gameLog';
@@ -57,14 +58,7 @@ function GameSession({ CardGameClient, players, replay }: Session) {
 }
 
 export function App() {
-  const [session, setSession] = useState<Session>(() =>
-    createSession({
-      seed: crypto.randomUUID(),
-      numPlayers: 2,
-      startingPlayer: chooseStartingPlayer(2),
-      players: createDefaultPlayers(),
-    }),
-  );
+  const [session, setSession] = useState<Session | null>(null);
   const [revision, setRevision] = useState(0);
   const replaceSession = (next: Omit<Session, 'CardGameClient'>) => {
     setSession(createSession(next));
@@ -82,8 +76,8 @@ export function App() {
   return (
     <GameLogContext.Provider
       value={{
-        seed: session.seed,
-        replayPaused: Boolean(session.replay),
+        seed: session?.seed ?? '',
+        replayPaused: Boolean(session?.replay),
         newGame,
         loadLog: (log, steps) => {
           replaceSession({
@@ -96,7 +90,11 @@ export function App() {
         },
       }}
     >
-      <GameSession key={revision} {...session} />
+      {session ? (
+        <GameSession key={revision} {...session} />
+      ) : (
+        <TitleScreen onStart={newGame} />
+      )}
     </GameLogContext.Provider>
   );
 }
