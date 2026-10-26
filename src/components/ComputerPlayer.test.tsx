@@ -1,7 +1,8 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import type { Card } from '../game';
 import messages from '../i18n/en.json';
 import { ComputerPlayer } from './ComputerPlayer';
@@ -11,8 +12,8 @@ const cards = [
   { id: 'hidden-2', type: 'event', name: 'timeline-origin', number: 1910 },
 ] satisfies Card[];
 
-it('shows computer identity and score without revealing its cards', () => {
-  const html = renderToStaticMarkup(
+it('shows computer identity and score without revealing its cards', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <ComputerPlayer
         cards={cards}
@@ -22,12 +23,20 @@ it('shows computer identity and score without revealing its cards', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('aria-label="Sally, AI"');
-  expect(html).toContain('>Sally</strong>');
-  expect(html).toContain('>3 points</span>');
-  expect(html).toContain('aria-label="2 face-down cards"');
-  expect(html).toContain('>2</strong>');
-  expect(html).not.toContain('1900');
-  expect(html).not.toContain('1910');
-  expect(html).not.toContain("Sally's hand");
+  expect(page.getByLabelText('Sally, AI').length).toBe(1);
+  await expect
+    .element(page.getByText('Sally', { exact: true }))
+    .toBeInTheDocument();
+  await expect
+    .element(page.getByText('3 points', { exact: true }))
+    .toBeInTheDocument();
+  expect(page.getByLabelText('2 face-down cards').length).toBe(1);
+  await expect
+    .element(page.getByText('2', { exact: true }))
+    .toBeInTheDocument();
+  await expect.element(page.getByCSS('body')).not.toMatchTextContent('1900');
+  await expect.element(page.getByCSS('body')).not.toMatchTextContent('1910');
+  await expect
+    .element(page.getByCSS('body'))
+    .not.toMatchTextContent("Sally's hand");
 });
