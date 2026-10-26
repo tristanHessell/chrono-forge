@@ -1,4 +1,4 @@
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import { maximumBoardZoom, minimumBoardZoom } from '../boardZoom';
 import boardZoomControlsStyles from './BoardZoomControls.module.css';
@@ -86,7 +86,9 @@ export function BoardZoomControls({
         }}
         type="button"
       >
-        <FormattedMessage id="zoom.fitAll" defaultMessage="Fit all" />
+        <svg aria-hidden="true" viewBox="0 0 16 16">
+          <path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" />
+        </svg>
       </button>
       <button
         aria-label={intl.formatMessage({
