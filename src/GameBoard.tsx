@@ -889,6 +889,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 defaultMessage: 'Undo your last move',
               })}
               className={controlsStyles.historyButton}
+              data-icon-button
               disabled={!canUndoMove(G)}
               onClick={() => {
                 setComputerPaused(true);
@@ -898,7 +899,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               }}
               type="button"
             >
-              <FormattedMessage id={'history.undo'} defaultMessage={'Undo'} />
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M3 7v6h6M21 17a9 9 0 0 0-15-6.7L3 13" />
+              </svg>
             </button>
             <button
               aria-label={intl.formatMessage({
@@ -906,6 +909,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 defaultMessage: 'Redo last action',
               })}
               className={controlsStyles.historyButton}
+              data-icon-button
               disabled={G.testFuture.length === 0}
               onClick={() => {
                 setComputerPaused(true);
@@ -915,7 +919,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               }}
               type="button"
             >
-              <FormattedMessage id={'history.redo'} defaultMessage={'Redo'} />
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M21 7v6h-6M3 17a9 9 0 0 1 15-6.7L21 13" />
+              </svg>
             </button>
           </div>
           {computerPaused && !finished && activePlayer.type === 'computer' && (
