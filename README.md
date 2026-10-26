@@ -30,7 +30,8 @@ See [CLAUDE.md](./CLAUDE.md) for repository rules, architecture, and contributor
 - `npm run lint:staged` checks the staged files before a commit.
 - `npm run lint:fix` applies ESLint's automatic fixes, including blank-line spacing.
 - `npm run spellcheck` checks spelling in source, configuration, and documentation.
-- `npm run test` runs the Vitest unit-test suite once.
+- `npm run test` runs the Vitest unit and browser test suites once.
+  Run `npx playwright install chromium` before the first test run.
 - `npm run test:simulation` manually runs 100 computer-vs-computer games and saves reports.
 - `npm run format` applies ESLint fixes, then formats the repository with Prettier.
 - `npm run format:check` verifies formatting without changing files.

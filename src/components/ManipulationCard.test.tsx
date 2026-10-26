@@ -1,15 +1,16 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import messages from '../i18n/en.json';
 import cardStyles from './Card.module.css';
 import { CardHand } from './CardHand';
 
 it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
   'renders %s without an Event date or category',
-  (action) => {
-    const html = renderToStaticMarkup(
+  async (action) => {
+    render(
       <IntlProvider locale="en" messages={messages}>
         <CardHand
           cards={[{ id: 'test', type: 'manipulation', action }]}
@@ -30,16 +31,22 @@ it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
       </IntlProvider>,
     );
 
-    expect(html).toContain('data-card-type="manipulation"');
-    expect(html).toContain(messages[`manipulation.${action}.name`]);
-    expect(html).toContain(`class="${cardStyles.manipulationName}"`);
-    expect(html).toContain(
-      renderToStaticMarkup(
-        <>{messages[`manipulation.${action}.description`]}</>,
-      ),
-    );
-    expect(html).not.toContain('hand-corner-number');
-    expect(html).not.toContain('data-event-category');
-    expect(html).not.toContain('NaN');
+    expect(page.getByCSS('[data-card-type="manipulation"]').length).toBe(1);
+    expect(
+      page.getByText(messages[`manipulation.${action}.name`], { exact: true })
+        .length,
+    ).toBe(1);
+    expect(
+      page.getByCSS(`[class~="${cardStyles.manipulationName}"]`).length,
+    ).toBe(1);
+    await expect
+      .element(page.getByCSS('[data-card-type="manipulation"]'))
+      .toHaveAttribute(
+        'aria-description',
+        expect.stringContaining(messages[`manipulation.${action}.description`]),
+      );
+    expect(page.getByCSS('[class*="hand-corner-number"]').length).toBe(0);
+    expect(page.getByCSS('[data-event-category]').length).toBe(0);
+    expect(page.getByText('NaN', { exact: true }).length).toBe(0);
   },
 );

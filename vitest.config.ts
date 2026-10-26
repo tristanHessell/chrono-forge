@@ -1,5 +1,5 @@
 import { mergeConfig } from 'vite';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 import viteConfig from './vite.config';
 
@@ -8,6 +8,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       css: { include: [/\.module\.css$/] },
+      exclude: [...configDefaults.exclude, 'src/**/*.test.tsx'],
     },
   }),
 );

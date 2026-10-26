@@ -34,6 +34,8 @@ jobs:
           cache: npm
       - name: Install the dependencies
         run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Check pull request commits
         if: github.event_name == 'pull_request'
         env:

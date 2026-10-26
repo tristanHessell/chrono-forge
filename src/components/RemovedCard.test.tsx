@@ -1,13 +1,16 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import messages from '../i18n/en.json';
 import { PlacementSlot } from './PlacementSlot';
+import slotStyles from './PlacementSlot.module.css';
 import { PlayedCard } from './PlayedCard';
+import playedStyles from './PlayedCard.module.css';
 
-it('visually and accessibly marks a removed Event and its overwrite target', () => {
-  const html = renderToStaticMarkup(
+it('visually and accessibly marks a removed Event and its overwrite target', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <PlayedCard
         card={{
@@ -40,13 +43,27 @@ it('visually and accessibly marks a removed Event and its overwrite target', () 
     </IntlProvider>,
   );
 
-  expect(html).toContain('removed-card');
-  expect(html).toContain('data-removed="true"');
-  expect(html).toContain('data-position="0:1"');
-  expect(html).toContain('Removed');
-  expect(html).toContain(messages['card.removedDescription']);
-  expect(html).toContain('overwrite-slot');
-  expect(html).toContain('data-drop-position="-1:2"');
-  expect(html).toContain('Overwrite');
-  expect(html).not.toContain('role="tooltip"');
+  const removedCard = page.getByCSS('[data-removed="true"]');
+
+  expect(removedCard.length).toBe(1);
+  await expect
+    .element(removedCard)
+    .toHaveClass(...playedStyles.removedCard.split(' '));
+  await expect.element(removedCard).toHaveAttribute('data-position', '0:1');
+  expect(page.getByText('Removed', { exact: true }).length).toBe(1);
+  await expect
+    .element(removedCard)
+    .toHaveAttribute(
+      'aria-description',
+      expect.stringContaining(messages['card.removedDescription']),
+    );
+
+  const overwriteSlot = page.getByCSS('[data-drop-position="-1:2"]');
+
+  expect(overwriteSlot.length).toBe(1);
+  await expect
+    .element(overwriteSlot)
+    .toHaveClass(...slotStyles.overwriteSlot.split(' '));
+  expect(page.getByLabelText('Overwrite removed Event').length).toBe(1);
+  expect(page.getByRole('tooltip').length).toBe(0);
 });

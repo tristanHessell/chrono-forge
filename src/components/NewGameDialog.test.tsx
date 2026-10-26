@@ -1,14 +1,15 @@
 import { createRef } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import messages from '../i18n/en.json';
 import { createDefaultPlayers } from '../playerSetup';
 import { NewGameDialog } from './NewGameDialog';
 
-it('starts with one human and one named computer', () => {
-  const html = renderToStaticMarkup(
+it('starts with one human and one named computer', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <NewGameDialog
         dialogRef={createRef()}
@@ -18,12 +19,16 @@ it('starts with one human and one named computer', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('>You</strong>');
-  expect(html).toContain('>Sally</strong>');
-  expect(html).toContain('aria-label="You, human"');
-  expect(html).toContain('aria-label="Sally, AI"');
-  expect(html).toContain('<option value="computer" selected="">AI</option>');
-  expect(html).toContain('>Add player</button>');
-  expect(html).toContain('>Start game</button>');
-  expect(html).not.toContain('Remove Sally');
+  expect(page.getByText('You', { exact: true }).length).toBe(1);
+  expect(page.getByText('Sally', { exact: true }).length).toBe(1);
+  expect(page.getByLabelText('You, human').length).toBe(1);
+  expect(page.getByLabelText('Sally, AI').length).toBe(1);
+  await expect.element(page.getByCSS('select')).toHaveValue('computer');
+  expect(page.getByCSS('button').filter({ hasText: 'Add player' }).length).toBe(
+    1,
+  );
+  expect(page.getByCSS('button').filter({ hasText: 'Start game' }).length).toBe(
+    1,
+  );
+  expect(page.getByText('Remove Sally').length).toBe(0);
 });

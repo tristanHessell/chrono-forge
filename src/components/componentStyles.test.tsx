@@ -1,7 +1,8 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import type { PlacedCard as Event } from '../game';
 import gameBoardStyles from '../GameBoard.module.css';
 import messages from '../i18n/en.json';
@@ -64,22 +65,27 @@ it('uses the same card back artwork for the deck and computer hands', () => {
   }
 });
 
-it('renders board card states and effect icons with their scoped classes', () => {
-  const html = renderToStaticMarkup(
+it('renders board card states and effect icons with their scoped classes', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <PlayedCard card={card} style={{}} links={null} isLatest />
     </IntlProvider>,
   );
 
-  expect(html).toContain(cardStyles.card);
-  expect(html).toContain(playedStyles.latestCard);
-  expect(html).toContain(effectStyles.cardEffect);
-  expect(html).toContain(cardStyles.cardEventName);
-  expect(html).toContain('Atomic Age');
+  const cardElement = page.getByCSS('[data-card-type="event"]');
+
+  await expect.element(cardElement).toHaveClass(...cardStyles.card.split(' '));
+  await expect
+    .element(cardElement)
+    .toHaveClass(...playedStyles.latestCard.split(' '));
+  expect(page.getByCSS(`[class~="${effectStyles.cardEffect}"]`).length).toBe(1);
+  await expect
+    .element(page.getByText('Atomic Age'))
+    .toHaveClass(...cardStyles.cardEventName.split(' '));
 });
 
 it('renders three card effects in a vertical stack', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <PlayedCard
         card={{
@@ -93,14 +99,16 @@ it('renders three card effects in a vertical stack', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain(effectStyles.cardEffects);
-  expect(html.match(new RegExp(effectStyles.cardEffect, 'g'))).toHaveLength(3);
+  expect(page.getByCSS(`[class~="${effectStyles.cardEffects}"]`).length).toBe(
+    1,
+  );
+  expect(page.getByCSS(`[class~="${effectStyles.cardEffect}"]`).length).toBe(3);
 });
 
 it.each(['0', '1', '2', '3', 'neutral'] as const)(
   'keeps the scoped ownership style for %s',
-  (owner) => {
-    const html = renderToStaticMarkup(
+  async (owner) => {
+    render(
       <IntlProvider locale="en" messages={messages}>
         <PlayedCard
           card={{ ...card, owner }}
@@ -110,18 +118,21 @@ it.each(['0', '1', '2', '3', 'neutral'] as const)(
         />
       </IntlProvider>,
     );
+
     const expected =
       owner === 'neutral'
         ? ownerStyles.ownerNeutral
         : ownerStyles[`owner${owner}`];
 
     expect(expected).toBeTruthy();
-    expect(html).toContain(expected);
+    await expect
+      .element(page.getByCSS(`[data-owner="${owner}"]`))
+      .toHaveClass(...expected.split(' '));
   },
 );
 
-it('preserves scoped preview styles and a stable drop target', () => {
-  const html = renderToStaticMarkup(
+it('preserves scoped preview styles and a stable drop target', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <PlacementSlot
         ariaLabel="Place here"
@@ -137,10 +148,15 @@ it('preserves scoped preview styles and a stable drop target', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain(slotStyles.snapPreview);
-  expect(html).toContain(slotStyles.releaseLabel);
-  expect(html).toContain(appearanceStyles.appearance);
-  expect(html).toContain('data-drop-position="1:0"');
-  expect(html).toContain('data-placement-slot="true"');
-  expect(html).toContain('data-event-category="technological"');
+  const slot = page.getByCSS('[data-drop-position="1:0"]');
+
+  await expect.element(slot).toHaveClass(...slotStyles.snapPreview.split(' '));
+  expect(page.getByCSS(`[class~="${slotStyles.releaseLabel}"]`).length).toBe(1);
+  await expect
+    .element(slot)
+    .toHaveClass(...appearanceStyles.appearance.split(' '));
+  await expect.element(slot).toHaveAttribute('data-placement-slot');
+  await expect
+    .element(slot)
+    .toHaveAttribute('data-event-category', 'technological');
 });

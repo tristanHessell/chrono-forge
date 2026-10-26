@@ -1,21 +1,22 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import type { Card } from '../game';
 import messages from '../i18n/en.json';
 import { CardDetailsDialog } from './CardDetailsDialog';
 
 function renderCardDetails(card: Card) {
-  return renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <CardDetailsDialog card={card} onClose={() => {}} />
     </IntlProvider>,
   );
 }
 
-it('shows the date and every effect description in one dialog', () => {
-  const html = renderCardDetails({
+it('shows the date and every effect description in one dialog', async () => {
+  renderCardDetails({
     id: 'test-event',
     type: 'event',
     category: 'technological',
@@ -24,25 +25,30 @@ it('shows the date and every effect description in one dialog', () => {
     effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
   });
 
-  expect(html).toContain('<h2 id=');
-  expect(html).toContain('Internet Expansion');
-  expect(html).toContain('<dt>Year</dt><dd>1990</dd>');
-  expect(html).toContain('<dt>Type</dt><dd>Tech</dd>');
-  expect(html).toContain('Draw one card');
-  expect(html).toContain('When you confirm this Event card, draw one card');
-  expect(html).toContain('Free action');
-  expect(html).toContain('1900 timeline bonus');
-  expect(html).toContain('<dialog');
+  await expect
+    .element(page.getByCSS('dialog h2'))
+    .toHaveTextContent('Internet Expansion');
+  await expect.element(page.getByCSS('dd').nth(0)).toHaveTextContent('1990');
+  await expect.element(page.getByCSS('dd').nth(1)).toHaveTextContent('Tech');
+  expect(page.getByText('Draw one card').length).toBeGreaterThan(0);
+  await expect
+    .element(page.getByCSS('body'))
+    .toMatchTextContent('When you confirm this Event card, draw one card');
+  expect(page.getByText('Free action').length).toBeGreaterThan(0);
+  expect(page.getByText('1900 timeline bonus').length).toBeGreaterThan(0);
+  expect(page.getByCSS('dialog').length).toBe(1);
 });
 
-it('shows the Command action description as its effect', () => {
-  const html = renderCardDetails({
+it('shows the Command action description as its effect', async () => {
+  renderCardDetails({
     id: 'test-command',
     type: 'manipulation',
     action: 'time-jump',
   });
 
-  expect(html).toContain('Time Jump');
-  expect(html).toContain('<dt>Type</dt><dd>Command</dd>');
-  expect(html).toContain('The entire board must remain legal.');
+  expect(page.getByText('Time Jump').length).toBeGreaterThan(0);
+  await expect.element(page.getByCSS('dd').nth(0)).toHaveTextContent('Command');
+  await expect
+    .element(page.getByCSS('body'))
+    .toMatchTextContent('The entire board must remain legal.');
 });

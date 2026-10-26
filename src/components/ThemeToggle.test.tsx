@@ -1,29 +1,33 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import messages from '../i18n/en.json';
 import { ThemeToggle } from './ThemeToggle';
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  delete document.documentElement.dataset.theme;
+});
 
 it.each(['light', 'dark', 'greyscale-light', 'greyscale-dark'])(
   'shows four labelled choices with %s selected',
-  (theme) => {
-    vi.stubGlobal('document', { documentElement: { dataset: { theme } } });
+  async (theme) => {
+    document.documentElement.dataset.theme = theme;
 
-    const html = renderToStaticMarkup(
+    render(
       <IntlProvider locale="en" messages={messages}>
         <ThemeToggle />
       </IntlProvider>,
     );
 
-    expect(html).toContain('aria-label="Theme"');
-    expect(html).toContain('>Light</option>');
-    expect(html).toContain('>Dark</option>');
-    expect(html).toContain('>Greyscale Light</option>');
-    expect(html).toContain('>Greyscale Dark</option>');
-    expect(html).toContain(`value="${theme}" selected=""`);
-    expect(html).not.toContain('aria-pressed');
+    const select = page.getByLabelText('Theme');
+
+    await expect.element(select).toHaveValue(theme);
+    expect(page.getByCSS('option').length).toBe(4);
+    await expect
+      .element(page.getByCSS('select'))
+      .toMatchTextContent('LightDarkGreyscale LightGreyscale Dark');
+    expect(page.getByCSS('[aria-pressed]').length).toBe(0);
   },
 );

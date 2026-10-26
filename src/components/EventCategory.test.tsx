@@ -1,7 +1,8 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import type { PlacedCard } from '../game';
 import messages from '../i18n/en.json';
 import { PlacementSlot } from './PlacementSlot';
@@ -9,7 +10,7 @@ import { PlayedCard } from './PlayedCard';
 
 it.each(['political', 'technological', 'environmental'] as const)(
   'labels %s cards and preserves category styling on the board and drag preview',
-  (category) => {
+  async (category) => {
     const card: PlacedCard = {
       id: 'test',
       type: 'event',
@@ -21,7 +22,8 @@ it.each(['political', 'technological', 'environmental'] as const)(
       owner: '0',
       placedAt: 1,
     };
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <PlayedCard card={card} style={{}} links={null} isLatest />
         <PlacementSlot
@@ -37,11 +39,17 @@ it.each(['political', 'technological', 'environmental'] as const)(
       </IntlProvider>,
     );
 
+    expect(page.getByCSS(`[data-event-category="${category}"]`).length).toBe(2);
     expect(
-      html.match(new RegExp(`data-event-category="${category}"`, 'g')),
-    ).toHaveLength(2);
-    expect(html).toContain(messages[`card.category.${category}`]);
-    expect(html.match(/Imperial Alliances/g)).toHaveLength(3);
-    expect(html).toContain('placed by you');
+      page.getByText(messages[`card.category.${category}`], { exact: true })
+        .length,
+    ).toBe(2);
+    expect(page.getByText('Imperial Alliances', { exact: true }).length).toBe(
+      2,
+    );
+    expect(page.getByLabelText(/Imperial Alliances/).length).toBe(1);
+    await expect
+      .element(page.getByCSS('[data-owner="0"]'))
+      .toHaveAttribute('aria-label', expect.stringContaining('placed by you'));
   },
 );

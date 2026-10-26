@@ -1,25 +1,30 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import type { PlacedCard } from '../game';
 import messages from '../i18n/en.json';
 import { GameResults } from './GameResults';
 
-it('shows a tie when neither player scored', () => {
-  const html = renderToStaticMarkup(
+it('shows a tie when neither player scored', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameResults played={[]} />
     </IntlProvider>,
   );
 
-  expect(html).toContain('it&#x27;s a tie!');
-  expect(html).toContain('0 card points + 0 bonus points = 0 total');
+  const body = page.getByCSS('body');
+
+  await expect.element(body).toMatchTextContent("it's a tie!");
+  await expect
+    .element(body)
+    .toMatchTextContent('0 card points + 0 bonus points = 0 total');
 });
 
 it.each(['0', '1', '2', '3'] as const)(
   'announces %s as the winner',
-  (owner) => {
+  async (owner) => {
     const card: PlacedCard = {
       id: 'test',
       type: 'event',
@@ -30,22 +35,27 @@ it.each(['0', '1', '2', '3'] as const)(
       placedAt: 1,
       owner,
     };
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <GameResults played={[card]} playerIds={['0', '1', '2', '3']} />
       </IntlProvider>,
     );
 
-    expect(html).toContain(
-      owner === '0'
-        ? 'you win!'
-        : `${['Sally', 'Barry', 'Morgan'][Number(owner) - 1]} wins!`,
-    );
-    expect(html).toContain('1 card point + 0 bonus points = 1 total');
+    await expect
+      .element(page.getByCSS('body'))
+      .toMatchTextContent(
+        owner === '0'
+          ? 'you win!'
+          : `${['Sally', 'Barry', 'Morgan'][Number(owner) - 1]} wins!`,
+      );
+    await expect
+      .element(page.getByCSS('body'))
+      .toMatchTextContent('1 card point + 0 bonus points = 1 total');
   },
 );
 
-it('names only the tied leaders in a four-player game', () => {
+it('names only the tied leaders in a four-player game', async () => {
   const played: PlacedCard[] = (['2', '3'] as const).map((owner) => ({
     id: owner,
     type: 'event',
@@ -56,22 +66,25 @@ it('names only the tied leaders in a four-player game', () => {
     placedAt: Number(owner),
     owner,
   }));
-  const html = renderToStaticMarkup(
+
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameResults played={played} playerIds={['0', '1', '2', '3']} />
     </IntlProvider>,
   );
 
-  expect(html).toContain('it&#x27;s a tie! (Barry, Morgan)');
-  expect(html).toContain('You: 0 card points');
+  const body = page.getByCSS('body');
+
+  await expect.element(body).toMatchTextContent("it's a tie! (Barry, Morgan)");
+  await expect.element(body).toMatchTextContent('You: 0 card points');
 });
 
 it('keeps the result summary free of game controls', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameResults played={[]} />
     </IntlProvider>,
   );
 
-  expect(html).not.toContain('Round scores');
+  expect(page.getByText('Round scores').length).toBe(0);
 });
