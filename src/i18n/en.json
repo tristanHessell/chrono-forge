@@ -181,6 +181,7 @@
   "theme.greyscale-light": "Greyscale Light",
   "theme.label": "Theme",
   "theme.light": "Light",
+  "titleScreen.continue": "Continue game",
   "titleScreen.start": "Start a new game",
   "turn.action": "{count, number} / 2",
   "turn.player": "{name}'s turn",
