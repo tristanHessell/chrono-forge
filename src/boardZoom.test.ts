@@ -51,6 +51,8 @@ it.each([
   [1, 100, 80, 0.8],
   [2, 200, 190, 1.9],
   [0.3, 100, 50, 0.2],
+  [1, 100, 101, 1.01],
+  [1, 100, 300, 2],
 ])(
   'scales board zoom from pinch movement at zoom %s',
   (currentZoom, previousDistance, distance, expected) => {
@@ -59,6 +61,18 @@ it.each([
     ).toBe(expected);
   },
 );
+
+it('accumulates small pinch movements before they reach one tenth', () => {
+  let zoom = 1;
+  let previousDistance = 100;
+
+  for (const distance of [101, 102]) {
+    zoom = changeBoardZoomByPinch(zoom, previousDistance, distance);
+    previousDistance = distance;
+  }
+
+  expect(zoom).toBeCloseTo(1.02);
+});
 
 it('cancels browser zoom gestures even after repeated input at the zoom limit', () => {
   const viewport = new EventTarget();

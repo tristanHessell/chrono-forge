@@ -41,9 +41,9 @@ export function changeBoardZoomByPinch(
   previousDistance: number,
   distance: number,
 ) {
-  return changeBoardZoom(
-    currentZoom,
-    currentZoom * (distance / previousDistance - 1),
+  return Math.min(
+    maximumBoardZoom,
+    Math.max(minimumBoardZoom, currentZoom * (distance / previousDistance)),
   );
 }
 
