@@ -3,6 +3,7 @@ import { expect, it, vi } from 'vitest';
 import {
   changeBoardZoom,
   changeBoardZoomByPinch,
+  fitBoardZoom,
   listenForBoardWheel,
 } from './boardZoom';
 
@@ -19,8 +20,8 @@ function wheel(deltaY: number, ctrlKey = false) {
 it.each([
   [1, -100, 1.1],
   [1, 100, 0.9],
-  [1.6, -100, 1.6],
-  [0.6, 100, 0.6],
+  [2, -100, 2],
+  [0.2, 100, 0.2],
   [1, 0, 1],
 ])(
   'contains wheel input at zoom %s with delta %s',
@@ -48,8 +49,8 @@ it.each([
 it.each([
   [1, 100, 120, 1.2],
   [1, 100, 80, 0.8],
-  [1.6, 200, 190, 1.5],
-  [0.7, 100, 50, 0.6],
+  [2, 200, 190, 1.9],
+  [0.3, 100, 50, 0.2],
 ])(
   'scales board zoom from pinch movement at zoom %s',
   (currentZoom, previousDistance, distance, expected) => {
@@ -61,7 +62,7 @@ it.each([
 
 it('cancels browser zoom gestures even after repeated input at the zoom limit', () => {
   const viewport = new EventTarget();
-  let zoom = 1.6;
+  let zoom = 2;
   const cleanup = listenForBoardWheel(viewport, (change) => {
     zoom = changeBoardZoom(zoom, change);
   });
@@ -71,10 +72,25 @@ it('cancels browser zoom gestures even after repeated input at the zoom limit', 
 
     expect(viewport.dispatchEvent(event)).toBe(false);
     expect(event.defaultPrevented).toBe(true);
-    expect(zoom).toBe(1.6);
+    expect(zoom).toBe(2);
   }
   cleanup();
 });
+
+it.each([
+  [1, 200, 100, 100, 100, 0.5],
+  [1, 100, 100, 200, 200, 1],
+  [1.6, 160, 100, 100, 100, 1],
+  [1, 1000, 1000, 100, 100, 0.2],
+  [1, 0, 100, 100, 100, 1],
+])(
+  'fits board dimensions %s × %s into viewport %s × %s',
+  (zoom, width, height, viewportWidth, viewportHeight, expected) => {
+    expect(
+      fitBoardZoom(zoom, width, height, viewportWidth, viewportHeight),
+    ).toBe(expected);
+  },
+);
 
 it('only intercepts the board and removes its listener during cleanup', () => {
   const viewport = new EventTarget();

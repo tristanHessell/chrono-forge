@@ -16,6 +16,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
   changeBoardZoom,
   changeBoardZoomByPinch,
+  fitBoardZoom,
   listenForBoardWheel,
 } from './boardZoom';
 import { BoardZoomControls } from './components/BoardZoomControls';
@@ -657,6 +658,38 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setBoardZoom((current) => changeBoardZoom(current, change));
   }, []);
 
+  const fitBoardToViewport = useCallback(() => {
+    const viewport = boardViewport.current;
+    const grid = viewport?.querySelector<HTMLElement>('[data-board-grid]');
+
+    if (!viewport || !grid) {
+      return;
+    }
+
+    const gridBounds = grid.getBoundingClientRect();
+    const viewportStyles = getComputedStyle(viewport);
+    const availableWidth =
+      viewport.clientWidth -
+      parseFloat(viewportStyles.paddingLeft) -
+      parseFloat(viewportStyles.paddingRight);
+    const availableHeight =
+      viewport.clientHeight -
+      parseFloat(viewportStyles.paddingTop) -
+      parseFloat(viewportStyles.paddingBottom);
+
+    setBoardZoom((current) =>
+      fitBoardZoom(
+        current,
+        gridBounds.width,
+        gridBounds.height,
+        availableWidth,
+        availableHeight,
+      ),
+    );
+    viewport.scrollLeft = 0;
+    viewport.scrollTop = 0;
+  }, []);
+
   useEffect(() => {
     const viewport = boardViewport.current;
 
@@ -1133,6 +1166,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           <div className={gameBoardStyles.boardSurface}>
             <BoardZoomControls
               boardZoom={boardZoom}
+              onFitAll={fitBoardToViewport}
               onResetZoom={() => {
                 setBoardZoom(1);
               }}
@@ -1154,6 +1188,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             >
               <div
                 className={gameBoardStyles.playedGrid}
+                data-board-grid
                 style={{ ...gridStyle, zoom: boardZoom }}
               >
                 {G.played.length === 0 && !G.pending && showPlacementSlots ? (

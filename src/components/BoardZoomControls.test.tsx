@@ -6,9 +6,9 @@ import messages from '../i18n/en.json';
 import { BoardZoomControls } from './BoardZoomControls';
 
 it.each([
-  [0.6, '60%', 'Zoom out'],
+  [0.2, '20%', 'Zoom out'],
   [1, '100%', null],
-  [1.6, '160%', 'Zoom in'],
+  [2, '200%', 'Zoom in'],
 ] as const)(
   'renders accessible floating controls at zoom %s',
   (zoom, percent, disabled) => {
@@ -16,6 +16,7 @@ it.each([
       <IntlProvider locale="en" messages={messages}>
         <BoardZoomControls
           boardZoom={zoom}
+          onFitAll={() => {}}
           onZoomChange={() => {}}
           onResetZoom={() => {}}
         />
@@ -27,6 +28,8 @@ it.each([
     expect(html).toContain('aria-label="Zoom out"');
     expect(html).toContain('aria-label="Zoom in"');
     expect(html).toContain('aria-label="Reset board zoom"');
+    expect(html).toContain('aria-label="Fit all"');
+    expect(html).toContain('>Fit all</button>');
     expect(html).toContain(`>${percent}</button>`);
 
     if (disabled) {
