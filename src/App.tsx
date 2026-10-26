@@ -1,11 +1,18 @@
 import { Client } from 'boardgame.io/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { TitleScreen } from './components/TitleScreen';
-import { type CardGameState, createCardGame, type PlayerId } from './game';
+import { type CardGameState, createCardGame } from './game';
 import { GameBoard } from './GameBoard';
 import { applyGameLogAction, type GameLog } from './gameLog';
 import { GameLogContext } from './gameLogContext';
+import {
+  loadSavedGame,
+  restoreSavedGame,
+  type SavedGame,
+  type SavedGameSession,
+  saveGame,
+} from './gameStorage';
 import type { PlayerCount } from './playerCount';
 import {
   chooseStartingPlayer,
@@ -14,16 +21,16 @@ import {
   PlayerSetupContext,
 } from './playerSetup';
 
-type Session = {
-  seed: string;
-  numPlayers: PlayerCount;
-  startingPlayer: PlayerId;
-  players: PlayerSetup[];
+type SessionOptions = SavedGameSession & {
   replay?: { log: GameLog; steps: number };
+  restore?: SavedGame;
+};
+
+type Session = SessionOptions & {
   CardGameClient: ReturnType<typeof Client<CardGameState>>;
 };
 
-function createSession(options: Omit<Session, 'CardGameClient'>): Session {
+function createSession(options: SessionOptions): Session {
   return {
     ...options,
     CardGameClient: Client({
@@ -35,9 +42,64 @@ function createSession(options: Omit<Session, 'CardGameClient'>): Session {
   };
 }
 
-function GameSession({ CardGameClient, players, replay }: Session) {
+function GameSession({
+  CardGameClient,
+  players,
+  replay,
+  restore,
+  replayPaused,
+  seed,
+  numPlayers,
+  startingPlayer,
+}: Session) {
   const ref = useRef<InstanceType<typeof CardGameClient>>(null);
   const replayed = useRef(false);
+
+  useLayoutEffect(() => {
+    const client = ref.current?.client;
+
+    if (!client) {
+      return;
+    }
+
+    if (restore) {
+      restoreSavedGame(client, restore);
+    }
+
+    return client.subscribe(() => {
+      const currentState = client.getState();
+
+      if (!currentState) {
+        throw new Error('The game client has no state to save.');
+      }
+
+      saveGame({
+        seed,
+        numPlayers,
+        startingPlayer,
+        players,
+        replayPaused: replayPaused || Boolean(replay),
+        state: {
+          G: currentState.G,
+          ctx: currentState.ctx,
+          plugins: currentState.plugins,
+          _undo: currentState._undo,
+          _redo: currentState._redo,
+          _stateID: currentState._stateID,
+        },
+        initialState: client.getInitialState(),
+        log: client.log ?? [],
+      });
+    });
+  }, [
+    numPlayers,
+    players,
+    replay,
+    replayPaused,
+    restore,
+    seed,
+    startingPlayer,
+  ]);
 
   useEffect(() => {
     if (!replay || replayed.current || !ref.current) {
@@ -59,8 +121,9 @@ function GameSession({ CardGameClient, players, replay }: Session) {
 
 export function App() {
   const [session, setSession] = useState<Session | null>(null);
+  const [savedGame] = useState(loadSavedGame);
   const [revision, setRevision] = useState(0);
-  const replaceSession = (next: Omit<Session, 'CardGameClient'>) => {
+  const replaceSession = (next: SessionOptions) => {
     setSession(createSession(next));
     setRevision((value) => value + 1);
   };
@@ -70,6 +133,21 @@ export function App() {
       numPlayers: players.length as PlayerCount,
       startingPlayer: chooseStartingPlayer(players.length as PlayerCount),
       players,
+      replayPaused: false,
+    });
+  };
+  const continueGame = () => {
+    if (!savedGame) {
+      return;
+    }
+
+    replaceSession({
+      seed: savedGame.seed,
+      numPlayers: savedGame.numPlayers,
+      startingPlayer: savedGame.startingPlayer,
+      players: savedGame.players,
+      replayPaused: savedGame.replayPaused,
+      restore: savedGame,
     });
   };
 
@@ -77,7 +155,7 @@ export function App() {
     <GameLogContext.Provider
       value={{
         seed: session?.seed ?? '',
-        replayPaused: Boolean(session?.replay),
+        replayPaused: Boolean(session?.replayPaused || session?.replay),
         newGame,
         loadLog: (log, steps) => {
           replaceSession({
@@ -85,6 +163,7 @@ export function App() {
             numPlayers: log.numPlayers,
             startingPlayer: log.startingPlayer,
             players: createDefaultPlayers(log.numPlayers),
+            replayPaused: true,
             replay: { log, steps },
           });
         },
@@ -93,7 +172,10 @@ export function App() {
       {session ? (
         <GameSession key={revision} {...session} />
       ) : (
-        <TitleScreen onStart={newGame} />
+        <TitleScreen
+          onContinue={savedGame ? continueGame : undefined}
+          onStart={newGame}
+        />
       )}
     </GameLogContext.Provider>
   );

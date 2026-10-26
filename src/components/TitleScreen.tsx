@@ -6,10 +6,11 @@ import { NewGameDialog } from './NewGameDialog';
 import titleScreenStyles from './TitleScreen.module.css';
 
 type Props = {
+  onContinue?: () => void;
   onStart: (players: PlayerSetup[]) => void;
 };
 
-export function TitleScreen({ onStart }: Props) {
+export function TitleScreen({ onContinue, onStart }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
 
   return (
@@ -24,16 +25,30 @@ export function TitleScreen({ onStart }: Props) {
         <h1>
           <FormattedMessage id={'brand.name'} defaultMessage={'Chrono-Forge'} />
         </h1>
-        <button
-          className={titleScreenStyles.startButton}
-          onClick={() => dialog.current?.showModal()}
-          type="button"
-        >
-          <FormattedMessage
-            id={'titleScreen.start'}
-            defaultMessage={'Start a new game'}
-          />
-        </button>
+        <div className={titleScreenStyles.actions}>
+          {onContinue && (
+            <button
+              className={titleScreenStyles.startButton}
+              onClick={onContinue}
+              type="button"
+            >
+              <FormattedMessage
+                id={'titleScreen.continue'}
+                defaultMessage={'Continue game'}
+              />
+            </button>
+          )}
+          <button
+            className={titleScreenStyles.startButton}
+            onClick={() => dialog.current?.showModal()}
+            type="button"
+          >
+            <FormattedMessage
+              id={'titleScreen.start'}
+              defaultMessage={'Start a new game'}
+            />
+          </button>
+        </div>
       </section>
       <NewGameDialog
         dialogRef={dialog}
