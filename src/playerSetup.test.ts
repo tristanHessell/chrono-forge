@@ -8,7 +8,7 @@ import {
 
 describe('player setup', () => {
   it('defaults to one human and one computer', () => {
-    expect(createDefaultPlayers()).toEqual([
+    expect(createDefaultPlayers()).toStrictEqual([
       { id: '0', name: 'You', type: 'human' },
       { id: '1', name: 'Sally', type: 'computer' },
     ]);
@@ -17,7 +17,7 @@ describe('player setup', () => {
   it('uses stable names for all four seats', () => {
     const players = createDefaultPlayers(4);
 
-    expect(players.map((player) => player.name)).toEqual([
+    expect(players.map((player) => player.name)).toStrictEqual([
       'You',
       'Sally',
       'Barry',

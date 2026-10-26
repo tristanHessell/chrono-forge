@@ -91,7 +91,8 @@ describe('computer opponent', () => {
 
     G.played.push(...surrounding);
     G.hands['1'] = [event('event-1900-1')];
-    expect(chooseComputerAction(G)).toEqual({
+
+    expect(chooseComputerAction(G)).toStrictEqual({
       type: 'discard',
       cardId: 'event-1900-1',
     });
@@ -107,8 +108,11 @@ describe('computer opponent', () => {
       owner: '1',
       placedAt: 1,
     };
-    expect(chooseComputerAction(G)).toEqual({ type: 'confirm' });
+
+    expect(chooseComputerAction(G)).toStrictEqual({ type: 'confirm' });
+
     G.roundOver = true;
+
     expect(chooseComputerAction(G)).toBeNull();
   });
 
@@ -121,7 +125,7 @@ describe('computer opponent', () => {
       hands: { ...G.hands, '0': [] },
     };
 
-    expect(chooseComputerAction(altered)).toEqual(before);
+    expect(chooseComputerAction(altered)).toStrictEqual(before);
   });
 
   it.each([2, 3, 4])(
@@ -151,7 +155,9 @@ describe('computer opponent', () => {
           expect(isValidPlacement(before.G.played, action.position, card)).toBe(
             true,
           );
+
           client.moves.playCard(action.cardId, action.position);
+
           expect(client.getState()!.G.pending?.id).toBe(card.id);
         } else if (action?.type === 'confirm') {
           client.moves.confirmPlacement();
@@ -171,8 +177,8 @@ describe('computer opponent', () => {
       const final = client.getState()!.G;
 
       expect(final.roundOver).toBe(true);
-      expect(final.hands['0']).toEqual([]);
-      expect(final.hands['1']).toEqual([]);
+      expect(final.hands['0']).toStrictEqual([]);
+      expect(final.hands['1']).toStrictEqual([]);
       expect(
         Object.values(final.hands).every((hand) => hand.length === 0),
       ).toBe(true);

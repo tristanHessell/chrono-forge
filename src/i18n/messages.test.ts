@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import messages from './en.json';
 
-describe('English messages', () => {
+describe('english messages', () => {
   it('formats every catalog message without missing values or invalid ICU syntax', () => {
     const errors: unknown[] = [];
     const intl = createIntl({
@@ -46,7 +46,8 @@ describe('English messages', () => {
 
       expect(text).not.toBe(id);
     }
-    expect(errors).toEqual([]);
+
+    expect(errors).toStrictEqual([]);
   });
 
   it('uses singular and plural deck counts', () => {

@@ -1,5 +1,5 @@
 import { Client } from 'boardgame.io/client';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { type CardGameState, createCardGame } from './game';
 import {
@@ -33,67 +33,75 @@ function createSave(): SavedGame {
   };
 }
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-  vi.restoreAllMocks();
-});
-
-it('saves and loads a valid game', () => {
-  const values = new Map<string, string>();
-
-  vi.stubGlobal('localStorage', {
-    getItem: (key: string) => values.get(key) ?? null,
-    setItem: (key: string, value: string) => values.set(key, value),
+describe('gameStorage', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
-  const savedGame = createSave();
+  it('saves and loads a valid game', () => {
+    const values = new Map<string, string>();
 
-  saveGame(savedGame);
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+    });
 
-  const loadedGame = loadSavedGame();
+    const savedGame = createSave();
 
-  expect(loadedGame).toMatchObject({
-    seed: savedGame.seed,
-    replayPaused: true,
-    state: { G: savedGame.state.G },
-  });
-  expect(values.has(gameStorageKey)).toBe(true);
+    saveGame(savedGame);
 
-  const resumed = Client({
-    game: { ...createCardGame(savedGame.startingPlayer), seed: savedGame.seed },
-    numPlayers: savedGame.numPlayers,
-  });
+    const loadedGame = loadSavedGame();
 
-  if (!loadedGame) {
-    throw new Error('The saved game did not load.');
-  }
+    expect(loadedGame).toMatchObject({
+      seed: savedGame.seed,
+      replayPaused: true,
+      state: { G: savedGame.state.G },
+    });
+    expect(values.has(gameStorageKey)).toBe(true);
 
-  restoreSavedGame(resumed, loadedGame);
+    const resumed = Client({
+      game: {
+        ...createCardGame(savedGame.startingPlayer),
+        seed: savedGame.seed,
+      },
+      numPlayers: savedGame.numPlayers,
+    });
 
-  expect(resumed.store.getState().G).toEqual(savedGame.state.G);
-  expect(resumed.log).toEqual(savedGame.log);
-});
+    if (!loadedGame) {
+      throw new Error('The saved game did not load.');
+    }
 
-it('restores the game state and log into a new client', () => {
-  const savedGame = createSave();
-  const resumed = Client({
-    game: { ...createCardGame(savedGame.startingPlayer), seed: savedGame.seed },
-    numPlayers: savedGame.numPlayers,
-  });
+    restoreSavedGame(resumed, loadedGame);
 
-  restoreSavedGame(resumed, savedGame);
-
-  expect(resumed.store.getState()).toEqual(savedGame.state);
-  expect(resumed.getInitialState()).toEqual(savedGame.initialState);
-});
-
-it('does not offer an invalid saved-game format for continuation', () => {
-  vi.stubGlobal('localStorage', {
-    getItem: () => '{"version":1}',
+    expect(resumed.store.getState().G).toStrictEqual(savedGame.state.G);
+    expect(resumed.log).toStrictEqual(savedGame.log);
   });
 
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  it('restores the game state and log into a new client', () => {
+    const savedGame = createSave();
+    const resumed = Client({
+      game: {
+        ...createCardGame(savedGame.startingPlayer),
+        seed: savedGame.seed,
+      },
+      numPlayers: savedGame.numPlayers,
+    });
 
-  expect(loadSavedGame()).toBeNull();
-  expect(console.error).toHaveBeenCalled();
+    restoreSavedGame(resumed, savedGame);
+
+    expect(resumed.store.getState()).toStrictEqual(savedGame.state);
+    expect(resumed.getInitialState()).toStrictEqual(savedGame.initialState);
+  });
+
+  it('does not offer an invalid saved-game format for continuation', () => {
+    vi.stubGlobal('localStorage', {
+      getItem: () => '{"version":1}',
+    });
+
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(loadSavedGame()).toBeNull();
+    expect(console.error).toHaveBeenCalledWith();
+  });
 });

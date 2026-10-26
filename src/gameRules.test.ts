@@ -66,10 +66,11 @@ describe('placement rules', () => {
       getAvailablePositions(played, { ...later, number: 1950 }),
     ).not.toContainEqual(position);
   });
+
   it('allows each side of the initial card', () => {
     const played = [card('center', 0, 0)];
 
-    expect(getAvailablePositions(played)).toEqual(
+    expect(getAvailablePositions(played)).toStrictEqual(
       expect.arrayContaining([
         { row: -1, column: 0 },
         { row: 0, column: -1 },
@@ -114,7 +115,7 @@ describe('card game state transitions', () => {
     expect(G.hands['1']).toHaveLength(5);
     expect(G.deck).toHaveLength(36);
     expect(G.startingPlayer).toBe('0');
-    expect(G.played).toEqual([
+    expect(G.played).toStrictEqual([
       expect.objectContaining({
         id: 'starting-0',
         number: 0,
@@ -132,6 +133,7 @@ describe('card game state transitions', () => {
       16,
     );
     expect(new Set(deck.map((card) => card.id)).size).toBe(46);
+
     for (let date = 1900; date <= 1990; date += 10) {
       expect(deck.filter((card) => card.number === date)).toHaveLength(3);
     }
@@ -200,6 +202,7 @@ describe('card game state transitions', () => {
       row: 0,
       column: 1,
     });
+
     expect(G.pending?.id).toBe('event-a-1');
     expect(G.hands['0']).toHaveLength(2);
 
@@ -212,9 +215,10 @@ describe('card game state transitions', () => {
         },
       },
     });
+
     expect(G.pending).toBeNull();
     expect(G.played).toHaveLength(2);
-    expect(G.hands['0'].map((item) => item.id)).toEqual(['event-b-2']);
+    expect(G.hands['0'].map((item) => item.id)).toStrictEqual(['event-b-2']);
     expect(G.deck).toHaveLength(1);
     expect(endedTurn).toBe(false);
     expect(G.actionsThisTurn).toBe(1);
@@ -234,13 +238,16 @@ describe('card game state transitions', () => {
       column: 1,
     });
     confirmPlacement({ G, ctx: { currentPlayer: '0' }, events });
+
     expect(G.played).toHaveLength(2);
 
     undoTest({ G, ctx: { currentPlayer: '1' }, events });
+
     expect(G.played).toHaveLength(1);
     expect(G.deck).toHaveLength(1);
 
     redoTest({ G, ctx: { currentPlayer: '0' }, events });
+
     expect(G.played).toHaveLength(2);
     expect(G.deck).toHaveLength(1);
   });
@@ -277,6 +284,6 @@ describe('card game state transitions', () => {
 
     expect(G.hands['1']).toHaveLength(0);
     expect(G.hands['0']).toHaveLength(1);
-    expect(nextTurn).toEqual({ next: '0' });
+    expect(nextTurn).toStrictEqual({ next: '0' });
   });
 });

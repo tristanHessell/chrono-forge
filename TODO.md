@@ -2,6 +2,12 @@
 
 ---
 
+- [Track Event effect additions](docs/event-effect-additions.md)
+
+---
+
+- [Track Command card additions](docs/command-card-additions.md)
+
 ---
 
 Add a rules section to the menu
@@ -13,7 +19,12 @@ Rename category `Political` -> `Politics`.
 Rename category `Environmental` -> `Nature`
 Rename category `Technological` -> `Tech`
 
+---
+
+UI Experiment:
 Change the Event cards to have the colour stripe on the right (where the category is), rather than around the card
+
+---
 
 Add Technology (yellow) Effects
 
@@ -47,13 +58,20 @@ Should a removed event invalidate any of the events that are no longer connected
 
 ---
 
-- [Track Event effect additions](docs/event-effect-additions.md)
+Add a `Options` section in the menu.
+
+Toggle arrows to be on or off
+
+Animate arrows option - have them moving in the direction they point or option not too.
+
+Move colour independent backgrounds to the options
 
 ---
 
-- [Track Command card additions](docs/command-card-additions.md)
+Make the discards private in the game log (unless they are for the human player).
+
+- They will need to be visible in the export and saved state, that is not an issue at this point in time.
 
 ---
 
-Linting: strings are no concatenated.
-Linting: ICU strings are valid etc
+Linting: order of object properties

@@ -60,12 +60,12 @@ describe('import ordering', () => {
       checked.messages.filter((message) =>
         message.ruleId?.startsWith('perfectionist/'),
       ),
-    ).toEqual([]);
+    ).toStrictEqual([]);
     expect(
       result.messages.filter((message) =>
         message.ruleId?.startsWith('perfectionist/'),
       ),
-    ).toEqual([]);
+    ).toStrictEqual([]);
   });
 
   it('preserves the relative order of side-effect imports', async () => {
@@ -118,7 +118,7 @@ describe('required braces', () => {
 
     expect(
       result.messages.filter((message) => message.ruleId === 'curly'),
-    ).toEqual([]);
+    ).toStrictEqual([]);
     expect(result.output).toMatch(/if \(ready\) \{\s*return 1;\s*\}/);
     expect(result.output).toMatch(/else \{\s*return 0;\s*\}/);
   });
@@ -136,70 +136,71 @@ describe('statement spacing', () => {
   it.each(['ts', 'tsx', 'js'])(
     'requires spacing after variable declarations in %s',
     async (extension) => {
-      expect(
-        await spacingErrors('const value = 1;\nconsole.log(value);', extension),
-      ).toHaveLength(1);
-      expect(
-        await spacingErrors(
-          'const value = 1;\n\nconsole.log(value);',
-          extension,
-        ),
-      ).toEqual([]);
+      await expect(
+        spacingErrors('const value = 1;\nconsole.log(value);', extension),
+      ).resolves.toHaveLength(1);
+      await expect(
+        spacingErrors('const value = 1;\n\nconsole.log(value);', extension),
+      ).resolves.toStrictEqual([]);
     },
   );
 
   it('keeps consecutive variable declarations together', async () => {
-    expect(
-      await spacingErrors(
+    await expect(
+      spacingErrors(
         'const first = 1;\nlet second = first;\nvar third = second;',
       ),
-    ).toEqual([]);
+    ).resolves.toStrictEqual([]);
   });
 
   it.each(['const', 'let', 'var'])(
     'requires spacing before a %s declaration',
     async (kind) => {
-      expect(
-        await spacingErrors(`console.log(1);\n${kind} value = 1;`),
-      ).toHaveLength(1);
-      expect(
-        await spacingErrors(`console.log(1);\n\n${kind} value = 1;`),
-      ).toEqual([]);
+      await expect(
+        spacingErrors(`console.log(1);\n${kind} value = 1;`),
+      ).resolves.toHaveLength(1);
+      await expect(
+        spacingErrors(`console.log(1);\n\n${kind} value = 1;`),
+      ).resolves.toStrictEqual([]);
     },
   );
 
   it('requires spacing between a block and a variable declaration', async () => {
-    expect(
-      await spacingErrors('if (ready) { start(); }\nconst value = 1;'),
-    ).toHaveLength(1);
+    await expect(
+      spacingErrors('if (ready) { start(); }\nconst value = 1;'),
+    ).resolves.toHaveLength(1);
   });
 
   it('requires spacing before exported variables too', async () => {
-    expect(
-      await spacingErrors('console.log(1);\nexport const value = 1;'),
-    ).toHaveLength(1);
+    await expect(
+      spacingErrors('console.log(1);\nexport const value = 1;'),
+    ).resolves.toHaveLength(1);
   });
 
   it('handles exported variable declarations without separating consecutive ones', async () => {
-    expect(
-      await spacingErrors(
+    await expect(
+      spacingErrors(
         'export const first = 1;\nexport const second = 2;\nconsole.log(first, second);',
       ),
-    ).toHaveLength(1);
+    ).resolves.toHaveLength(1);
   });
 
   it('requires spacing before a return following another statement', async () => {
-    expect(
-      await spacingErrors('function read() {\nconsole.log(1);\nreturn 1;\n}'),
-    ).toHaveLength(1);
-    expect(
-      await spacingErrors('function read() {\nconsole.log(1);\n\nreturn 1;\n}'),
-    ).toEqual([]);
+    await expect(
+      spacingErrors('function read() {\nconsole.log(1);\nreturn 1;\n}'),
+    ).resolves.toHaveLength(1);
+    await expect(
+      spacingErrors('function read() {\nconsole.log(1);\n\nreturn 1;\n}'),
+    ).resolves.toStrictEqual([]);
   });
 
   it('does not add spacing to a return-only function', async () => {
-    expect(await spacingErrors('function read() {\nreturn 1;\n}')).toEqual([]);
-    expect(await spacingErrors('const read = () => 1;')).toEqual([]);
+    await expect(
+      spacingErrors('function read() {\nreturn 1;\n}'),
+    ).resolves.toStrictEqual([]);
+    await expect(spacingErrors('const read = () => 1;')).resolves.toStrictEqual(
+      [],
+    );
   });
 
   it('automatically fixes spacing around declarations and before returns', async () => {

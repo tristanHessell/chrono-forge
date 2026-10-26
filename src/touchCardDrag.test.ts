@@ -41,6 +41,7 @@ describe('touch card dragging', () => {
     drag.start(pointer(), 'event');
     drag.move(pointer({ clientX: 102, clientY: 402 }));
     drag.end(pointer());
+
     expect(target.setPointerCapture).toHaveBeenCalledWith(1);
     expect(target.releasePointerCapture).toHaveBeenCalledWith(1);
     expect(callbacks.onStart).not.toHaveBeenCalled();
@@ -57,21 +58,24 @@ describe('touch card dragging', () => {
 
       drag.start(pointer({ pointerType }), 'event');
       drag.move(move);
+
       expect(callbacks.onStart).toHaveBeenCalledExactlyOnceWith(
         'event',
         'hand',
       );
       expect(callbacks.onMove).toHaveBeenCalledWith({ x: 100, y: 390 });
-      expect(move.preventDefault).toHaveBeenCalledOnce();
+      expect(move.preventDefault).toHaveBeenCalledExactlyOnceWith();
+
       drag.move(pointer({ clientY: 300 }));
       drag.end(pointer({ clientX: 150, clientY: 200 }));
-      expect(callbacks.onStart).toHaveBeenCalledOnce();
+
+      expect(callbacks.onStart).toHaveBeenCalledExactlyOnceWith();
       expect(callbacks.onDrop).toHaveBeenCalledExactlyOnceWith(
         'event',
         'hand',
         { x: 150, y: 200 },
       );
-      expect(callbacks.onFinish).toHaveBeenCalledOnce();
+      expect(callbacks.onFinish).toHaveBeenCalledExactlyOnceWith();
       expect(drag.tracking).toBe(false);
       expect(drag.consumeClick()).toBe(true);
       expect(drag.consumeClick()).toBe(false);
@@ -89,6 +93,7 @@ describe('touch card dragging', () => {
       drag.start(pointer(changes), 'event');
       drag.move(pointer({ clientY: 200 }));
       drag.end(pointer());
+
       expect(callbacks.onStart).not.toHaveBeenCalled();
       expect(callbacks.onDrop).not.toHaveBeenCalled();
       expect(target.setPointerCapture).not.toHaveBeenCalled();
@@ -100,16 +105,21 @@ describe('touch card dragging', () => {
 
     drag.start(pointer(), 'pending-event', 'pending');
     drag.move(pointer({ pointerId: 2, clientY: 200 }));
+
     expect(callbacks.onStart).not.toHaveBeenCalled();
+
     drag.move(pointer({ clientY: 200 }));
     drag.cancel(2);
+
     expect(drag.tracking).toBe(true);
+
     drag.cancel(1);
     drag.cancel(1);
+
     expect(callbacks.onStart).toHaveBeenCalledWith('pending-event', 'pending');
     expect(callbacks.onDrop).not.toHaveBeenCalled();
-    expect(callbacks.onFinish).toHaveBeenCalledOnce();
-    expect(target.releasePointerCapture).toHaveBeenCalledOnce();
+    expect(callbacks.onFinish).toHaveBeenCalledExactlyOnceWith();
+    expect(target.releasePointerCapture).toHaveBeenCalledExactlyOnceWith();
   });
 
   it('uses current callbacks after highlighting causes a render', () => {
@@ -120,9 +130,12 @@ describe('touch card dragging', () => {
     drag.move(pointer({ clientY: 200 }));
     drag.updateCallbacks({ ...callbacks, onDrop });
     drag.end(pointer({ clientY: 200 }));
-    expect(onDrop).toHaveBeenCalledOnce();
+
+    expect(onDrop).toHaveBeenCalledExactlyOnceWith();
     expect(callbacks.onDrop).not.toHaveBeenCalled();
+
     drag.resetClickSuppression();
+
     expect(drag.consumeClick()).toBe(false);
   });
 });
@@ -148,7 +161,7 @@ describe('touch destinations', () => {
   ];
 
   it('accepts only legal destinations for the dragged card', () => {
-    expect(touchDropPosition(played, card, '-1:0')).toEqual({
+    expect(touchDropPosition(played, card, '-1:0')).toStrictEqual({
       row: -1,
       column: 0,
     });
@@ -175,9 +188,9 @@ describe('touch destinations', () => {
     expect(
       touchDropPosition(board, { ...card, number: 1930 }, '-2:0'),
     ).toBeNull();
-    expect(touchDropPosition(board, { ...card, number: 1950 }, '-2:0')).toEqual(
-      { row: -2, column: 0 },
-    );
+    expect(
+      touchDropPosition(board, { ...card, number: 1950 }, '-2:0'),
+    ).toStrictEqual({ row: -2, column: 0 });
   });
 
   it('supports valid overwrites and empty positions beside removed cards', () => {
@@ -186,12 +199,12 @@ describe('touch destinations', () => {
       { ...card, row: -1, column: 0, placedAt: 1, owner: '0', removed: true },
     ];
 
-    expect(touchDropPosition(board, card, '-1:0')).toEqual({
+    expect(touchDropPosition(board, card, '-1:0')).toStrictEqual({
       row: -1,
       column: 0,
     });
-    expect(touchDropPosition(board, { ...card, number: 1950 }, '-2:0')).toEqual(
-      { row: -2, column: 0 },
-    );
+    expect(
+      touchDropPosition(board, { ...card, number: 1950 }, '-2:0'),
+    ).toStrictEqual({ row: -2, column: 0 });
   });
 });

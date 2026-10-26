@@ -12,7 +12,7 @@ function shuffle<T>(cards: T[]): T[] {
   return cards;
 }
 
-describe('RoundScoresDialog', () => {
+describe(RoundScoresDialog, () => {
   const setupGame = (): CardGameState => ({
     ...CardGame.setup!({
       ctx: { numPlayers: 2 },
@@ -39,11 +39,11 @@ describe('RoundScoresDialog', () => {
 
     await expect.element(body).toMatchTextContent('Round scores');
     expect(
-      page.getByCSS('button').filter({ hasText: 'Round points' }).length,
-    ).toBe(1);
+      page.getByCSS('button').filter({ hasText: 'Round points' }),
+    ).toHaveLength(1);
     expect(
-      page.getByCSS('button').filter({ hasText: 'Cumulative' }).length,
-    ).toBe(1);
+      page.getByCSS('button').filter({ hasText: 'Cumulative' }),
+    ).toHaveLength(1);
     await expect.element(body).toMatchTextContent('You');
     await expect.element(body).toMatchTextContent('Sally');
     await expect.element(body).toMatchTextContent('Round 1');
@@ -124,7 +124,8 @@ describe('RoundScoresDialog', () => {
       </IntlProvider>,
     );
 
-    expect(page.getByCSS('th[scope="col"]').length).toBe(5);
+    expect(page.getByCSS('th[scope="col"]')).toHaveLength(5);
+
     for (const [index, name] of ['You', 'Sally', 'Barry', 'Morgan'].entries()) {
       await expect
         .element(page.getByCSS('th[scope="col"]').nth(index + 1))

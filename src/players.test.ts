@@ -15,7 +15,7 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
     const G = client.getState()!.G;
 
     expect(G.playerIds).toHaveLength(numPlayers);
-    expect(Object.values(G.hands).map((hand) => hand.length)).toEqual(
+    expect(Object.values(G.hands).map((hand) => hand.length)).toStrictEqual(
       Array(numPlayers).fill(5),
     );
     expect(G.deck).toHaveLength(46 - numPlayers * 5);
@@ -32,22 +32,31 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
     for (let id = 0; id < numPlayers; id += 1) {
       expect(client.getState()!.ctx.currentPlayer).toBe(String(id));
       expect(client.getState()!.G.round).toBe(1);
+
       client.moves.discardCard(client.getState()!.G.hands[id][0].id);
+
       expect(client.getState()!.ctx.currentPlayer).toBe(String(id));
       expect(client.getState()!.G.actionsThisTurn).toBe(1);
+
       client.moves.discardCard(client.getState()!.G.hands[id][0].id);
+
       expect(client.getState()!.G.hands[id]).toHaveLength(5);
     }
+
     expect(client.getState()!.ctx.currentPlayer).toBe('0');
     expect(client.getState()!.G.round).toBe(2);
 
     const after = client.getState()!.G;
 
     expect(canUndoMove(after)).toBe(false);
+
     client.moves.undoTest();
-    expect(client.getState()!.G).toEqual(after);
+
+    expect(client.getState()!.G).toStrictEqual(after);
+
     client.moves.redoTest();
-    expect(client.getState()!.G).toEqual(after);
+
+    expect(client.getState()!.G).toStrictEqual(after);
   });
 
   it('skips empty seats and waits for every hand before ending', () => {
@@ -82,13 +91,16 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
     });
 
     client.moves.discardCard('last-0');
+
     expect(client.getState()!.ctx.currentPlayer).toBe('2');
     expect(client.getState()!.G.roundOver).toBe(false);
+
     client.moves.discardCard('last-2');
 
     if (numPlayers === 4) {
       expect(client.getState()!.G.roundOver).toBe(false);
       expect(client.getState()!.ctx.currentPlayer).toBe('3');
+
       client.moves.discardCard('last-3');
     }
 
@@ -144,23 +156,29 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
     client.moves.playCard(before.hands['0'][0].id, { row: 0, column: 1 });
     client.moves.discardCard(before.hands['0'][0].id);
-    expect(client.getState()!.G).toEqual(before);
+
+    expect(client.getState()!.G).toStrictEqual(before);
+
     client.moves.playCard('effect', { row: 0, column: 1 });
+
     expect(client.getState()!.G.pending?.owner).toBe(owner);
+
     client.moves.confirmPlacement();
-    expect(client.getState()!.G.hands[owner].map((card) => card.id)).toEqual([
-      'spare',
-      'drawn',
-    ]);
+
+    expect(
+      client.getState()!.G.hands[owner].map((card) => card.id),
+    ).toStrictEqual(['spare', 'drawn']);
     expect(
       calculateScoreBreakdown(client.getState()!.G.played)[owner]?.total ?? 0,
     ).toBe(1);
-    expect(client.getState()!.G.hands['0']).toEqual(before.hands['0']);
+    expect(client.getState()!.G.hands['0']).toStrictEqual(before.hands['0']);
 
     const after = client.getState()!;
 
     expect(canUndoMove(after.G)).toBe(false);
+
     client.moves.undoTest();
-    expect(client.getState()!.G).toEqual(after.G);
+
+    expect(client.getState()!.G).toStrictEqual(after.G);
   });
 });

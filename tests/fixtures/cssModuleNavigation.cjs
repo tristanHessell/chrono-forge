@@ -1,3 +1,5 @@
+/* global Buffer, process */
+
 const { spawn } = require('node:child_process');
 const { readFileSync } = require('node:fs');
 const path = require('node:path');
@@ -93,18 +95,16 @@ async function checkNavigation() {
       throw new Error(`Missing CSS definition for ${name}`);
     }
 
+    const definitionFile = readFileSync(definition.file, 'utf8').split('\n');
+
     definitions.push({
       name,
       file: path.relative(directory, definition.file),
-      cssLine: readFileSync(definition.file, 'utf8')
-        .split('\n')
-        [definition.start.line - 1].trim(),
-      cssClass: readFileSync(definition.file, 'utf8')
-        .split('\n')
-        [definition.start.line - 1].slice(
-          definition.start.offset - 1,
-          definition.end.offset - 1,
-        ),
+      cssLine: definitionFile[definition.start.line - 1].trim(),
+      cssClass: definitionFile[definition.start.line - 1].slice(
+        definition.start.offset - 1,
+        definition.end.offset - 1,
+      ),
     });
   }
 
