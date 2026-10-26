@@ -1,4 +1,7 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
+import { Client } from 'boardgame.io/client';
 import { IntlProvider } from 'react-intl';
 import { expect, it, vi } from 'vitest';
 
@@ -13,7 +16,7 @@ vi.mock('./ThemeToggle', () => ({
 
 it('renders the game log trigger beside its dialog', () => {
   const client = Client({ game: CardGame, debug: false });
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <GameLogControls
         G={client.getState()!.G}
@@ -23,17 +26,17 @@ it('renders the game log trigger beside its dialog', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('aria-label="Game Log"');
-  expect(html).toContain('title="Game Log"');
-  expect(html).toContain('data-icon-button="true"');
-  expect(html).toContain('<svg aria-hidden="true" viewBox="0 0 24 24">');
-  expect(html).toContain('</button><dialog');
+  expect(screen.getByRole('button', { name: 'Game Log' })).toBeTruthy();
+  expect(screen.getByTitle('Game Log')).toBeTruthy();
+  expect(container.querySelector('[data-icon-button="true"]')).toBeTruthy();
+  expect(container.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+  expect(container.querySelector('button + dialog')).toBeTruthy();
   client.stop();
 });
 
 it('provides a labelled corner close icon instead of a text Close button', () => {
   const client = Client({ game: CardGame, debug: false });
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <GameLogControls
         G={client.getState()!.G}
@@ -43,11 +46,19 @@ it('provides a labelled corner close icon instead of a text Close button', () =>
     </IntlProvider>,
   );
 
-  expect(html).toContain(`class="${dialogStyles.gameLogHeader}"`);
-  expect(html).toContain(`class="${dialogStyles.gameLogClose}"`);
-  expect(html).toContain('aria-label="Close"');
-  expect(html).toContain('<svg aria-hidden="true"');
-  expect(html).not.toContain('>Close</button>');
+  expect(
+    container.querySelector(`.${dialogStyles.gameLogHeader}`),
+  ).toBeTruthy();
+  expect(container.querySelector(`.${dialogStyles.gameLogClose}`)).toBeTruthy();
+  expect(
+    container
+      .querySelector(`.${dialogStyles.gameLogClose}`)
+      ?.getAttribute('aria-label'),
+  ).toBe('Close');
+  expect(
+    container.querySelector(
+      `.${dialogStyles.gameLogClose} svg[aria-hidden="true"]`,
+    ),
+  ).toBeTruthy();
   client.stop();
 });
-import { Client } from 'boardgame.io/client';

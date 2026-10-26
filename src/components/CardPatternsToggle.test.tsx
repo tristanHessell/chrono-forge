@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { afterEach, expect, it, vi } from 'vitest';
 
@@ -12,14 +14,15 @@ it.each(['on', 'off', null])(
   (value) => {
     vi.stubGlobal('localStorage', { getItem: () => value });
 
-    const html = renderToStaticMarkup(
+    render(
       <IntlProvider locale="en" messages={messages}>
         <CardPatternsToggle />
       </IntlProvider>,
     );
 
-    expect(html).toContain('Colour-independent backgrounds');
-    expect(html).toContain('type="checkbox"');
-    expect(html.includes('checked=""')).toBe(value === 'on');
+    expect(screen.getByText('Colour-independent backgrounds')).toBeTruthy();
+    expect(screen.getByRole<HTMLInputElement>('checkbox').checked).toBe(
+      value === 'on',
+    );
   },
 );

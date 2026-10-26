@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -9,7 +11,7 @@ import { CardHand } from './CardHand';
 it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
   'renders %s without an Event date or category',
   (action) => {
-    const html = renderToStaticMarkup(
+    const { container } = render(
       <IntlProvider locale="en" messages={messages}>
         <CardHand
           cards={[{ id: 'test', type: 'manipulation', action }]}
@@ -30,16 +32,22 @@ it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
       </IntlProvider>,
     );
 
-    expect(html).toContain('data-card-type="manipulation"');
-    expect(html).toContain(messages[`manipulation.${action}.name`]);
-    expect(html).toContain(`class="${cardStyles.manipulationName}"`);
-    expect(html).toContain(
-      renderToStaticMarkup(
-        <>{messages[`manipulation.${action}.description`]}</>,
-      ),
-    );
-    expect(html).not.toContain('hand-corner-number');
-    expect(html).not.toContain('data-event-category');
-    expect(html).not.toContain('NaN');
+    expect(
+      screen.getByText(messages[`manipulation.${action}.name`]),
+    ).toBeTruthy();
+    expect(
+      container
+        .querySelector('[aria-description]')
+        ?.getAttribute('aria-description'),
+    ).toContain(messages[`manipulation.${action}.description`]);
+    expect(
+      container.querySelector('[data-card-type="manipulation"]'),
+    ).toBeTruthy();
+    expect(
+      container.querySelector(`.${cardStyles.manipulationName}`),
+    ).toBeTruthy();
+    expect(container.querySelector('.hand-corner-number')).toBeNull();
+    expect(container.querySelector('[data-event-category]')).toBeNull();
+    expect(screen.queryByText('NaN')).toBeNull();
   },
 );

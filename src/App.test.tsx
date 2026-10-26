@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { Client } from 'boardgame.io/client';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { afterEach, expect, it, vi } from 'vitest';
 
@@ -14,15 +16,15 @@ afterEach(() => {
 });
 
 it('shows the title screen without creating a game session', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <App />
     </IntlProvider>,
   );
 
-  expect(html).toContain('<h1>Chrono-Forge</h1>');
-  expect(html).toContain('>Start a new game</button>');
-  expect(html).not.toContain('aria-label="Card table"');
+  expect(screen.getByRole('heading', { name: 'Chrono-Forge' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Start a new game' })).toBeTruthy();
+  expect(screen.queryByLabelText('Card table')).toBeNull();
 });
 
 it('offers to continue the saved game from the title screen', () => {
@@ -48,11 +50,11 @@ it('offers to continue the saved game from the title screen', () => {
         : null,
   });
 
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <App />
     </IntlProvider>,
   );
 
-  expect(html).toContain('>Continue game</button>');
+  expect(screen.getByRole('button', { name: 'Continue game' })).toBeTruthy();
 });

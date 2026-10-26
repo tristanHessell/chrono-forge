@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -21,7 +23,7 @@ it.each(['political', 'technological', 'environmental'] as const)(
       owner: '0',
       placedAt: 1,
     };
-    const html = renderToStaticMarkup(
+    const { container } = render(
       <IntlProvider locale="en" messages={messages}>
         <PlayedCard card={card} style={{}} links={null} isLatest />
         <PlacementSlot
@@ -38,10 +40,12 @@ it.each(['political', 'technological', 'environmental'] as const)(
     );
 
     expect(
-      html.match(new RegExp(`data-event-category="${category}"`, 'g')),
+      container.querySelectorAll(`[data-event-category="${category}"]`),
     ).toHaveLength(2);
-    expect(html).toContain(messages[`card.category.${category}`]);
-    expect(html.match(/Imperial Alliances/g)).toHaveLength(3);
-    expect(html).toContain('placed by you');
+    expect(
+      screen.getAllByText(messages[`card.category.${category}`]),
+    ).not.toHaveLength(0);
+    expect(screen.getAllByText('Imperial Alliances')).toHaveLength(2);
+    expect(screen.getByRole('img', { name: /placed by you/ })).toBeTruthy();
   },
 );

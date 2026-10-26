@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { Client } from 'boardgame.io/client';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -54,41 +56,46 @@ it('summarises actor, card, coordinates, refill draws, turn changes and history 
   expect(items[1].drawn.length).toBeGreaterThan(0);
   expect(client.getState()).toEqual(before);
 
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <GameLogView log={log} />
     </IntlProvider>,
   );
 
-  expect(html).toContain('You');
-  expect(html).toContain(logStyles.logPlayerReference);
-  expect(html).toContain(ownershipStyles.owner0);
-  expect(html).toContain(ownershipStyles.owner1);
-  expect(html).not.toContain('Player 1');
-  expect(html).not.toContain('Selected');
-  expect(html).toContain('Confirmed');
-  expect(html).toContain('Discarded');
-  expect(html).not.toContain('Drew:');
-  expect(html.split(`class="${logStyles.logCardReference}"`)).toHaveLength(3);
-  expect(html).not.toContain('Undid');
-  expect(html).not.toContain('Redid');
-  expect(html).not.toContain('MAKE_MOVE');
-  expect(html).not.toContain(event.id);
+  expect(screen.getAllByText('You')).not.toHaveLength(0);
+  expect(
+    container.querySelector(`.${logStyles.logPlayerReference.split(' ')[0]}`),
+  ).toBeTruthy();
+  expect(container.querySelector(`.${ownershipStyles.owner0}`)).toBeTruthy();
+  expect(container.querySelector(`.${ownershipStyles.owner1}`)).toBeTruthy();
+  expect(screen.queryByText('Player 1')).toBeNull();
+  expect(screen.queryByText('Selected')).toBeNull();
+  expect(screen.getByText(/Confirmed/)).toBeTruthy();
+  expect(screen.getByText(/Discarded/)).toBeTruthy();
+  expect(screen.queryByText('Drew:')).toBeNull();
+  expect(
+    container.querySelectorAll(`.${logStyles.logCardReference.split(' ')[0]}`),
+  ).toHaveLength(2);
+  expect(screen.queryByText('Undid')).toBeNull();
+  expect(screen.queryByText('Redid')).toBeNull();
+  expect(screen.queryByText('MAKE_MOVE')).toBeNull();
+  expect(screen.queryByText(event.id)).toBeNull();
   client.stop();
 });
 
 it('shows seed, player count and an empty-state message before the first action', () => {
   const log = parseGameLog(exportGameLog('initial-seed', 4));
-  const html = renderToStaticMarkup(
+
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameLogView log={log} />
     </IntlProvider>,
   );
 
   expect(summarizeGameLog(log)).toEqual([]);
-  expect(html).toContain('initial-seed');
-  expect(html).toContain('No actions yet.');
-  expect(html).toContain('You</strong> takes the first turn.');
+  expect(screen.getByText('initial-seed')).toBeTruthy();
+  expect(screen.getByText('No actions yet.')).toBeTruthy();
+  expect(screen.getByText(/takes the first turn/)).toBeTruthy();
 });
 
 it.each(['time-jump', 'time-swap', 'take-control'] as const)(
@@ -114,24 +121,28 @@ it.each(['time-jump', 'time-swap', 'take-control'] as const)(
 
     const state = client.getState()!;
     const log = currentGameLog(setup.seed, state.G, state.ctx.currentPlayer);
-    const html = renderToStaticMarkup(
+    const { container } = render(
       <IntlProvider locale="en" messages={messages}>
         <GameLogView log={log} />
       </IntlProvider>,
     );
 
     expect(log.actions).toHaveLength(5);
-    expect(html.split(`class="${logStyles.logCardReference}"`)).toHaveLength(
-      action === 'time-swap' ? 9 : 8,
-    );
-    expect(html).toMatch(
-      /<strong[^>]*data-card-type="manipulation"[^>]*>Remove Event<\/strong>/,
-    );
-    expect(html).toContain(
-      `>${messages[`manipulation.${action}.name`]}</strong>`,
-    );
-    expect(html).not.toContain('Drew:');
-    expect(html).not.toContain('a card');
+    expect(
+      container.querySelectorAll(
+        `.${logStyles.logCardReference.split(' ')[0]}`,
+      ),
+    ).toHaveLength(action === 'time-swap' ? 8 : 7);
+
+    expect(
+      container.querySelector('strong[data-card-type="manipulation"]'),
+    ).toBeTruthy();
+    expect(screen.getByText('Remove Event')).toBeTruthy();
+    expect(
+      screen.getByText(messages[`manipulation.${action}.name`]),
+    ).toBeTruthy();
+    expect(screen.queryByText('Drew:')).toBeNull();
+    expect(screen.queryByText('a card')).toBeNull();
     client.stop();
   },
 );

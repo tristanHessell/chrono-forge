@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -65,21 +67,23 @@ it('uses the same card back artwork for the deck and computer hands', () => {
 });
 
 it('renders board card states and effect icons with their scoped classes', () => {
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <PlayedCard card={card} style={{}} links={null} isLatest />
     </IntlProvider>,
   );
 
-  expect(html).toContain(cardStyles.card);
-  expect(html).toContain(playedStyles.latestCard);
-  expect(html).toContain(effectStyles.cardEffect);
-  expect(html).toContain(cardStyles.cardEventName);
-  expect(html).toContain('Atomic Age');
+  expect(
+    container.querySelector(`.${cardStyles.card.split(' ')[0]}`),
+  ).toBeTruthy();
+  expect(container.querySelector(`.${playedStyles.latestCard}`)).toBeTruthy();
+  expect(container.querySelector(`.${effectStyles.cardEffect}`)).toBeTruthy();
+  expect(container.querySelector(`.${cardStyles.cardEventName}`)).toBeTruthy();
+  expect(screen.getByText('Atomic Age')).toBeTruthy();
 });
 
 it('renders three card effects in a vertical stack', () => {
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <PlayedCard
         card={{
@@ -93,14 +97,16 @@ it('renders three card effects in a vertical stack', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain(effectStyles.cardEffects);
-  expect(html.match(new RegExp(effectStyles.cardEffect, 'g'))).toHaveLength(3);
+  expect(container.querySelector(`.${effectStyles.cardEffects}`)).toBeTruthy();
+  expect(
+    container.querySelectorAll(`.${effectStyles.cardEffect}`),
+  ).toHaveLength(3);
 });
 
 it.each(['0', '1', '2', '3', 'neutral'] as const)(
   'keeps the scoped ownership style for %s',
   (owner) => {
-    const html = renderToStaticMarkup(
+    const { container } = render(
       <IntlProvider locale="en" messages={messages}>
         <PlayedCard
           card={{ ...card, owner }}
@@ -116,12 +122,12 @@ it.each(['0', '1', '2', '3', 'neutral'] as const)(
         : ownerStyles[`owner${owner}`];
 
     expect(expected).toBeTruthy();
-    expect(html).toContain(expected);
+    expect(container.querySelector(`.${expected.split(' ')[0]}`)).toBeTruthy();
   },
 );
 
 it('preserves scoped preview styles and a stable drop target', () => {
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <PlacementSlot
         ariaLabel="Place here"
@@ -137,10 +143,19 @@ it('preserves scoped preview styles and a stable drop target', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain(slotStyles.snapPreview);
-  expect(html).toContain(slotStyles.releaseLabel);
-  expect(html).toContain(appearanceStyles.appearance);
-  expect(html).toContain('data-drop-position="1:0"');
-  expect(html).toContain('data-placement-slot="true"');
-  expect(html).toContain('data-event-category="technological"');
+  expect(
+    container.querySelector(`[data-drop-position="1:0"][data-placement-slot]`),
+  ).toBeTruthy();
+  expect(
+    container.querySelector('[data-event-category="technological"]'),
+  ).toBeTruthy();
+  expect(
+    container.querySelector(`.${slotStyles.snapPreview.split(' ')[0]}`),
+  ).toBeTruthy();
+  expect(
+    container.querySelector(`.${slotStyles.releaseLabel.split(' ')[0]}`),
+  ).toBeTruthy();
+  expect(
+    container.querySelector(`.${appearanceStyles.appearance.split(' ')[0]}`),
+  ).toBeTruthy();
 });

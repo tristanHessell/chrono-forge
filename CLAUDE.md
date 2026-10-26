@@ -169,6 +169,9 @@ The boardgame.io developer panel uses the library's own English text.
 ### Tests
 
 Keep unit tests beside the source in `*.test.ts` or `*.test.tsx` files.
+Render React components with Testing Library in a DOM environment.
+Assert on roles, accessible names, and visible text instead of static markup.
+Query the DOM directly only for attributes and styles that users cannot access.
 Vitest processes CSS modules to test scoped classes and shared compositions.
 The `tests/` directory contains tests for the quality tools.
 Add regression tests for changes to placement rules, Manipulations, scoring, turns, or replay behaviour.

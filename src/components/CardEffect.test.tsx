@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -6,24 +8,23 @@ import messages from '../i18n/en.json';
 import { CardEffect } from './CardEffect';
 
 it('shows effect icons without hover tooltips', () => {
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <CardEffect effect="draw-one" />
     </IntlProvider>,
   );
 
-  expect(html).toContain('role="img"');
-  expect(html).toContain('aria-label="Draw one card"');
-  expect(html).not.toContain('role="tooltip"');
-  expect(html).not.toContain('data-tooltip-enabled');
+  expect(screen.getByRole('img', { name: 'Draw one card' })).toBeTruthy();
+  expect(container.querySelector('[role="tooltip"]')).toBeNull();
+  expect(container.querySelector('[data-tooltip-enabled]')).toBeNull();
 });
 
 it('shows the free action label', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <CardEffect effect="free-action" />
     </IntlProvider>,
   );
 
-  expect(html).toContain('aria-label="Free action"');
+  expect(screen.getByRole('img', { name: 'Free action' })).toBeTruthy();
 });

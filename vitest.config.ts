@@ -8,6 +8,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       css: { include: [/\.module\.css$/] },
+      setupFiles: ['./tests/setup.ts'],
     },
   }),
 );

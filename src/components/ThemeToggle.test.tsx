@@ -1,29 +1,42 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { afterEach, expect, it, vi } from 'vitest';
 
 import messages from '../i18n/en.json';
 import { ThemeToggle } from './ThemeToggle';
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  delete document.documentElement.dataset.theme;
+  vi.unstubAllGlobals();
+});
 
 it.each(['light', 'dark', 'greyscale-light', 'greyscale-dark'])(
   'shows four labelled choices with %s selected',
   (theme) => {
-    vi.stubGlobal('document', { documentElement: { dataset: { theme } } });
+    vi.stubGlobal('matchMedia', () => ({
+      addEventListener: vi.fn(),
+      matches: false,
+      removeEventListener: vi.fn(),
+    }));
+    document.documentElement.dataset.theme = theme;
 
-    const html = renderToStaticMarkup(
+    render(
       <IntlProvider locale="en" messages={messages}>
         <ThemeToggle />
       </IntlProvider>,
     );
 
-    expect(html).toContain('aria-label="Theme"');
-    expect(html).toContain('>Light</option>');
-    expect(html).toContain('>Dark</option>');
-    expect(html).toContain('>Greyscale Light</option>');
-    expect(html).toContain('>Greyscale Dark</option>');
-    expect(html).toContain(`value="${theme}" selected=""`);
-    expect(html).not.toContain('aria-pressed');
+    const themeSelect = screen.getByRole('combobox', { name: 'Theme' });
+
+    expect(screen.getByRole('option', { name: 'Light' })).toBeTruthy();
+    expect(screen.getByRole('option', { name: 'Dark' })).toBeTruthy();
+    expect(
+      screen.getByRole('option', { name: 'Greyscale Light' }),
+    ).toBeTruthy();
+    expect(screen.getByRole('option', { name: 'Greyscale Dark' })).toBeTruthy();
+    expect((themeSelect as HTMLSelectElement).value).toBe(theme);
+    expect(screen.queryByRole('button', { name: 'Theme' })).toBeNull();
   },
 );

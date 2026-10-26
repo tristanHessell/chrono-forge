@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -12,7 +14,7 @@ it.each([
 ] as const)(
   'renders accessible floating controls at zoom %s',
   (zoom, percent, disabled) => {
-    const html = renderToStaticMarkup(
+    render(
       <IntlProvider locale="en" messages={messages}>
         <BoardZoomControls
           boardZoom={zoom}
@@ -23,19 +25,31 @@ it.each([
       </IntlProvider>,
     );
 
-    expect(html).toContain('role="group"');
-    expect(html).toContain('aria-label="Board zoom controls"');
-    expect(html).toContain('aria-label="Zoom out"');
-    expect(html).toContain('aria-label="Zoom in"');
-    expect(html).toContain('aria-label="Reset board zoom"');
-    expect(html).toContain('aria-label="Fit all"');
-    expect(html).toContain('>Fit all</button>');
-    expect(html).toContain(`>${percent}</button>`);
+    expect(
+      screen.getByRole('group', { name: 'Board zoom controls' }),
+    ).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Zoom out' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Zoom in' })).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: 'Reset board zoom' }),
+    ).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Fit all' })).toBeTruthy();
+    expect(screen.getByText(percent)).toBeTruthy();
 
     if (disabled) {
-      expect(html).toContain(`aria-label="${disabled}" disabled=""`);
+      expect(
+        screen.getByRole<HTMLButtonElement>('button', { name: disabled })
+          .disabled,
+      ).toBe(true);
     } else {
-      expect(html).not.toContain('disabled=""');
+      expect(
+        screen.getByRole<HTMLButtonElement>('button', { name: 'Zoom out' })
+          .disabled,
+      ).toBe(false);
+      expect(
+        screen.getByRole<HTMLButtonElement>('button', { name: 'Zoom in' })
+          .disabled,
+      ).toBe(false);
     }
   },
 );

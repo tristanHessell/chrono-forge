@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -7,7 +9,7 @@ import messages from '../i18n/en.json';
 import { CardDetailsDialog } from './CardDetailsDialog';
 
 function renderCardDetails(card: Card) {
-  return renderToStaticMarkup(
+  return render(
     <IntlProvider locale="en" messages={messages}>
       <CardDetailsDialog card={card} onClose={() => {}} />
     </IntlProvider>,
@@ -15,7 +17,7 @@ function renderCardDetails(card: Card) {
 }
 
 it('shows the date and every effect description in one dialog', () => {
-  const html = renderCardDetails({
+  renderCardDetails({
     id: 'test-event',
     type: 'event',
     category: 'technological',
@@ -24,25 +26,32 @@ it('shows the date and every effect description in one dialog', () => {
     effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
   });
 
-  expect(html).toContain('<h2 id=');
-  expect(html).toContain('Internet Expansion');
-  expect(html).toContain('<dt>Year</dt><dd>1990</dd>');
-  expect(html).toContain('<dt>Type</dt><dd>Tech</dd>');
-  expect(html).toContain('Draw one card');
-  expect(html).toContain('When you confirm this Event card, draw one card');
-  expect(html).toContain('Free action');
-  expect(html).toContain('1900 timeline bonus');
-  expect(html).toContain('<dialog');
+  expect(
+    screen.getByRole('heading', { level: 2, name: 'Internet Expansion' }),
+  ).toBeTruthy();
+  expect(screen.getByText('Year', { selector: 'dt' })).toBeTruthy();
+  expect(screen.getByText('1990', { selector: 'dd' })).toBeTruthy();
+  expect(screen.getByText('Type', { selector: 'dt' })).toBeTruthy();
+  expect(screen.getByText('Tech', { selector: 'dd' })).toBeTruthy();
+  expect(screen.getByText('Draw one card')).toBeTruthy();
+  expect(
+    screen.getByText(/When you confirm this Event card, draw one card/),
+  ).toBeTruthy();
+  expect(screen.getByText('Free action')).toBeTruthy();
+  expect(screen.getByText('1900 timeline bonus')).toBeTruthy();
+  expect(screen.getByRole('dialog')).toBeTruthy();
 });
 
 it('shows the Command action description as its effect', () => {
-  const html = renderCardDetails({
+  renderCardDetails({
     id: 'test-command',
     type: 'manipulation',
     action: 'time-jump',
   });
 
-  expect(html).toContain('Time Jump');
-  expect(html).toContain('<dt>Type</dt><dd>Command</dd>');
-  expect(html).toContain('The entire board must remain legal.');
+  expect(
+    screen.getByRole('heading', { level: 2, name: 'Time Jump' }),
+  ).toBeTruthy();
+  expect(screen.getByText('Command', { selector: 'dd' })).toBeTruthy();
+  expect(screen.getByText(/The entire board must remain legal/)).toBeTruthy();
 });

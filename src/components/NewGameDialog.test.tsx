@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { createRef } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -8,22 +10,28 @@ import { createDefaultPlayers } from '../playerSetup';
 import { NewGameDialog } from './NewGameDialog';
 
 it('starts with one human and one named computer', () => {
-  const html = renderToStaticMarkup(
+  const dialogRef = createRef<HTMLDialogElement>();
+
+  render(
     <IntlProvider locale="en" messages={messages}>
       <NewGameDialog
-        dialogRef={createRef()}
+        dialogRef={dialogRef}
         initialPlayers={createDefaultPlayers()}
         onStart={() => {}}
       />
     </IntlProvider>,
   );
 
-  expect(html).toContain('>You</strong>');
-  expect(html).toContain('>Sally</strong>');
-  expect(html).toContain('aria-label="You, human"');
-  expect(html).toContain('aria-label="Sally, AI"');
-  expect(html).toContain('<option value="computer" selected="">AI</option>');
-  expect(html).toContain('>Add player</button>');
-  expect(html).toContain('>Start game</button>');
-  expect(html).not.toContain('Remove Sally');
+  dialogRef.current?.showModal();
+
+  expect(screen.getByText('You', { selector: 'strong' })).toBeTruthy();
+  expect(screen.getByText('Sally', { selector: 'strong' })).toBeTruthy();
+  expect(screen.getByLabelText('You, human')).toBeTruthy();
+  expect(screen.getByLabelText('Sally, AI')).toBeTruthy();
+  expect(screen.getByRole<HTMLSelectElement>('combobox').value).toBe(
+    'computer',
+  );
+  expect(screen.getByRole('button', { name: 'Add player' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Start game' })).toBeTruthy();
+  expect(screen.queryByRole('button', { name: 'Remove Sally' })).toBeNull();
 });

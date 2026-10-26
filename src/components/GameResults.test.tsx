@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -7,14 +9,16 @@ import messages from '../i18n/en.json';
 import { GameResults } from './GameResults';
 
 it('shows a tie when neither player scored', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameResults played={[]} />
     </IntlProvider>,
   );
 
-  expect(html).toContain('it&#x27;s a tie!');
-  expect(html).toContain('0 card points + 0 bonus points = 0 total');
+  expect(screen.getByText(/it's a tie!/)).toBeTruthy();
+  expect(
+    screen.getAllByText(/0 card points \+ 0 bonus points = 0 total/),
+  ).not.toHaveLength(0);
 });
 
 it.each(['0', '1', '2', '3'] as const)(
@@ -30,18 +34,25 @@ it.each(['0', '1', '2', '3'] as const)(
       placedAt: 1,
       owner,
     };
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <GameResults played={[card]} playerIds={['0', '1', '2', '3']} />
       </IntlProvider>,
     );
 
-    expect(html).toContain(
-      owner === '0'
-        ? 'you win!'
-        : `${['Sally', 'Barry', 'Morgan'][Number(owner) - 1]} wins!`,
-    );
-    expect(html).toContain('1 card point + 0 bonus points = 1 total');
+    expect(
+      screen.getByText(
+        owner === '0'
+          ? /you win!/
+          : new RegExp(
+              `${['Sally', 'Barry', 'Morgan'][Number(owner) - 1]} wins!`,
+            ),
+      ),
+    ).toBeTruthy();
+    expect(
+      screen.getByText(/1 card point \+ 0 bonus points = 1 total/),
+    ).toBeTruthy();
   },
 );
 
@@ -56,22 +67,23 @@ it('names only the tied leaders in a four-player game', () => {
     placedAt: Number(owner),
     owner,
   }));
-  const html = renderToStaticMarkup(
+
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameResults played={played} playerIds={['0', '1', '2', '3']} />
     </IntlProvider>,
   );
 
-  expect(html).toContain('it&#x27;s a tie! (Barry, Morgan)');
-  expect(html).toContain('You: 0 card points');
+  expect(screen.getByText(/it's a tie! \(Barry, Morgan\)/)).toBeTruthy();
+  expect(screen.getByText(/You: 0 card points/)).toBeTruthy();
 });
 
 it('keeps the result summary free of game controls', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <GameResults played={[]} />
     </IntlProvider>,
   );
 
-  expect(html).not.toContain('Round scores');
+  expect(screen.queryByRole('button', { name: 'Round scores' })).toBeNull();
 });

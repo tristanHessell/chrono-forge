@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it, vi } from 'vitest';
 
@@ -11,19 +13,23 @@ vi.mock('./ThemeToggle', () => ({
 }));
 
 it('keeps all settings inside a closed menu', () => {
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <GameMenu onNewGame={() => {}} onOpenCatalog={() => {}} />
     </IntlProvider>,
   );
 
-  expect(html).toContain(`<details class="${styles.gameMenu}">`);
-  expect(html).not.toContain('open=""');
-  expect(html).toContain('aria-label="Game menu"');
-  expect(html).toContain('>New game</button>');
-  expect(html).toContain('>All cards</button>');
-  expect(html).toContain('>Theme</button>');
-  expect(html).toContain('Colour-independent backgrounds');
-  expect(html).toContain('type="checkbox"');
-  expect(html).not.toContain('role="menu"');
+  const menu = container.querySelector('details');
+
+  expect(menu?.classList.contains(styles.gameMenu)).toBe(true);
+  expect(menu?.open).toBe(false);
+  expect(
+    container.querySelector('summary[aria-label="Game menu"]'),
+  ).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'New game' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'All cards' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Theme' })).toBeTruthy();
+  expect(screen.getByText('Colour-independent backgrounds')).toBeTruthy();
+  expect(screen.getByRole('checkbox')).toBeTruthy();
+  expect(container.querySelector('[role="menu"]')).toBeNull();
 });

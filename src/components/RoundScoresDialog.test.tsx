@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { createRef } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { describe, expect, it } from 'vitest';
 
@@ -27,26 +29,30 @@ describe('RoundScoresDialog', () => {
 
   it('renders individual round scores and running totals', () => {
     const G = setupGame();
-    const html = renderToStaticMarkup(
+    const dialogRef = createRef<HTMLDialogElement>();
+
+    render(
       <IntlProvider locale="en" messages={messages}>
-        <RoundScoresDialog dialogRef={createRef()} G={G} />
+        <RoundScoresDialog dialogRef={dialogRef} G={G} />
       </IntlProvider>,
     );
 
-    expect(html).toContain('Round scores');
-    expect(html).toContain('>Round points</button>');
-    expect(html).toContain('>Cumulative</button>');
-    expect(html).toContain('>You</th>');
-    expect(html).toContain('>Sally</th>');
-    expect(html).toContain('Round 1');
-    expect(html).toContain('Round 2');
-    expect(html).toContain('Round 3');
-    expect(html).toContain('(in progress)');
-    expect(html).toContain('>+2</span>');
-    expect(html).toContain('>+1</span>');
-    expect(html).toContain('total: 2');
-    expect(html).toContain('total: 3');
-    expect(html).toContain('>Total</th>');
+    dialogRef.current?.showModal();
+
+    expect(screen.getByRole('heading', { name: 'Round scores' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Round points' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Cumulative' })).toBeTruthy();
+    expect(screen.getByRole('columnheader', { name: 'You' })).toBeTruthy();
+    expect(screen.getByRole('columnheader', { name: 'Sally' })).toBeTruthy();
+    expect(screen.getByText('Round 1')).toBeTruthy();
+    expect(screen.getByText('Round 2')).toBeTruthy();
+    expect(screen.getByText('Round 3')).toBeTruthy();
+    expect(screen.getByText('(in progress)')).toBeTruthy();
+    expect(screen.getAllByText('+2')).not.toHaveLength(0);
+    expect(screen.getAllByText('+1')).not.toHaveLength(0);
+    expect(screen.getAllByText('total: 2')).not.toHaveLength(0);
+    expect(screen.getAllByText('total: 3')).not.toHaveLength(0);
+    expect(screen.getByRole('rowheader', { name: 'Total' })).toBeTruthy();
   });
 
   it('renders only completed rounds when the game is over', () => {
@@ -59,16 +65,19 @@ describe('RoundScoresDialog', () => {
       round: 2,
       roundOver: true,
     };
-    const html = renderToStaticMarkup(
+    const dialogRef = createRef<HTMLDialogElement>();
+
+    render(
       <IntlProvider locale="en" messages={messages}>
-        <RoundScoresDialog dialogRef={createRef()} G={G} />
+        <RoundScoresDialog dialogRef={dialogRef} G={G} />
       </IntlProvider>,
     );
+    dialogRef.current?.showModal();
 
-    expect(html).toContain('Round 1');
-    expect(html).toContain('Round 2');
-    expect(html).not.toContain('(in progress)');
-    expect(html).toContain('>Total</th>');
+    expect(screen.getAllByText('Round 1')).not.toHaveLength(0);
+    expect(screen.getAllByText('Round 2')).not.toHaveLength(0);
+    expect(screen.queryByText('(in progress)')).toBeNull();
+    expect(screen.getByRole('rowheader', { name: 'Total' })).toBeTruthy();
   });
 
   it('shows an in-progress row at the start of round 1', () => {
@@ -81,16 +90,20 @@ describe('RoundScoresDialog', () => {
       round: 1,
       roundOver: false,
     };
-    const html = renderToStaticMarkup(
+    const dialogRef = createRef<HTMLDialogElement>();
+
+    render(
       <IntlProvider locale="en" messages={messages}>
-        <RoundScoresDialog dialogRef={createRef()} G={G} />
+        <RoundScoresDialog dialogRef={dialogRef} G={G} />
       </IntlProvider>,
     );
 
-    expect(html).toContain('Round 1');
-    expect(html).toContain('(in progress)');
-    expect(html).toContain('>0</span>');
-    expect(html).toContain('total: 0');
+    dialogRef.current?.showModal();
+
+    expect(screen.getByText('Round 1')).toBeTruthy();
+    expect(screen.getByText('(in progress)')).toBeTruthy();
+    expect(screen.getAllByText('0')).not.toHaveLength(0);
+    expect(screen.getAllByText('total: 0')).not.toHaveLength(0);
   });
 
   it('includes columns for three or four players', () => {
@@ -103,15 +116,17 @@ describe('RoundScoresDialog', () => {
       round: 2,
       roundOver: false,
     };
-    const html = renderToStaticMarkup(
+    const dialogRef = createRef<HTMLDialogElement>();
+
+    render(
       <IntlProvider locale="en" messages={messages}>
-        <RoundScoresDialog dialogRef={createRef()} G={G} />
+        <RoundScoresDialog dialogRef={dialogRef} G={G} />
       </IntlProvider>,
     );
+    dialogRef.current?.showModal();
 
-    expect(html).toContain('>You</th>');
-    expect(html).toContain('>Sally</th>');
-    expect(html).toContain('>Barry</th>');
-    expect(html).toContain('>Morgan</th>');
+    for (const name of ['You', 'Sally', 'Barry', 'Morgan']) {
+      expect(screen.getByRole('columnheader', { name })).toBeTruthy();
+    }
   });
 });

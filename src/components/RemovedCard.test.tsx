@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -7,7 +9,7 @@ import { PlacementSlot } from './PlacementSlot';
 import { PlayedCard } from './PlayedCard';
 
 it('visually and accessibly marks a removed Event and its overwrite target', () => {
-  const html = renderToStaticMarkup(
+  const { container } = render(
     <IntlProvider locale="en" messages={messages}>
       <PlayedCard
         card={{
@@ -40,13 +42,15 @@ it('visually and accessibly marks a removed Event and its overwrite target', () 
     </IntlProvider>,
   );
 
-  expect(html).toContain('removed-card');
-  expect(html).toContain('data-removed="true"');
-  expect(html).toContain('data-position="0:1"');
-  expect(html).toContain('Removed');
-  expect(html).toContain(messages['card.removedDescription']);
-  expect(html).toContain('overwrite-slot');
-  expect(html).toContain('data-drop-position="-1:2"');
-  expect(html).toContain('Overwrite');
-  expect(html).not.toContain('role="tooltip"');
+  expect(container.querySelector('[data-removed="true"]')).toBeTruthy();
+  expect(container.querySelector('[data-position="0:1"]')).toBeTruthy();
+  expect(screen.getByText('Removed')).toBeTruthy();
+  expect(
+    container
+      .querySelector('[data-removed="true"]')
+      ?.getAttribute('aria-description'),
+  ).toContain(messages['card.removedDescription']);
+  expect(container.querySelector('[data-drop-position="-1:2"]')).toBeTruthy();
+  expect(screen.getByLabelText('Overwrite removed Event')).toBeTruthy();
+  expect(screen.queryByRole('tooltip')).toBeNull();
 });

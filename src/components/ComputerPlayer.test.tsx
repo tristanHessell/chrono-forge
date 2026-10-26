@@ -1,4 +1,6 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+// @vitest-environment jsdom
+
+import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
 
@@ -12,7 +14,7 @@ const cards = [
 ] satisfies Card[];
 
 it('shows computer identity and score without revealing its cards', () => {
-  const html = renderToStaticMarkup(
+  render(
     <IntlProvider locale="en" messages={messages}>
       <ComputerPlayer
         cards={cards}
@@ -22,12 +24,12 @@ it('shows computer identity and score without revealing its cards', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('aria-label="Sally, AI"');
-  expect(html).toContain('>Sally</strong>');
-  expect(html).toContain('>3 points</span>');
-  expect(html).toContain('aria-label="2 face-down cards"');
-  expect(html).toContain('>2</strong>');
-  expect(html).not.toContain('1900');
-  expect(html).not.toContain('1910');
-  expect(html).not.toContain("Sally's hand");
+  expect(screen.getByLabelText('Sally, AI')).toBeTruthy();
+  expect(screen.getByText('Sally', { selector: 'strong' })).toBeTruthy();
+  expect(screen.getByText('3 points')).toBeTruthy();
+  expect(screen.getByLabelText('2 face-down cards')).toBeTruthy();
+  expect(screen.getByText('2', { selector: 'strong' })).toBeTruthy();
+  expect(screen.queryByText('1900')).toBeNull();
+  expect(screen.queryByText('1910')).toBeNull();
+  expect(screen.queryByText("Sally's hand")).toBeNull();
 });
