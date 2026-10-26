@@ -1,8 +1,9 @@
 import { createRef } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { describe, expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import { CardGame, type CardGameState } from '../game';
 import messages from '../i18n/en.json';
 import { RoundScoresDialog } from './RoundScoresDialog';
@@ -25,31 +26,38 @@ describe('RoundScoresDialog', () => {
     roundOver: false,
   });
 
-  it('renders individual round scores and running totals', () => {
+  it('renders individual round scores and running totals', async () => {
     const G = setupGame();
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <RoundScoresDialog dialogRef={createRef()} G={G} />
       </IntlProvider>,
     );
 
-    expect(html).toContain('Round scores');
-    expect(html).toContain('>Round points</button>');
-    expect(html).toContain('>Cumulative</button>');
-    expect(html).toContain('>You</th>');
-    expect(html).toContain('>Sally</th>');
-    expect(html).toContain('Round 1');
-    expect(html).toContain('Round 2');
-    expect(html).toContain('Round 3');
-    expect(html).toContain('(in progress)');
-    expect(html).toContain('>+2</span>');
-    expect(html).toContain('>+1</span>');
-    expect(html).toContain('total: 2');
-    expect(html).toContain('total: 3');
-    expect(html).toContain('>Total</th>');
+    const body = page.getByCSS('body');
+
+    await expect.element(body).toMatchTextContent('Round scores');
+    expect(
+      page.getByCSS('button').filter({ hasText: 'Round points' }).length,
+    ).toBe(1);
+    expect(
+      page.getByCSS('button').filter({ hasText: 'Cumulative' }).length,
+    ).toBe(1);
+    await expect.element(body).toMatchTextContent('You');
+    await expect.element(body).toMatchTextContent('Sally');
+    await expect.element(body).toMatchTextContent('Round 1');
+    await expect.element(body).toMatchTextContent('Round 2');
+    await expect.element(body).toMatchTextContent('Round 3');
+    await expect.element(body).toMatchTextContent('(in progress)');
+    await expect.element(body).toMatchTextContent('+2');
+    await expect.element(body).toMatchTextContent('+1');
+    await expect.element(body).toMatchTextContent('total: 2');
+    await expect.element(body).toMatchTextContent('total: 3');
+    await expect.element(body).toMatchTextContent('Total');
   });
 
-  it('renders only completed rounds when the game is over', () => {
+  it('renders only completed rounds when the game is over', async () => {
     const G: CardGameState = {
       ...setupGame(),
       roundScores: [
@@ -59,19 +67,22 @@ describe('RoundScoresDialog', () => {
       round: 2,
       roundOver: true,
     };
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <RoundScoresDialog dialogRef={createRef()} G={G} />
       </IntlProvider>,
     );
 
-    expect(html).toContain('Round 1');
-    expect(html).toContain('Round 2');
-    expect(html).not.toContain('(in progress)');
-    expect(html).toContain('>Total</th>');
+    const body = page.getByCSS('body');
+
+    await expect.element(body).toMatchTextContent('Round 1');
+    await expect.element(body).toMatchTextContent('Round 2');
+    await expect.element(body).not.toMatchTextContent('(in progress)');
+    await expect.element(body).toMatchTextContent('Total');
   });
 
-  it('shows an in-progress row at the start of round 1', () => {
+  it('shows an in-progress row at the start of round 1', async () => {
     const G: CardGameState = {
       ...CardGame.setup!({
         ctx: { numPlayers: 2 },
@@ -81,19 +92,22 @@ describe('RoundScoresDialog', () => {
       round: 1,
       roundOver: false,
     };
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <RoundScoresDialog dialogRef={createRef()} G={G} />
       </IntlProvider>,
     );
 
-    expect(html).toContain('Round 1');
-    expect(html).toContain('(in progress)');
-    expect(html).toContain('>0</span>');
-    expect(html).toContain('total: 0');
+    const body = page.getByCSS('body');
+
+    await expect.element(body).toMatchTextContent('Round 1');
+    await expect.element(body).toMatchTextContent('(in progress)');
+    await expect.element(body).toMatchTextContent('0');
+    await expect.element(body).toMatchTextContent('total: 0');
   });
 
-  it('includes columns for three or four players', () => {
+  it('includes columns for three or four players', async () => {
     const G: CardGameState = {
       ...CardGame.setup!({
         ctx: { numPlayers: 4 },
@@ -103,15 +117,18 @@ describe('RoundScoresDialog', () => {
       round: 2,
       roundOver: false,
     };
-    const html = renderToStaticMarkup(
+
+    render(
       <IntlProvider locale="en" messages={messages}>
         <RoundScoresDialog dialogRef={createRef()} G={G} />
       </IntlProvider>,
     );
 
-    expect(html).toContain('>You</th>');
-    expect(html).toContain('>Sally</th>');
-    expect(html).toContain('>Barry</th>');
-    expect(html).toContain('>Morgan</th>');
+    expect(page.getByCSS('th[scope="col"]').length).toBe(5);
+    for (const [index, name] of ['You', 'Sally', 'Barry', 'Morgan'].entries()) {
+      await expect
+        .element(page.getByCSS('th[scope="col"]').nth(index + 1))
+        .toHaveTextContent(name);
+    }
   });
 });

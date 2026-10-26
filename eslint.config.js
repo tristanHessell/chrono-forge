@@ -67,7 +67,7 @@ export default defineConfig(
       globals: globals.browser,
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['simulations/*.ts'],
+          allowDefaultProject: ['simulations/*.ts', 'vitest.browser.config.ts'],
           defaultProject: 'tsconfig.node.json',
         },
       },

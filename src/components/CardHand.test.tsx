@@ -1,12 +1,13 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { IntlProvider } from 'react-intl';
 import { expect, it } from 'vitest';
+import { page } from 'vitest/browser';
 
+import { render } from '../../tests/render';
 import messages from '../i18n/en.json';
 import { CardHand } from './CardHand';
 
-it('shows the player avatar and score above the current hand', () => {
-  const html = renderToStaticMarkup(
+it('shows the player avatar and score above the current hand', async () => {
+  render(
     <IntlProvider locale="en" messages={messages}>
       <CardHand
         activeOwner="0"
@@ -27,7 +28,9 @@ it('shows the player avatar and score above the current hand', () => {
     </IntlProvider>,
   );
 
-  expect(html).toContain('aria-label="You, human"');
-  expect(html).toContain('Your hand');
-  expect(html).toContain('4 points');
+  expect(page.getByLabelText('You, human').length).toBe(1);
+  expect(page.getByLabelText('Your hand drop area').length).toBe(1);
+  await expect
+    .element(page.getByText('4 points', { exact: true }))
+    .toBeInTheDocument();
 });
