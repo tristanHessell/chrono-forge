@@ -107,7 +107,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
       >
         <div className={dialogStyles.gameLogHeader}>
           <h2 id="game-log-title">
-            <FormattedMessage id={'log.title'} defaultMessage={'Game Log'} />
+            <FormattedMessage id="log.title" defaultMessage="Game Log" />
           </h2>
           <button
             className={dialogStyles.gameLogClose}
@@ -125,10 +125,8 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
         </div>
         <p>
           <FormattedMessage
-            id={'log.overview'}
-            defaultMessage={
-              'Card uses are listed in order. Undo removes a card use and redo restores it; neither is a log entry. Computers stay paused while you inspect the log.'
-            }
+            id="log.overview"
+            defaultMessage="Card uses are listed in order. Undo removes a card use and redo restores it; neither is a log entry. Computers stay paused while you inspect the log."
           />
         </p>
         <div className={gameLogControlsStyles.gameLogActions}>
@@ -141,10 +139,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               setStatus('');
             }}
           >
-            <FormattedMessage
-              id={'log.import'}
-              defaultMessage={'Import JSON'}
-            />
+            <FormattedMessage id="log.import" defaultMessage="Import JSON" />
           </button>
           <button
             type="button"
@@ -155,10 +150,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               setStatus('');
             }}
           >
-            <FormattedMessage
-              id={'log.export'}
-              defaultMessage={'Export JSON'}
-            />
+            <FormattedMessage id="log.export" defaultMessage="Export JSON" />
           </button>
           {mode !== 'log' && (
             <button
@@ -168,10 +160,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
                 setStatus('');
               }}
             >
-              <FormattedMessage
-                id={'log.back'}
-                defaultMessage={'Back to log'}
-              />
+              <FormattedMessage id="log.back" defaultMessage="Back to log" />
             </button>
           )}
         </div>
@@ -180,17 +169,12 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
           <>
             <p>
               <FormattedMessage
-                id={'log.help'}
-                defaultMessage={
-                  'The JSON log includes the initial seed, player count, starting player, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order.'
-                }
+                id="log.help"
+                defaultMessage="The JSON log includes the initial seed, player count, starting player, and current card uses. Undo/redo operations and draft movements are not exported. Paste a log to recreate the game. Leave the action count blank for the latest confirmed state, or use 0 for the initial deal. Computers stay paused until resumed. Replays require matching game rules and card definitions. Logs reveal all hands and the deck order."
               />
             </p>
             <label htmlFor="game-log-text">
-              <FormattedMessage
-                id={'log.text'}
-                defaultMessage={'Game log JSON'}
-              />
+              <FormattedMessage id="log.text" defaultMessage="Game log JSON" />
             </label>
             <textarea
               id="game-log-text"
@@ -205,8 +189,8 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               <>
                 <label htmlFor="game-log-steps">
                   <FormattedMessage
-                    id={'log.steps'}
-                    defaultMessage={'Replay first N actions (optional)'}
+                    id="log.steps"
+                    defaultMessage="Replay first N actions (optional)"
                   />
                 </label>
                 <input
@@ -229,17 +213,14 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
             <div className={gameLogControlsStyles.gameLogActions}>
               {mode === 'export' && (
                 <button type="button" onClick={copyLog}>
-                  <FormattedMessage
-                    id={'log.copy'}
-                    defaultMessage={'Copy log'}
-                  />
+                  <FormattedMessage id="log.copy" defaultMessage="Copy log" />
                 </button>
               )}
               {mode === 'import' && (
                 <button type="button" onClick={replay}>
                   <FormattedMessage
-                    id={'log.replay'}
-                    defaultMessage={'Load replay'}
+                    id="log.replay"
+                    defaultMessage="Load replay"
                   />
                 </button>
               )}

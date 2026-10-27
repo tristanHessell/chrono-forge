@@ -1,7 +1,10 @@
+import comments from '@eslint-community/eslint-plugin-eslint-comments/configs';
+import eslintReact from '@eslint-react/eslint-plugin';
 import js from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import vitest from '@vitest/eslint-plugin';
 import formatjs from 'eslint-plugin-formatjs';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -18,12 +21,17 @@ export default defineConfig(
   { ignores: ['dist', '**/*.module.css.d.ts'] },
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
-    extends: [js.configs.recommended],
+    extends: [js.configs.recommended, comments.recommended],
     plugins: {
       '@stylistic': stylistic,
       perfectionist,
     },
     rules: {
+      '@eslint-community/eslint-comments/require-description': 'error',
+      '@eslint-community/eslint-comments/disable-enable-pair': [
+        'error',
+        { allowWholeFile: true },
+      ],
       'perfectionist/sort-imports': [
         'error',
         {
@@ -38,6 +46,7 @@ export default defineConfig(
           fallbackSort: { type: 'type-import-first' },
         },
       ],
+      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
       'perfectionist/sort-named-imports': 'error',
       curly: ['error', 'all'],
       '@stylistic/padding-line-between-statements': [
@@ -62,7 +71,11 @@ export default defineConfig(
     },
   },
   {
-    extends: [tseslint.configs.strictTypeChecked],
+    extends: [
+      tseslint.configs.strictTypeChecked,
+      eslintReact.configs['recommended-typescript'],
+      jsxA11y.flatConfigs.strict,
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2022,
@@ -87,6 +100,7 @@ export default defineConfig(
         'warn',
         { allowConstantExport: true },
       ],
+      '@stylistic/jsx-curly-brace-presence': ['error', 'never'],
       'formatjs/no-offset': 'error',
       'formatjs/enforce-id': 'error',
       'formatjs/enforce-default-message': ['error', 'literal'],

@@ -81,6 +81,7 @@ export function PlayedCard({
   );
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- TODO this element is interactive, the whole app needs to be modified to handle roles better
     <div
       aria-label={intl.formatMessage<{
         readonly category: string;
@@ -122,6 +123,7 @@ export function PlayedCard({
       data-position={'row' in card ? positionKey(card) : undefined}
       data-removed={'removed' in card ? card.removed || undefined : undefined}
       role={onTarget || onShowDetails ? 'button' : 'img'}
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- TODO this element is interactive, the whole app needs to be modified to handle roles better
       tabIndex={
         onTarget || onShowDetails || card.effects?.length ? 0 : undefined
       }

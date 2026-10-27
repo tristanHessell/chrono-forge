@@ -59,17 +59,12 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
         >
           <div>
             <h2 id="new-game-title">
-              <FormattedMessage
-                id={'newGame.title'}
-                defaultMessage={'New game'}
-              />
+              <FormattedMessage id="newGame.title" defaultMessage="New game" />
             </h2>
             <p>
               <FormattedMessage
-                id={'newGame.description'}
-                defaultMessage={
-                  'Player 1 is always human. Add up to four players and choose who controls each other seat.'
-                }
+                id="newGame.description"
+                defaultMessage="Player 1 is always human. Add up to four players and choose who controls each other seat."
               />
             </p>
           </div>
@@ -95,25 +90,22 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                 <strong>{player.name}</strong>
                 <small>
                   <FormattedMessage
-                    id={'newGame.playerNumber'}
-                    defaultMessage={'Player {count, number}'}
+                    id="newGame.playerNumber"
+                    defaultMessage="Player {count, number}"
                     values={{ count: index + 1 }}
                   />
                 </small>
               </div>
               {index === 0 ? (
                 <span className={newGameDialogStyles.fixedType}>
-                  <FormattedMessage
-                    id={'newGame.human'}
-                    defaultMessage={'Human'}
-                  />
+                  <FormattedMessage id="newGame.human" defaultMessage="Human" />
                 </span>
               ) : (
                 <label className={newGameDialogStyles.playerType}>
                   <span>
                     <FormattedMessage
-                      id={'newGame.playerType'}
-                      defaultMessage={'Controller'}
+                      id="newGame.playerType"
+                      defaultMessage="Controller"
                     />
                   </span>
                   <select
@@ -138,14 +130,14 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                   >
                     <option value="computer">
                       <FormattedMessage
-                        id={'newGame.computer'}
-                        defaultMessage={'AI'}
+                        id="newGame.computer"
+                        defaultMessage="AI"
                       />
                     </option>
                     <option value="human">
                       <FormattedMessage
-                        id={'newGame.human'}
-                        defaultMessage={'Human'}
+                        id="newGame.human"
+                        defaultMessage="Human"
                       />
                     </option>
                   </select>
@@ -169,8 +161,8 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
                   type="button"
                 >
                   <FormattedMessage
-                    id={'newGame.remove'}
-                    defaultMessage={'Remove'}
+                    id="newGame.remove"
+                    defaultMessage="Remove"
                   />
                 </button>
               )}
@@ -185,16 +177,13 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
               type="button"
             >
               <FormattedMessage
-                id={'newGame.addPlayer'}
-                defaultMessage={'Add player'}
+                id="newGame.addPlayer"
+                defaultMessage="Add player"
               />
             </button>
           )}
           <button className={controlsStyles.historyButton} type="submit">
-            <FormattedMessage
-              id={'newGame.start'}
-              defaultMessage={'Start game'}
-            />
+            <FormattedMessage id="newGame.start" defaultMessage="Start game" />
           </button>
         </div>
       </form>

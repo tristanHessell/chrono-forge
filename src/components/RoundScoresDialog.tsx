@@ -92,8 +92,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
       <div className={dialogStyles.gameLogHeader}>
         <h2 id={titleId}>
           <FormattedMessage
-            id={'roundScores.title'}
-            defaultMessage={'Round scores'}
+            id="roundScores.title"
+            defaultMessage="Round scores"
           />
         </h2>
         <button
@@ -112,15 +112,15 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
       </div>
       <p>
         <FormattedMessage
-          id={'roundScores.overview'}
-          defaultMessage={'Points for each player across rounds.'}
+          id="roundScores.overview"
+          defaultMessage="Points for each player across rounds."
         />
       </p>
       {rows.length === 0 ? (
         <p className={roundScoresDialogStyles.emptyMessage}>
           <FormattedMessage
-            id={'roundScores.empty'}
-            defaultMessage={'No rounds played yet.'}
+            id="roundScores.empty"
+            defaultMessage="No rounds played yet."
           />
         </p>
       ) : (
@@ -146,8 +146,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
               }}
             >
               <FormattedMessage
-                id={'roundScores.modeRound'}
-                defaultMessage={'Round points'}
+                id="roundScores.modeRound"
+                defaultMessage="Round points"
               />
             </button>
             <button
@@ -163,8 +163,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
               }}
             >
               <FormattedMessage
-                id={'roundScores.modeTotal'}
-                defaultMessage={'Cumulative'}
+                id="roundScores.modeTotal"
+                defaultMessage="Cumulative"
               />
             </button>
           </div>
@@ -177,8 +177,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                     scope="col"
                   >
                     <FormattedMessage
-                      id={'roundScores.round'}
-                      defaultMessage={'Round'}
+                      id="roundScores.round"
+                      defaultMessage="Round"
                     />
                   </th>
                   {playerIds.map((id) => (
@@ -216,8 +216,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                       {row.isInProgress && (
                         <span className={roundScoresDialogStyles.currentBadge}>
                           <FormattedMessage
-                            id={'roundScores.inProgress'}
-                            defaultMessage={'(in progress)'}
+                            id="roundScores.inProgress"
+                            defaultMessage="(in progress)"
                           />
                         </span>
                       )}
@@ -279,8 +279,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                 <tr className={roundScoresDialogStyles.totalRow}>
                   <th className={roundScoresDialogStyles.roundCell} scope="row">
                     <FormattedMessage
-                      id={'roundScores.total'}
-                      defaultMessage={'Total'}
+                      id="roundScores.total"
+                      defaultMessage="Total"
                     />
                   </th>
                   {playerIds.map((id) => (

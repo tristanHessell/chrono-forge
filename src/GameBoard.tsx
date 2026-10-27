@@ -830,6 +830,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     : G.pending?.owner;
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- element interactions are a catch all here, rather than it being a truly interactive element.
     <main
       className={clsx(gameBoardStyles.gameShell, {
         [gameBoardStyles.choosingJumpDestination]: choosingJumpDestination,
@@ -866,14 +867,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               <path d="m12 2 9 5v10l-9 5-9-5V7z" />
             </svg>
             <div>
-              <FormattedMessage
-                id={'brand.name'}
-                defaultMessage={'Chrono-Forge'}
-              />
+              <FormattedMessage id="brand.name" defaultMessage="Chrono-Forge" />
               <small>
                 <FormattedMessage
-                  id={'brand.tagline'}
-                  defaultMessage={'Tactical card system'}
+                  id="brand.tagline"
+                  defaultMessage="Tactical card system"
                 />
               </small>
             </div>
@@ -979,8 +977,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               }}
             >
               <FormattedMessage
-                id={'computer.resume'}
-                defaultMessage={'Resume computer'}
+                id="computer.resume"
+                defaultMessage="Resume computer"
               />
             </button>
           )}
@@ -1066,7 +1064,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 role="status"
               >
                 <span>
-                  <FormattedMessage id={'deck.title'} defaultMessage={'Deck'} />
+                  <FormattedMessage id="deck.title" defaultMessage="Deck" />
                 </span>
                 <div
                   className={gameBoardStyles.deckCardBack}
@@ -1127,8 +1125,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 </svg>
                 <span>
                   <FormattedMessage
-                    id={'discard.title'}
-                    defaultMessage={'Discard'}
+                    id="discard.title"
+                    defaultMessage="Discard"
                   />
                   <small>
                     <FormattedMessage
@@ -1309,6 +1307,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         />
                       ))}
                     {G.pending && (
+                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- TODO improve roles for these cards
                       <div
                         aria-label={intl.formatMessage({
                           id: 'placement.pending',

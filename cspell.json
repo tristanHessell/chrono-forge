@@ -10,9 +10,9 @@
   "words": [
     "boardgame",
     "Chrono-Forge",
-    "commitlint",
     "clsx",
     "Comlink",
+    "commitlint",
     "Descriptionless",
     "Flexbox",
     "formatjs",
@@ -22,6 +22,7 @@
     "minimaxer",
     "minimaxmer",
     "negamax",
+    "noninteractive",
     "nums",
     "nvmrc",
     "pannable",

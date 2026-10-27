@@ -10,6 +10,7 @@ import {
   manipulationNameMessages,
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
+import { AriaDescription } from './AriaDescription';
 import cardStyles from './Card.module.css';
 import cardCatalogDialogStyles from './CardCatalogDialog.module.css';
 import dialogStyles from './Dialog.module.css';
@@ -28,7 +29,6 @@ function CatalogCard({
   view: CardView;
   onShowDetails: (card: Card) => void;
 }) {
-  const intl = useIntl();
   const cardView =
     view === 'table' && card.type === 'event' ? (
       <PlayedCard card={card} onShowDetails={onShowDetails} />
@@ -39,11 +39,7 @@ function CatalogCard({
         data-event-category={card.category}
         role="button"
         tabIndex={0}
-        aria-description={intl.formatMessage({
-          id: 'card.detailsHint',
-          defaultMessage:
-            'Double-click or press Alt + Enter to view card details.',
-        })}
+        aria-describedby="card-catalog-helper-message"
         onDoubleClick={() => {
           onShowDetails(card);
         }}
@@ -54,6 +50,12 @@ function CatalogCard({
           }
         }}
       >
+        <AriaDescription id="card-catalog-helper-message">
+          <FormattedMessage
+            id="card.detailsHint"
+            defaultMessage="Double-click or press Alt + Enter to view card details."
+          />
+        </AriaDescription>
         <HandCardFace card={card} />
       </div>
     );
@@ -101,7 +103,7 @@ export function CardCatalogDialog({
         )}
       >
         <h2 id={titleId}>
-          <FormattedMessage id={'catalog.title'} defaultMessage={'All cards'} />
+          <FormattedMessage id="catalog.title" defaultMessage="All cards" />
         </h2>
         <button
           className={dialogStyles.gameLogClose}
@@ -119,17 +121,12 @@ export function CardCatalogDialog({
       </div>
       <p>
         <FormattedMessage
-          id={'catalog.overview'}
-          defaultMessage={
-            'The complete configured deck, not just the cards remaining in this game. Every copy is shown. Double-click a card to view its details and effects.'
-          }
+          id="catalog.overview"
+          defaultMessage="The complete configured deck, not just the cards remaining in this game. Every copy is shown. Double-click a card to view its details and effects."
         />
       </p>
       <label className={cardCatalogDialogStyles.catalogView}>
-        <FormattedMessage
-          id={'catalog.view'}
-          defaultMessage={'Display cards'}
-        />
+        <FormattedMessage id="catalog.view" defaultMessage="Display cards" />
         <select
           value={view}
           onChange={(event) => {
@@ -137,21 +134,18 @@ export function CardCatalogDialog({
           }}
         >
           <option value="hand">
-            <FormattedMessage
-              id={'catalog.view.hand'}
-              defaultMessage={'In hand'}
-            />
+            <FormattedMessage id="catalog.view.hand" defaultMessage="In hand" />
           </option>
           <option value="table">
             <FormattedMessage
-              id={'catalog.view.table'}
-              defaultMessage={'On table'}
+              id="catalog.view.table"
+              defaultMessage="On table"
             />
           </option>
         </select>
       </label>
       <label className={cardCatalogDialogStyles.catalogView}>
-        <FormattedMessage id={'catalog.size'} defaultMessage={'Card size'} />
+        <FormattedMessage id="catalog.size" defaultMessage="Card size" />
         <select
           value={size}
           onChange={(event) => {
@@ -160,14 +154,14 @@ export function CardCatalogDialog({
         >
           <option value="standard">
             <FormattedMessage
-              id={'catalog.size.standard'}
-              defaultMessage={'Standard (124 × 88 px)'}
+              id="catalog.size.standard"
+              defaultMessage="Standard (124 × 88 px)"
             />
           </option>
           <option value="compact">
             <FormattedMessage
-              id={'catalog.size.compact'}
-              defaultMessage={'Compact (104 × 72 px)'}
+              id="catalog.size.compact"
+              defaultMessage="Compact (104 × 72 px)"
             />
           </option>
         </select>
@@ -207,10 +201,7 @@ export function CardCatalogDialog({
       </dl>
       <section className={cardCatalogDialogStyles.catalogGroup}>
         <h3>
-          <FormattedMessage
-            id={'catalog.start'}
-            defaultMessage={'Starting card'}
-          />
+          <FormattedMessage id="catalog.start" defaultMessage="Starting card" />
           <span>
             <FormattedMessage
               id="catalog.count"

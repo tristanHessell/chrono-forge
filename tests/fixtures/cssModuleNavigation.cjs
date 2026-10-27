@@ -1,4 +1,4 @@
-/* global Buffer, process */
+/* global Buffer, process -- TODO remove this once the repository is setup to include all js files */
 
 const { spawn } = require('node:child_process');
 const { readFileSync } = require('node:fs');

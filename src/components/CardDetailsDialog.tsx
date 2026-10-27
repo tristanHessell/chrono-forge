@@ -110,8 +110,8 @@ export function CardDetailsDialog({
             <div>
               <dt>
                 <FormattedMessage
-                  id={'card.details.year'}
-                  defaultMessage={'Year'}
+                  id="card.details.year"
+                  defaultMessage="Year"
                 />
               </dt>
               <dd>{intl.formatNumber(card.number, { useGrouping: false })}</dd>
@@ -119,10 +119,7 @@ export function CardDetailsDialog({
           )}
           <div>
             <dt>
-              <FormattedMessage
-                id={'card.details.type'}
-                defaultMessage={'Type'}
-              />
+              <FormattedMessage id="card.details.type" defaultMessage="Type" />
             </dt>
             <dd>{cardType}</dd>
           </div>
@@ -130,8 +127,8 @@ export function CardDetailsDialog({
         <section className={cardDetailsStyles.effects}>
           <h3>
             <FormattedMessage
-              id={'card.details.effects'}
-              defaultMessage={'Effects'}
+              id="card.details.effects"
+              defaultMessage="Effects"
             />
           </h3>
           {effects?.length ? (
@@ -146,8 +143,8 @@ export function CardDetailsDialog({
           ) : (
             <p>
               <FormattedMessage
-                id={'card.details.noEffects'}
-                defaultMessage={'No special effects.'}
+                id="card.details.noEffects"
+                defaultMessage="No special effects."
               />
             </p>
           )}
