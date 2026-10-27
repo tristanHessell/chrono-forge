@@ -1,4 +1,4 @@
-import { type PointerEvent, useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 import {
   type DragPoint,
@@ -36,22 +36,22 @@ export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
     preview,
     controller,
     onPointerDown: (
-      event: PointerEvent<HTMLElement>,
+      event: React.PointerEvent<HTMLElement>,
       cardId: string,
       source: DragSource = 'hand',
     ) => {
       controller.start(event, cardId, source);
     },
-    onPointerMove: (event: PointerEvent<HTMLElement>) => {
+    onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
       controller.move(event);
     },
-    onPointerUp: (event: PointerEvent<HTMLElement>) => {
+    onPointerUp: (event: React.PointerEvent<HTMLElement>) => {
       controller.end(event);
     },
-    onPointerCancel: (event: PointerEvent<HTMLElement>) => {
+    onPointerCancel: (event: React.PointerEvent<HTMLElement>) => {
       controller.cancel(event.pointerId);
     },
-    onLostPointerCapture: (event: PointerEvent<HTMLElement>) => {
+    onLostPointerCapture: (event: React.PointerEvent<HTMLElement>) => {
       controller.cancel(event.pointerId);
     },
   };

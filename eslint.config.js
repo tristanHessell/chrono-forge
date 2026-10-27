@@ -94,8 +94,34 @@ export default defineConfig(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+          disallowTypeAnnotations: true,
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "ImportDeclaration[importKind='type'][source.value='react']",
+          message:
+            "Type-only imports are forbidden from 'react'. Use the global React namespace instead.",
+        },
+        {
+          selector:
+            "ImportSpecifier[importKind='type'][parent.source.value='react']",
+          message:
+            "Inline type imports are forbidden from 'react'. Use the global React namespace instead.",
+        },
+      ],
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
+      '@eslint-react/no-use-context': 'error',
+      '@eslint-react/naming-convention-ref-name': 'error',
+      '@eslint-react/no-array-index-key': 'error',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
@@ -231,7 +257,7 @@ export default defineConfig(
       // This is not a priority right now, but can be a good steer for the agents
       'vitest/max-expects': 'off',
       // TODO enforce this
-      'vitest/no-conditional-in-test': 'off',
+      'vitest/no-conditional-in-test': 'warn',
       'vitest/require-top-level-describe': 'error',
       'vitest/consistent-test-it': [
         'error',

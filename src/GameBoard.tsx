@@ -1,10 +1,8 @@
 import type { BoardProps } from 'boardgame.io/react';
 import clsx from 'clsx';
 import {
-  type DragEvent,
-  type PointerEvent,
+  use,
   useCallback,
-  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -121,7 +119,7 @@ const linkDirections = [
   },
 ] as const;
 
-function setCardDragImage(event: DragEvent<HTMLElement>) {
+function setCardDragImage(event: React.DragEvent<HTMLElement>) {
   const preview = event.currentTarget.cloneNode(true) as HTMLElement;
 
   preview.className = cardStyles.card;
@@ -157,13 +155,13 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const gameMoves = moves as CardGameMoves;
   const finished = Boolean(ctx.gameover) || G.roundOver;
   const activeOwner = ctx.currentPlayer as PlayerId;
-  const players = useContext(PlayerSetupContext);
+  const players = use(PlayerSetupContext);
   const activePlayer = getPlayer(players, activeOwner);
   const isHumanTurn = activePlayer.type === 'human';
   const handOwner = isHumanTurn ? activeOwner : '0';
   const handPlayer = getPlayer(players, handOwner);
   const scores = calculateScores(G.played);
-  const { newGame, replayPaused } = useContext(GameLogContext);
+  const { newGame, replayPaused } = use(GameLogContext);
   const [computerPaused, setComputerPaused] = useState(replayPaused);
 
   useComputerOpponent(
@@ -183,19 +181,19 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   const [snapPosition, setSnapPosition] = useState<CardPosition | null>(null);
   const [boardZoom, setBoardZoom] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
-  const boardViewport = useRef<HTMLDivElement>(null);
-  const cardCatalogDialog = useRef<HTMLDialogElement>(null);
-  const newGameDialog = useRef<HTMLDialogElement>(null);
-  const roundScoresDialog = useRef<HTMLDialogElement>(null);
-  const lastJumpDestination = useRef<CardPosition | null>(null);
-  const panStart = useRef({
+  const boardViewportRef = useRef<HTMLDivElement>(null);
+  const cardCatalogDialogRef = useRef<HTMLDialogElement>(null);
+  const newGameDialogRef = useRef<HTMLDialogElement>(null);
+  const roundScoresDialogRef = useRef<HTMLDialogElement>(null);
+  const lastJumpDestinationRef = useRef<CardPosition | null>(null);
+  const panStartRef = useRef({
     pointerX: 0,
     pointerY: 0,
     scrollLeft: 0,
     scrollTop: 0,
   });
-  const touchPoints = useRef(new Map<number, { x: number; y: number }>());
-  const pinchDistance = useRef<number | null>(null);
+  const touchPointsRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchDistanceRef = useRef<number | null>(null);
   const draggedCardDetails = draggedCard
     ? draggedCard.source === 'pending'
       ? G.pending
@@ -254,8 +252,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   );
 
   useLayoutEffect(() => {
-    const viewport = boardViewport.current;
-    const position = lastJumpDestination.current;
+    const viewport = boardViewportRef.current;
+    const position = lastJumpDestinationRef.current;
 
     if (!viewport || choosingJumpDestination || !position) {
       return;
@@ -281,7 +279,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         viewBounds.height / 2;
     }
 
-    lastJumpDestination.current = null;
+    lastJumpDestinationRef.current = null;
   }, [choosingJumpDestination, G.played]);
 
   const showPlacementSlots =
@@ -383,7 +381,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
   const placeSelectedCard = (position: CardPosition) => {
     if (manipulation && manipulationTargetId) {
-      lastJumpDestination.current = position;
+      lastJumpDestinationRef.current = position;
       gameMoves.manipulate(manipulation.id, manipulationTargetId, position);
       setSelectedCardId(null);
       setManipulationTargetId(null);
@@ -405,7 +403,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   };
 
   const beginDrag = (
-    event: DragEvent<HTMLElement>,
+    event: React.DragEvent<HTMLElement>,
     cardId: string,
     source: DraggedCard['source'],
   ) => {
@@ -424,7 +422,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setManipulationTargetId(null);
   };
 
-  const readDraggedCard = (event: DragEvent<HTMLElement>) => {
+  const readDraggedCard = (event: React.DragEvent<HTMLElement>) => {
     if (draggedCard) {
       return draggedCard;
     }
@@ -439,7 +437,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     return { cardId, source } satisfies DraggedCard;
   };
 
-  const dropCard = (event: DragEvent<HTMLElement>, position: CardPosition) => {
+  const dropCard = (
+    event: React.DragEvent<HTMLElement>,
+    position: CardPosition,
+  ) => {
     event.preventDefault();
 
     const droppedCard = readDraggedCard(event);
@@ -461,13 +462,13 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setSelectedCardId(null);
   };
 
-  const allowDrop = (event: DragEvent<HTMLElement>) => {
+  const allowDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   };
 
   const allowManipulationDrop = (
-    event: DragEvent<HTMLElement>,
+    event: React.DragEvent<HTMLElement>,
     targetId: string,
   ) => {
     const droppedCard = readDraggedCard(event);
@@ -483,7 +484,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   };
 
   const dropManipulationOnTarget = (
-    event: DragEvent<HTMLElement>,
+    event: React.DragEvent<HTMLElement>,
     targetId: string,
   ) => {
     event.preventDefault();
@@ -515,7 +516,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   };
 
   const snapToPosition = (
-    event: DragEvent<HTMLElement>,
+    event: React.DragEvent<HTMLElement>,
     position: CardPosition,
   ) => {
     allowDrop(event);
@@ -606,7 +607,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setSelectedCardId(null);
   };
 
-  const dropOnDiscard = (event: DragEvent<HTMLElement>) => {
+  const dropOnDiscard = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
 
     const droppedCard = readDraggedCard(event);
@@ -616,7 +617,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     }
   };
 
-  const dropOnPendingCard = (event: DragEvent<HTMLElement>) => {
+  const dropOnPendingCard = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
 
     const droppedCard = readDraggedCard(event);
@@ -631,7 +632,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setSelectedCardId(null);
   };
 
-  const returnCardToHand = (event: DragEvent<HTMLElement>) => {
+  const returnCardToHand = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
 
     const droppedCard = readDraggedCard(event);
@@ -663,7 +664,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         }),
       )
     ) {
-      newGameDialog.current?.showModal();
+      newGameDialogRef.current?.showModal();
     }
   };
 
@@ -672,7 +673,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   }, []);
 
   const fitBoardToViewport = useCallback(() => {
-    const viewport = boardViewport.current;
+    const viewport = boardViewportRef.current;
     const grid = viewport?.querySelector<HTMLElement>('[data-board-grid]');
 
     if (!viewport || !grid) {
@@ -704,7 +705,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
   }, []);
 
   useEffect(() => {
-    const viewport = boardViewport.current;
+    const viewport = boardViewportRef.current;
 
     if (!viewport) {
       return;
@@ -713,25 +714,25 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     return listenForBoardWheel(viewport, adjustBoardZoom);
   }, [adjustBoardZoom]);
 
-  const startBoardPan = (event: PointerEvent<HTMLDivElement>) => {
+  const startBoardPan = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'touch') {
-      touchPoints.current.set(event.pointerId, {
+      touchPointsRef.current.set(event.pointerId, {
         x: event.clientX,
         y: event.clientY,
       });
 
-      if (touchPoints.current.size === 2) {
-        const [first, second] = [...touchPoints.current.values()];
+      if (touchPointsRef.current.size === 2) {
+        const [first, second] = [...touchPointsRef.current.values()];
         const distance = Math.hypot(first.x - second.x, first.y - second.y);
 
-        pinchDistance.current = distance || null;
+        pinchDistanceRef.current = distance || null;
         touchDrag.controller.cancel();
         setIsPanning(false);
 
         return;
       }
-      if (touchPoints.current.size > 2) {
-        pinchDistance.current = null;
+      if (touchPointsRef.current.size > 2) {
+        pinchDistanceRef.current = null;
         setIsPanning(false);
 
         return;
@@ -740,7 +741,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
 
     if (
       event.button !== 0 ||
-      pinchDistance.current ||
+      pinchDistanceRef.current ||
       (event.target as Element).closest(
         '[data-card-type], [data-placement-slot]',
       )
@@ -748,7 +749,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       return;
     }
 
-    panStart.current = {
+    panStartRef.current = {
       pointerX: event.clientX,
       pointerY: event.clientY,
       scrollLeft: event.currentTarget.scrollLeft,
@@ -758,20 +759,20 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     setIsPanning(true);
   };
 
-  const panBoard = (event: PointerEvent<HTMLDivElement>) => {
+  const panBoard = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'touch') {
-      const touchPoint = touchPoints.current.get(event.pointerId);
+      const touchPoint = touchPointsRef.current.get(event.pointerId);
 
       if (touchPoint) {
         touchPoint.x = event.clientX;
         touchPoint.y = event.clientY;
 
-        if (pinchDistance.current && touchPoints.current.size === 2) {
-          const [first, second] = [...touchPoints.current.values()];
+        if (pinchDistanceRef.current && touchPointsRef.current.size === 2) {
+          const [first, second] = [...touchPointsRef.current.values()];
           const distance = Math.hypot(first.x - second.x, first.y - second.y);
-          const previousDistance = pinchDistance.current;
+          const previousDistance = pinchDistanceRef.current;
 
-          pinchDistance.current = distance;
+          pinchDistanceRef.current = distance;
           setBoardZoom((current) =>
             changeBoardZoomByPinch(current, previousDistance, distance),
           );
@@ -779,7 +780,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           return;
         }
       }
-      if (pinchDistance.current) {
+      if (pinchDistanceRef.current) {
         return;
       }
     }
@@ -789,17 +790,19 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     }
 
     event.currentTarget.scrollLeft =
-      panStart.current.scrollLeft - (event.clientX - panStart.current.pointerX);
+      panStartRef.current.scrollLeft -
+      (event.clientX - panStartRef.current.pointerX);
     event.currentTarget.scrollTop =
-      panStart.current.scrollTop - (event.clientY - panStart.current.pointerY);
+      panStartRef.current.scrollTop -
+      (event.clientY - panStartRef.current.pointerY);
   };
 
-  const stopBoardPan = (event: PointerEvent<HTMLDivElement>) => {
+  const stopBoardPan = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'touch') {
-      touchPoints.current.delete(event.pointerId);
+      touchPointsRef.current.delete(event.pointerId);
 
-      if (touchPoints.current.size < 2) {
-        pinchDistance.current = null;
+      if (touchPointsRef.current.size < 2) {
+        pinchDistanceRef.current = null;
       }
     }
 
@@ -990,7 +993,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               finishDrag();
               setSelectedCardId(null);
               setManipulationTargetId(null);
-              cardCatalogDialog.current?.showModal();
+              cardCatalogDialogRef.current?.showModal();
             }}
           />
         </div>
@@ -1165,7 +1168,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   finishDrag();
                   setSelectedCardId(null);
                   setManipulationTargetId(null);
-                  roundScoresDialog.current?.showModal();
+                  roundScoresDialogRef.current?.showModal();
                 }}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1184,7 +1187,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               onZoomChange={adjustBoardZoom}
             />
             <div
-              ref={boardViewport}
+              ref={boardViewportRef}
               aria-label={intl.formatMessage({
                 id: 'board.label',
                 defaultMessage: 'Pannable and zoomable played-card board',
@@ -1539,12 +1542,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         </div>
       )}
       <NewGameDialog
-        dialogRef={newGameDialog}
+        dialogRef={newGameDialogRef}
         initialPlayers={players}
         onStart={startNewGame}
       />
       <CardCatalogDialog
-        dialogRef={cardCatalogDialog}
+        dialogRef={cardCatalogDialogRef}
         onShowDetails={showCardDetails}
       />
       <CardDetailsDialog
@@ -1553,7 +1556,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           setDetailsCard(null);
         }}
       />
-      <RoundScoresDialog dialogRef={roundScoresDialog} G={G} />
+      <RoundScoresDialog dialogRef={roundScoresDialogRef} G={G} />
       <footer className={gameBoardStyles.footer}>
         {finished ? (
           <GameResults played={G.played} playerIds={G.playerIds} />

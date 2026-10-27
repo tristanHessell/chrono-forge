@@ -78,8 +78,8 @@
   "dependencies": {
     "boardgame.io": "0.50.2",
     "clsx": "2.1.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-intl": "12.1.4"
   },
   "devDependencies": {
@@ -91,8 +91,8 @@
     "@formatjs/cli": "6.16.32",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/lodash.camelcase": "4.3.9",
-    "@types/react": "18.3.31",
-    "@types/react-dom": "18.3.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "5.2.0",
     "@vitest/browser-playwright": "5.0.5",
     "@vitest/eslint-plugin": "1.6.28",

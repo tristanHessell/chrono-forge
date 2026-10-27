@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { type FormEvent, type RefObject, useState } from 'react';
+import { useState } from 'react';
 import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -15,7 +15,7 @@ import newGameDialogStyles from './NewGameDialog.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
 type Props = {
-  dialogRef: RefObject<HTMLDialogElement>;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
   initialPlayers: PlayerSetup[];
   onStart: (players: PlayerSetup[]) => void;
 };
@@ -38,7 +38,7 @@ export function NewGameDialog({ dialogRef, initialPlayers, onStart }: Props) {
       ),
     );
   };
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     dialogRef.current?.close();
     onStart(players);

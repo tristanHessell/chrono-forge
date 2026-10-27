@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach } from 'vitest';
@@ -19,7 +18,7 @@ locators.extend({
 
 const roots: Root[] = [];
 
-export function render(element: ReactNode) {
+export function render(element: React.ReactNode) {
   const container = document.createElement('div');
 
   document.body.append(container);

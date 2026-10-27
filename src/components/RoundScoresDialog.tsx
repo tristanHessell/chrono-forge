@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { type RefObject, useContext, useId, useState } from 'react';
+import { use, useId, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { CardGameState } from '../game';
@@ -10,7 +10,7 @@ import ownershipStyles from './Ownership.module.css';
 import roundScoresDialogStyles from './RoundScoresDialog.module.css';
 
 type Props = {
-  dialogRef: RefObject<HTMLDialogElement>;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
   G: CardGameState;
 };
 
@@ -33,7 +33,7 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
   const intl = useIntl();
   const titleId = useId();
   const [viewMode, setViewMode] = useState<'round' | 'total'>('round');
-  const players = useContext(PlayerSetupContext);
+  const players = use(PlayerSetupContext);
   const playerIds = G.playerIds;
   const completedRounds = G.roundScores;
   const inProgressCumulative = calculateScores(G.played);

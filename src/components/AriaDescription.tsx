@@ -1,5 +1,3 @@
-import React from 'react';
-
 import styles from './AriaDescription.module.css';
 
 type Props = React.PropsWithChildren<{

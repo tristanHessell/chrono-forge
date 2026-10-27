@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { type RefObject, useId, useState } from 'react';
+import { useId, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { loadCardCatalog } from '../cardCatalog';
@@ -34,7 +34,10 @@ function CatalogCard({
       <PlayedCard card={card} onShowDetails={onShowDetails} />
     ) : (
       <div
-        className={`${cardStyles.card} ${cardCatalogDialogStyles.catalogHandCard}`}
+        className={clsx(
+          cardStyles.card,
+          cardCatalogDialogStyles.catalogHandCard,
+        )}
         data-card-type={card.type}
         data-event-category={card.category}
         role="button"
@@ -75,7 +78,7 @@ export function CardCatalogDialog({
   dialogRef,
   onShowDetails,
 }: {
-  dialogRef: RefObject<HTMLDialogElement>;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
   onShowDetails: (card: Card) => void;
 }) {
   const intl = useIntl();

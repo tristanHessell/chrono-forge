@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useContext, useMemo } from 'react';
+import { use, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { eventCardNameMessage } from '../eventCardName';
@@ -13,7 +13,7 @@ import ownershipStyles from './Ownership.module.css';
 
 export function GameLogView({ log }: { log: GameLog }) {
   const intl = useIntl();
-  const players = useContext(PlayerSetupContext);
+  const players = use(PlayerSetupContext);
   const items = useMemo(() => summarizeGameLog(log), [log]);
   const playerReference = (id: string) => {
     const player = getPlayer(players, id as PlayerId);

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { use } from 'react';
 import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -16,7 +16,7 @@ export function GameResults({
   playerIds?: PlayerId[];
 }) {
   const intl = useIntl();
-  const players = useContext(PlayerSetupContext);
+  const players = use(PlayerSetupContext);
   const scores = calculateScoreBreakdown(played);
   const highest = Math.max(...playerIds.map((id) => scores[id]?.total ?? 0));
   const winners = playerIds.filter(

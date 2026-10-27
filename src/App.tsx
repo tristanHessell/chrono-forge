@@ -53,7 +53,7 @@ function GameSession({
   startingPlayer,
 }: Session) {
   const ref = useRef<InstanceType<typeof CardGameClient>>(null);
-  const replayed = useRef(false);
+  const replayedRef = useRef(false);
 
   useLayoutEffect(() => {
     const client = ref.current?.client;
@@ -102,20 +102,20 @@ function GameSession({
   ]);
 
   useEffect(() => {
-    if (!replay || replayed.current || !ref.current) {
+    if (!replay || replayedRef.current || !ref.current) {
       return;
     }
 
-    replayed.current = true;
+    replayedRef.current = true;
     for (const action of replay.log.actions.slice(0, replay.steps)) {
       applyGameLogAction(ref.current.client, action);
     }
   }, [replay]);
 
   return (
-    <PlayerSetupContext.Provider value={players}>
+    <PlayerSetupContext value={players}>
       <CardGameClient ref={ref} />
-    </PlayerSetupContext.Provider>
+    </PlayerSetupContext>
   );
 }
 
@@ -152,7 +152,7 @@ export function App() {
   };
 
   return (
-    <GameLogContext.Provider
+    <GameLogContext
       value={{
         seed: session?.seed ?? '',
         replayPaused: Boolean(session?.replayPaused || session?.replay),
@@ -177,6 +177,6 @@ export function App() {
           onStart={newGame}
         />
       )}
-    </GameLogContext.Provider>
+    </GameLogContext>
   );
 }
