@@ -18,6 +18,7 @@ import {
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
+import { AriaDescription } from './AriaDescription';
 import cardStyles from './Card.module.css';
 import { CardEffects } from './CardEffect';
 import { CardEventName } from './CardEventName';
@@ -178,33 +179,36 @@ export function PlayedCard({
           onTarget();
         }
       }}
-      aria-description={[
-        'removed' in card && card.removed
-          ? intl.formatMessage({
-              id: 'card.removedDescription',
-              defaultMessage:
-                'Removed Event: scores no points and does not qualify for bonuses. It still has its date and links, can be moved or swapped, and can be overwritten by a valid Event.',
-            })
-          : card.effects?.length
-            ? intl.formatList(
-                card.effects.map((effect) =>
-                  intl.formatMessage(effectDescriptionMessages[effect]),
-                ),
-              )
-            : '',
-        onShowDetails
-          ? intl.formatMessage({
-              id: 'card.detailsHint',
-              defaultMessage:
-                'Double-click or press Alt + Enter to view card details.',
-            })
-          : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      aria-describedby={`${card.id}-details-description`}
       style={style}
     >
       {links}
+      <AriaDescription id={`${card.id}-details-description`}>
+        {[
+          'removed' in card && card.removed
+            ? intl.formatMessage({
+                id: 'card.removedDescription',
+                defaultMessage:
+                  'Removed Event: scores no points and does not qualify for bonuses. It still has its date and links, can be moved or swapped, and can be overwritten by a valid Event.',
+              })
+            : card.effects?.length
+              ? intl.formatList(
+                  card.effects.map((effect) =>
+                    intl.formatMessage(effectDescriptionMessages[effect]),
+                  ),
+                )
+              : '',
+          onShowDetails
+            ? intl.formatMessage({
+                id: 'card.detailsHint',
+                defaultMessage:
+                  'Double-click or press Alt + Enter to view card details.',
+              })
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      </AriaDescription>
       <CardEffects effects={card.effects} />
       <strong>{intl.formatNumber(card.number, { useGrouping: false })}</strong>
       <CardEventName card={card} />

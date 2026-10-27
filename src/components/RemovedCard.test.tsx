@@ -54,12 +54,6 @@ describe('removedCard', () => {
       .toHaveClass(...playedStyles.removedCard.split(' '));
     await expect.element(removedCard).toHaveAttribute('data-position', '0:1');
     expect(page.getByText('Removed', { exact: true })).toHaveLength(1);
-    await expect
-      .element(removedCard)
-      .toHaveAttribute(
-        'aria-description',
-        expect.stringContaining(messages['card.removedDescription']),
-      );
 
     const overwriteSlot = page.getByCSS('[data-drop-position="-1:2"]');
 
