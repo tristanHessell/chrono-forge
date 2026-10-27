@@ -177,6 +177,8 @@ export default defineConfig(
       'vitest/prefer-expect-resolves': 'error',
       'vitest/prefer-expect-type-of': 'error',
       'vitest/prefer-hooks-in-order': 'error',
+      // TODO enforce this rule once we've sorted out the non-deterministic tests (e.g. componentStyles).
+      'vitest/prefer-strict-boolean-matchers': 'off',
       'vitest/prefer-hooks-on-top': 'error',
       'vitest/prefer-import-in-mock': 'error',
       'vitest/prefer-importing-vitest-globals': 'error',
@@ -184,7 +186,6 @@ export default defineConfig(
       'vitest/prefer-mock-promise-shorthand': 'error',
       'vitest/prefer-snapshot-hint': 'error',
       'vitest/prefer-spy-on': 'error',
-      'vitest/prefer-strict-boolean-matchers': 'error',
       'vitest/prefer-strict-equal': 'error',
       'vitest/prefer-to-be-falsy': 'off',
       'vitest/prefer-to-be-object': 'error',

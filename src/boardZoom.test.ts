@@ -129,6 +129,6 @@ describe('boardZoom', () => {
 
     expect(viewport.dispatchEvent(event)).toBe(true);
     expect(event.defaultPrevented).toBe(false);
-    expect(onZoomChange).toHaveBeenCalledExactlyOnceWith();
+    expect(onZoomChange).toHaveBeenCalledExactlyOnceWith(0.1);
   });
 });

@@ -33,13 +33,13 @@ const card: Event = {
 
 describe('componentStyles', () => {
   it('exports camelCase keys for dot notation without kebab-case aliases', () => {
-    expect(logStyles.gameLogReadable).toBe(true);
+    expect(logStyles.gameLogReadable).toBeTruthy();
     expect(logStyles).not.toHaveProperty('game-log-readable');
-    expect(playedStyles.linkTop).toBe(true);
-    expect(playedStyles.linkBottom).toBe(true);
+    expect(playedStyles.linkTop).toBeTruthy();
+    expect(playedStyles.linkBottom).toBeTruthy();
 
     for (const owner of ['0', '1', '2', '3', 'Neutral'] as const) {
-      expect(ownerStyles[`owner${owner}`]).toBe(true);
+      expect(ownerStyles[`owner${owner}`]).toBeTruthy();
     }
   });
 
@@ -134,7 +134,7 @@ describe('componentStyles', () => {
           ? ownerStyles.ownerNeutral
           : ownerStyles[`owner${owner}`];
 
-      expect(expected).toBe(true);
+      expect(expected).toBeTruthy();
       await expect
         .element(page.getByCSS(`[data-owner="${owner}"]`))
         .toHaveClass(...expected.split(' '));

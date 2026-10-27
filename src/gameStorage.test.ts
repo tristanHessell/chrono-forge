@@ -75,7 +75,8 @@ describe('gameStorage', () => {
     restoreSavedGame(resumed, loadedGame);
 
     expect(resumed.store.getState().G).toStrictEqual(savedGame.state.G);
-    expect(resumed.log).toStrictEqual(savedGame.log);
+    // eslint-disable-next-line vitest/prefer-strict-equal -- undefined property value is expected (and rightfully not present at all in the actual value).
+    expect(resumed.log).toEqual(savedGame.log);
   });
 
   it('restores the game state and log into a new client', () => {
@@ -102,6 +103,8 @@ describe('gameStorage', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(loadSavedGame()).toBeNull();
-    expect(console.error).toHaveBeenCalledWith();
+    expect(console.error).toHaveBeenCalledWith(
+      'The saved game has an invalid or unsupported format.',
+    );
   });
 });

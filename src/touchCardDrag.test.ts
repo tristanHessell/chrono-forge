@@ -69,7 +69,10 @@ describe('touch card dragging', () => {
       drag.move(pointer({ clientY: 300 }));
       drag.end(pointer({ clientX: 150, clientY: 200 }));
 
-      expect(callbacks.onStart).toHaveBeenCalledExactlyOnceWith();
+      expect(callbacks.onStart).toHaveBeenCalledExactlyOnceWith(
+        'event',
+        'hand',
+      );
       expect(callbacks.onDrop).toHaveBeenCalledExactlyOnceWith(
         'event',
         'hand',
@@ -119,7 +122,7 @@ describe('touch card dragging', () => {
     expect(callbacks.onStart).toHaveBeenCalledWith('pending-event', 'pending');
     expect(callbacks.onDrop).not.toHaveBeenCalled();
     expect(callbacks.onFinish).toHaveBeenCalledExactlyOnceWith();
-    expect(target.releasePointerCapture).toHaveBeenCalledExactlyOnceWith();
+    expect(target.releasePointerCapture).toHaveBeenCalledExactlyOnceWith(1);
   });
 
   it('uses current callbacks after highlighting causes a render', () => {
@@ -131,7 +134,10 @@ describe('touch card dragging', () => {
     drag.updateCallbacks({ ...callbacks, onDrop });
     drag.end(pointer({ clientY: 200 }));
 
-    expect(onDrop).toHaveBeenCalledExactlyOnceWith();
+    expect(onDrop).toHaveBeenCalledExactlyOnceWith('event', 'hand', {
+      x: 100,
+      y: 200,
+    });
     expect(callbacks.onDrop).not.toHaveBeenCalled();
 
     drag.resetClickSuppression();
