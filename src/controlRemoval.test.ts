@@ -116,7 +116,7 @@ function clientFor(
   });
 }
 
-describe('Take Control and Remove Event', () => {
+describe('take Control and Remove Event', () => {
   it.each(['bonus', 'draw'])(
     'takes control of %s, including its valid points, without triggering a draw',
     (target) => {
@@ -128,21 +128,27 @@ describe('Take Control and Remove Event', () => {
       const after = client.getState()!.G;
       const original = before.played.find((card) => card.id === target)!;
 
-      expect(after.played.find((card) => card.id === target)).toEqual({
+      expect(after.played.find((card) => card.id === target)).toStrictEqual({
         ...original,
         owner: '0',
       });
-      expect(after.deck).toEqual(before.deck);
-      expect(after.discarded.map((card) => card.id)).toEqual(['manipulation']);
+      expect(after.deck).toStrictEqual(before.deck);
+      expect(after.discarded.map((card) => card.id)).toStrictEqual([
+        'manipulation',
+      ]);
       expect(after.actionsThisTurn).toBe(1);
       expect(calculateScoreBreakdown(after.played)['0']?.total ?? 0).toBe(
         target === 'bonus' ? 2 : 1,
       );
+
       client.moves.undoTest();
-      expect(client.getState()!.G.played).toEqual(before.played);
-      expect(client.getState()!.G.hands).toEqual(before.hands);
+
+      expect(client.getState()!.G.played).toStrictEqual(before.played);
+      expect(client.getState()!.G.hands).toStrictEqual(before.hands);
+
       client.moves.redoTest();
-      expect(client.getState()!.G.played).toEqual(after.played);
+
+      expect(client.getState()!.G.played).toStrictEqual(after.played);
     },
   );
 
@@ -157,21 +163,25 @@ describe('Take Control and Remove Event', () => {
       const after = client.getState()!.G;
 
       expect(after.played).toHaveLength(before.played.length);
-      expect(after.played.find((card) => card.id === target)).toEqual({
+      expect(after.played.find((card) => card.id === target)).toStrictEqual({
         ...before.played.find((card) => card.id === target),
         removed: true,
       });
-      expect(calculateScoreBreakdown(after.played)['1']).toEqual({
+      expect(calculateScoreBreakdown(after.played)['1']).toStrictEqual({
         base: 1,
         bonus: 0,
         total: 1,
       });
       expect(isValidBoard(after.played)).toBe(true);
-      expect(after.deck).toEqual(before.deck);
+      expect(after.deck).toStrictEqual(before.deck);
+
       client.moves.undoTest();
-      expect(client.getState()!.G.played).toEqual(before.played);
+
+      expect(client.getState()!.G.played).toStrictEqual(before.played);
+
       client.moves.redoTest();
-      expect(client.getState()!.G.played).toEqual(after.played);
+
+      expect(client.getState()!.G.played).toStrictEqual(after.played);
     },
   );
 
@@ -200,7 +210,8 @@ describe('Take Control and Remove Event', () => {
       client.moves.manipulate('manipulation', 'start');
       client.moves.manipulate('manipulation', 'unknown');
       client.moves.manipulate('other', 'bonus');
-      expect(client.getState()!.G).toEqual(before);
+
+      expect(client.getState()!.G).toStrictEqual(before);
 
       if (action === 'take-control') {
         expect(applyManipulation(board(), action, 'bonus', '1')).toBeNull();
@@ -236,13 +247,15 @@ describe('Take Control and Remove Event', () => {
     const client = clientFor('remove-event', board(), 1);
 
     client.moves.manipulate('manipulation', 'bonus');
+
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(canUndoMove(client.getState()!.G)).toBe(false);
 
     const after = client.getState()!.G;
 
     client.moves.undoTest();
-    expect(client.getState()!.G).toEqual(after);
+
+    expect(client.getState()!.G).toStrictEqual(after);
   });
 });
 
@@ -259,11 +272,14 @@ describe('overwriting removed Events', () => {
       row: 0,
       column: 2,
     });
+
     client.moves.playCard('replacement', { row: 0, column: 2 });
+
     expect(client.getState()!.G.pending?.id).toBe('replacement');
     expect(
       client.getState()!.G.played.find((card) => card.id === 'bonus')?.removed,
     ).toBe(true);
+
     client.moves.confirmPlacement();
 
     const after = client.getState()!.G;
@@ -281,8 +297,8 @@ describe('overwriting removed Events', () => {
     expect(
       after.played.find((card) => card.id === 'replacement')?.removed,
     ).toBeUndefined();
-    expect(after.discarded.map((card) => card.id)).toEqual(['bonus']);
-    expect(after.hands['0'].map((card) => card.id)).toEqual([
+    expect(after.discarded.map((card) => card.id)).toStrictEqual(['bonus']);
+    expect(after.hands['0'].map((card) => card.id)).toStrictEqual([
       'manipulation',
       'drawn',
     ]);
@@ -298,8 +314,10 @@ describe('overwriting removed Events', () => {
       ).size,
     ).toBe(8);
     expect(canUndoMove(after)).toBe(false);
+
     client.moves.undoTest();
-    expect(client.getState()!.G).toEqual(after);
+
+    expect(client.getState()!.G).toStrictEqual(after);
   });
 
   it('cancels an unconfirmed overwrite without discarding the old Event', () => {
@@ -308,9 +326,10 @@ describe('overwriting removed Events', () => {
 
     client.moves.playCard('replacement', { row: 0, column: 2 });
     client.moves.returnPendingCard();
-    expect(client.getState()!.G.played).toEqual(before.played);
-    expect(client.getState()!.G.discarded).toEqual([]);
-    expect(client.getState()!.G.hands).toEqual(before.hands);
+
+    expect(client.getState()!.G.played).toStrictEqual(before.played);
+    expect(client.getState()!.G.discarded).toStrictEqual([]);
+    expect(client.getState()!.G.hands).toStrictEqual(before.hands);
     expect(client.getState()!.G.actionsThisTurn).toBe(0);
   });
 
@@ -360,6 +379,7 @@ describe('overwriting removed Events', () => {
         row: 0,
         column: 1,
       });
+
       client.moves.playCard('replacement', { row: 0, column: 1 });
       client.moves.confirmPlacement();
 
@@ -372,12 +392,14 @@ describe('overwriting removed Events', () => {
         placedAt: 1,
         owner: '0',
       });
-      expect(after.discarded.map((card) => card.id)).toEqual(['source']);
+      expect(after.discarded.map((card) => card.id)).toStrictEqual(['source']);
       expect(isValidBoard(after.played)).toBe(true);
 
       expect(canUndoMove(after)).toBe(false);
+
       client.moves.undoTest();
-      expect(client.getState()!.G).toEqual(after);
+
+      expect(client.getState()!.G).toStrictEqual(after);
     },
   );
 
@@ -522,13 +544,15 @@ describe('overwriting removed Events', () => {
     const before = client.getState()!.G;
 
     expect(isValidPlacement(played, position, event)).toBe(true);
+
     client.moves.playCard('replacement', position);
+
     expect(client.getState()!.G.pending).toMatchObject({
       id: 'replacement',
       row: -1,
       column: 1,
     });
-    expect(client.getState()!.G.played).toEqual(before.played);
+    expect(client.getState()!.G.played).toStrictEqual(before.played);
   });
 });
 

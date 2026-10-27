@@ -1,6 +1,6 @@
 import { Client } from 'boardgame.io/client';
 import { IntlProvider } from 'react-intl';
-import { expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { page } from 'vitest/browser';
 
 import { render } from '../../tests/render';
@@ -9,63 +9,66 @@ import messages from '../i18n/en.json';
 import dialogStyles from './Dialog.module.css';
 import { GameLogControls } from './GameLogControls';
 
-vi.mock('./ThemeToggle', () => ({
+vi.mock(import('./ThemeToggle'), () => ({
   ThemeToggle: () => <button type="button">{messages['theme.label']}</button>,
 }));
 
-it('renders the game log trigger beside its dialog', async () => {
-  const client = Client({ game: CardGame, debug: false });
+describe(GameLogControls, () => {
+  it('renders the game log trigger beside its dialog', async () => {
+    const client = Client({ game: CardGame, debug: false });
 
-  render(
-    <IntlProvider locale="en" messages={messages}>
-      <GameLogControls
-        G={client.getState()!.G}
-        currentPlayer="0"
-        onOpen={() => {}}
-      />
-    </IntlProvider>,
-  );
+    render(
+      <IntlProvider locale="en" messages={messages}>
+        <GameLogControls
+          G={client.getState()!.G}
+          currentPlayer="0"
+          onOpen={() => {}}
+        />
+      </IntlProvider>,
+    );
 
-  const button = page.getByRole('button', { name: 'Game Log' });
+    const button = page.getByRole('button', { name: 'Game Log' });
 
-  await expect.element(button).toHaveAttribute('title', 'Game Log');
-  await expect.element(button).toHaveAttribute('data-icon-button', 'true');
-  expect(page.getByCSS('button[aria-label="Game Log"] + dialog').length).toBe(
-    1,
-  );
-  expect(
-    page.getByCSS('button[aria-label="Game Log"] svg[aria-hidden="true"]')
-      .length,
-  ).toBe(1);
-  client.stop();
-});
+    await expect.element(button).toHaveAttribute('title', 'Game Log');
+    await expect.element(button).toHaveAttribute('data-icon-button', 'true');
+    expect(
+      page.getByCSS('button[aria-label="Game Log"] + dialog'),
+    ).toHaveLength(1);
+    expect(
+      page.getByCSS('button[aria-label="Game Log"] svg[aria-hidden="true"]'),
+    ).toHaveLength(1);
 
-it('provides a labelled corner close icon instead of a text Close button', async () => {
-  const client = Client({ game: CardGame, debug: false });
+    client.stop();
+  });
 
-  render(
-    <IntlProvider locale="en" messages={messages}>
-      <GameLogControls
-        G={client.getState()!.G}
-        currentPlayer="0"
-        onOpen={() => {}}
-      />
-    </IntlProvider>,
-  );
+  it('provides a labelled corner close icon instead of a text Close button', async () => {
+    const client = Client({ game: CardGame, debug: false });
 
-  expect(page.getByCSS(`[class~="${dialogStyles.gameLogHeader}"]`).length).toBe(
-    1,
-  );
-  expect(page.getByCSS(`[class~="${dialogStyles.gameLogClose}"]`).length).toBe(
-    1,
-  );
+    render(
+      <IntlProvider locale="en" messages={messages}>
+        <GameLogControls
+          G={client.getState()!.G}
+          currentPlayer="0"
+          onOpen={() => {}}
+        />
+      </IntlProvider>,
+    );
 
-  const closeButton = page.getByCSS('button[aria-label="Close"]');
+    expect(
+      page.getByCSS(`[class~="${dialogStyles.gameLogHeader}"]`),
+    ).toHaveLength(1);
+    expect(
+      page.getByCSS(`[class~="${dialogStyles.gameLogClose}"]`),
+    ).toHaveLength(1);
 
-  expect(closeButton.length).toBe(1);
-  expect(
-    page.getByCSS('button[aria-label="Close"] svg[aria-hidden="true"]').length,
-  ).toBe(1);
-  await expect.element(closeButton).toHaveTextContent('');
-  client.stop();
+    const closeButton = page.getByCSS('button[aria-label="Close"]');
+
+    expect(closeButton).toHaveLength(1);
+    expect(
+      page.getByCSS('button[aria-label="Close"] svg[aria-hidden="true"]'),
+    ).toHaveLength(1);
+    await expect.element(closeButton).toHaveTextContent('');
+
+    client.stop();
+  });
 });

@@ -15,29 +15,33 @@ describe('discarding', () => {
     )!;
 
     client.moves.playCard(card.id, { row: 0, column: 1 });
+
     expect(client.getState()!.G.pending?.id).toBe(card.id);
 
     client.moves.discardCard(card.id);
 
     const after = client.getState()!;
 
-    expect(after.G.discarded).toEqual([card]);
+    expect(after.G.discarded).toStrictEqual([card]);
     expect(after.G.hands['0']).toHaveLength(4);
-    expect(after.G.deck).toEqual(initial.deck);
-    expect(after.G.played).toEqual(initial.played);
+    expect(after.G.deck).toStrictEqual(initial.deck);
+    expect(after.G.played).toStrictEqual(initial.played);
     expect(after.G.pending).toBeNull();
     expect(after.ctx.currentPlayer).toBe('0');
     expect(after.G.actionsThisTurn).toBe(1);
 
     client.moves.undoTest();
+
     expect(client.getState()!.ctx.currentPlayer).toBe('0');
-    expect(client.getState()!.G.hands['0']).toEqual(initial.hands['0']);
-    expect(client.getState()!.G.discarded).toEqual([]);
+    expect(client.getState()!.G.hands['0']).toStrictEqual(initial.hands['0']);
+    expect(client.getState()!.G.discarded).toStrictEqual([]);
+
     client.moves.redoTest();
+
     expect(client.getState()!.ctx.currentPlayer).toBe('0');
     expect(client.getState()!.G.actionsThisTurn).toBe(1);
-    expect(client.getState()!.G.hands['0']).toEqual(after.G.hands['0']);
-    expect(client.getState()!.G.discarded).toEqual([card]);
+    expect(client.getState()!.G.hands['0']).toStrictEqual(after.G.hands['0']);
+    expect(client.getState()!.G.discarded).toStrictEqual([card]);
   });
 
   it('rejects discarding another player’s card or an unknown card', () => {
@@ -49,7 +53,8 @@ describe('discarding', () => {
 
     client.moves.discardCard(initial.hands['1'][0].id);
     client.moves.discardCard('missing');
-    expect(client.getState()!.G).toEqual(initial);
+
+    expect(client.getState()!.G).toStrictEqual(initial);
     expect(client.getState()!.ctx.currentPlayer).toBe('0');
   });
 
@@ -73,8 +78,11 @@ describe('discarding', () => {
       expect(after.G.discarded).toHaveLength(count);
       expect(after.G.played).toHaveLength(1);
     }
+
     expect(client.getState()!.G.roundOver).toBe(true);
+
     client.moves.discardCard('missing');
+
     expect(client.getState()!.G.discarded).toHaveLength(46);
   });
 });

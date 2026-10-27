@@ -36,11 +36,11 @@ describe('base scoring', () => {
         placed(1980, 1, 0, 3, '1'),
         placed(1990, 0, 3, 4, '1'),
       ]),
-    ).toEqual({
+    ).toStrictEqual({
       '0': { base: 2, bonus: 0, total: 2 },
       '1': { base: 2, bonus: 1, total: 3 },
     });
-    expect(calculateScores([start])).toEqual({ '0': 0, '1': 0 });
+    expect(calculateScores([start])).toStrictEqual({ '0': 0, '1': 0 });
   });
 
   it('includes base and bonus points when the last play ends the game', () => {
@@ -67,15 +67,22 @@ describe('base scoring', () => {
     });
 
     client.moves.playCard('event-1990-1', { row: 0, column: 3 });
+
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
+
     client.moves.confirmPlacement();
+
     expect(client.getState()!.G.roundOver).toBe(true);
-    expect(calculateScoreBreakdown(client.getState()!.G.played)['0']).toEqual({
+    expect(
+      calculateScoreBreakdown(client.getState()!.G.played)['0'],
+    ).toStrictEqual({
       base: 3,
       bonus: 1,
       total: 4,
     });
+
     client.moves.undoTest();
+
     expect(client.getState()!.G.roundOver).toBe(false);
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
   });
@@ -94,18 +101,22 @@ describe('1900 timeline bonus', () => {
   it('scores a direct or indirect timeline connection for the 1990 owner', () => {
     expect(
       calculateScores([start, placed(1900, 0, 1, 1), placed(1990, 0, 2, 2)]),
-    ).toEqual({ '0': 3, '1': 0 });
-    expect(calculateScores([...timeline, placed(1990, 0, 3, 3, '1')])).toEqual({
+    ).toStrictEqual({ '0': 3, '1': 0 });
+    expect(
+      calculateScores([...timeline, placed(1990, 0, 3, 3, '1')]),
+    ).toStrictEqual({
       '0': 2,
       '1': 2,
     });
   });
 
   it('does not count a 1900 on a separate branch through the starting card', () => {
-    expect(calculateScores([...timeline, placed(1990, 1, 0, 3)])).toEqual({
-      '0': 3,
-      '1': 0,
-    });
+    expect(calculateScores([...timeline, placed(1990, 1, 0, 3)])).toStrictEqual(
+      {
+        '0': 3,
+        '1': 0,
+      },
+    );
   });
 
   it('counts each qualifying 1990 once and allows multiple cards to score', () => {
@@ -115,7 +126,7 @@ describe('1900 timeline bonus', () => {
       placed(1990, 1, 2, 4, '1'),
     ];
 
-    expect(calculateScores(played)).toEqual({ '0': 4, '1': 2 });
+    expect(calculateScores(played)).toStrictEqual({ '0': 4, '1': 2 });
 
     const two1900 = [
       start,
@@ -162,11 +173,16 @@ describe('1900 timeline bonus', () => {
     });
 
     client.moves.playCard('event-1990-1', { row: 0, column: 3 });
+
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
+
     client.moves.confirmPlacement();
+
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(4);
     expect(canUndoMove(client.getState()!.G)).toBe(false);
+
     client.moves.undoTest();
+
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(4);
   });
 });

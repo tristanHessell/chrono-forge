@@ -124,7 +124,7 @@ function clientFor(
   });
 }
 
-describe('Manipulation rules', () => {
+describe('manipulation rules', () => {
   it.each([false, true])(
     'overwrites a removed Event with Time Jump, preserving the moved card status (%s)',
     (removed) => {
@@ -188,21 +188,26 @@ describe('Manipulation rules', () => {
     const after = client.getState()!.G;
 
     expect(after.played).toHaveLength(before.played.length - 1);
-    expect(after.discarded.map((card) => card.id)).toEqual([
+    expect(after.discarded.map((card) => card.id)).toStrictEqual([
       'd',
       'manipulation',
     ]);
     expect(after.discarded[0]).not.toHaveProperty('removed');
-    expect(after.hands['0'].map((card) => card.id)).toEqual(['spare']);
-    expect(after.deck).toEqual(before.deck);
+    expect(after.hands['0'].map((card) => card.id)).toStrictEqual(['spare']);
+    expect(after.deck).toStrictEqual(before.deck);
     expect(after.actionsThisTurn).toBe(1);
     expect(after.played.find((card) => card.id === 'c')?.owner).toBe('1');
+
     client.moves.undoTest();
-    expect(client.getState()!.G.played).toEqual(before.played);
-    expect(client.getState()!.G.discarded).toEqual(before.discarded);
+
+    expect(client.getState()!.G.played).toStrictEqual(before.played);
+    expect(client.getState()!.G.discarded).toStrictEqual(before.discarded);
+
     client.moves.redoTest();
-    expect(client.getState()!.G.played).toEqual(after.played);
-    expect(client.getState()!.G.discarded).toEqual(after.discarded);
+
+    expect(client.getState()!.G.played).toStrictEqual(after.played);
+    expect(client.getState()!.G.discarded).toStrictEqual(after.discarded);
+
     client.stop();
   });
 
@@ -210,17 +215,19 @@ describe('Manipulation rules', () => {
     const original = board();
 
     original[2].number = 1910;
+
     expect(calculateScores(original)['0']).toBe(2);
 
     const swapped = applyTimeSwap(original, 'a', 'b')!;
 
     expect(calculateScores(swapped)['0']).toBe(3);
   });
+
   it('moves a card into an empty legal position without changing its metadata', () => {
     const original = board();
     const moved = applyTimeJump(original, 'c', { row: -1, column: 1 })!;
 
-    expect(moved.find((card) => card.id === 'c')).toEqual({
+    expect(moved.find((card) => card.id === 'c')).toStrictEqual({
       ...original[3],
       row: -1,
       column: 1,
@@ -237,9 +244,9 @@ describe('Manipulation rules', () => {
     const original = board();
     const swapped = applyTimeSwap(original, 'c', 'd')!;
 
-    expect(swapped[3]).toEqual({ ...original[3], row: 2, column: 0 });
-    expect(swapped[4]).toEqual({ ...original[4], row: 0, column: 2 });
-    expect(calculateScores(swapped)).toEqual(calculateScores(original));
+    expect(swapped[3]).toStrictEqual({ ...original[3], row: 2, column: 0 });
+    expect(swapped[4]).toStrictEqual({ ...original[4], row: 0, column: 2 });
+    expect(calculateScores(swapped)).toStrictEqual(calculateScores(original));
     expect(isValidBoard(swapped)).toBe(true);
   });
 
@@ -338,7 +345,7 @@ describe('Manipulation rules', () => {
   });
 });
 
-describe('Manipulation game moves', () => {
+describe('manipulation game moves', () => {
   it.each(['time-jump', 'time-swap'] as const)(
     'uses %s as one action and supports undo/redo',
     (action) => {
@@ -353,20 +360,26 @@ describe('Manipulation game moves', () => {
 
       const after = client.getState()!;
 
-      expect(after.G.played).not.toEqual(before.G.played);
-      expect(after.G.discarded).toEqual([before.G.hands['0'][0]]);
-      expect(after.G.hands['0']).toEqual([before.G.hands['0'][1]]);
-      expect(after.G.deck).toEqual(before.G.deck); // Moving a 1940 card does not draw again.
+      expect(after.G.played).not.toStrictEqual(before.G.played);
+      expect(after.G.discarded).toStrictEqual([before.G.hands['0'][0]]);
+      expect(after.G.hands['0']).toStrictEqual([before.G.hands['0'][1]]);
+      expect(after.G.deck).toStrictEqual(before.G.deck); // Moving a 1940 card does not draw again.
       expect(after.G.actionsThisTurn).toBe(1);
       expect(after.G.nextPlacementOrder).toBe(5);
       expect(after.ctx.currentPlayer).toBe('0');
+
       client.moves.undoTest();
-      expect(client.getState()!.G.played).toEqual(before.G.played);
-      expect(client.getState()!.G.hands['0']).toEqual(before.G.hands['0']);
+
+      expect(client.getState()!.G.played).toStrictEqual(before.G.played);
+      expect(client.getState()!.G.hands['0']).toStrictEqual(
+        before.G.hands['0'],
+      );
       expect(client.getState()!.G.actionsThisTurn).toBe(0);
+
       client.moves.redoTest();
-      expect(client.getState()!.G.played).toEqual(after.G.played);
-      expect(client.getState()!.G.discarded).toEqual(after.G.discarded);
+
+      expect(client.getState()!.G.played).toStrictEqual(after.G.played);
+      expect(client.getState()!.G.discarded).toStrictEqual(after.G.discarded);
     },
   );
 
@@ -374,15 +387,17 @@ describe('Manipulation game moves', () => {
     const client = clientFor('time-jump', { actionsThisTurn: 1 });
 
     client.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
+
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.hands['0']).toHaveLength(2);
-    expect(client.getState()!.G.deck).toEqual([]);
+    expect(client.getState()!.G.deck).toStrictEqual([]);
     expect(client.getState()!.G.undoBlocked).toBe(true);
 
     const after = client.getState()!.G;
 
     client.moves.undoTest();
-    expect(client.getState()!.G).toEqual(after);
+
+    expect(client.getState()!.G).toStrictEqual(after);
   });
 
   it('rejects invalid targets, wrong card kinds, wrong action arguments and other hands without spending an action', () => {
@@ -393,7 +408,8 @@ describe('Manipulation game moves', () => {
     client.moves.manipulate('manipulation', 'c', 'd');
     client.moves.manipulate('spare', 'c', { row: -1, column: 1 });
     client.moves.manipulate('other', 'c', { row: -1, column: 1 });
-    expect(client.getState()!.G).toEqual(before);
+
+    expect(client.getState()!.G).toStrictEqual(before);
   });
 
   it('does not manipulate during an unconfirmed placement or after game end', () => {
@@ -404,13 +420,15 @@ describe('Manipulation game moves', () => {
     const before = client.getState()!.G;
 
     client.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
-    expect(client.getState()!.G).toEqual(before);
+
+    expect(client.getState()!.G).toStrictEqual(before);
 
     const ended = clientFor('time-jump', { roundOver: true });
     const final = ended.getState()!.G;
 
     ended.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
-    expect(ended.getState()!.G).toEqual(final);
+
+    expect(ended.getState()!.G).toStrictEqual(final);
   });
 
   it.each(['time-jump', 'time-swap'] as const)(

@@ -1,32 +1,34 @@
 import { IntlProvider } from 'react-intl';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { page } from 'vitest/browser';
 
 import { render } from '../../tests/render';
 import messages from '../i18n/en.json';
 import { CardPatternsToggle } from './CardPatternsToggle';
 
-afterEach(() => vi.unstubAllGlobals());
+describe(CardPatternsToggle, () => {
+  afterEach(() => vi.unstubAllGlobals());
 
-it.each(['on', 'off', null])(
-  'shows the saved pattern preference: %s',
-  async (value) => {
-    vi.stubGlobal('localStorage', { getItem: () => value });
+  it.each(['on', 'off', null])(
+    'shows the saved pattern preference: %s',
+    async (value) => {
+      vi.stubGlobal('localStorage', { getItem: () => value });
 
-    render(
-      <IntlProvider locale="en" messages={messages}>
-        <CardPatternsToggle />
-      </IntlProvider>,
-    );
+      render(
+        <IntlProvider locale="en" messages={messages}>
+          <CardPatternsToggle />
+        </IntlProvider>,
+      );
 
-    await expect
-      .element(page.getByText('Colour-independent backgrounds'))
-      .toBeInTheDocument();
+      await expect
+        .element(page.getByText('Colour-independent backgrounds'))
+        .toBeInTheDocument();
 
-    if (value === 'on') {
-      await expect.element(page.getByRole('checkbox')).toBeChecked();
-    } else {
-      await expect.element(page.getByRole('checkbox')).not.toBeChecked();
-    }
-  },
-);
+      if (value === 'on') {
+        await expect.element(page.getByRole('checkbox')).toBeChecked();
+      } else {
+        await expect.element(page.getByRole('checkbox')).not.toBeChecked();
+      }
+    },
+  );
+});
