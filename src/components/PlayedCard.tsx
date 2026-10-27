@@ -1,11 +1,5 @@
 import clsx from 'clsx';
-import { useEffect, useRef } from 'react';
-import {
-  type CSSProperties,
-  type DragEvent,
-  type ReactNode,
-  useContext,
-} from 'react';
+import { use, useEffect, useRef } from 'react';
 import type { MessageValue } from 'react-intl';
 import { useIntl } from 'react-intl';
 
@@ -27,13 +21,13 @@ import playedCardStyles from './PlayedCard.module.css';
 
 type PlayedCardProps = {
   card: PlacedCard | EventCard;
-  style?: CSSProperties;
-  links?: ReactNode;
+  style?: React.CSSProperties;
+  links?: React.ReactNode;
   isLatest?: boolean;
   onTarget?: () => void;
   onShowDetails?: (card: EventCard) => void;
-  onDragOver?: (event: DragEvent<HTMLDivElement>) => void;
-  onDrop?: (event: DragEvent<HTMLDivElement>) => void;
+  onDragOver?: (event: React.DragEvent<HTMLDivElement>) => void;
+  onDrop?: (event: React.DragEvent<HTMLDivElement>) => void;
   selected?: boolean;
 };
 
@@ -48,9 +42,9 @@ export function PlayedCard({
   onDrop,
   selected,
 }: PlayedCardProps) {
-  const targetClickTimer = useRef<number | null>(null);
+  const targetClickTimerRef = useRef<number | null>(null);
   const intl = useIntl();
-  const players = useContext(PlayerSetupContext);
+  const players = use(PlayerSetupContext);
   const owner = 'owner' in card ? card.owner : 'neutral';
   const ownerName =
     owner === 'neutral'
@@ -74,8 +68,8 @@ export function PlayedCard({
 
   useEffect(
     () => () => {
-      if (targetClickTimer.current !== null) {
-        window.clearTimeout(targetClickTimer.current);
+      if (targetClickTimerRef.current !== null) {
+        window.clearTimeout(targetClickTimerRef.current);
       }
     },
     [],
@@ -140,26 +134,26 @@ export function PlayedCard({
           return;
         }
 
-        if (targetClickTimer.current !== null) {
-          window.clearTimeout(targetClickTimer.current);
-          targetClickTimer.current = null;
+        if (targetClickTimerRef.current !== null) {
+          window.clearTimeout(targetClickTimerRef.current);
+          targetClickTimerRef.current = null;
         }
 
         if (event.detail > 1) {
           return;
         }
 
-        targetClickTimer.current = window.setTimeout(() => {
-          targetClickTimer.current = null;
+        targetClickTimerRef.current = window.setTimeout(() => {
+          targetClickTimerRef.current = null;
           onTarget();
         }, 500);
       }}
       onDoubleClick={(event) => {
         event.preventDefault();
 
-        if (targetClickTimer.current !== null) {
-          window.clearTimeout(targetClickTimer.current);
-          targetClickTimer.current = null;
+        if (targetClickTimerRef.current !== null) {
+          window.clearTimeout(targetClickTimerRef.current);
+          targetClickTimerRef.current = null;
         }
 
         onShowDetails?.(card);

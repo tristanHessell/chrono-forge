@@ -88,8 +88,8 @@ export function CardEffects({
 
   return (
     <span className={cardEffectStyles.cardEffects}>
-      {effects.map((effect, index) => (
-        <CardEffect effect={effect} key={`${effect}-${index}`} />
+      {effects.map((effect) => (
+        <CardEffect effect={effect} key={effect} />
       ))}
     </span>
   );

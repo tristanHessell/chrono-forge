@@ -14,20 +14,20 @@ type Props = {
 
 export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
   const intl = useIntl();
-  const menu = useRef<HTMLDetailsElement>(null);
-  const trigger = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDetailsElement>(null);
+  const triggerRef = useRef<HTMLElement>(null);
   const closeMenu = (restoreFocus = false) => {
-    menu.current?.removeAttribute('open');
+    menuRef.current?.removeAttribute('open');
 
     if (restoreFocus) {
-      trigger.current?.focus();
+      triggerRef.current?.focus();
     }
   };
 
   useEffect(() => {
     const closeOutside = (event: PointerEvent) => {
-      if (!menu.current?.contains(event.target as Node)) {
-        menu.current?.removeAttribute('open');
+      if (!menuRef.current?.contains(event.target as Node)) {
+        menuRef.current?.removeAttribute('open');
       }
     };
 
@@ -42,7 +42,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- interactions are for handling the closing of the menu, rather than being directly interacted with by the user
     <details
       className={gameMenuStyles.gameMenu}
-      ref={menu}
+      ref={menuRef}
       onBlur={(event) => {
         if (focusMovedOutside(event.currentTarget, event.relatedTarget)) {
           closeMenu();
@@ -57,7 +57,7 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
     >
       <summary
         className={controlsStyles.historyButton}
-        ref={trigger}
+        ref={triggerRef}
         aria-label={intl.formatMessage({
           id: 'menu.title',
           defaultMessage: 'Game menu',

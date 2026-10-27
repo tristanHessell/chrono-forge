@@ -1,5 +1,5 @@
 import type { LogEntry, State } from 'boardgame.io';
-import { Client } from 'boardgame.io/client';
+import { type Client } from 'boardgame.io/client';
 
 import type { CardGameState, PlayerId } from './game';
 import type { PlayerCount } from './playerCount';

@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function TitleScreen({ onContinue, onStart }: Props) {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   return (
     <main className={titleScreenStyles.titleScreen}>
@@ -40,7 +40,7 @@ export function TitleScreen({ onContinue, onStart }: Props) {
           )}
           <button
             className={titleScreenStyles.startButton}
-            onClick={() => dialog.current?.showModal()}
+            onClick={() => dialogRef.current?.showModal()}
             type="button"
           >
             <FormattedMessage
@@ -51,7 +51,7 @@ export function TitleScreen({ onContinue, onStart }: Props) {
         </div>
       </section>
       <NewGameDialog
-        dialogRef={dialog}
+        dialogRef={dialogRef}
         initialPlayers={createDefaultPlayers()}
         onStart={onStart}
       />

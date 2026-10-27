@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { use, useRef, useState } from 'react';
 import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -23,8 +23,8 @@ type Props = {
 
 export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
   const intl = useIntl();
-  const { seed, loadLog } = useContext(GameLogContext);
-  const dialog = useRef<HTMLDialogElement>(null);
+  const { seed, loadLog } = use(GameLogContext);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [text, setText] = useState('');
   const [steps, setSteps] = useState('');
   const [status, setStatus] = useState('');
@@ -37,7 +37,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
     setText('');
     setSteps('');
     setStatus('');
-    dialog.current?.showModal();
+    dialogRef.current?.showModal();
   };
   const replay = () => {
     try {
@@ -101,7 +101,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
         </svg>
       </button>
       <dialog
-        ref={dialog}
+        ref={dialogRef}
         className={dialogStyles.gameLogDialog}
         aria-labelledby="game-log-title"
       >
@@ -116,7 +116,7 @@ export function GameLogControls({ G, currentPlayer, onOpen }: Props) {
               id: 'log.close',
               defaultMessage: 'Close',
             })}
-            onClick={() => dialog.current?.close()}
+            onClick={() => dialogRef.current?.close()}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24">
               <path d="m6 6 12 12M18 6 6 18" />

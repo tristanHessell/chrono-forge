@@ -1,4 +1,4 @@
-import { defineMessages, TypedMessageDescriptor } from 'react-intl';
+import { defineMessages, type TypedMessageDescriptor } from 'react-intl';
 
 import type {
   CardEffect,

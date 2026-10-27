@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { type CSSProperties, type DragEvent, useState } from 'react';
+import { useState } from 'react';
 import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -35,10 +35,10 @@ type CardHandProps = {
   isReturnTarget: boolean;
   selectedCardId: string | null;
   onChoose: (cardId: string) => void;
-  onDragStart: (event: DragEvent<HTMLElement>, cardId: string) => void;
+  onDragStart: (event: React.DragEvent<HTMLElement>, cardId: string) => void;
   onDragEnd: () => void;
-  onDragOver: (event: DragEvent<HTMLElement>) => void;
-  onDrop: (event: DragEvent<HTMLElement>) => void;
+  onDragOver: (event: React.DragEvent<HTMLElement>) => void;
+  onDrop: (event: React.DragEvent<HTMLElement>) => void;
   onShowDetails?: (card: Card) => void;
   touchDrag?: TouchCardDragHandlers;
 };
@@ -84,7 +84,7 @@ export function CardHand({
     setHoveredCardId(null);
     onDragEnd();
   };
-  const previewHandReorder = (event: DragEvent<HTMLDivElement>) => {
+  const previewHandReorder = (event: React.DragEvent<HTMLDivElement>) => {
     if (!draggedId) {
       if (isReturnTarget) {
         onDragOver(event);
@@ -263,7 +263,9 @@ export function CardHand({
         <div
           className={cardHandStyles.handFan}
           data-hand-fan
-          style={{ '--hand-count': Math.max(1, cards.length) } as CSSProperties}
+          style={
+            { '--hand-count': Math.max(1, cards.length) } as React.CSSProperties
+          }
         >
           {renderedCards.map((card) => {
             const index = orderedCards.findIndex(
@@ -299,7 +301,7 @@ export function CardHand({
                     [cardHandStyles.handCardDragging]: draggedId === card.id,
                   },
                 )}
-                style={{ '--hand-index': index } as CSSProperties}
+                style={{ '--hand-index': index } as React.CSSProperties}
                 data-card-type={card.type}
                 data-hand-card
                 data-event-category={card.category}

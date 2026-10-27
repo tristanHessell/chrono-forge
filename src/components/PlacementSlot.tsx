@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import type { CSSProperties, DragEvent } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card, CardPosition } from '../game';
@@ -21,11 +20,11 @@ type PlacementSlotProps = {
   draggedCard: Card | null | undefined;
   isDragActive: boolean;
   isPreview: boolean;
-  style?: CSSProperties;
+  style?: React.CSSProperties;
   onClick: () => void;
-  onDragEnter: (event: DragEvent<HTMLElement>) => void;
-  onDragOver: (event: DragEvent<HTMLElement>) => void;
-  onDrop: (event: DragEvent<HTMLElement>) => void;
+  onDragEnter: (event: React.DragEvent<HTMLElement>) => void;
+  onDragOver: (event: React.DragEvent<HTMLElement>) => void;
+  onDrop: (event: React.DragEvent<HTMLElement>) => void;
 };
 
 export function PlacementSlot({
