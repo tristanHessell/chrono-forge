@@ -31,7 +31,7 @@ export function ThemeToggle() {
 
   return (
     <label className={themeToggleStyles.themeChoice}>
-      <FormattedMessage id={'theme.label'} defaultMessage={'Theme'} />
+      <FormattedMessage id="theme.label" defaultMessage="Theme" />
       <select
         aria-label={intl.formatMessage({
           id: 'theme.label',

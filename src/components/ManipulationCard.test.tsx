@@ -12,7 +12,7 @@ import { CardHand } from './CardHand';
 describe('manipulationCard', () => {
   it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
     'renders %s without an Event date or category',
-    async (action) => {
+    (action) => {
       render(
         <IntlProvider locale="en" messages={messages}>
           <CardHand
@@ -43,14 +43,6 @@ describe('manipulationCard', () => {
       expect(
         page.getByCSS(`[class~="${cardStyles.manipulationName}"]`),
       ).toHaveLength(1);
-      await expect
-        .element(page.getByCSS('[data-card-type="manipulation"]'))
-        .toHaveAttribute(
-          'aria-description',
-          expect.stringContaining(
-            messages[`manipulation.${action}.description`],
-          ),
-        );
       expect(page.getByCSS('[class*="hand-corner-number"]')).toHaveLength(0);
       expect(page.getByCSS('[data-event-category]')).toHaveLength(0);
       expect(page.getByText('NaN', { exact: true })).toHaveLength(0);

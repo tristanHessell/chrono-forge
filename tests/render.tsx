@@ -28,12 +28,14 @@ export function render(element: ReactNode) {
 
   roots.push(root);
 
+  // eslint-disable-next-line @eslint-react/dom-no-flush-sync -- TODO explain why this is necessary
   flushSync(() => {
     root.render(element);
   });
 }
 
 afterEach(() => {
+  // eslint-disable-next-line @eslint-react/dom-no-flush-sync -- TODO explain why this is necessary
   flushSync(() => {
     for (const root of roots) {
       root.unmount();

@@ -85,6 +85,8 @@
   "devDependencies": {
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
+    "@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
+    "@eslint-react/eslint-plugin": "5.28.8",
     "@eslint/js": "9.39.5",
     "@formatjs/cli": "6.16.32",
     "@stylistic/eslint-plugin": "5.10.0",
@@ -99,6 +101,7 @@
     "cz-conventional-changelog": "3.3.0",
     "eslint": "9.39.5",
     "eslint-plugin-formatjs": "8.1.2",
+    "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-perfectionist": "5.13.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.4.26",

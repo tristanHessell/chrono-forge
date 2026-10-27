@@ -16,6 +16,7 @@ import {
 } from '../i18n/messageDescriptors';
 import type { PlayerType } from '../playerSetup';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
+import { AriaDescription } from './AriaDescription';
 import cardStyles from './Card.module.css';
 import cardHandStyles from './CardHand.module.css';
 import { HandCardFace } from './HandCardFace';
@@ -214,11 +215,12 @@ export function CardHand({
                 setFocusedCardId(null);
               }}
             >
-              <FormattedMessage id={'hand.orderDate'} defaultMessage={'Date'} />
+              <FormattedMessage id="hand.orderDate" defaultMessage="Date" />
             </button>
           ))}
         </div>
       </div>
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- TODO this will need to change once we use role="application" */}
       <div
         aria-label={
           owner === '0'
@@ -276,30 +278,7 @@ export function CardHand({
                 aria-pressed={
                   selectedCardId === card.id || pendingCardId === card.id
                 }
-                aria-description={[
-                  card.type === 'manipulation'
-                    ? intl.formatMessage(
-                        manipulationDescriptionMessages[card.action],
-                      )
-                    : '',
-                  ...(card.type === 'event'
-                    ? (card.effects?.map((effect) =>
-                        intl.formatMessage(effectDescriptionMessages[effect]),
-                      ) ?? [])
-                    : []),
-                  intl.formatMessage({
-                    id: 'hand.reorderHint',
-                    defaultMessage:
-                      'Drag within your hand to reorder, or use Alt + Left or Right arrow while focused.',
-                  }),
-                  intl.formatMessage({
-                    id: 'card.detailsHint',
-                    defaultMessage:
-                      'Double-click or press Alt + Enter to view card details.',
-                  }),
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                aria-describedby=""
                 className={clsx(
                   cardStyles.card,
                   cardHandStyles.playable,
@@ -397,6 +376,32 @@ export function CardHand({
                 }}
                 type="button"
               >
+                <AriaDescription id="">
+                  {[
+                    card.type === 'manipulation'
+                      ? intl.formatMessage(
+                          manipulationDescriptionMessages[card.action],
+                        )
+                      : '',
+                    ...(card.type === 'event'
+                      ? (card.effects?.map((effect) =>
+                          intl.formatMessage(effectDescriptionMessages[effect]),
+                        ) ?? [])
+                      : []),
+                    intl.formatMessage({
+                      id: 'hand.reorderHint',
+                      defaultMessage:
+                        'Drag within your hand to reorder, or use Alt + Left or Right arrow while focused.',
+                    }),
+                    intl.formatMessage({
+                      id: 'card.detailsHint',
+                      defaultMessage:
+                        'Double-click or press Alt + Enter to view card details.',
+                    }),
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                </AriaDescription>
                 <HandCardFace card={card} />
                 {pendingCardId === card.id && (
                   <small
@@ -404,8 +409,8 @@ export function CardHand({
                     data-drag-decoration
                   >
                     <FormattedMessage
-                      id={'hand.onTable'}
-                      defaultMessage={'On table'}
+                      id="hand.onTable"
+                      defaultMessage="On table"
                     />
                   </small>
                 )}

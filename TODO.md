@@ -75,3 +75,5 @@ Make the discards private in the game log (unless they are for the human player)
 ---
 
 Linting: order of object properties
+
+Linting: Use global react namespace for types
