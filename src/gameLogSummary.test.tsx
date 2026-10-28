@@ -122,14 +122,14 @@ describe('gameLogSummary', () => {
 
       // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
       if (action === 'time-jump') {
-        client.moves.manipulate(command.id, 'event-1920-3', {
+        client.moves.command(command.id, 'event-1920-3', {
           column: 1,
           row: -1,
         });
       } else if (action === 'time-swap') {
-        client.moves.manipulate(command.id, 'event-1920-3', 'event-1910-2');
+        client.moves.command(command.id, 'event-1920-3', 'event-1910-2');
       } else {
-        client.moves.manipulate(command.id, 'event-1940-3');
+        client.moves.command(command.id, 'event-1940-3');
       }
 
       const state = client.getState()!;

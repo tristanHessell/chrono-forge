@@ -68,13 +68,13 @@ import { useComputerOpponent } from './useComputerOpponent';
 import { useTouchCardDrag } from './useTouchCardDrag';
 
 type CardGameMoves = {
-  confirmPlacement: () => void;
-  discardCard: (cardId: string) => void;
-  manipulate: (
+  command: (
     cardId: string,
     targetId: string,
     destination?: CardPosition | string,
   ) => void;
+  confirmPlacement: () => void;
+  discardCard: (cardId: string) => void;
   movePendingCard: (position: CardPosition) => void;
   playCard: (cardId: string, position: CardPosition) => void;
   redoTest: () => void;
@@ -370,7 +370,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const placeSelectedCard = (position: CardPosition) => {
     if (command && commandTargetId) {
       lastJumpDestinationRef.current = position;
-      gameMoves.manipulate(command.id, commandTargetId, position);
+      gameMoves.command(command.id, commandTargetId, position);
       setSelectedCardId(null);
       setCommandTargetId(null);
 
@@ -491,7 +491,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       command.action === 'take-control' ||
       command.action === 'remove-event'
     ) {
-      gameMoves.manipulate(command.id, targetId);
+      gameMoves.command(command.id, targetId);
       setSelectedCardId(null);
       setCommandTargetId(null);
     } else {
@@ -1264,7 +1264,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                                     command?.action === 'take-control' ||
                                     command?.action === 'remove-event'
                                   ) {
-                                    gameMoves.manipulate(command.id, card.id);
+                                    gameMoves.command(command.id, card.id);
                                     setSelectedCardId(null);
                                     setCommandTargetId(null);
 
@@ -1274,7 +1274,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                                     command?.action === 'time-swap' &&
                                     commandTargetId
                                   ) {
-                                    gameMoves.manipulate(
+                                    gameMoves.command(
                                       command.id,
                                       commandTargetId,
                                       card.id,

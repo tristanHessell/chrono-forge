@@ -119,7 +119,7 @@ describe('take Control and Remove Event', () => {
       const client = clientFor('take-control');
       const before = client.getState()!.G;
 
-      client.moves.manipulate('command', target);
+      client.moves.command('command', target);
 
       const after = client.getState()!.G;
       const original = before.played.find((card) => card.id === target)!;
@@ -152,7 +152,7 @@ describe('take Control and Remove Event', () => {
       const client = clientFor('remove-event');
       const before = client.getState()!.G;
 
-      client.moves.manipulate('command', target);
+      client.moves.command('command', target);
 
       const after = client.getState()!.G;
 
@@ -195,9 +195,9 @@ describe('take Control and Remove Event', () => {
     const client = clientFor(action);
     const before = client.getState()!.G;
 
-    client.moves.manipulate('command', 'start');
-    client.moves.manipulate('command', 'unknown');
-    client.moves.manipulate('other', 'bonus');
+    client.moves.command('command', 'start');
+    client.moves.command('command', 'unknown');
+    client.moves.command('other', 'bonus');
 
     expect(client.getState()!.G).toStrictEqual(before);
 
@@ -209,9 +209,9 @@ describe('take Control and Remove Event', () => {
     const client = clientFor(action);
     const before = client.getState()!.G;
 
-    client.moves.manipulate('command', 'start');
-    client.moves.manipulate('command', 'unknown');
-    client.moves.manipulate('other', 'bonus');
+    client.moves.command('command', 'start');
+    client.moves.command('command', 'unknown');
+    client.moves.command('other', 'bonus');
 
     expect(client.getState()!.G).toStrictEqual(before);
 
@@ -243,7 +243,7 @@ describe('take Control and Remove Event', () => {
   it('restores turn ownership and the removed status across second-action undo/redo', () => {
     const client = clientFor('remove-event', board(), 1);
 
-    client.moves.manipulate('command', 'bonus');
+    client.moves.command('command', 'bonus');
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(canUndoMove(client.getState()!.G)).toBe(false);
@@ -564,9 +564,9 @@ describe('computer control/removal decisions', () => {
       };
       const choice = chooseComputerAction(G, '0');
 
-      expect(choice?.type).toBe('manipulate');
+      expect(choice?.type).toBe('command');
 
-      assert(choice?.type === 'manipulate', 'Expected a Command');
+      assert(choice?.type === 'command', 'Expected a Command');
 
       expect(
         applyCommand(
