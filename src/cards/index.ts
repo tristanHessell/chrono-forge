@@ -48,7 +48,6 @@ import starting0 from './starting-event';
 
 // Preserve this order so existing seeds produce the same deals.
 const definitions = {
-  startingCard: starting0,
   deck: [
     event19001,
     event19101,
@@ -97,6 +96,7 @@ const definitions = {
     removeEvent3,
     removeEvent4,
   ],
+  startingCard: starting0,
 } as const;
 
 export default definitions;

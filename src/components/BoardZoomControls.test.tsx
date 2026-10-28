@@ -19,8 +19,8 @@ describe(BoardZoomControls, () => {
           <BoardZoomControls
             boardZoom={zoom}
             onFitAll={() => {}}
-            onZoomChange={() => {}}
             onResetZoom={() => {}}
+            onZoomChange={() => {}}
           />
         </IntlProvider>,
       );
@@ -44,6 +44,7 @@ describe(BoardZoomControls, () => {
         .element(page.getByCSS('button').nth(1))
         .toHaveTextContent(percent);
 
+      // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
       if (disabled) {
         await expect
           .element(page.getByRole('button', { name: disabled }))

@@ -37,8 +37,8 @@ export function HandCardFace({ card }: { card: Card }) {
       <span className={cardStyles.cardTypeName}>
         {card.type === 'manipulation'
           ? intl.formatMessage({
-              id: 'card.manipulation',
               defaultMessage: 'Command',
+              id: 'card.manipulation',
             })
           : card.category
             ? intl.formatMessage(categoryMessages[card.category])

@@ -18,12 +18,12 @@ function renderCardDetails(card: Card) {
 describe(CardDetailsDialog, () => {
   it('shows the date and every effect description in one dialog', async () => {
     renderCardDetails({
-      id: 'test-event',
-      type: 'event',
       category: 'technological',
+      effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
+      id: 'test-event',
       name: 'internet-expansion',
       number: 1990,
-      effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
+      type: 'event',
     });
 
     await expect
@@ -42,9 +42,9 @@ describe(CardDetailsDialog, () => {
 
   it('shows the Command action description as its effect', async () => {
     renderCardDetails({
+      action: 'time-jump',
       id: 'test-command',
       type: 'manipulation',
-      action: 'time-jump',
     });
 
     expect(page.getByText('Time Jump').length).toBeGreaterThan(0);

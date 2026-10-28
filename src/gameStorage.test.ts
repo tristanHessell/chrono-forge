@@ -1,5 +1,5 @@
 import { Client } from 'boardgame.io/client';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, assert, describe, expect, it, vi } from 'vitest';
 
 import { type CardGameState, createCardGame } from './game';
 import {
@@ -21,15 +21,15 @@ function createSave(): SavedGame {
   client.moves.discardCard(card.id);
 
   return {
-    version: 1,
-    seed: 'saved-game-seed',
-    numPlayers: 2,
-    startingPlayer: '0',
-    players: createDefaultPlayers(),
-    replayPaused: true,
-    state: client.getState()!,
     initialState: client.getInitialState(),
     log: client.log ?? [],
+    numPlayers: 2,
+    players: createDefaultPlayers(),
+    replayPaused: true,
+    seed: 'saved-game-seed',
+    startingPlayer: '0',
+    state: client.getState()!,
+    version: 1,
   };
 }
 
@@ -54,8 +54,8 @@ describe('gameStorage', () => {
     const loadedGame = loadSavedGame();
 
     expect(loadedGame).toMatchObject({
-      seed: savedGame.seed,
       replayPaused: true,
+      seed: savedGame.seed,
       state: { G: savedGame.state.G },
     });
     expect(values.has(gameStorageKey)).toBe(true);
@@ -68,9 +68,7 @@ describe('gameStorage', () => {
       numPlayers: savedGame.numPlayers,
     });
 
-    if (!loadedGame) {
-      throw new Error('The saved game did not load.');
-    }
+    assert(loadedGame, 'The saved game did not load.');
 
     restoreSavedGame(resumed, loadedGame);
 

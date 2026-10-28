@@ -29,7 +29,6 @@ export const extractMessageCatalog = (outFile = 'src/i18n/en.json') => {
 
 export const extractMessagesPlugin = (): Plugin => {
   return {
-    name: 'extract-message-catalog',
     buildStart: () => {
       extractMessageCatalog();
     },
@@ -52,5 +51,6 @@ export const extractMessagesPlugin = (): Plugin => {
         }
       });
     },
+    name: 'extract-message-catalog',
   };
 };

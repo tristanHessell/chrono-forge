@@ -33,9 +33,9 @@ describe(currentGameLog, () => {
     (numPlayers) => {
       const seed = `current-history-${numPlayers}`;
       const client = Client({
+        debug: false,
         game: { ...CardGame, seed },
         numPlayers,
-        debug: false,
       });
 
       for (
@@ -43,7 +43,7 @@ describe(currentGameLog, () => {
         index < 150 && !client.getState()!.G.roundOver;
         index += 1
       ) {
-        const { G, ctx } = client.getState()!;
+        const { ctx, G } = client.getState()!;
         const action = chooseComputerAction(G, ctx.currentPlayer as '0')!;
 
         if (action.type === 'play') {

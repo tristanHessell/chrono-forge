@@ -10,9 +10,9 @@ describe.each([2, 3, 4] as const)('%i-player seeded replay', (numPlayers) => {
   it('reproduces every confirmed action, turn transition and history', () => {
     const seed = 'replay-test';
     const client = Client({
+      debug: false,
       game: { ...CardGame, seed },
       numPlayers,
-      debug: false,
     });
     const states = [client.getState()!];
 
@@ -21,7 +21,7 @@ describe.each([2, 3, 4] as const)('%i-player seeded replay', (numPlayers) => {
       index < 24 || client.getState()!.G.pending;
       index += 1
     ) {
-      const { G, ctx } = client.getState()!;
+      const { ctx, G } = client.getState()!;
       const action = chooseComputerAction(G, ctx.currentPlayer as '0');
 
       if (!action) {
@@ -98,7 +98,7 @@ describe('gameLog', () => {
 
   it('keeps confirmed actions in the exported replay', () => {
     const seed = 'card-use-history';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
     const first = client.getState()!.G.hands['0'][0].id;
     const second = client.getState()!.G.hands['0'][1].id;
     const exported = () => parseGameLog(exportGameLog(seed, 2, client.log));
@@ -119,9 +119,9 @@ describe('gameLog', () => {
   it('preserves a non-zero starting player in a replay', () => {
     const seed = 'non-zero-starting-player';
     const client = Client({
+      debug: false,
       game: { ...createCardGame('1'), seed },
       numPlayers: 2,
-      debug: false,
     });
 
     client.moves.discardCard(client.getState()!.G.hands['1'][0].id);
@@ -141,12 +141,12 @@ describe('gameLog', () => {
 
   it('omits draft activity and records only the final confirmed card and position', () => {
     const seed = 'replay-test';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
     const initial = client.getState()!.G;
     const events = initial.hands['0'].filter((card) => card.type === 'event');
 
-    client.moves.playCard(events[0].id, { row: 0, column: 1 });
-    client.moves.movePendingCard({ row: -1, column: 0 });
+    client.moves.playCard(events[0].id, { column: 1, row: 0 });
+    client.moves.movePendingCard({ column: 0, row: -1 });
     client.moves.replacePendingCard(events[1].id);
 
     const draftLog = parseGameLog(exportGameLog(seed, 2, client.log));
@@ -162,8 +162,8 @@ describe('gameLog', () => {
 
     expect(confirmedLog.actions).toHaveLength(1);
     expect(confirmedLog.actions[0].payload).toMatchObject({
+      args: [events[1].id, { column: 0, row: -1 }],
       type: 'playEvent',
-      args: [events[1].id, { row: -1, column: 0 }],
     });
     expect(replay.getState()!.G).toStrictEqual(client.getState()!.G);
 
@@ -174,33 +174,33 @@ describe('gameLog', () => {
 
   it('converts earlier JSON logs with draft moves to confirmed actions', () => {
     const seed = 'replay-test';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
     const card = client
       .getState()!
       .G.hands['0'].find((card) => card.type === 'event')!;
     const action = (type: string, args: unknown[]) => ({
+      payload: { args, playerID: '0', type },
       type: 'MAKE_MOVE',
-      payload: { type, args, playerID: '0' },
     });
     const log = parseGameLog(
       JSON.stringify({
-        version: 1,
-        rulesVersion: 2,
-        seed,
-        numPlayers: 2,
         actions: [
-          action('playCard', [card.id, { row: 0, column: 1 }]),
-          action('movePendingCard', [{ row: -1, column: 0 }]),
+          action('playCard', [card.id, { column: 1, row: 0 }]),
+          action('movePendingCard', [{ column: 0, row: -1 }]),
           action('confirmPlacement', []),
         ],
+        numPlayers: 2,
+        rulesVersion: 2,
+        seed,
+        version: 1,
       }),
     );
 
     expect(log.version).toBe(2);
     expect(log.actions).toHaveLength(1);
     expect(log.actions[0].payload).toMatchObject({
+      args: [card.id, { column: 0, row: -1 }],
       type: 'playEvent',
-      args: [card.id, { row: -1, column: 0 }],
     });
 
     client.stop();
@@ -208,7 +208,7 @@ describe('gameLog', () => {
 
   it('replays repositioning, replacement, returning to hand, and branching after undo', () => {
     const seed = 'replay-test';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
     const hand = client
       .getState()!
       .G.hands['0'].filter((card) => card.type === 'event');
@@ -241,7 +241,7 @@ describe('gameLog', () => {
 
   it('replays explicit debug turn events without duplicating move-triggered turn events', () => {
     const seed = 'debug-turn';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
 
     client.events.endTurn!({ next: '1' });
 
@@ -258,7 +258,7 @@ describe('gameLog', () => {
 
   it('folds framework undo and redo into card uses without recording either operation', () => {
     const seed = 'framework-history';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
 
     client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
     client.undo();
@@ -279,21 +279,21 @@ describe('gameLog', () => {
 
   it('does not change the existing game when a replay fails', () => {
     const client = Client({
-      game: { ...CardGame, seed: 'unchanged' },
       debug: false,
+      game: { ...CardGame, seed: 'unchanged' },
     });
     const before = client.getState()!;
     const text = JSON.stringify({
-      version: 2,
-      rulesVersion: 2,
-      seed: 'bad-arguments',
-      numPlayers: 2,
       actions: [
         {
+          payload: { args: [null, null], playerID: '1', type: 'playEvent' },
           type: 'MAKE_MOVE',
-          payload: { type: 'playEvent', args: [null, null], playerID: '1' },
         },
       ],
+      numPlayers: 2,
+      rulesVersion: 2,
+      seed: 'bad-arguments',
+      version: 2,
     });
 
     expect(() => replayGameLog(parseGameLog(text))).toThrow();

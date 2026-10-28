@@ -4,9 +4,9 @@ type Props = React.PropsWithChildren<{
   id: string;
 }>;
 
-export function AriaDescription({ id, children }: Props) {
+export function AriaDescription({ children, id }: Props) {
   return (
-    <div id={id} className={styles.ariaDescription}>
+    <div className={styles.ariaDescription} id={id}>
       {children}
     </div>
   );

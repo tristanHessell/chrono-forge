@@ -13,14 +13,14 @@ function placed(
   owner: PlacedCard['owner'] = '0',
 ): PlacedCard {
   return {
+    column,
     id: `${row}:${column}`,
-    type: 'event',
     name: 'timeline-origin',
     number,
-    row,
-    column,
-    placedAt,
     owner,
+    placedAt,
+    row,
+    type: 'event',
     ...(number === 1990 ? { effects: ['timeline-1900-bonus'] as const } : {}),
   };
 }
@@ -49,8 +49,6 @@ describe('base scoring', () => {
         ...CardGame,
         setup: (context) => ({
           ...CardGame.setup!(context),
-          played: timeline,
-          nextPlacementOrder: 3,
           deck: [],
           hands: {
             ...CardGame.setup!(context).hands,
@@ -61,12 +59,14 @@ describe('base scoring', () => {
             ],
             '1': [],
           },
+          nextPlacementOrder: 3,
+          played: timeline,
         }),
       },
       numPlayers: 2,
     });
 
-    client.moves.playCard('event-1990-1', { row: 0, column: 3 });
+    client.moves.playCard('event-1990-1', { column: 3, row: 0 });
 
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
 
@@ -157,8 +157,6 @@ describe('1900 timeline bonus', () => {
         ...CardGame,
         setup: (context) => ({
           ...CardGame.setup!(context),
-          played: timeline,
-          nextPlacementOrder: 3,
           hands: {
             ...CardGame.setup!(context).hands,
             '0': [
@@ -167,12 +165,14 @@ describe('1900 timeline bonus', () => {
               )!,
             ],
           },
+          nextPlacementOrder: 3,
+          played: timeline,
         }),
       },
       numPlayers: 2,
     });
 
-    client.moves.playCard('event-1990-1', { row: 0, column: 3 });
+    client.moves.playCard('event-1990-1', { column: 3, row: 0 });
 
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
 

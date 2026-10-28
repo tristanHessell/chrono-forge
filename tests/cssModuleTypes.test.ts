@@ -15,7 +15,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { resolveConfig, type ResolvedConfig } from 'vite';
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import {
+  afterEach,
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'vitest';
 
 import manifest from '../package.json';
 import {
@@ -41,7 +49,7 @@ describe('cssModuleTypes', () => {
   });
 
   afterEach(() => {
-    rmSync(directory, { recursive: true, force: true });
+    rmSync(directory, { force: true, recursive: true });
   });
 
   it('generates exact readonly keys and replaces them after a CSS rename', async () => {
@@ -83,16 +91,14 @@ describe('cssModuleTypes', () => {
     const httpServer = new EventEmitter();
     const hook = plugin.configureServer;
 
-    if (typeof hook !== 'function') {
-      throw new Error('Missing CSS types dev hook');
-    }
+    assert(typeof hook === 'function', 'Missing CSS types dev hook');
 
     await hook.call(
       {} as never,
       {
         config: { ...config, root: directory },
-        watcher,
         httpServer,
+        watcher,
       } as never,
     );
     try {
@@ -111,9 +117,9 @@ describe('cssModuleTypes', () => {
 
   it('fails the real build after a referenced CSS class is removed', () => {
     const scripts = {
+      build: manifest.scripts.build,
       'css:types': manifest.scripts['css:types'],
       typecheck: manifest.scripts.typecheck,
-      build: manifest.scripts.build,
     };
     const build = () =>
       spawnSync('npm', ['run', 'build'], {
@@ -134,7 +140,7 @@ describe('cssModuleTypes', () => {
     );
     writeFileSync(
       path.join(directory, 'package.json'),
-      JSON.stringify({ type: 'module', scripts }),
+      JSON.stringify({ scripts, type: 'module' }),
     );
     writeFileSync(
       path.join(directory, 'vite.config.js'),
@@ -144,11 +150,11 @@ describe('cssModuleTypes', () => {
       path.join(directory, 'tsconfig.json'),
       JSON.stringify({
         compilerOptions: {
-          strict: true,
-          noEmit: true,
-          skipLibCheck: true,
           module: 'ESNext',
           moduleResolution: 'Bundler',
+          noEmit: true,
+          skipLibCheck: true,
+          strict: true,
           target: 'ES2022',
         },
         include: ['src'],

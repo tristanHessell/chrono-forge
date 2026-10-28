@@ -24,5 +24,5 @@ try {
     throw new Error('src/i18n/en.json is out of date. Run npm run messages.');
   }
 } finally {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+  rmSync(temporaryDirectory, { force: true, recursive: true });
 }

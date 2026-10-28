@@ -31,19 +31,19 @@ export function GameResults({
             ? intl.formatMessage(
                 winners[0] === '0'
                   ? {
-                      id: 'score.youWin',
                       defaultMessage: 'Game over — you win!',
+                      id: 'score.youWin',
                     }
                   : {
-                      id: 'score.playerWins',
                       defaultMessage: 'Game over — {name} wins!',
+                      id: 'score.playerWins',
                     },
                 { name: getPlayer(players, winners[0]).name },
               )
             : intl.formatMessage<{ readonly players: MessageValue }>(
                 {
-                  id: 'score.tie',
                   defaultMessage: "Game over — it's a tie! ({players})",
+                  id: 'score.tie',
                 },
                 {
                   players: winners
@@ -57,7 +57,6 @@ export function GameResults({
         {playerIds.map((owner) => (
           <span className={ownershipStyles[`owner${owner}`]} key={owner}>
             <FormattedMessage
-              id="score.breakdown"
               defaultMessage="{name}: {base, plural,
                 one {# card point}
                 other {# card points}
@@ -65,6 +64,7 @@ export function GameResults({
                 one {# bonus point}
                 other {# bonus points}
               } = {total, number} total"
+              id="score.breakdown"
               values={{
                 name: getPlayer(players, owner).name,
                 ...(scores[owner] ?? { base: 0, bonus: 0, total: 0 }),

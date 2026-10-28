@@ -15,13 +15,13 @@ vi.mock(import('./ThemeToggle'), () => ({
 
 describe(GameLogControls, () => {
   it('renders the game log trigger beside its dialog', async () => {
-    const client = Client({ game: CardGame, debug: false });
+    const client = Client({ debug: false, game: CardGame });
 
     render(
       <IntlProvider locale="en" messages={messages}>
         <GameLogControls
-          G={client.getState()!.G}
           currentPlayer="0"
+          G={client.getState()!.G}
           onOpen={() => {}}
         />
       </IntlProvider>,
@@ -42,13 +42,13 @@ describe(GameLogControls, () => {
   });
 
   it('provides a labelled corner close icon instead of a text Close button', async () => {
-    const client = Client({ game: CardGame, debug: false });
+    const client = Client({ debug: false, game: CardGame });
 
     render(
       <IntlProvider locale="en" messages={messages}>
         <GameLogControls
-          G={client.getState()!.G}
           currentPlayer="0"
+          G={client.getState()!.G}
           onOpen={() => {}}
         />
       </IntlProvider>,

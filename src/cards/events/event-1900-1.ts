@@ -1,9 +1,9 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'political',
   id: 'event-1900-1',
-  type: 'event',
   name: 'imperial-alliances',
   number: 1900,
-  category: 'political',
+  type: 'event',
 } as const satisfies EventCard;

@@ -17,7 +17,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isCardPosition(
   value: unknown,
-): value is { row: number; column: number } {
+): value is { column: number; row: number } {
   return (
     isRecord(value) &&
     Number.isInteger(value.row) &&
@@ -26,12 +26,12 @@ function isCardPosition(
 }
 
 export type GameLog = {
-  version: 2;
+  actions: LogEntry['action'][];
+  numPlayers: PlayerCount;
   rulesVersion: 2 | typeof RULES_VERSION;
   seed: string;
-  numPlayers: PlayerCount;
   startingPlayer: PlayerId;
-  actions: LogEntry['action'][];
+  version: 2;
 };
 
 export function currentGameLog(
@@ -66,7 +66,7 @@ export function currentGameLog(
 
       if (placed) {
         type = 'playEvent';
-        args = [used.id, { row: placed.row, column: placed.column }];
+        args = [used.id, { column: placed.column, row: placed.row }];
       }
     } else {
       const changed = before.played.filter((card) => {
@@ -90,7 +90,7 @@ export function currentGameLog(
         args = [used.id, target.id];
 
         if (used.action === 'time-jump') {
-          args.push({ row: moved.row, column: moved.column });
+          args.push({ column: moved.column, row: moved.row });
         } else if (used.action === 'time-swap') {
           args.push(changed[1].id);
         }
@@ -98,18 +98,18 @@ export function currentGameLog(
     }
 
     actions.push({
+      payload: { args, playerID: before.currentPlayer, type },
       type: 'MAKE_MOVE',
-      payload: { type, args, playerID: before.currentPlayer },
     });
   }
 
   return {
-    version: 2,
+    actions,
+    numPlayers: G.playerIds.length as PlayerCount,
     rulesVersion: G.freeActionsEnabled ? RULES_VERSION : 2,
     seed,
-    numPlayers: G.playerIds.length as PlayerCount,
     startingPlayer: G.startingPlayer,
-    actions,
+    version: 2,
   };
 }
 
@@ -164,9 +164,9 @@ function confirmedActions(
   rulesVersion: GameLog['rulesVersion'] = RULES_VERSION,
 ): LogEntry['action'][] {
   const client = Client({
+    debug: false,
     game: { ...createCardGame(startingPlayer, rulesVersion !== 2), seed },
     numPlayers,
-    debug: false,
   });
   const result: LogEntry['action'][] = [];
   const future: LogEntry['action'][] = [];
@@ -232,8 +232,8 @@ function confirmedActions(
             ...action,
             payload: {
               ...action.payload,
+              args: [pending.id, { column: pending.column, row: pending.row }],
               type: 'playEvent',
-              args: [pending.id, { row: pending.row, column: pending.column }],
             },
           });
           future.length = 0;
@@ -276,9 +276,9 @@ export function exportGameLog(
       ...entry.action,
       payload: {
         ...entry.action.payload,
-        playerID: entry.action.payload.playerID,
         // Local replay never needs authentication credentials.
         credentials: undefined,
+        playerID: entry.action.payload.playerID,
         ...(entry.action.type === 'GAME_EVENT'
           ? {
               args:
@@ -292,11 +292,6 @@ export function exportGameLog(
 
   return JSON.stringify(
     {
-      version: 2,
-      rulesVersion,
-      seed,
-      numPlayers,
-      startingPlayer,
       actions: confirmedActions(
         seed,
         numPlayers,
@@ -304,6 +299,11 @@ export function exportGameLog(
         startingPlayer,
         rulesVersion,
       ),
+      numPlayers,
+      rulesVersion,
+      seed,
+      startingPlayer,
+      version: 2,
     } satisfies GameLog,
     null,
     2,
@@ -402,11 +402,6 @@ export function parseGameLog(text: string): GameLog {
   }
 
   return {
-    version: 2,
-    rulesVersion,
-    seed: parsed.seed,
-    numPlayers,
-    startingPlayer,
     actions: confirmedActions(
       parsed.seed,
       numPlayers,
@@ -414,6 +409,11 @@ export function parseGameLog(text: string): GameLog {
       startingPlayer,
       rulesVersion,
     ),
+    numPlayers,
+    rulesVersion,
+    seed: parsed.seed,
+    startingPlayer,
+    version: 2,
   };
 }
 
@@ -423,12 +423,12 @@ export function replayGameLog(log: GameLog, steps = log.actions.length) {
   }
 
   const client = Client({
+    debug: false,
     game: {
       ...createCardGame(log.startingPlayer, log.rulesVersion !== 2),
       seed: log.seed,
     },
     numPlayers: log.numPlayers,
-    debug: false,
   });
 
   try {

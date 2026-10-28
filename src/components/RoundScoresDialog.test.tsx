@@ -18,12 +18,12 @@ describe(RoundScoresDialog, () => {
       ctx: { numPlayers: 2 },
       random: { Shuffle: shuffle },
     } as never),
+    round: 3,
+    roundOver: false,
     roundScores: [
       { '0': 2, '1': 1 },
       { '0': 3, '1': 3 },
     ],
-    round: 3,
-    roundOver: false,
   });
 
   it('renders individual round scores and running totals', async () => {
@@ -60,12 +60,12 @@ describe(RoundScoresDialog, () => {
   it('renders only completed rounds when the game is over', async () => {
     const G: CardGameState = {
       ...setupGame(),
+      round: 2,
+      roundOver: true,
       roundScores: [
         { '0': 2, '1': 1 },
         { '0': 4, '1': 3 },
       ],
-      round: 2,
-      roundOver: true,
     };
 
     render(
@@ -88,9 +88,9 @@ describe(RoundScoresDialog, () => {
         ctx: { numPlayers: 2 },
         random: { Shuffle: shuffle },
       } as never),
-      roundScores: [],
       round: 1,
       roundOver: false,
+      roundScores: [],
     };
 
     render(
@@ -113,9 +113,9 @@ describe(RoundScoresDialog, () => {
         ctx: { numPlayers: 4 },
         random: { Shuffle: shuffle },
       } as never),
-      roundScores: [{ '0': 1, '1': 2, '2': 0, '3': 1 }],
       round: 2,
       roundOver: false,
+      roundScores: [{ '0': 1, '1': 2, '2': 0, '3': 1 }],
     };
 
     render(

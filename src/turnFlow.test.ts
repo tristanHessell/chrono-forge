@@ -71,7 +71,7 @@ describe('turnFlow', () => {
         (card) => card.type === 'event' && !card.effects?.length,
       )!;
 
-    client.moves.playCard(card.id, { row: 0, column: 1 });
+    client.moves.playCard(card.id, { column: 1, row: 0 });
 
     expect(client.getState()!.G.actionsThisTurn).toBe(0);
 
@@ -102,13 +102,13 @@ describe('turnFlow', () => {
       numPlayers: 2,
     });
 
-    client.moves.playCard(hand[0].id, { row: 0, column: 1 });
+    client.moves.playCard(hand[0].id, { column: 1, row: 0 });
     client.moves.confirmPlacement();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('0');
     expect(client.getState()!.G.actionsThisTurn).toBe(1);
 
-    client.moves.playCard(hand[1].id, { row: 0, column: 2 });
+    client.moves.playCard(hand[1].id, { column: 2, row: 0 });
     client.moves.confirmPlacement();
 
     expect(client.getState()!.G.played).toHaveLength(3);
@@ -122,9 +122,9 @@ describe('turnFlow', () => {
     (count) => {
       const deck: Card[] = Array.from({ length: count }, (_, index) => ({
         id: `last-${index}`,
-        type: 'event',
         name: 'timeline-origin',
         number: 1900,
+        type: 'event',
       }));
       const client = Client({
         game: {
@@ -186,7 +186,7 @@ describe('turnFlow', () => {
       numPlayers: 2,
     });
 
-    client.moves.playCard(effect.id, { row: 0, column: 1 });
+    client.moves.playCard(effect.id, { column: 1, row: 0 });
     client.moves.confirmPlacement();
 
     expect(client.getState()!.G.hands['0']).toHaveLength(5);
@@ -226,18 +226,18 @@ describe('turnFlow', () => {
     expect(client.getState()!.G.round).toBe(1);
     expect(client.getState()!.G.roundScores).toStrictEqual([]);
 
-    client.moves.playCard(p0Cards[0].id, { row: 0, column: 1 });
+    client.moves.playCard(p0Cards[0].id, { column: 1, row: 0 });
     client.moves.confirmPlacement();
-    client.moves.playCard(p0Cards[1].id, { row: 0, column: 2 });
+    client.moves.playCard(p0Cards[1].id, { column: 2, row: 0 });
     client.moves.confirmPlacement();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.round).toBe(1);
     expect(client.getState()!.G.roundScores).toStrictEqual([]);
 
-    client.moves.playCard(p1Cards[0].id, { row: 1, column: 0 });
+    client.moves.playCard(p1Cards[0].id, { column: 0, row: 1 });
     client.moves.confirmPlacement();
-    client.moves.playCard(p1Cards[1].id, { row: 2, column: 0 });
+    client.moves.playCard(p1Cards[1].id, { column: 0, row: 2 });
     client.moves.confirmPlacement();
 
     const stateAfterRound1 = client.getState()!.G;

@@ -24,7 +24,7 @@ describe('removedTimeJump', () => {
               ? { ...card, removed }
               : card,
         );
-      const destination = { row: -2, column: 0 };
+      const destination = { column: 0, row: -2 };
 
       expect(isValidBoard(played)).toBe(true);
       expect(applyTimeJump(played, 'event-1940-3', destination)).toBeNull();
@@ -32,7 +32,7 @@ describe('removedTimeJump', () => {
         destination,
       );
       expect(
-        applyTimeJump(played, 'event-1940-3', { row: 0, column: 1 }),
+        applyTimeJump(played, 'event-1940-3', { column: 1, row: 0 }),
       ).not.toBeNull();
 
       client.stop();
@@ -40,8 +40,8 @@ describe('removedTimeJump', () => {
   );
 
   it.each([
-    { row: -2, column: 0 },
-    { row: -1, column: 1 },
+    { column: 0, row: -2 },
+    { column: 1, row: -1 },
   ])(
     'allows the removed 1920 Event to reconnect to 1910 at $row, $column',
     (destination) => {
@@ -54,12 +54,12 @@ describe('removedTimeJump', () => {
         (card) => card.type === 'manipulation' && card.action === 'time-jump',
       )!;
 
-      expect(target).toMatchObject({ removed: true, placedAt: 1 });
+      expect(target).toMatchObject({ placedAt: 1, removed: true });
       expect(getTimeJumpPositions(before.G.played, target.id)).toContainEqual(
         destination,
       );
       expect(
-        applyTimeJump(before.G.played, target.id, { row: -1, column: -2 }),
+        applyTimeJump(before.G.played, target.id, { column: -2, row: -1 }),
       ).toBeNull();
       expect(jump).toBeDefined();
 

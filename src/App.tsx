@@ -34,22 +34,22 @@ function createSession(options: SessionOptions): Session {
   return {
     ...options,
     CardGameClient: Client({
-      game: { ...createCardGame(options.startingPlayer), seed: options.seed },
       board: GameBoard,
-      numPlayers: options.numPlayers,
       debug: false,
+      game: { ...createCardGame(options.startingPlayer), seed: options.seed },
+      numPlayers: options.numPlayers,
     }),
   };
 }
 
 function GameSession({
   CardGameClient,
+  numPlayers,
   players,
   replay,
-  restore,
   replayPaused,
+  restore,
   seed,
-  numPlayers,
   startingPlayer,
 }: Session) {
   const ref = useRef<InstanceType<typeof CardGameClient>>(null);
@@ -74,21 +74,21 @@ function GameSession({
       }
 
       saveGame({
-        seed,
-        numPlayers,
-        startingPlayer,
-        players,
-        replayPaused: replayPaused || Boolean(replay),
-        state: {
-          G: currentState.G,
-          ctx: currentState.ctx,
-          plugins: currentState.plugins,
-          _undo: currentState._undo,
-          _redo: currentState._redo,
-          _stateID: currentState._stateID,
-        },
         initialState: client.getInitialState(),
         log: client.log ?? [],
+        numPlayers,
+        players,
+        replayPaused: replayPaused || Boolean(replay),
+        seed,
+        startingPlayer,
+        state: {
+          _redo: currentState._redo,
+          _stateID: currentState._stateID,
+          _undo: currentState._undo,
+          ctx: currentState.ctx,
+          G: currentState.G,
+          plugins: currentState.plugins,
+        },
       });
     });
   }, [
@@ -120,7 +120,7 @@ function GameSession({
 }
 
 export function App() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<null | Session>(null);
   const [savedGame] = useState(loadSavedGame);
   const [revision, setRevision] = useState(0);
   const replaceSession = (next: SessionOptions) => {
@@ -129,11 +129,11 @@ export function App() {
   };
   const newGame = (players: PlayerSetup[]) => {
     replaceSession({
-      seed: crypto.randomUUID(),
       numPlayers: players.length as PlayerCount,
-      startingPlayer: chooseStartingPlayer(players.length as PlayerCount),
       players,
       replayPaused: false,
+      seed: crypto.randomUUID(),
+      startingPlayer: chooseStartingPlayer(players.length as PlayerCount),
     });
   };
   const continueGame = () => {
@@ -142,31 +142,31 @@ export function App() {
     }
 
     replaceSession({
-      seed: savedGame.seed,
       numPlayers: savedGame.numPlayers,
-      startingPlayer: savedGame.startingPlayer,
       players: savedGame.players,
       replayPaused: savedGame.replayPaused,
       restore: savedGame,
+      seed: savedGame.seed,
+      startingPlayer: savedGame.startingPlayer,
     });
   };
 
   return (
     <GameLogContext
       value={{
-        seed: session?.seed ?? '',
-        replayPaused: Boolean(session?.replayPaused || session?.replay),
-        newGame,
         loadLog: (log, steps) => {
           replaceSession({
-            seed: log.seed,
             numPlayers: log.numPlayers,
-            startingPlayer: log.startingPlayer,
             players: createDefaultPlayers(log.numPlayers),
-            replayPaused: true,
             replay: { log, steps },
+            replayPaused: true,
+            seed: log.seed,
+            startingPlayer: log.startingPlayer,
           });
         },
+        newGame,
+        replayPaused: Boolean(session?.replayPaused || session?.replay),
+        seed: session?.seed ?? '',
       }}
     >
       {session ? (

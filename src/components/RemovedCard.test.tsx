@@ -17,31 +17,31 @@ describe('removedCard', () => {
       <IntlProvider locale="en" messages={messages}>
         <PlayedCard
           card={{
+            column: 1,
             id: 'removed',
-            type: 'event',
             name: 'timeline-origin',
             number: 1990,
-            row: 0,
-            column: 1,
-            placedAt: 1,
             owner: '2',
+            placedAt: 1,
             removed: true,
+            row: 0,
+            type: 'event',
           }}
-          style={{}}
-          links={null}
           isLatest={false}
+          links={null}
+          style={{}}
         />
         <PlacementSlot
           ariaLabel="Overwrite removed Event"
-          position={{ row: -1, column: 2 }}
           draggedCard={null}
-          overwrite
           isDragActive={false}
           isPreview={false}
           onClick={() => {}}
           onDragEnter={() => {}}
           onDragOver={() => {}}
           onDrop={() => {}}
+          overwrite
+          position={{ column: 2, row: -1 }}
         />
       </IntlProvider>,
     );

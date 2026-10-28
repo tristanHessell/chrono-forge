@@ -18,12 +18,12 @@ export function TitleScreen({ onContinue, onStart }: Props) {
       <section className={titleScreenStyles.titleCard}>
         <p className={titleScreenStyles.tagline}>
           <FormattedMessage
-            id="brand.tagline"
             defaultMessage="Tactical card system"
+            id="brand.tagline"
           />
         </p>
         <h1>
-          <FormattedMessage id="brand.name" defaultMessage="Chrono-Forge" />
+          <FormattedMessage defaultMessage="Chrono-Forge" id="brand.name" />
         </h1>
         <div className={titleScreenStyles.actions}>
           {onContinue && (
@@ -33,8 +33,8 @@ export function TitleScreen({ onContinue, onStart }: Props) {
               type="button"
             >
               <FormattedMessage
-                id="titleScreen.continue"
                 defaultMessage="Continue game"
+                id="titleScreen.continue"
               />
             </button>
           )}
@@ -44,8 +44,8 @@ export function TitleScreen({ onContinue, onStart }: Props) {
             type="button"
           >
             <FormattedMessage
-              id="titleScreen.start"
               defaultMessage="Start a new game"
+              id="titleScreen.start"
             />
           </button>
         </div>

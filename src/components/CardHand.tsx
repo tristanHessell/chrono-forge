@@ -24,49 +24,49 @@ import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
 type CardHandProps = {
-  interactive?: boolean;
-  cards: Card[];
-  owner: Exclude<CardOwner, 'neutral'>;
-  ownerName: string;
-  playerType: PlayerType;
-  score: number;
   activeOwner: Exclude<CardOwner, 'neutral'>;
-  pendingCardId: string | undefined;
+  cards: Card[];
+  interactive?: boolean;
   isReturnTarget: boolean;
-  selectedCardId: string | null;
   onChoose: (cardId: string) => void;
-  onDragStart: (event: React.DragEvent<HTMLElement>, cardId: string) => void;
   onDragEnd: () => void;
   onDragOver: (event: React.DragEvent<HTMLElement>) => void;
+  onDragStart: (event: React.DragEvent<HTMLElement>, cardId: string) => void;
   onDrop: (event: React.DragEvent<HTMLElement>) => void;
   onShowDetails?: (card: Card) => void;
+  owner: Exclude<CardOwner, 'neutral'>;
+  ownerName: string;
+  pendingCardId: string | undefined;
+  playerType: PlayerType;
+  score: number;
+  selectedCardId: null | string;
   touchDrag?: TouchCardDragHandlers;
 };
 
 export function CardHand({
-  interactive = true,
-  cards,
-  owner,
-  ownerName,
-  playerType,
-  score,
   activeOwner,
-  pendingCardId,
+  cards,
+  interactive = true,
   isReturnTarget,
-  selectedCardId,
   onChoose,
-  onDragStart,
   onDragEnd,
   onDragOver,
+  onDragStart,
   onDrop,
   onShowDetails,
+  owner,
+  ownerName,
+  pendingCardId,
+  playerType,
+  score,
+  selectedCardId,
   touchDrag,
 }: CardHandProps) {
   const intl = useIntl();
   const isOpponent = owner !== '0';
   const [order, setOrder] = useState<HandOrder | null>(null);
   const [manualIds, setManualIds] = useState<string[]>([]);
-  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [draggedId, setDraggedId] = useState<null | string>(null);
   const [dragStartIds, setDragStartIds] = useState<string[]>([]);
   const orderedCards = order
     ? orderHand(cards, order)
@@ -129,8 +129,8 @@ export function CardHand({
       );
     }
   };
-  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
-  const [focusedCardId, setFocusedCardId] = useState<string | null>(null);
+  const [hoveredCardId, setHoveredCardId] = useState<null | string>(null);
+  const [focusedCardId, setFocusedCardId] = useState<null | string>(null);
   const highlightedId =
     draggedId ??
     hoveredCardId ??
@@ -164,21 +164,21 @@ export function CardHand({
             >
               {owner === '0'
                 ? intl.formatMessage({
-                    id: 'hand.yourTitle',
                     defaultMessage: 'You',
+                    id: 'hand.yourTitle',
                   })
                 : intl.formatMessage<{ readonly name: MessageValue }>(
                     {
-                      id: 'hand.playerTitle',
                       defaultMessage: "{name}'s hand",
+                      id: 'hand.playerTitle',
                     },
                     { name: ownerName },
                   )}
             </p>
             <span>
               <FormattedMessage
-                id="score.points"
                 defaultMessage="{count, plural, one {# point} other {# points}}"
+                id="score.points"
                 values={{
                   count: score,
                 }}
@@ -187,35 +187,35 @@ export function CardHand({
           </div>
         </div>
         <div
-          className={cardHandStyles.handOrder}
-          role="group"
           aria-label={
             owner === '0'
               ? intl.formatMessage({
-                  id: 'hand.yourOrderLabel',
                   defaultMessage: 'Order your hand',
+                  id: 'hand.yourOrderLabel',
                 })
               : intl.formatMessage<{ readonly name: MessageValue }>(
                   {
-                    id: 'hand.orderLabel',
                     defaultMessage: "Order {name}'s hand",
+                    id: 'hand.orderLabel',
                   },
                   { name: ownerName },
                 )
           }
+          className={cardHandStyles.handOrder}
+          role="group"
         >
           {(['date'] as const).map((value) => (
             <button
-              key={value}
-              type="button"
               aria-pressed={order === value}
+              key={value}
               onClick={() => {
                 setOrder(value);
                 setHoveredCardId(null);
                 setFocusedCardId(null);
               }}
+              type="button"
             >
-              <FormattedMessage id="hand.orderDate" defaultMessage="Date" />
+              <FormattedMessage defaultMessage="Date" id="hand.orderDate" />
             </button>
           ))}
         </div>
@@ -225,22 +225,17 @@ export function CardHand({
         aria-label={
           owner === '0'
             ? intl.formatMessage({
-                id: 'hand.yourDropArea',
                 defaultMessage: 'Your hand drop area',
+                id: 'hand.yourDropArea',
               })
             : intl.formatMessage<{ readonly name: MessageValue }>(
                 {
-                  id: 'hand.dropArea',
                   defaultMessage: "{name}'s hand drop area",
+                  id: 'hand.dropArea',
                 },
                 { name: ownerName },
               )
         }
-        data-hand-owner={owner}
-        data-return-label={intl.formatMessage({
-          id: 'hand.return',
-          defaultMessage: 'Drop here to return',
-        })}
         className={clsx(
           cardHandStyles.cardRow,
           isOpponent && cardHandStyles.opponentCardRow,
@@ -249,6 +244,11 @@ export function CardHand({
             [cardHandStyles.handReturnTarget]: isReturnTarget,
           },
         )}
+        data-hand-owner={owner}
+        data-return-label={intl.formatMessage({
+          defaultMessage: 'Drop here to return',
+          id: 'hand.return',
+        })}
         onDragOver={previewHandReorder}
         onDrop={(event) => {
           if (draggedId) {
@@ -274,39 +274,41 @@ export function CardHand({
 
             return (
               <button
+                aria-describedby=""
                 aria-disabled={
                   !interactive || activeOwner !== owner || undefined
                 }
                 aria-pressed={
                   selectedCardId === card.id || pendingCardId === card.id
                 }
-                aria-describedby=""
                 className={clsx(
                   cardStyles.card,
                   cardHandStyles.playable,
                   cardHandStyles.handCard,
                   isOpponent && cardHandStyles.opponentCard,
                   {
-                    [cardHandStyles.pendingInHand]: pendingCardId === card.id,
-                    [cardHandStyles.handCardHighlighted]:
-                      index === highlightedIndex,
-                    [cardHandStyles.handCardBefore]:
-                      !draggedId &&
-                      highlightedIndex >= 0 &&
-                      index < highlightedIndex,
                     [cardHandStyles.handCardAfter]:
                       !draggedId &&
                       highlightedIndex >= 0 &&
                       index > highlightedIndex,
+                    [cardHandStyles.handCardBefore]:
+                      !draggedId &&
+                      highlightedIndex >= 0 &&
+                      index < highlightedIndex,
                     [cardHandStyles.handCardDragging]: draggedId === card.id,
+                    [cardHandStyles.handCardHighlighted]:
+                      index === highlightedIndex,
+                    [cardHandStyles.pendingInHand]: pendingCardId === card.id,
                   },
                 )}
-                style={{ '--hand-index': index } as React.CSSProperties}
                 data-card-type={card.type}
-                data-hand-card
                 data-event-category={card.category}
+                data-hand-card
                 draggable={interactive && activeOwner === owner}
                 key={card.id}
+                onBlur={() => {
+                  setFocusedCardId(null);
+                }}
                 onClick={() => {
                   if (interactive && activeOwner === owner) {
                     onChoose(card.id);
@@ -315,27 +317,6 @@ export function CardHand({
                 onDoubleClick={(event) => {
                   event.preventDefault();
                   onShowDetails?.(card);
-                }}
-                onPointerDown={
-                  card.type === 'event' && interactive && activeOwner === owner
-                    ? (event) => touchDrag?.onPointerDown(event, card.id)
-                    : undefined
-                }
-                onPointerMove={touchDrag?.onPointerMove}
-                onPointerUp={touchDrag?.onPointerUp}
-                onPointerCancel={touchDrag?.onPointerCancel}
-                onLostPointerCapture={touchDrag?.onLostPointerCapture}
-                onPointerEnter={() => {
-                  setHoveredCardId(card.id);
-                }}
-                onPointerLeave={() => {
-                  setHoveredCardId(null);
-                }}
-                onFocus={() => {
-                  setFocusedCardId(card.id);
-                }}
-                onBlur={() => {
-                  setFocusedCardId(null);
                 }}
                 onDragEnd={finishHandDrag}
                 onDragStart={(event) => {
@@ -347,6 +328,9 @@ export function CardHand({
 
                   setDragStartIds(orderedCards.map((card) => card.id));
                   setDraggedId(card.id);
+                }}
+                onFocus={() => {
+                  setFocusedCardId(card.id);
                 }}
                 onKeyDown={(event) => {
                   if (event.altKey && event.key === 'Enter') {
@@ -376,6 +360,22 @@ export function CardHand({
                     reorder(card.id, orderedCards[targetIndex].id, before);
                   }
                 }}
+                onLostPointerCapture={touchDrag?.onLostPointerCapture}
+                onPointerCancel={touchDrag?.onPointerCancel}
+                onPointerDown={
+                  card.type === 'event' && interactive && activeOwner === owner
+                    ? (event) => touchDrag?.onPointerDown(event, card.id)
+                    : undefined
+                }
+                onPointerEnter={() => {
+                  setHoveredCardId(card.id);
+                }}
+                onPointerLeave={() => {
+                  setHoveredCardId(null);
+                }}
+                onPointerMove={touchDrag?.onPointerMove}
+                onPointerUp={touchDrag?.onPointerUp}
+                style={{ '--hand-index': index } as React.CSSProperties}
                 type="button"
               >
                 <AriaDescription id="">
@@ -391,14 +391,14 @@ export function CardHand({
                         ) ?? [])
                       : []),
                     intl.formatMessage({
-                      id: 'hand.reorderHint',
                       defaultMessage:
                         'Drag within your hand to reorder, or use Alt + Left or Right arrow while focused.',
+                      id: 'hand.reorderHint',
                     }),
                     intl.formatMessage({
-                      id: 'card.detailsHint',
                       defaultMessage:
                         'Double-click or press Alt + Enter to view card details.',
+                      id: 'card.detailsHint',
                     }),
                   ]
                     .filter(Boolean)
@@ -411,8 +411,8 @@ export function CardHand({
                     data-drag-decoration
                   >
                     <FormattedMessage
-                      id="hand.onTable"
                       defaultMessage="On table"
+                      id="hand.onTable"
                     />
                   </small>
                 )}

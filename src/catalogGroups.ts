@@ -15,11 +15,11 @@ export function catalogGroups(deck: Card[]) {
   }
 
   return [...groups].map(([id, cards]) => ({
-    id,
     cards: [...cards].sort(
       (left, right) =>
         (left.number ?? 0) - (right.number ?? 0) ||
         left.id.localeCompare(right.id),
     ),
+    id,
   }));
 }

@@ -2,16 +2,16 @@ import type { Card, CardPosition } from './game';
 import { applyGameLogAction, type GameLog, replayGameLog } from './gameLog';
 
 export type GameLogItem = {
-  index: number;
-  player: string;
-  turn: number;
-  move: string;
   card?: Card;
-  target?: Card;
-  secondTarget?: Card;
-  position?: CardPosition;
   drawn: Card[];
+  index: number;
+  move: string;
   nextPlayer?: string;
+  player: string;
+  position?: CardPosition;
+  secondTarget?: Card;
+  target?: Card;
+  turn: number;
 };
 
 export function summarizeGameLog(log: GameLog): GameLogItem[] {
@@ -19,7 +19,7 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
 
   try {
     return log.actions.map((action, index) => {
-      const { G, ctx } = client.getState()!;
+      const { ctx, G } = client.getState()!;
       const args: unknown[] = Array.isArray(action.payload.args)
         ? action.payload.args
         : [];
@@ -55,32 +55,32 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
       );
 
       return {
-        index: index + 1,
-        player: ctx.currentPlayer,
-        turn: ctx.turn,
-        move,
         card,
-        target:
-          move === 'manipulate'
-            ? cards.find((card) => card.id === args[1])
-            : undefined,
-        secondTarget:
-          move === 'manipulate'
-            ? cards.find((card) => card.id === destination)
-            : undefined,
-        position:
-          destination && typeof destination === 'object'
-            ? (destination as CardPosition)
-            : undefined,
         drawn: ['playEvent', 'discardCard', 'manipulate'].includes(move)
           ? after.G.hands[ctx.currentPlayer].filter(
               (card) => !oldHandIds.has(card.id),
             )
           : [],
+        index: index + 1,
+        move,
         nextPlayer:
           after.ctx.currentPlayer !== ctx.currentPlayer
             ? after.ctx.currentPlayer
             : undefined,
+        player: ctx.currentPlayer,
+        position:
+          destination && typeof destination === 'object'
+            ? (destination as CardPosition)
+            : undefined,
+        secondTarget:
+          move === 'manipulate'
+            ? cards.find((card) => card.id === destination)
+            : undefined,
+        target:
+          move === 'manipulate'
+            ? cards.find((card) => card.id === args[1])
+            : undefined,
+        turn: ctx.turn,
       };
     });
   } finally {

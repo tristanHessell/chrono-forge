@@ -14,7 +14,7 @@ describe('discarding', () => {
       (candidate) => candidate.type === 'event',
     )!;
 
-    client.moves.playCard(card.id, { row: 0, column: 1 });
+    client.moves.playCard(card.id, { column: 1, row: 0 });
 
     expect(client.getState()!.G.pending?.id).toBe(card.id);
 

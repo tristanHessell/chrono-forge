@@ -14,6 +14,10 @@ Add a rules section to the menu
 
 ---
 
+Refactor `GameBoard` to be a much smaller file
+
+---
+
 Rename `Manipulations` -> `Commands`
 Rename category `Political` -> `Politics`.
 Rename category `Environmental` -> `Nature`
@@ -50,7 +54,7 @@ Move map output files to a different location
 
 ---
 
-Comment through functions
+Comment through functions as a lot of this code is confusing
 
 ---
 
@@ -58,13 +62,15 @@ Should a removed event invalidate any of the events that are no longer connected
 
 ---
 
-Add a `Options` section in the menu.
+Add a `Settings` section in the menu.
 
 Toggle arrows to be on or off
 
 Animate arrows option - have them moving in the direction they point or option not too.
 
 Move colour independent backgrounds to the options
+
+Include a version number in the settings page
 
 ---
 
@@ -74,6 +80,20 @@ Make the discards private in the game log (unless they are for the human player)
 
 ---
 
-Linting: order of object properties
+Mobile: Can't drag event cards around in the hand.
 
-Linting: Use global react namespace for types
+---
+
+Show final scores section as a dialog.
+
+- Include some UI of the order of the players and their scores (events, bonus, total).
+- They should be able to go back to look at the game board.
+- This should make the game log public
+
+---
+
+Use a different name as `Chrono-Forge` is taken.
+
+---
+
+Don't allow svg's to be defined inline - they must come from a named component

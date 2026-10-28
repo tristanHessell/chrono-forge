@@ -31,13 +31,12 @@ export function ThemeToggle() {
 
   return (
     <label className={themeToggleStyles.themeChoice}>
-      <FormattedMessage id="theme.label" defaultMessage="Theme" />
+      <FormattedMessage defaultMessage="Theme" id="theme.label" />
       <select
         aria-label={intl.formatMessage({
-          id: 'theme.label',
           defaultMessage: 'Theme',
+          id: 'theme.label',
         })}
-        value={theme}
         onChange={(event) => {
           const next = parseTheme(event.target.value);
 
@@ -46,6 +45,7 @@ export function ThemeToggle() {
             setTheme(next);
           }
         }}
+        value={theme}
       >
         {(['light', 'dark', 'greyscale-light', 'greyscale-dark'] as const).map(
           (value) => (

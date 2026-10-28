@@ -2,13 +2,13 @@ import definitions from './cards';
 import type { Card, CardEffect, EventName, ManipulationAction } from './game';
 
 function readCard(definition: {
-  id: string;
-  type: string;
-  number?: number;
   action?: string;
   category?: string;
   effects?: unknown;
+  id: string;
   name?: string;
+  number?: number;
+  type: string;
 }): Card {
   if (definition.type === 'manipulation') {
     if (
@@ -25,9 +25,9 @@ function readCard(definition: {
     }
 
     return {
+      action: definition.action as ManipulationAction,
       id: definition.id,
       type: 'manipulation',
-      action: definition.action as ManipulationAction,
     };
   }
   if (
@@ -54,9 +54,9 @@ function readCard(definition: {
 
   return {
     id: card.id,
+    name: name as EventName,
     number: card.number!,
     type: 'event',
-    name: name as EventName,
     ...(category ? { category } : {}),
     ...(effects?.length ? { effects } : {}),
   };
@@ -108,5 +108,5 @@ export function loadCardCatalog() {
     throw new Error('Card definitions must have unique IDs.');
   }
 
-  return { startingCard, deck };
+  return { deck, startingCard };
 }

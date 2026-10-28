@@ -20,23 +20,23 @@ if (!Number.isInteger(numPlayers) || numPlayers < 2 || numPlayers > 4) {
 }
 
 type Score = { base: number; bonus: number; total: number };
-type RecordedMove = { player: string; action: ComputerAction };
+type RecordedMove = { action: ComputerAction; player: string };
 type MatchResult = {
-  game: number;
-  seed: string;
-  completed: boolean;
-  error?: string;
-  winners: string[];
-  scores: Record<string, Score>;
-  rounds: number;
-  turns: number;
   actions: number;
-  playedCards: number;
+  completed: boolean;
   discardedCards: number;
-  manipulations: number;
-  remainingCards: { deck: number; hands: Record<string, number> };
   durationMs: number;
+  error?: string;
+  game: number;
+  manipulations: number;
   moves: RecordedMove[];
+  playedCards: number;
+  remainingCards: { deck: number; hands: Record<string, number> };
+  rounds: number;
+  scores: Record<string, Score>;
+  seed: string;
+  turns: number;
+  winners: string[];
 };
 
 function playMatch(game: number, seed: string): MatchResult {
@@ -64,7 +64,7 @@ function playMatch(game: number, seed: string): MatchResult {
         );
       }
 
-      moves.push({ player: before.ctx.currentPlayer, action });
+      moves.push({ action, player: before.ctx.currentPlayer });
 
       if (action.type === 'play') {
         client.moves.playCard(action.cardId, action.position);
@@ -103,7 +103,7 @@ function playMatch(game: number, seed: string): MatchResult {
         }
       }
 
-      const { G, ctx } = client.getState()!;
+      const { ctx, G } = client.getState()!;
       const cards = [
         ...G.played,
         ...Object.values(G.hands).flat(),
@@ -140,7 +140,7 @@ function playMatch(game: number, seed: string): MatchResult {
     client.stop();
   }
 
-  const { G, ctx } = client.getState()!;
+  const { ctx, G } = client.getState()!;
   const breakdown = calculateScoreBreakdown(G.played);
   const scores: Record<string, Score> = Object.fromEntries(
     G.playerIds.map((id) => [
@@ -154,29 +154,29 @@ function playMatch(game: number, seed: string): MatchResult {
   );
 
   return {
+    completed,
     game,
     seed,
-    completed,
     ...(error ? { error } : {}),
-    winners: completed
-      ? G.playerIds.filter((id) => scores[id].total === highest)
-      : [],
-    scores,
-    rounds: G.round,
-    turns: ctx.turn,
     actions: moves.filter(({ action }) => action.type !== 'play').length,
-    playedCards: G.played.length - 1,
     discardedCards: countActivelyDiscardedCards(G.discarded, moves),
+    durationMs: Math.round(performance.now() - started),
     manipulations: moves.filter(({ action }) => action.type === 'manipulate')
       .length,
+    moves,
+    playedCards: G.played.length - 1,
     remainingCards: {
       deck: G.deck.length,
       hands: Object.fromEntries(
         Object.entries(G.hands).map(([id, hand]) => [id, hand.length]),
       ),
     },
-    durationMs: Math.round(performance.now() - started),
-    moves,
+    rounds: G.round,
+    scores,
+    turns: ctx.turn,
+    winners: completed
+      ? G.playerIds.filter((id) => scores[id].total === highest)
+      : [],
   };
 }
 
@@ -215,47 +215,47 @@ it(`records and summarises 100 games with ${numPlayers} computers (manual only)`
     playerIds.map((id) => [
       id,
       {
-        wins: completed.filter(
-          (match) => match.winners.length === 1 && match.winners[0] === id,
-        ).length,
-        tiedWins: completed.filter(
-          (match) => match.winners.length > 1 && match.winners.includes(id),
-        ).length,
         averageBase: average((match) => match.scores[id].base),
         averageBonus: average((match) => match.scores[id].bonus),
         averageScore: average((match) => match.scores[id].total),
+        tiedWins: completed.filter(
+          (match) => match.winners.length > 1 && match.winners.includes(id),
+        ).length,
+        wins: completed.filter(
+          (match) => match.winners.length === 1 && match.winners[0] === id,
+        ).length,
       },
     ]),
   );
   const summary = {
-    numPlayers,
-    games: GAME_COUNT,
-    completed: completed.length,
-    failed: matches.length - completed.length,
-    draws: completed.filter((match) => match.winners.length > 1).length,
-    playerStats,
+    averageActions: average((match) => match.actions),
+    averageDiscardedCards: average((match) => match.discardedCards),
+    averageGameMs: average((match) => match.durationMs),
+    averageManipulations: average((match) => match.manipulations),
+    averagePlayedCards: average((match) => match.playedCards),
     averageRounds: average((match) => match.rounds),
     averageTurns: average((match) => match.turns),
-    averageActions: average((match) => match.actions),
-    averagePlayedCards: average((match) => match.playedCards),
-    averageDiscardedCards: average((match) => match.discardedCards),
-    averageManipulations: average((match) => match.manipulations),
-    averageGameMs: average((match) => match.durationMs),
+    completed: completed.length,
+    draws: completed.filter((match) => match.winners.length > 1).length,
+    failed: matches.length - completed.length,
+    games: GAME_COUNT,
+    numPlayers,
+    playerStats,
     wallClockMs: Math.round(performance.now() - batchStarted),
   };
   const report = {
-    startedAt,
-    finishedAt: new Date().toISOString(),
     baseSeed,
+    discardedCardsDefinition:
+      'Cards explicitly discarded from a hand. Excludes used Manipulations and overwritten Events.',
+    finishedAt: new Date().toISOString(),
+    matches,
     playerLabels: Object.fromEntries(
       playerIds.map((id) => [id, playerLabel(id)]),
     ),
     roundDefinition:
       'One rotation through the player seats; count includes the final partial round. Empty hands are skipped.',
-    discardedCardsDefinition:
-      'Cards explicitly discarded from a hand. Excludes used Manipulations and overwritten Events.',
+    startedAt,
     summary,
-    matches,
   };
   const directory = resolve('simulation-results');
   const basename = `computer-matches-${numPlayers}p-${startedAt.replace(/[:.]/g, '-')}`;

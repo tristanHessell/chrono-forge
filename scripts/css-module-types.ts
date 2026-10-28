@@ -9,7 +9,7 @@ import { type Plugin, preprocessCSS, type ResolvedConfig } from 'vite';
 
 const generatedHeader = '// Generated CSS module types. Do not edit.\n';
 
-type ClassPosition = { line: number; column: number; length: number };
+type ClassPosition = { column: number; length: number; line: number };
 
 function isMissingFileError(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT';
@@ -52,9 +52,9 @@ function classPositions(css: string, file: string): Map<string, ClassPosition> {
 
         if (!positions.has(key)) {
           positions.set(key, {
-            line,
             column,
             length: node.toString().trim().length - 1,
+            line,
           });
         }
       });
@@ -65,9 +65,9 @@ function classPositions(css: string, file: string): Map<string, ClassPosition> {
 
     if (!positions.has(key)) {
       positions.set(key, {
-        line: rule.source!.start!.line,
         column: rule.source!.start!.column - 1 + '@keyframes '.length,
         length: rule.params.length,
+        line: rule.source!.start!.line,
       });
     }
   });
@@ -116,15 +116,15 @@ export async function generateCssModuleTypes(
 
       lines.push(`  readonly ${key}: string;`);
       map.addMapping({
-        generated: { line: lines.length, column: 11 },
-        original: { line: position.line, column: position.column },
+        generated: { column: 11, line: lines.length },
+        original: { column: position.column, line: position.line },
         source: path.basename(file),
       });
       map.addMapping({
-        generated: { line: lines.length, column: 11 + key.length },
+        generated: { column: 11 + key.length, line: lines.length },
         original: {
-          line: position.line,
           column: position.column + position.length,
+          line: position.line,
         },
         source: path.basename(file),
       });
@@ -159,7 +159,6 @@ export async function generateCssModuleTypes(
 
 export function cssModuleTypesPlugin(): Plugin {
   return {
-    name: 'css-module-types',
     async configureServer(server) {
       let pending = Promise.resolve();
 
@@ -189,5 +188,6 @@ export function cssModuleTypesPlugin(): Plugin {
       server.watcher.on('unlink', update);
       server.httpServer?.once('close', stop);
     },
+    name: 'css-module-types',
   };
 }

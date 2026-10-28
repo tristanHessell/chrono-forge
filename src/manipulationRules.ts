@@ -21,7 +21,7 @@ export function applyManipulation(
   targetId: string,
   owner: PlayerId,
   destination?: CardPosition | string,
-): PlacedCard[] | null {
+): null | PlacedCard[] {
   if (action === 'time-jump') {
     return destination && typeof destination === 'object'
       ? applyTimeJump(played, targetId, destination)
@@ -56,7 +56,7 @@ export function applyTimeJump(
   played: PlacedCard[],
   targetId: string,
   destination: CardPosition,
-): PlacedCard[] | null {
+): null | PlacedCard[] {
   const target = played.find((card) => card.id === targetId);
   const occupying = played.find(
     (card) => positionKey(card) === positionKey(destination),
@@ -88,9 +88,9 @@ export function applyTimeJump(
       card.id === targetId
         ? {
             ...card,
-            row: destination.row,
             column: destination.column,
             placedAt: occupying?.placedAt ?? card.placedAt,
+            row: destination.row,
           }
         : card,
     );
@@ -120,7 +120,7 @@ export function applyTimeSwap(
   played: PlacedCard[],
   firstId: string,
   secondId: string,
-): PlacedCard[] | null {
+): null | PlacedCard[] {
   const first = played.find((card) => card.id === firstId);
   const second = played.find((card) => card.id === secondId);
 
@@ -136,9 +136,9 @@ export function applyTimeSwap(
 
   const result = played.map((card) =>
     card.id === firstId
-      ? { ...card, row: second.row, column: second.column }
+      ? { ...card, column: second.column, row: second.row }
       : card.id === secondId
-        ? { ...card, row: first.row, column: first.column }
+        ? { ...card, column: first.column, row: first.row }
         : card,
   );
 
@@ -170,13 +170,13 @@ export function getTimeJumpPositions(
 
   for (const card of played) {
     if (card.removed) {
-      candidates.set(positionKey(card), { row: card.row, column: card.column });
+      candidates.set(positionKey(card), { column: card.column, row: card.row });
     }
 
     for (const offset of ADJACENT_OFFSETS) {
       const position = {
-        row: card.row + offset.row,
         column: card.column + offset.column,
+        row: card.row + offset.row,
       };
 
       candidates.set(positionKey(position), position);

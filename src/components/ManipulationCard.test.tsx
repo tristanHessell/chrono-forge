@@ -16,20 +16,20 @@ describe('manipulationCard', () => {
       render(
         <IntlProvider locale="en" messages={messages}>
           <CardHand
-            cards={[{ id: 'test', type: 'manipulation', action }]}
-            owner="0"
-            ownerName="You"
-            playerType="human"
             activeOwner="0"
-            pendingCardId={undefined}
-            score={0}
+            cards={[{ action, id: 'test', type: 'manipulation' }]}
             isReturnTarget={false}
-            selectedCardId={null}
             onChoose={() => {}}
-            onDragStart={() => {}}
             onDragEnd={() => {}}
             onDragOver={() => {}}
+            onDragStart={() => {}}
             onDrop={() => {}}
+            owner="0"
+            ownerName="You"
+            pendingCardId={undefined}
+            playerType="human"
+            score={0}
+            selectedCardId={null}
           />
         </IntlProvider>,
       );

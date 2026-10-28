@@ -1,10 +1,10 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'environmental',
+  effects: ['draw-one'],
   id: 'event-1940-3',
-  type: 'event',
   name: 'green-revolution',
   number: 1940,
-  effects: ['draw-one'],
-  category: 'environmental',
+  type: 'event',
 } as const satisfies EventCard;

@@ -70,8 +70,8 @@ describe('cardEffects', () => {
         const client = effectClient(player);
         const before = client.getState()!.G;
 
-        client.moves.playCard('event-1940-1', { row: 0, column: 1 });
-        client.moves.movePendingCard({ row: 1, column: 0 });
+        client.moves.playCard('event-1940-1', { column: 1, row: 0 });
+        client.moves.movePendingCard({ column: 0, row: 1 });
 
         expect(client.getState()!.G.deck).toStrictEqual(before.deck);
 
@@ -104,7 +104,7 @@ describe('cardEffects', () => {
     it('allows confirmation when the deck is empty', () => {
       const client = effectClient('0', []);
 
-      client.moves.playCard('event-1940-1', { row: 0, column: 1 });
+      client.moves.playCard('event-1940-1', { column: 1, row: 0 });
       client.moves.confirmPlacement();
 
       const after = client.getState()!;
@@ -119,7 +119,7 @@ describe('cardEffects', () => {
       const client = effectClient('0', [event('event-1900-1')], true);
       const before = client.getState()!.G.deck;
 
-      client.moves.playCard('event-1940-1', { row: 0, column: 1 });
+      client.moves.playCard('event-1940-1', { column: 1, row: 0 });
       client.moves.returnPendingCard();
 
       expect(client.getState()!.G.deck).toStrictEqual(before);
@@ -174,7 +174,7 @@ describe('cardEffects', () => {
         numPlayers: 2,
       });
 
-      client.moves.playCard(hand[0].id, { row: 0, column: 1 });
+      client.moves.playCard(hand[0].id, { column: 1, row: 0 });
       client.moves.confirmPlacement();
 
       const afterFreeAction = client.getState()!;
@@ -192,13 +192,13 @@ describe('cardEffects', () => {
 
       expect(client.getState()!.G).toStrictEqual(afterFreeAction.G);
 
-      client.moves.playCard(hand[1].id, { row: 0, column: 2 });
+      client.moves.playCard(hand[1].id, { column: 2, row: 0 });
       client.moves.confirmPlacement();
 
       expect(client.getState()!.ctx.currentPlayer).toBe('0');
       expect(client.getState()!.G.actionsThisTurn).toBe(1);
 
-      client.moves.playCard(hand[2].id, { row: 0, column: 3 });
+      client.moves.playCard(hand[2].id, { column: 3, row: 0 });
       client.moves.confirmPlacement();
 
       const afterTurn = client.getState()!;
@@ -217,17 +217,17 @@ describe('cardEffects', () => {
     };
     const earlierCard: PlacedCard = {
       ...event('event-1900-1'),
-      row: 0,
       column: 1,
       owner: '1',
       placedAt: 1,
+      row: 0,
     };
     const startingCard: PlacedCard = {
       ...cards.startingCard,
-      row: 0,
       column: 0,
       owner: 'neutral' as const,
       placedAt: 0,
+      row: 0,
     };
     const drawnCard = event('event-1920-1');
     const client = Client({
@@ -239,19 +239,19 @@ describe('cardEffects', () => {
           return {
             ...initial,
             deck: [drawnCard],
-            played: [startingCard, earlierCard],
-            nextPlacementOrder: 2,
             hands: {
               ...initial.hands,
               '0': [playedCard],
             },
+            nextPlacementOrder: 2,
+            played: [startingCard, earlierCard],
           };
         },
       },
       numPlayers: 2,
     });
 
-    client.moves.playCard(playedCard.id, { row: 0, column: 2 });
+    client.moves.playCard(playedCard.id, { column: 2, row: 0 });
     client.moves.confirmPlacement();
 
     const after = client.getState()!;

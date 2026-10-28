@@ -18,31 +18,29 @@ import { HandCardFace } from './HandCardFace';
 import { PlayedCard } from './PlayedCard';
 
 type CardView = 'hand' | 'table';
-type CardSize = 'standard' | 'compact';
+type CardSize = 'compact' | 'standard';
 
 function CatalogCard({
   card,
-  view,
   onShowDetails,
+  view,
 }: {
   card: Card;
-  view: CardView;
   onShowDetails: (card: Card) => void;
+  view: CardView;
 }) {
   const cardView =
     view === 'table' && card.type === 'event' ? (
       <PlayedCard card={card} onShowDetails={onShowDetails} />
     ) : (
       <div
+        aria-describedby="card-catalog-helper-message"
         className={clsx(
           cardStyles.card,
           cardCatalogDialogStyles.catalogHandCard,
         )}
         data-card-type={card.type}
         data-event-category={card.category}
-        role="button"
-        tabIndex={0}
-        aria-describedby="card-catalog-helper-message"
         onDoubleClick={() => {
           onShowDetails(card);
         }}
@@ -52,11 +50,13 @@ function CatalogCard({
             onShowDetails(card);
           }
         }}
+        role="button"
+        tabIndex={0}
       >
         <AriaDescription id="card-catalog-helper-message">
           <FormattedMessage
-            id="card.detailsHint"
             defaultMessage="Double-click or press Alt + Enter to view card details."
+            id="card.detailsHint"
           />
         </AriaDescription>
         <HandCardFace card={card} />
@@ -85,19 +85,19 @@ export function CardCatalogDialog({
   const titleId = useId();
   const [view, setView] = useState<CardView>('hand');
   const [size, setSize] = useState<CardSize>('standard');
-  const { startingCard, deck } = loadCardCatalog();
+  const { deck, startingCard } = loadCardCatalog();
   const events = deck.filter((card) => card.type === 'event').length;
   const groups = catalogGroups(deck);
 
   return (
     <dialog
-      ref={dialogRef}
+      aria-labelledby={titleId}
       className={clsx(
         dialogStyles.gameLogDialog,
         cardCatalogDialogStyles.cardCatalogDialog,
       )}
       data-card-size={size}
-      aria-labelledby={titleId}
+      ref={dialogRef}
     >
       <div
         className={clsx(
@@ -106,16 +106,16 @@ export function CardCatalogDialog({
         )}
       >
         <h2 id={titleId}>
-          <FormattedMessage id="catalog.title" defaultMessage="All cards" />
+          <FormattedMessage defaultMessage="All cards" id="catalog.title" />
         </h2>
         <button
-          className={dialogStyles.gameLogClose}
-          type="button"
           aria-label={intl.formatMessage({
-            id: 'catalog.close',
             defaultMessage: 'Close card catalog',
+            id: 'catalog.close',
           })}
+          className={dialogStyles.gameLogClose}
           onClick={() => dialogRef.current?.close()}
+          type="button"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="m6 6 12 12M18 6 6 18" />
@@ -124,47 +124,47 @@ export function CardCatalogDialog({
       </div>
       <p>
         <FormattedMessage
-          id="catalog.overview"
           defaultMessage="The complete configured deck, not just the cards remaining in this game. Every copy is shown. Double-click a card to view its details and effects."
+          id="catalog.overview"
         />
       </p>
       <label className={cardCatalogDialogStyles.catalogView}>
-        <FormattedMessage id="catalog.view" defaultMessage="Display cards" />
+        <FormattedMessage defaultMessage="Display cards" id="catalog.view" />
         <select
-          value={view}
           onChange={(event) => {
             setView(event.currentTarget.value as CardView);
           }}
+          value={view}
         >
           <option value="hand">
-            <FormattedMessage id="catalog.view.hand" defaultMessage="In hand" />
+            <FormattedMessage defaultMessage="In hand" id="catalog.view.hand" />
           </option>
           <option value="table">
             <FormattedMessage
-              id="catalog.view.table"
               defaultMessage="On table"
+              id="catalog.view.table"
             />
           </option>
         </select>
       </label>
       <label className={cardCatalogDialogStyles.catalogView}>
-        <FormattedMessage id="catalog.size" defaultMessage="Card size" />
+        <FormattedMessage defaultMessage="Card size" id="catalog.size" />
         <select
-          value={size}
           onChange={(event) => {
             setSize(event.currentTarget.value as CardSize);
           }}
+          value={size}
         >
           <option value="standard">
             <FormattedMessage
-              id="catalog.size.standard"
               defaultMessage="Standard (124 × 88 px)"
+              id="catalog.size.standard"
             />
           </option>
           <option value="compact">
             <FormattedMessage
-              id="catalog.size.compact"
               defaultMessage="Compact (104 × 72 px)"
+              id="catalog.size.compact"
             />
           </option>
         </select>
@@ -174,23 +174,23 @@ export function CardCatalogDialog({
           [
             [
               intl.formatMessage({
-                id: 'catalog.deck',
                 defaultMessage: 'Deck cards',
+                id: 'catalog.deck',
               }),
               deck.length,
             ],
             [intl.formatMessage(startingEventNameMessage), events],
             [
               intl.formatMessage({
-                id: 'card.manipulation',
                 defaultMessage: 'Command',
+                id: 'card.manipulation',
               }),
               deck.length - events,
             ],
             [
               intl.formatMessage({
-                id: 'catalog.start',
                 defaultMessage: 'Starting card',
+                id: 'catalog.start',
               }),
               1,
             ],
@@ -204,11 +204,11 @@ export function CardCatalogDialog({
       </dl>
       <section className={cardCatalogDialogStyles.catalogGroup}>
         <h3>
-          <FormattedMessage id="catalog.start" defaultMessage="Starting card" />
+          <FormattedMessage defaultMessage="Starting card" id="catalog.start" />
           <span>
             <FormattedMessage
-              id="catalog.count"
               defaultMessage="{count, plural, one {# card} other {# cards}}"
+              id="catalog.count"
               values={{ count: 1 }}
             />
           </span>
@@ -221,15 +221,15 @@ export function CardCatalogDialog({
           />
         </ul>
       </section>
-      {groups.map(({ id, cards }) => {
+      {groups.map(({ cards, id }) => {
         const card = cards[0];
         const label =
           card.type === 'event'
             ? card.category
               ? intl.formatMessage(categoryMessages[card.category])
               : intl.formatMessage({
-                  id: 'card.event',
                   defaultMessage: 'Event',
+                  id: 'card.event',
                 })
             : intl.formatMessage(manipulationNameMessages[card.action]);
 
@@ -239,8 +239,8 @@ export function CardCatalogDialog({
               {label}
               <span>
                 <FormattedMessage
-                  id="catalog.count"
                   defaultMessage="{count, plural, one {# card} other {# cards}}"
+                  id="catalog.count"
                   values={{ count: cards.length }}
                 />
               </span>
@@ -248,8 +248,8 @@ export function CardCatalogDialog({
             <ul className={cardCatalogDialogStyles.catalogGrid}>
               {cards.map((entry) => (
                 <CatalogCard
-                  key={entry.id}
                   card={entry}
+                  key={entry.id}
                   onShowDetails={onShowDetails}
                   view={view}
                 />

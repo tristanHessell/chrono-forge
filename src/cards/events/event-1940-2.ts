@@ -1,10 +1,10 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'technological',
+  effects: ['draw-one'],
   id: 'event-1940-2',
-  type: 'event',
   name: 'atomic-age',
   number: 1940,
-  effects: ['draw-one'],
-  category: 'technological',
+  type: 'event',
 } as const satisfies EventCard;

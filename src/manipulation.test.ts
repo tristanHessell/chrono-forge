@@ -1,5 +1,5 @@
 import { Client } from 'boardgame.io/client';
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 
 import { chooseComputerAction } from './computer';
 import {
@@ -19,56 +19,56 @@ import { calculateScores } from './scoring';
 
 const board = (): PlacedCard[] => [
   {
+    column: 0,
     id: 'start',
-    type: 'event',
     name: 'timeline-origin',
     number: 0,
-    row: 0,
-    column: 0,
     owner: 'neutral',
     placedAt: 0,
+    row: 0,
+    type: 'event',
   },
   {
+    column: 1,
     id: 'a',
-    type: 'event',
     name: 'timeline-origin',
     number: 1900,
-    row: 0,
-    column: 1,
     owner: '0',
     placedAt: 1,
+    row: 0,
+    type: 'event',
   },
   {
+    column: 0,
     id: 'b',
-    type: 'event',
     name: 'timeline-origin',
     number: 1900,
-    row: 1,
-    column: 0,
     owner: '1',
     placedAt: 2,
+    row: 1,
+    type: 'event',
   },
   {
+    column: 2,
+    effects: ['draw-one'],
     id: 'c',
-    type: 'event',
     name: 'timeline-origin',
     number: 1940,
-    effects: ['draw-one'],
-    row: 0,
-    column: 2,
     owner: '1',
     placedAt: 3,
+    row: 0,
+    type: 'event',
   },
   {
+    column: 0,
+    effects: ['timeline-1900-bonus'],
     id: 'd',
-    type: 'event',
     name: 'timeline-origin',
     number: 1990,
-    effects: ['timeline-1900-bonus'],
-    row: 2,
-    column: 0,
     owner: '0',
     placedAt: 4,
+    row: 2,
+    type: 'event',
   },
 ];
 
@@ -77,9 +77,9 @@ function clientFor(
   overrides: Partial<CardGameState> = {},
 ) {
   const manipulation: Card = {
+    action,
     id: 'manipulation',
     type: 'manipulation',
-    action,
   };
 
   return Client({
@@ -87,16 +87,16 @@ function clientFor(
       ...CardGame,
       setup: (context): CardGameState => ({
         ...CardGame.setup!(context),
-        played: board(),
         deck: [
           {
             id: 'draw',
-            type: 'event',
             name: 'timeline-origin',
             number: 1920,
+            type: 'event',
           },
         ],
         nextPlacementOrder: 5,
+        played: board(),
         ...overrides,
         hands: {
           ...CardGame.setup!(context).hands,
@@ -104,17 +104,17 @@ function clientFor(
             manipulation,
             {
               id: 'spare',
-              type: 'event',
               name: 'timeline-origin',
               number: 1950,
+              type: 'event',
             },
           ],
           '1': [
             {
               id: 'other',
-              type: 'event',
               name: 'timeline-origin',
               number: 1960,
+              type: 'event',
             },
           ],
         },
@@ -135,22 +135,22 @@ describe('manipulation rules', () => {
             ? { ...card, removed }
             : card,
       );
-      const result = applyTimeJump(played, 'c', { row: 2, column: 0 })!;
+      const result = applyTimeJump(played, 'c', { column: 0, row: 2 })!;
 
       expect(result).not.toBeNull();
       expect(getTimeJumpPositions(played, 'c')).toContainEqual({
-        row: 2,
         column: 0,
+        row: 2,
       });
       expect(result.find((card) => card.id === 'd')).toBeUndefined();
       expect(result.find((card) => card.id === 'c')).toMatchObject({
+        column: 0,
+        effects: ['draw-one'],
         number: 1940,
         owner: '1',
-        effects: ['draw-one'],
+        placedAt: 4,
         removed,
         row: 2,
-        column: 0,
-        placedAt: 4,
       });
       expect(result).toHaveLength(played.length - 1);
       expect(isValidBoard(result)).toBe(true);
@@ -163,16 +163,16 @@ describe('manipulation rules', () => {
       card.id === 'd' ? { ...card, removed: true } : card,
     );
 
-    expect(applyTimeJump(played, 'c', { row: 1, column: 0 })).toBeNull();
-    expect(applyTimeJump(played, 'd', { row: 2, column: 0 })).toBeNull();
-    expect(applyTimeJump(played, 'a', { row: 2, column: 0 })).toBeNull();
+    expect(applyTimeJump(played, 'c', { column: 0, row: 1 })).toBeNull();
+    expect(applyTimeJump(played, 'd', { column: 0, row: 2 })).toBeNull();
+    expect(applyTimeJump(played, 'a', { column: 0, row: 2 })).toBeNull();
 
     const invalidDateBoard = board().map((card) =>
       card.id === 'c' ? { ...card, removed: true } : card,
     );
 
     expect(
-      applyTimeJump(invalidDateBoard, 'b', { row: 0, column: 2 }),
+      applyTimeJump(invalidDateBoard, 'b', { column: 2, row: 0 }),
     ).toBeNull();
   });
 
@@ -183,7 +183,7 @@ describe('manipulation rules', () => {
     const client = clientFor('time-jump', { played });
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'c', { row: 2, column: 0 });
+    client.moves.manipulate('manipulation', 'c', { column: 0, row: 2 });
 
     const after = client.getState()!.G;
 
@@ -225,18 +225,18 @@ describe('manipulation rules', () => {
 
   it('moves a card into an empty legal position without changing its metadata', () => {
     const original = board();
-    const moved = applyTimeJump(original, 'c', { row: -1, column: 1 })!;
+    const moved = applyTimeJump(original, 'c', { column: 1, row: -1 })!;
 
     expect(moved.find((card) => card.id === 'c')).toStrictEqual({
       ...original[3],
-      row: -1,
       column: 1,
+      row: -1,
     });
     expect(original[3].row).toBe(0);
     expect(isValidBoard(moved)).toBe(true);
     expect(getTimeJumpPositions(original, 'c')).toContainEqual({
-      row: -1,
       column: 1,
+      row: -1,
     });
   });
 
@@ -244,8 +244,8 @@ describe('manipulation rules', () => {
     const original = board();
     const swapped = applyTimeSwap(original, 'c', 'd')!;
 
-    expect(swapped[3]).toStrictEqual({ ...original[3], row: 2, column: 0 });
-    expect(swapped[4]).toStrictEqual({ ...original[4], row: 0, column: 2 });
+    expect(swapped[3]).toStrictEqual({ ...original[3], column: 0, row: 2 });
+    expect(swapped[4]).toStrictEqual({ ...original[4], column: 2, row: 0 });
     expect(calculateScores(swapped)).toStrictEqual(calculateScores(original));
     expect(isValidBoard(swapped)).toBe(true);
   });
@@ -253,70 +253,70 @@ describe('manipulation rules', () => {
   it('reorders placement when a swap changes the valid link direction', () => {
     const original: PlacedCard[] = [
       {
+        column: 0,
         id: 'start',
-        type: 'event',
         name: 'timeline-origin',
         number: 0,
-        row: 0,
-        column: 0,
         owner: 'neutral',
         placedAt: 0,
+        row: 0,
+        type: 'event',
       },
       {
+        column: -1,
         id: '1900',
-        type: 'event',
         name: 'timeline-origin',
         number: 1900,
-        row: 0,
-        column: -1,
         owner: '0',
         placedAt: 1,
+        row: 0,
+        type: 'event',
       },
       {
+        column: -2,
         id: '1990',
-        type: 'event',
         name: 'timeline-origin',
         number: 1990,
-        row: 0,
-        column: -2,
         owner: '1',
         placedAt: 2,
+        row: 0,
+        type: 'event',
       },
       {
+        column: 1,
         id: '1920',
-        type: 'event',
         name: 'timeline-origin',
         number: 1920,
-        row: 0,
-        column: 1,
         owner: '0',
         placedAt: 3,
+        row: 0,
+        type: 'event',
       },
     ];
     const swapped = applyTimeSwap(original, '1900', '1920')!;
 
     expect(swapped.find((card) => card.id === '1900')).toMatchObject({
-      row: 0,
       column: 1,
       placedAt: 1,
+      row: 0,
     });
     expect(swapped.find((card) => card.id === '1920')).toMatchObject({
-      row: 0,
       column: -1,
       placedAt: 2,
+      row: 0,
     });
     expect(isValidBoard(swapped)).toBe(true);
   });
 
   it.each([
-    ['start', { row: -1, column: 0 }],
-    ['missing', { row: -1, column: 0 }],
-    ['c', { row: 0, column: 2 }],
-    ['c', { row: 1, column: 0 }],
-    ['c', { row: 10, column: 10 }],
-    ['c', { row: 0.5, column: 2 }],
-    ['c', { row: 1, column: 1 }],
-    ['a', { row: -1, column: 0 }],
+    ['start', { column: 0, row: -1 }],
+    ['missing', { column: 0, row: -1 }],
+    ['c', { column: 2, row: 0 }],
+    ['c', { column: 0, row: 1 }],
+    ['c', { column: 10, row: 10 }],
+    ['c', { column: 2, row: 0.5 }],
+    ['c', { column: 1, row: 1 }],
+    ['a', { column: 0, row: -1 }],
   ] as const)('rejects an invalid jump for %s to %j', (target, destination) => {
     expect(applyTimeJump(board(), target, destination)).toBeNull();
   });
@@ -334,11 +334,11 @@ describe('manipulation rules', () => {
     expect(
       isValidPlacement(
         board(),
-        { row: -1, column: 0 },
+        { column: 0, row: -1 },
         {
+          action: 'time-jump',
           id: 'jump',
           type: 'manipulation',
-          action: 'time-jump',
         },
       ),
     ).toBe(false);
@@ -355,7 +355,7 @@ describe('manipulation game moves', () => {
       client.moves.manipulate(
         'manipulation',
         'c',
-        action === 'time-jump' ? { row: -1, column: 1 } : 'd',
+        action === 'time-jump' ? { column: 1, row: -1 } : 'd',
       );
 
       const after = client.getState()!;
@@ -386,7 +386,7 @@ describe('manipulation game moves', () => {
   it('blocks undo when a second-action manipulation refills the hand', () => {
     const client = clientFor('time-jump', { actionsThisTurn: 1 });
 
-    client.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
+    client.moves.manipulate('manipulation', 'c', { column: 1, row: -1 });
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.hands['0']).toHaveLength(2);
@@ -404,10 +404,10 @@ describe('manipulation game moves', () => {
     const client = clientFor('time-jump');
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'a', { row: -1, column: 0 });
+    client.moves.manipulate('manipulation', 'a', { column: 0, row: -1 });
     client.moves.manipulate('manipulation', 'c', 'd');
-    client.moves.manipulate('spare', 'c', { row: -1, column: 1 });
-    client.moves.manipulate('other', 'c', { row: -1, column: 1 });
+    client.moves.manipulate('spare', 'c', { column: 1, row: -1 });
+    client.moves.manipulate('other', 'c', { column: 1, row: -1 });
 
     expect(client.getState()!.G).toStrictEqual(before);
   });
@@ -415,18 +415,18 @@ describe('manipulation game moves', () => {
   it('does not manipulate during an unconfirmed placement or after game end', () => {
     const client = clientFor('time-jump');
 
-    client.moves.playCard('spare', { row: -1, column: 0 });
+    client.moves.playCard('spare', { column: 0, row: -1 });
 
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
+    client.moves.manipulate('manipulation', 'c', { column: 1, row: -1 });
 
     expect(client.getState()!.G).toStrictEqual(before);
 
     const ended = clientFor('time-jump', { roundOver: true });
     const final = ended.getState()!.G;
 
-    ended.moves.manipulate('manipulation', 'c', { row: -1, column: 1 });
+    ended.moves.manipulate('manipulation', 'c', { column: 1, row: -1 });
 
     expect(ended.getState()!.G).toStrictEqual(final);
   });
@@ -444,9 +444,7 @@ describe('manipulation game moves', () => {
 
       expect(choice?.type).toBe('manipulate');
 
-      if (choice?.type !== 'manipulate') {
-        throw new Error('Expected Manipulation');
-      }
+      assert(choice?.type === 'manipulate', 'Expected Manipulation');
 
       expect(choice.cardId).toBe('manipulation');
 

@@ -14,7 +14,7 @@ export function GameIntlProvider({ children }: { children: React.ReactNode }) {
   }, [locale]);
 
   return (
-    <IntlProvider locale={locale} defaultLocale="en" messages={messages}>
+    <IntlProvider defaultLocale="en" locale={locale} messages={messages}>
       {children}
     </IntlProvider>
   );

@@ -27,14 +27,14 @@ describe(GameResults, () => {
     'announces %s as the winner',
     async (owner) => {
       const card: PlacedCard = {
+        column: 0,
         id: 'test',
-        type: 'event',
         name: 'timeline-origin',
         number: 1900,
-        row: 0,
-        column: 0,
-        placedAt: 1,
         owner,
+        placedAt: 1,
+        row: 0,
+        type: 'event',
       };
 
       render(
@@ -58,14 +58,14 @@ describe(GameResults, () => {
 
   it('names only the tied leaders in a four-player game', async () => {
     const played: PlacedCard[] = (['2', '3'] as const).map((owner) => ({
+      column: Number(owner),
       id: owner,
-      type: 'event',
       name: 'timeline-origin',
       number: 1900,
-      row: 0,
-      column: Number(owner),
-      placedAt: Number(owner),
       owner,
+      placedAt: Number(owner),
+      row: 0,
+      type: 'event',
     }));
 
     render(

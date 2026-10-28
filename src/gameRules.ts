@@ -1,13 +1,13 @@
 import type { Card, CardPosition, PlacedCard } from './game';
 
 export const ADJACENT_OFFSETS: CardPosition[] = [
-  { row: -1, column: 0 },
-  { row: 0, column: -1 },
-  { row: 0, column: 1 },
-  { row: 1, column: 0 },
+  { column: 0, row: -1 },
+  { column: -1, row: 0 },
+  { column: 1, row: 0 },
+  { column: 0, row: 1 },
 ];
 
-export const positionKey = ({ row, column }: CardPosition) =>
+export const positionKey = ({ column, row }: CardPosition) =>
   `${row}:${column}`;
 
 export const areAdjacent = (first: CardPosition, second: CardPosition) =>
@@ -20,18 +20,18 @@ export const wouldCreateSquare = (
 ) => {
   const occupiedPositions = new Set(played.map(positionKey));
   const candidateSquares = [
-    { row: position.row - 1, column: position.column - 1 },
-    { row: position.row - 1, column: position.column },
-    { row: position.row, column: position.column - 1 },
-    { row: position.row, column: position.column },
+    { column: position.column - 1, row: position.row - 1 },
+    { column: position.column, row: position.row - 1 },
+    { column: position.column - 1, row: position.row },
+    { column: position.column, row: position.row },
   ];
 
-  return candidateSquares.some(({ row, column }) => {
+  return candidateSquares.some(({ column, row }) => {
     const square = [
-      { row, column },
-      { row: row + 1, column },
-      { row, column: column + 1 },
-      { row: row + 1, column: column + 1 },
+      { column, row },
+      { column, row: row + 1 },
+      { column: column + 1, row },
+      { column: column + 1, row: row + 1 },
     ];
 
     return square
@@ -94,10 +94,10 @@ const isValidEventPlacement = (
       isValidBoard(
         withPlacedEvent(played, {
           ...card,
-          row: position.row,
           column: position.column,
           owner: '0',
           placedAt: occupying.placedAt,
+          row: position.row,
         }),
       )
     );
@@ -175,10 +175,10 @@ export const getAvailablePositions = (
     new Map(
       played.flatMap((card) =>
         [
-          ...(card.removed ? [{ row: card.row, column: card.column }] : []),
-          ...ADJACENT_OFFSETS.map(({ row, column }) => ({
-            row: card.row + row,
+          ...(card.removed ? [{ column: card.column, row: card.row }] : []),
+          ...ADJACENT_OFFSETS.map(({ column, row }) => ({
             column: card.column + column,
+            row: card.row + row,
           })),
         ]
           .filter(

@@ -10,11 +10,10 @@ export function CardPatternsToggle() {
   return (
     <label className={cardPatternsToggleStyles.cardPatternsChoice}>
       <FormattedMessage
-        id="patterns.label"
         defaultMessage="Colour-independent backgrounds"
+        id="patterns.label"
       />
       <input
-        type="checkbox"
         checked={enabled}
         onChange={(event) => {
           const next = event.target.checked;
@@ -22,6 +21,7 @@ export function CardPatternsToggle() {
           saveCardPatterns(next);
           setEnabled(next);
         }}
+        type="checkbox"
       />
     </label>
   );
