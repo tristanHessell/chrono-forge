@@ -81,12 +81,12 @@ export function currentGameLog(
         );
       });
 
-      // A discarded Manipulation leaves the board unchanged.
+      // A discarded Command leaves the board unchanged.
       if (changed.length) {
         const target = changed[0];
         const moved = after.played.find((card) => card.id === target.id)!;
 
-        type = 'manipulate';
+        type = 'command';
         args = [used.id, target.id];
 
         if (used.action === 'time-jump') {
@@ -381,7 +381,7 @@ export function parseGameLog(text: string): GameLog {
       const names =
         action.type === 'MAKE_MOVE'
           ? parsed.version === 2
-            ? ['playEvent', 'discardCard', 'manipulate', 'undoTest', 'redoTest']
+            ? ['playEvent', 'discardCard', 'command', 'undoTest', 'redoTest']
             : Object.keys(CardGame.moves!)
           : [
               'endTurn',

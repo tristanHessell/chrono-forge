@@ -40,13 +40,13 @@
   transform: translateY(-50%);
 }
 
-.manipulation-target[data-card-type] {
+.command-target[data-card-type] {
   cursor: crosshair;
   outline: 3px dashed var(--focus-ring);
   outline-offset: 2px;
 }
 
-.manipulation-selected[data-card-type] {
+.command-selected[data-card-type] {
   outline: 3px solid #fff;
   outline-offset: 2px;
 }

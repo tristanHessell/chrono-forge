@@ -35,7 +35,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["take-control-3", "event-1910-3"],
         "playerID": "1"
       }
@@ -85,7 +85,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["take-control-2", "event-1950-1"],
         "playerID": "1"
       }
@@ -149,7 +149,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["remove-event-3", "event-1910-2"],
         "playerID": "1"
       }
@@ -255,7 +255,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": [
           "time-jump-1",
           "event-1990-3",
@@ -270,7 +270,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["remove-event-4", "event-1920-1"],
         "playerID": "0"
       }
@@ -348,7 +348,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["time-swap-2", "event-1980-1", "event-1990-2"],
         "playerID": "1"
       }
@@ -356,7 +356,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["time-swap-3", "event-1960-3", "event-1990-1"],
         "playerID": "1"
       }
@@ -364,7 +364,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": [
           "time-jump-3",
           "event-1990-1",
@@ -379,7 +379,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["take-control-4", "event-1900-1"],
         "playerID": "0"
       }
@@ -401,7 +401,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["remove-event-2", "event-1900-1"],
         "playerID": "1"
       }
@@ -423,7 +423,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["remove-event-1", "event-1930-3"],
         "playerID": "0"
       }

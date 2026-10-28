@@ -44,7 +44,7 @@ describe(CardDetailsDialog, () => {
     renderCardDetails({
       action: 'time-jump',
       id: 'test-command',
-      type: 'manipulation',
+      type: 'command',
     });
 
     expect(page.getByText('Time Jump').length).toBeGreaterThan(0);

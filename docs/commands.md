@@ -1,6 +1,6 @@
-# Manipulations
+# Commands
 
-Manipulations are command cards. The deck contains four copies of each command.
+Commands are command cards. The deck contains four copies of each command.
 Each use costs one action and moves the command card to the discard pile. A
 command does not score a base point. It does not trigger Event effects again.
 
@@ -14,20 +14,20 @@ scoring.
 
 ## Add a Command card
 
-The code calls Command cards Manipulations. Follow the existing names in the
+Follow the existing names in the
 source files.
 
 1. Define the command's valid targets, arguments, and effects. Decide whether
    it can target the starting card or a removed Event.
-2. Add an action ID to `ManipulationAction` in `src/game.ts`.
-3. Add one card definition per copy in `src/cards/manipulations/`. Give every
+2. Add an action ID to `CommandAction` in `src/game.ts`.
+3. Add one card definition per copy in `src/cards/commands/`. Give every
    copy a unique ID.
 4. Import each definition in `src/cards/index.ts` and add it to the deck.
    Keep the existing card order so seeded games remain compatible.
 5. Allow the action ID in `src/cardCatalog.ts`. Update the catalog tests for
    the new cards and copy count.
 6. Implement validation and the board change in
-   `src/manipulationRules.ts`. Add destination discovery when the command needs
+   `src/commandRules.ts`. Add destination discovery when the command needs
    a position or a second target.
 7. Update `src/GameBoard.tsx` for target selection, destinations, and prompts.
    Update `src/computer.ts` so the computer can choose legal uses.

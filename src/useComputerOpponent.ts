@@ -5,13 +5,13 @@ import type { CardGameState, CardPosition, PlayerId } from './game';
 import type { PlayerSetup } from './playerSetup';
 
 type ComputerMoves = {
-  confirmPlacement: () => void;
-  discardCard: (cardId: string) => void;
-  manipulate: (
+  command: (
     cardId: string,
     targetId: string,
     destination?: CardPosition | string,
   ) => void;
+  confirmPlacement: () => void;
+  discardCard: (cardId: string) => void;
   playCard: (cardId: string, position: CardPosition) => void;
 };
 
@@ -22,7 +22,7 @@ export function useComputerOpponent(
   paused: boolean,
   moves: ComputerMoves,
 ) {
-  const { confirmPlacement, discardCard, manipulate, playCard } = moves;
+  const { command, confirmPlacement, discardCard, playCard } = moves;
 
   useEffect(() => {
     const current = players.find((player) => player.id === currentPlayer);
@@ -40,8 +40,8 @@ export function useComputerOpponent(
         discardCard(action.cardId);
       } else if (action?.type === 'confirm') {
         confirmPlacement();
-      } else if (action?.type === 'manipulate') {
-        manipulate(action.cardId, action.targetId, action.destination);
+      } else if (action?.type === 'command') {
+        command(action.cardId, action.targetId, action.destination);
       }
     }, 600);
 
@@ -56,6 +56,6 @@ export function useComputerOpponent(
     playCard,
     discardCard,
     confirmPlacement,
-    manipulate,
+    command,
   ]);
 }

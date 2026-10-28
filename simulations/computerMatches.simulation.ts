@@ -5,9 +5,9 @@ import { Client } from 'boardgame.io/client';
 import { expect, it } from 'vitest';
 
 import { loadCardCatalog } from '../src/cardCatalog';
+import { isValidBoard } from '../src/commandRules';
 import { chooseComputerAction, type ComputerAction } from '../src/computer';
 import { CardGame } from '../src/game';
-import { isValidBoard } from '../src/manipulationRules';
 import { calculateScoreBreakdown } from '../src/scoring';
 import { countActivelyDiscardedCards, playerLabel } from './statistics';
 
@@ -23,12 +23,12 @@ type Score = { base: number; bonus: number; total: number };
 type RecordedMove = { action: ComputerAction; player: string };
 type MatchResult = {
   actions: number;
+  commands: number;
   completed: boolean;
   discardedCards: number;
   durationMs: number;
   error?: string;
   game: number;
-  manipulations: number;
   moves: RecordedMove[];
   playedCards: number;
   remainingCards: { deck: number; hands: Record<string, number> };
@@ -87,7 +87,7 @@ function playMatch(game: number, seed: string): MatchResult {
         if (action.type === 'discard') {
           client.moves.discardCard(action.cardId);
         } else {
-          client.moves.manipulate(
+          client.moves.command(
             action.cardId,
             action.targetId,
             action.destination,
@@ -159,10 +159,9 @@ function playMatch(game: number, seed: string): MatchResult {
     seed,
     ...(error ? { error } : {}),
     actions: moves.filter(({ action }) => action.type !== 'play').length,
+    commands: moves.filter(({ action }) => action.type === 'command').length,
     discardedCards: countActivelyDiscardedCards(G.discarded, moves),
     durationMs: Math.round(performance.now() - started),
-    manipulations: moves.filter(({ action }) => action.type === 'manipulate')
-      .length,
     moves,
     playedCards: G.played.length - 1,
     remainingCards: {
@@ -229,9 +228,9 @@ it(`records and summarises 100 games with ${numPlayers} computers (manual only)`
   );
   const summary = {
     averageActions: average((match) => match.actions),
+    averageCommands: average((match) => match.commands),
     averageDiscardedCards: average((match) => match.discardedCards),
     averageGameMs: average((match) => match.durationMs),
-    averageManipulations: average((match) => match.manipulations),
     averagePlayedCards: average((match) => match.playedCards),
     averageRounds: average((match) => match.rounds),
     averageTurns: average((match) => match.turns),
@@ -246,7 +245,7 @@ it(`records and summarises 100 games with ${numPlayers} computers (manual only)`
   const report = {
     baseSeed,
     discardedCardsDefinition:
-      'Cards explicitly discarded from a hand. Excludes used Manipulations and overwritten Events.',
+      'Cards explicitly discarded from a hand. Excludes used Commands and overwritten Events.',
     finishedAt: new Date().toISOString(),
     matches,
     playerLabels: Object.fromEntries(
@@ -286,7 +285,7 @@ it(`records and summarises 100 games with ${numPlayers} computers (manual only)`
     `Average game wall time: ${summary.averageGameMs} ms. Actions: ${summary.averageActions}.`,
     `Average played cards: ${summary.averagePlayedCards}. Actively discarded cards: ${summary.averageDiscardedCards}.`,
     report.discardedCardsDefinition,
-    `Average Manipulations used: ${summary.averageManipulations}.`,
+    `Average Commands used: ${summary.averageCommands}.`,
     '',
     '## Individual games',
     '',

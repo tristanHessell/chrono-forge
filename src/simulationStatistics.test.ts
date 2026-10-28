@@ -15,7 +15,7 @@ describe('simulationStatistics', () => {
     },
   );
 
-  it('counts explicit discards, including unused Manipulations, but excludes used cards and overwritten Events', () => {
+  it('counts explicit discards, including unused Commands, but excludes used cards and overwritten Events', () => {
     const discarded: Card[] = [
       {
         id: 'discarded-event',
@@ -23,8 +23,8 @@ describe('simulationStatistics', () => {
         number: 1900,
         type: 'event',
       },
-      { action: 'time-swap', id: 'unused-manipulation', type: 'manipulation' },
-      { action: 'remove-event', id: 'used-manipulation', type: 'manipulation' },
+      { action: 'time-swap', id: 'unused-command', type: 'command' },
+      { action: 'remove-event', id: 'used-command', type: 'command' },
       {
         id: 'overwritten-event',
         name: 'timeline-origin',
@@ -34,11 +34,11 @@ describe('simulationStatistics', () => {
     ];
     const actions: ComputerAction[] = [
       { cardId: 'discarded-event', type: 'discard' },
-      { cardId: 'unused-manipulation', type: 'discard' },
+      { cardId: 'unused-command', type: 'discard' },
       {
-        cardId: 'used-manipulation',
+        cardId: 'used-command',
         targetId: 'overwritten-event',
-        type: 'manipulate',
+        type: 'command',
       },
       { cardId: 'replacement', position: { column: 1, row: 0 }, type: 'play' },
       { type: 'confirm' },

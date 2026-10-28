@@ -178,7 +178,7 @@ describe('touch destinations', () => {
     expect(
       touchDropPosition(
         played,
-        { action: 'time-jump', id: 'jump', type: 'manipulation' },
+        { action: 'time-jump', id: 'jump', type: 'command' },
         '-1:0',
       ),
     ).toBeNull();

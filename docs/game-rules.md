@@ -1,7 +1,7 @@
 # Game rules
 
 This document describes setup, turns, card placement, and scoring.
-See [Manipulations](./manipulations.md) for the four command cards.
+See [Commands](./commands.md) for the four command cards.
 
 ## Players and setup
 
@@ -13,7 +13,7 @@ The shared deck has 46 cards:
 
 - 30 Event cards: one Politics, Tech, and Nature card for each decade from 1900
   through 1990.
-- 16 Manipulation cards: four copies of each command.
+- 16 Command cards: four copies of each command.
 
 A neutral Event numbered 0 starts in the center of the table. It belongs to no
 player and does not score. Each player's first Event must touch this card.
@@ -21,7 +21,7 @@ player and does not score. Each player's first Event must touch this card.
 ## Turns and actions
 
 Each turn has up to two actions. A player can confirm an Event, use a
-Manipulation, or discard a card for each action. Confirming a `free-action`
+Command, or discard a card for each action. Confirming a `free-action`
 Event does not use one of these actions. A player can still take up to two
 other actions that turn. Selecting, moving, or replacing an unconfirmed Event
 does not use an action.
@@ -53,7 +53,7 @@ incoming links are perpendicular. Links cannot meet head-to-head from opposite
 sides. The connected timeline must remain valid after each confirmed move.
 
 These placement rules also apply when a player moves or replaces an unconfirmed
-Event. See [Manipulations](./manipulations.md) for how board changes affect
+Event. See [Commands](./commands.md) for how board changes affect
 existing links.
 
 ## Add an Event effect

@@ -53,7 +53,7 @@ describe(currentGameLog, () => {
         } else if (action.type === 'discard') {
           client.moves.discardCard(action.cardId);
         } else {
-          client.moves.manipulate(
+          client.moves.command(
             action.cardId,
             action.targetId,
             action.destination,
@@ -71,7 +71,7 @@ describe(currentGameLog, () => {
         log.actions.every(
           (action) =>
             action.type === 'MAKE_MOVE' &&
-            ['playEvent', 'discardCard', 'manipulate'].includes(
+            ['playEvent', 'discardCard', 'command'].includes(
               action.payload.type,
             ),
         ),

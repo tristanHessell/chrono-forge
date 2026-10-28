@@ -108,9 +108,9 @@ export function PlayedCard({
           ? ownershipStyles.ownerNeutral
           : ownershipStyles[`owner${owner}`],
         {
+          [playedCardStyles.commandSelected]: selected,
+          [playedCardStyles.commandTarget]: Boolean(onTarget),
           [playedCardStyles.latestCard]: isLatest,
-          [playedCardStyles.manipulationSelected]: selected,
-          [playedCardStyles.manipulationTarget]: Boolean(onTarget),
           [playedCardStyles.removedCard]:
             'removed' in card && Boolean(card.removed),
         },

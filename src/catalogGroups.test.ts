@@ -16,10 +16,10 @@ describe(catalogGroups, () => {
       'event:political',
       'event:technological',
       'event:environmental',
-      'manipulation:time-jump',
-      'manipulation:time-swap',
-      'manipulation:take-control',
-      'manipulation:remove-event',
+      'command:time-jump',
+      'command:time-swap',
+      'command:take-control',
+      'command:remove-event',
     ]);
     expect(deck).toStrictEqual(original);
   });

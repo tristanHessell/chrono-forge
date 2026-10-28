@@ -1,19 +1,15 @@
 import { useIntl } from 'react-intl';
 
-import type { CardEffect as Effect, ManipulationAction } from '../game';
+import type { CommandAction, CardEffect as Effect } from '../game';
 import {
+  commandDescriptionMessages,
+  commandNameMessages,
   effectDescriptionMessages,
   effectNameMessages,
-  manipulationDescriptionMessages,
-  manipulationNameMessages,
 } from '../i18n/messageDescriptors';
 import cardEffectStyles from './CardEffect.module.css';
 
-export function CardEffect({
-  effect,
-}: {
-  effect?: Effect | ManipulationAction;
-}) {
+export function CardEffect({ effect }: { effect?: CommandAction | Effect }) {
   const intl = useIntl();
   const nameMessage =
     effect === 'draw-one' ||
@@ -21,7 +17,7 @@ export function CardEffect({
     effect === 'timeline-1900-bonus'
       ? effectNameMessages[effect]
       : effect
-        ? manipulationNameMessages[effect]
+        ? commandNameMessages[effect]
         : null;
   const descriptionMessage =
     effect === 'draw-one' ||
@@ -29,7 +25,7 @@ export function CardEffect({
     effect === 'timeline-1900-bonus'
       ? effectDescriptionMessages[effect]
       : effect
-        ? manipulationDescriptionMessages[effect]
+        ? commandDescriptionMessages[effect]
         : null;
 
   if (!effect || !nameMessage || !descriptionMessage) {
@@ -80,7 +76,7 @@ export function CardEffect({
 export function CardEffects({
   effects,
 }: {
-  effects?: readonly (Effect | ManipulationAction)[];
+  effects?: readonly (CommandAction | Effect)[];
 }) {
   if (!effects?.length) {
     return null;

@@ -5,7 +5,7 @@ other hands or the deck order to choose a move.
 
 It evaluates legal Event placements for points, free-action effects, draw
 effects, and future plays. If it cannot place an Event, it discards a card. It
-can also use Manipulation cards. Its hand stays visible in this prototype.
+can also use Command cards. Its hand stays visible in this prototype.
 
 Computer moves run locally after a short delay. Undo and redo pause the computer
 so you can inspect a restored position. Use **Resume computer** to continue.
