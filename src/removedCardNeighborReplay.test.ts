@@ -46,7 +46,7 @@ describe('removedCardNeighborReplay', () => {
       );
       expect(isValidBoard(jumped)).toBe(true);
 
-      client.moves.manipulate(jump!.id, climate.id, destination);
+      client.moves.command(jump!.id, climate.id, destination);
 
       expect(client.getState()!.G.played).toStrictEqual(jumped);
     } finally {

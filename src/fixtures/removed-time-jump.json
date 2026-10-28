@@ -31,7 +31,7 @@
     {
       "type": "MAKE_MOVE",
       "payload": {
-        "type": "manipulate",
+        "type": "command",
         "args": ["remove-event-4", "event-1920-3"],
         "playerID": "1"
       }

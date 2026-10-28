@@ -159,8 +159,8 @@ describe('computer opponent', () => {
           client.moves.confirmPlacement();
         } else if (action?.type === 'discard') {
           client.moves.discardCard(action.cardId);
-        } else if (action?.type === 'manipulate') {
-          client.moves.manipulate(
+        } else if (action?.type === 'command') {
+          client.moves.command(
             action.cardId,
             action.targetId,
             action.destination,

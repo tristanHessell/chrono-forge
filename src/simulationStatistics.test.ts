@@ -38,7 +38,7 @@ describe('simulationStatistics', () => {
       {
         cardId: 'used-command',
         targetId: 'overwritten-event',
-        type: 'manipulate',
+        type: 'command',
       },
       { cardId: 'replacement', position: { column: 1, row: 0 }, type: 'play' },
       { type: 'confirm' },

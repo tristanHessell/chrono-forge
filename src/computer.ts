@@ -8,7 +8,7 @@ export type ComputerAction =
       cardId: string;
       destination?: CardPosition | string;
       targetId: string;
-      type: 'manipulate';
+      type: 'command';
     }
   | { cardId: string; position: CardPosition; type: 'play' }
   | { cardId: string; type: 'discard' }
@@ -88,7 +88,7 @@ export function chooseComputerAction(
                 cardId: card.id,
                 destination,
                 targetId: target.id,
-                type: 'manipulate',
+                type: 'command',
               },
               value,
             };

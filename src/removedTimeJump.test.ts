@@ -63,7 +63,7 @@ describe('removedTimeJump', () => {
       ).toBeNull();
       expect(jump).toBeDefined();
 
-      client.moves.manipulate(jump.id, target.id, destination);
+      client.moves.command(jump.id, target.id, destination);
 
       const after = client.getState()!;
       const moved = after.G.played.find((card) => card.id === target.id)!;

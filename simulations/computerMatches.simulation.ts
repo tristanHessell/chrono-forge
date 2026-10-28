@@ -87,7 +87,7 @@ function playMatch(game: number, seed: string): MatchResult {
         if (action.type === 'discard') {
           client.moves.discardCard(action.cardId);
         } else {
-          client.moves.manipulate(
+          client.moves.command(
             action.cardId,
             action.targetId,
             action.destination,
@@ -159,7 +159,7 @@ function playMatch(game: number, seed: string): MatchResult {
     seed,
     ...(error ? { error } : {}),
     actions: moves.filter(({ action }) => action.type !== 'play').length,
-    commands: moves.filter(({ action }) => action.type === 'manipulate').length,
+    commands: moves.filter(({ action }) => action.type === 'command').length,
     discardedCards: countActivelyDiscardedCards(G.discarded, moves),
     durationMs: Math.round(performance.now() - started),
     moves,

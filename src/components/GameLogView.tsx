@@ -134,7 +134,7 @@ export function GameLogView({ log }: { log: GameLog }) {
                     defaultMessage: 'Discarded {card}.',
                     id: 'log.action.discard',
                   };
-                case 'manipulate':
+                case 'command':
                   return item.card?.type === 'command'
                     ? {
                         defaultMessage:
