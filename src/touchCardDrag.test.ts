@@ -9,34 +9,34 @@ import {
 
 function setup() {
   const callbacks = {
-    onStart: vi.fn(),
-    onMove: vi.fn(),
     onDrop: vi.fn(),
     onFinish: vi.fn(),
+    onMove: vi.fn(),
+    onStart: vi.fn(),
   };
   const target = {
-    setPointerCapture: vi.fn(),
     hasPointerCapture: vi.fn(() => true),
     releasePointerCapture: vi.fn(),
+    setPointerCapture: vi.fn(),
   };
   const pointer = (changes: Partial<DragPointer> = {}): DragPointer => ({
-    pointerId: 1,
-    pointerType: 'touch',
-    isPrimary: true,
     button: 0,
     clientX: 100,
     clientY: 400,
     currentTarget: target,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: 'touch',
     preventDefault: vi.fn(),
     ...changes,
   });
 
-  return { callbacks, target, pointer, drag: new TouchCardDrag(callbacks) };
+  return { callbacks, drag: new TouchCardDrag(callbacks), pointer, target };
 }
 
 describe('touch card dragging', () => {
   it('keeps taps as clicks without starting a drag or using a card', () => {
-    const { drag, pointer, callbacks, target } = setup();
+    const { callbacks, drag, pointer, target } = setup();
 
     drag.start(pointer(), 'event');
     drag.move(pointer({ clientX: 102, clientY: 402 }));
@@ -53,8 +53,8 @@ describe('touch card dragging', () => {
   it.each(['touch', 'pen'])(
     'highlights positions when a %s drag starts and drops at the release point',
     (pointerType) => {
-      const { drag, pointer, callbacks } = setup();
-      const move = pointer({ pointerType, clientY: 390 });
+      const { callbacks, drag, pointer } = setup();
+      const move = pointer({ clientY: 390, pointerType });
 
       drag.start(pointer({ pointerType }), 'event');
       drag.move(move);
@@ -91,7 +91,7 @@ describe('touch card dragging', () => {
       { isPrimary: false },
       { button: 2 },
     ]) {
-      const { drag, pointer, callbacks, target } = setup();
+      const { callbacks, drag, pointer, target } = setup();
 
       drag.start(pointer(changes), 'event');
       drag.move(pointer({ clientY: 200 }));
@@ -104,10 +104,10 @@ describe('touch card dragging', () => {
   });
 
   it('ignores unrelated pointer events and cancels without dropping', () => {
-    const { drag, pointer, callbacks, target } = setup();
+    const { callbacks, drag, pointer, target } = setup();
 
     drag.start(pointer(), 'pending-event', 'pending');
-    drag.move(pointer({ pointerId: 2, clientY: 200 }));
+    drag.move(pointer({ clientY: 200, pointerId: 2 }));
 
     expect(callbacks.onStart).not.toHaveBeenCalled();
 
@@ -126,7 +126,7 @@ describe('touch card dragging', () => {
   });
 
   it('uses current callbacks after highlighting causes a render', () => {
-    const { drag, pointer, callbacks } = setup();
+    const { callbacks, drag, pointer } = setup();
     const onDrop = vi.fn();
 
     drag.start(pointer(), 'event');
@@ -149,27 +149,27 @@ describe('touch card dragging', () => {
 describe('touch destinations', () => {
   const card: EventCard = {
     id: '1940',
-    type: 'event',
     name: 'timeline-origin',
     number: 1940,
+    type: 'event',
   };
   const played: PlacedCard[] = [
     {
+      column: 0,
       id: 'start',
-      type: 'event',
       name: 'timeline-origin',
       number: 0,
-      row: 0,
-      column: 0,
-      placedAt: 0,
       owner: 'neutral',
+      placedAt: 0,
+      row: 0,
+      type: 'event',
     },
   ];
 
   it('accepts only legal destinations for the dragged card', () => {
     expect(touchDropPosition(played, card, '-1:0')).toStrictEqual({
-      row: -1,
       column: 0,
+      row: -1,
     });
     expect(touchDropPosition(played, card, '0:0')).toBeNull();
     expect(touchDropPosition(played, card, '2:0')).toBeNull();
@@ -178,7 +178,7 @@ describe('touch destinations', () => {
     expect(
       touchDropPosition(
         played,
-        { id: 'jump', type: 'manipulation', action: 'time-jump' },
+        { action: 'time-jump', id: 'jump', type: 'manipulation' },
         '-1:0',
       ),
     ).toBeNull();
@@ -187,7 +187,7 @@ describe('touch destinations', () => {
   it('rejects earlier or equal dates even when a target existed for another card', () => {
     const board: PlacedCard[] = [
       ...played,
-      { ...card, row: -1, column: 0, placedAt: 1, owner: '0' },
+      { ...card, column: 0, owner: '0', placedAt: 1, row: -1 },
     ];
 
     expect(touchDropPosition(board, card, '-2:0')).toBeNull();
@@ -196,21 +196,21 @@ describe('touch destinations', () => {
     ).toBeNull();
     expect(
       touchDropPosition(board, { ...card, number: 1950 }, '-2:0'),
-    ).toStrictEqual({ row: -2, column: 0 });
+    ).toStrictEqual({ column: 0, row: -2 });
   });
 
   it('supports valid overwrites and empty positions beside removed cards', () => {
     const board: PlacedCard[] = [
       ...played,
-      { ...card, row: -1, column: 0, placedAt: 1, owner: '0', removed: true },
+      { ...card, column: 0, owner: '0', placedAt: 1, removed: true, row: -1 },
     ];
 
     expect(touchDropPosition(board, card, '-1:0')).toStrictEqual({
-      row: -1,
       column: 0,
+      row: -1,
     });
     expect(
       touchDropPosition(board, { ...card, number: 1950 }, '-2:0'),
-    ).toStrictEqual({ row: -2, column: 0 });
+    ).toStrictEqual({ column: 0, row: -2 });
   });
 });

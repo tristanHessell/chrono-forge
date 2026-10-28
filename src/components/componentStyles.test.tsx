@@ -19,16 +19,16 @@ import { PlayedCard } from './PlayedCard';
 import playedStyles from './PlayedCard.module.css';
 
 const card: Event = {
-  id: 'styled-event',
-  type: 'event',
   category: 'technological',
+  column: 1,
+  effects: ['draw-one'],
+  id: 'styled-event',
   name: 'atomic-age',
   number: 1940,
-  effects: ['draw-one'],
   owner: '0',
-  row: 0,
-  column: 1,
   placedAt: 1,
+  row: 0,
+  type: 'event',
 };
 
 describe('componentStyles', () => {
@@ -72,7 +72,7 @@ describe('componentStyles', () => {
   it('renders board card states and effect icons with their scoped classes', async () => {
     render(
       <IntlProvider locale="en" messages={messages}>
-        <PlayedCard card={card} style={{}} links={null} isLatest />
+        <PlayedCard card={card} isLatest links={null} style={{}} />
       </IntlProvider>,
     );
 
@@ -100,9 +100,9 @@ describe('componentStyles', () => {
             ...card,
             effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
           }}
-          style={{}}
-          links={null}
           isLatest={false}
+          links={null}
+          style={{}}
         />
       </IntlProvider>,
     );
@@ -122,9 +122,9 @@ describe('componentStyles', () => {
         <IntlProvider locale="en" messages={messages}>
           <PlayedCard
             card={{ ...card, owner }}
-            style={{}}
-            links={null}
             isLatest={false}
+            links={null}
+            style={{}}
           />
         </IntlProvider>,
       );
@@ -146,7 +146,6 @@ describe('componentStyles', () => {
       <IntlProvider locale="en" messages={messages}>
         <PlacementSlot
           ariaLabel="Place here"
-          position={{ row: 1, column: 0 }}
           draggedCard={card}
           isDragActive
           isPreview
@@ -154,6 +153,7 @@ describe('componentStyles', () => {
           onDragEnter={() => {}}
           onDragOver={() => {}}
           onDrop={() => {}}
+          position={{ column: 0, row: 1 }}
         />
       </IntlProvider>,
     );

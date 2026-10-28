@@ -77,9 +77,9 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
                   : [
                       {
                         id: `last-${id}`,
-                        type: 'event',
                         name: 'timeline-origin',
                         number: 1900,
+                        type: 'event',
                       },
                     ],
               ]),
@@ -97,6 +97,7 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
     client.moves.discardCard('last-2');
 
+    // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
     if (numPlayers === 4) {
       expect(client.getState()!.G.roundOver).toBe(false);
       expect(client.getState()!.ctx.currentPlayer).toBe('3');
@@ -118,32 +119,32 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
           return {
             ...G,
+            deck: [
+              {
+                id: 'drawn',
+                name: 'timeline-origin',
+                number: 1960,
+                type: 'event',
+              },
+            ],
             hands: {
               ...G.hands,
               [owner]: [
                 {
+                  effects: ['draw-one'],
                   id: 'effect',
-                  type: 'event',
                   name: 'timeline-origin',
                   number: 1940,
-                  effects: ['draw-one'],
+                  type: 'event',
                 },
                 {
                   id: 'spare',
-                  type: 'event',
                   name: 'timeline-origin',
                   number: 1950,
+                  type: 'event',
                 },
               ],
             },
-            deck: [
-              {
-                id: 'drawn',
-                type: 'event',
-                name: 'timeline-origin',
-                number: 1960,
-              },
-            ],
           };
         },
       },
@@ -154,12 +155,12 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
     const before = client.getState()!.G;
 
-    client.moves.playCard(before.hands['0'][0].id, { row: 0, column: 1 });
+    client.moves.playCard(before.hands['0'][0].id, { column: 1, row: 0 });
     client.moves.discardCard(before.hands['0'][0].id);
 
     expect(client.getState()!.G).toStrictEqual(before);
 
-    client.moves.playCard('effect', { row: 0, column: 1 });
+    client.moves.playCard('effect', { column: 1, row: 0 });
 
     expect(client.getState()!.G.pending?.owner).toBe(owner);
 

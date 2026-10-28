@@ -36,8 +36,8 @@ export function CardDetailsDialog({
   const cardType =
     card?.type === 'manipulation'
       ? intl.formatMessage({
-          id: 'card.manipulation',
           defaultMessage: 'Command',
+          id: 'card.manipulation',
         })
       : card?.category
         ? intl.formatMessage(categoryMessages[card.category])
@@ -46,15 +46,15 @@ export function CardDetailsDialog({
     card?.type === 'manipulation'
       ? [
           {
-            name: intl.formatMessage(manipulationNameMessages[card.action]),
             description: intl.formatMessage(
               manipulationDescriptionMessages[card.action],
             ),
+            name: intl.formatMessage(manipulationNameMessages[card.action]),
           },
         ]
       : card?.effects?.map((effect) => ({
-          name: intl.formatMessage(effectNameMessages[effect]),
           description: intl.formatMessage(effectDescriptionMessages[effect]),
+          name: intl.formatMessage(effectNameMessages[effect]),
         }));
 
   useEffect(() => {
@@ -75,21 +75,21 @@ export function CardDetailsDialog({
 
   return (
     <dialog
-      ref={dialogRef}
-      className={clsx(dialogStyles.gameLogDialog, cardDetailsStyles.dialog)}
       aria-labelledby={titleId}
+      className={clsx(dialogStyles.gameLogDialog, cardDetailsStyles.dialog)}
       onClose={onClose}
+      ref={dialogRef}
     >
       <div className={dialogStyles.gameLogHeader}>
         <h2 id={titleId}>{cardName}</h2>
         <button
-          className={dialogStyles.gameLogClose}
-          type="button"
           aria-label={intl.formatMessage({
-            id: 'card.details.close',
             defaultMessage: 'Close card details',
+            id: 'card.details.close',
           })}
+          className={dialogStyles.gameLogClose}
           onClick={() => dialogRef.current?.close()}
+          type="button"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="m6 6 12 12M18 6 6 18" />
@@ -110,8 +110,8 @@ export function CardDetailsDialog({
             <div>
               <dt>
                 <FormattedMessage
-                  id="card.details.year"
                   defaultMessage="Year"
+                  id="card.details.year"
                 />
               </dt>
               <dd>{intl.formatNumber(card.number, { useGrouping: false })}</dd>
@@ -119,7 +119,7 @@ export function CardDetailsDialog({
           )}
           <div>
             <dt>
-              <FormattedMessage id="card.details.type" defaultMessage="Type" />
+              <FormattedMessage defaultMessage="Type" id="card.details.type" />
             </dt>
             <dd>{cardType}</dd>
           </div>
@@ -127,13 +127,13 @@ export function CardDetailsDialog({
         <section className={cardDetailsStyles.effects}>
           <h3>
             <FormattedMessage
-              id="card.details.effects"
               defaultMessage="Effects"
+              id="card.details.effects"
             />
           </h3>
           {effects?.length ? (
             <ul>
-              {effects.map(({ name, description }) => (
+              {effects.map(({ description, name }) => (
                 <li key={name}>
                   <strong>{name}</strong>
                   <p>{description}</p>
@@ -143,8 +143,8 @@ export function CardDetailsDialog({
           ) : (
             <p>
               <FormattedMessage
-                id="card.details.noEffects"
                 defaultMessage="No special effects."
+                id="card.details.noEffects"
               />
             </p>
           )}

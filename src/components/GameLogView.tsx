@@ -32,8 +32,8 @@ export function GameLogView({ log }: { log: GameLog }) {
   const cardName = (card?: Card): string => {
     if (!card) {
       return intl.formatMessage({
-        id: 'log.unknownCard',
         defaultMessage: 'a card',
+        id: 'log.unknownCard',
       });
     }
     if (card.type === 'manipulation') {
@@ -45,8 +45,8 @@ export function GameLogView({ log }: { log: GameLog }) {
   const cardReference = (card?: Card) => (
     <strong
       className={gameLogViewStyles.logCardReference}
-      data-event-category={card?.category}
       data-card-type={card?.type}
+      data-event-category={card?.category}
     >
       {cardName(card)}
     </strong>
@@ -54,16 +54,16 @@ export function GameLogView({ log }: { log: GameLog }) {
 
   return (
     <section
-      className={gameLogViewStyles.gameLogReadable}
       aria-label={intl.formatMessage({
-        id: 'log.history',
         defaultMessage: 'Game action history',
+        id: 'log.history',
       })}
+      className={gameLogViewStyles.gameLogReadable}
     >
       <dl className={gameLogViewStyles.gameLogMetadata}>
         <div>
           <dt>
-            <FormattedMessage id="log.seed" defaultMessage="Initial seed" />
+            <FormattedMessage defaultMessage="Initial seed" id="log.seed" />
           </dt>
           <dd>
             <code>{log.seed}</code>
@@ -71,73 +71,72 @@ export function GameLogView({ log }: { log: GameLog }) {
         </div>
         <div>
           <dt>
-            <FormattedMessage id="game.players" defaultMessage="Players" />
+            <FormattedMessage defaultMessage="Players" id="game.players" />
           </dt>
           <dd>{log.numPlayers}</dd>
         </div>
       </dl>
       <p>
         <FormattedMessage
-          id="log.started"
           defaultMessage="Game started. {player} takes the first turn."
+          id="log.started"
           values={{ player: playerReference('0') }}
         />
       </p>
       {items.length === 0 ? (
         <p>
-          <FormattedMessage id="log.empty" defaultMessage="No actions yet." />
+          <FormattedMessage defaultMessage="No actions yet." id="log.empty" />
         </p>
       ) : (
         <ol className={gameLogViewStyles.gameLogEntries}>
           {items.map((item) => {
             const values = {
-              card: cardReference(item.card),
-              target: cardReference(item.target),
-              second: cardReference(item.secondTarget),
               action: item.move,
-              row: item.position?.row ?? 0,
+              card: cardReference(item.card),
               column: item.position?.column ?? 0,
+              row: item.position?.row ?? 0,
+              second: cardReference(item.secondTarget),
+              target: cardReference(item.target),
             };
             const description = (() => {
               switch (item.move) {
                 case 'playEvent':
                   return {
-                    id: 'log.action.confirm',
                     defaultMessage:
                       'Confirmed {card} at row {row}, column {column}.',
+                    id: 'log.action.confirm',
                   };
                 case 'confirmPlacement':
                   return {
-                    id: 'log.action.confirm',
                     defaultMessage:
                       'Confirmed {card} at row {row}, column {column}.',
+                    id: 'log.action.confirm',
                   };
                 case 'replacePendingCard':
                   return {
-                    id: 'log.action.replace',
                     defaultMessage:
                       'Replaced the unconfirmed card with {card}.',
+                    id: 'log.action.replace',
                   };
                 case 'movePendingCard':
                   return {
-                    id: 'log.action.move',
                     defaultMessage:
                       'Moved unconfirmed {card} to row {row}, column {column}.',
+                    id: 'log.action.move',
                   };
                 case 'returnPendingCard':
                   return {
-                    id: 'log.action.return',
                     defaultMessage: 'Returned unconfirmed {card} to hand.',
+                    id: 'log.action.return',
                   };
                 case 'discardCard':
                   return {
-                    id: 'log.action.discard',
                     defaultMessage: 'Discarded {card}.',
+                    id: 'log.action.discard',
                   };
                 case 'manipulate':
                   return item.card?.type === 'manipulation'
                     ? {
-                        id: `log.action.${item.card.action}`,
                         defaultMessage:
                           item.card.action === 'time-jump'
                             ? 'Used {card} to move {target} to row {row}, column {column}.'
@@ -146,15 +145,16 @@ export function GameLogView({ log }: { log: GameLog }) {
                               : item.card.action === 'take-control'
                                 ? 'Used {card} to gain ownership of {target}.'
                                 : 'Used {card} to remove {target} from scoring.',
+                        id: `log.action.${item.card.action}`,
                       }
                     : {
-                        id: 'log.action.other',
                         defaultMessage: 'Debug event: {action}.',
+                        id: 'log.action.other',
                       };
                 default:
                   return {
-                    id: 'log.action.other',
                     defaultMessage: 'Debug event: {action}.',
+                    id: 'log.action.other',
                   };
               }
             })();
@@ -163,11 +163,11 @@ export function GameLogView({ log }: { log: GameLog }) {
               <li key={item.index}>
                 <small>
                   <FormattedMessage
-                    id="log.entry"
                     defaultMessage="Turn {count} · {player}"
+                    id="log.entry"
                     values={{
-                      player: playerReference(item.player),
                       count: item.turn,
+                      player: playerReference(item.player),
                     }}
                   />
                 </small>
@@ -177,8 +177,8 @@ export function GameLogView({ log }: { log: GameLog }) {
                 {item.nextPlayer && (
                   <small>
                     <FormattedMessage
-                      id="log.nextPlayer"
                       defaultMessage="Next turn: {player}."
+                      id="log.nextPlayer"
                       values={{ player: playerReference(item.nextPlayer) }}
                     />
                   </small>

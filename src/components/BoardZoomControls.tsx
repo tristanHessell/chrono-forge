@@ -6,31 +6,31 @@ import boardZoomControlsStyles from './BoardZoomControls.module.css';
 type Props = {
   boardZoom: number;
   onFitAll: () => void;
-  onZoomChange: (change: number) => void;
   onResetZoom: () => void;
+  onZoomChange: (change: number) => void;
 };
 
 export function BoardZoomControls({
   boardZoom,
   onFitAll,
-  onZoomChange,
   onResetZoom,
+  onZoomChange,
 }: Props) {
   const intl = useIntl();
 
   return (
     <div
+      aria-label={intl.formatMessage({
+        defaultMessage: 'Board zoom controls',
+        id: 'zoom.label',
+      })}
       className={boardZoomControlsStyles.zoomControls}
       role="group"
-      aria-label={intl.formatMessage({
-        id: 'zoom.label',
-        defaultMessage: 'Board zoom controls',
-      })}
     >
       <button
         aria-label={intl.formatMessage({
-          id: 'zoom.out',
           defaultMessage: 'Zoom out',
+          id: 'zoom.out',
         })}
         disabled={boardZoom <= minimumBoardZoom}
         onClick={(event) => {
@@ -50,8 +50,8 @@ export function BoardZoomControls({
       </button>
       <button
         aria-label={intl.formatMessage({
-          id: 'zoom.reset',
           defaultMessage: 'Reset board zoom',
+          id: 'zoom.reset',
         })}
         className={boardZoomControlsStyles.zoomValue}
         onClick={(event) => {
@@ -66,14 +66,14 @@ export function BoardZoomControls({
         type="button"
       >
         {intl.formatNumber(boardZoom, {
-          style: 'percent',
           maximumFractionDigits: 0,
+          style: 'percent',
         })}
       </button>
       <button
         aria-label={intl.formatMessage({
-          id: 'zoom.fitAll',
           defaultMessage: 'Fit all',
+          id: 'zoom.fitAll',
         })}
         onClick={(event) => {
           if (event.detail === 0) {
@@ -92,8 +92,8 @@ export function BoardZoomControls({
       </button>
       <button
         aria-label={intl.formatMessage({
-          id: 'zoom.in',
           defaultMessage: 'Zoom in',
+          id: 'zoom.in',
         })}
         disabled={boardZoom >= maximumBoardZoom}
         onClick={(event) => {

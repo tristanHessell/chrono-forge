@@ -1,10 +1,10 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'environmental',
+  effects: ['timeline-1900-bonus'],
   id: 'event-1990-3',
-  type: 'event',
   name: 'climate-summit',
   number: 1990,
-  effects: ['timeline-1900-bonus'],
-  category: 'environmental',
+  type: 'event',
 } as const satisfies EventCard;

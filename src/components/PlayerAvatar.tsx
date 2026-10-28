@@ -9,12 +9,12 @@ import playerAvatarStyles from './PlayerAvatar.module.css';
 
 type Props = {
   compact?: boolean;
+  name: string;
   owner: PlayerId;
   type: PlayerType;
-  name: string;
 };
 
-export function PlayerAvatar({ compact = false, owner, type, name }: Props) {
+export function PlayerAvatar({ compact = false, name, owner, type }: Props) {
   const intl = useIntl();
 
   return (
@@ -24,8 +24,8 @@ export function PlayerAvatar({ compact = false, owner, type, name }: Props) {
         readonly type: string;
       }>(
         {
-          id: 'player.avatar.label',
           defaultMessage: '{name}, {type, select, computer {AI} other {human}}',
+          id: 'player.avatar.label',
         },
         { name, type },
       )}

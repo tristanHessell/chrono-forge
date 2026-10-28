@@ -42,7 +42,6 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- interactions are for handling the closing of the menu, rather than being directly interacted with by the user
     <details
       className={gameMenuStyles.gameMenu}
-      ref={menuRef}
       onBlur={(event) => {
         if (focusMovedOutside(event.currentTarget, event.relatedTarget)) {
           closeMenu();
@@ -54,49 +53,50 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
           closeMenu(true);
         }
       }}
+      ref={menuRef}
     >
       <summary
+        aria-label={intl.formatMessage({
+          defaultMessage: 'Game menu',
+          id: 'menu.title',
+        })}
         className={controlsStyles.historyButton}
         ref={triggerRef}
-        aria-label={intl.formatMessage({
-          id: 'menu.title',
-          defaultMessage: 'Game menu',
-        })}
       >
         <svg aria-hidden="true" viewBox="0 0 16 16">
           <path d="M2 3h12M2 8h12M2 13h12" />
         </svg>
-        <FormattedMessage id="menu.toggle" defaultMessage="Menu" />
+        <FormattedMessage defaultMessage="Menu" id="menu.toggle" />
       </summary>
       <div
+        aria-label={intl.formatMessage({
+          defaultMessage: 'Game menu',
+          id: 'menu.title',
+        })}
         className={gameMenuStyles.gameMenuPanel}
         role="group"
-        aria-label={intl.formatMessage({
-          id: 'menu.title',
-          defaultMessage: 'Game menu',
-        })}
       >
         <button
           className={controlsStyles.historyButton}
-          type="button"
           onClick={() => {
             closeMenu(true);
             onNewGame();
           }}
+          type="button"
         >
-          <FormattedMessage id="game.new" defaultMessage="New game" />
+          <FormattedMessage defaultMessage="New game" id="game.new" />
         </button>
         <ThemeToggle />
         <CardPatternsToggle />
         <button
           className={controlsStyles.historyButton}
-          type="button"
           onClick={() => {
             closeMenu(true);
             onOpenCatalog();
           }}
+          type="button"
         >
-          <FormattedMessage id="catalog.title" defaultMessage="All cards" />
+          <FormattedMessage defaultMessage="All cards" id="catalog.title" />
         </button>
       </div>
     </details>

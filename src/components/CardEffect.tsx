@@ -38,18 +38,18 @@ export function CardEffect({
 
   return (
     <span
+      aria-label={intl.formatMessage(nameMessage)}
       className={cardEffectStyles.cardEffect}
       role="img"
-      aria-label={intl.formatMessage(nameMessage)}
     >
       <svg
-        viewBox="0 0 24 24"
-        width="18"
-        height="18"
+        aria-hidden="true"
         fill="none"
+        height="18"
         stroke="currentColor"
         strokeWidth="1.8"
-        aria-hidden="true"
+        viewBox="0 0 24 24"
+        width="18"
       >
         {effect === 'draw-one' ? (
           <path d="M5 5V3h12v3M3 8h12v13H3zM18 9v8m-4-4h8" />

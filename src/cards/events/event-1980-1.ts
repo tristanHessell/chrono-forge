@@ -1,9 +1,9 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'political',
   id: 'event-1980-1',
-  type: 'event',
   name: 'democratic-change',
   number: 1980,
-  category: 'political',
+  type: 'event',
 } as const satisfies EventCard;

@@ -16,7 +16,7 @@ export {
 } from './gameRules';
 
 export type CardEffect = 'draw-one' | 'free-action' | 'timeline-1900-bonus';
-export type EventCategory = 'political' | 'technological' | 'environmental';
+export type EventCategory = 'environmental' | 'political' | 'technological';
 export type EventName =
   | 'assembly-lines'
   | 'atomic-age'
@@ -50,67 +50,67 @@ export type EventName =
   | 'united-nations'
   | 'wildlife-refuges';
 export type ManipulationAction =
-  'time-jump' | 'time-swap' | 'take-control' | 'remove-event';
+  'remove-event' | 'take-control' | 'time-jump' | 'time-swap';
 
 export type EventCard = {
-  id: string;
-  type: 'event';
   // Only the neutral starting card has no category.
   category?: EventCategory;
+  effects?: readonly CardEffect[];
+  id: string;
   /**
    * The id for the intl message corresponding to this event's name.
    */
   name: EventName;
   number: number;
-  effects?: readonly CardEffect[];
+  type: 'event';
 };
 
 export type ManipulationCard = {
-  id: string;
-  type: 'manipulation';
   action: ManipulationAction;
-  number?: never;
   category?: never;
   effects?: never;
+  id: string;
+  number?: never;
+  type: 'manipulation';
 };
 
 export type Card = EventCard | ManipulationCard;
 
 export type PlayerId = '0' | '1' | '2' | '3';
-export type CardOwner = PlayerId | 'neutral';
+export type CardOwner = 'neutral' | PlayerId;
 
 export type PlacedCard = EventCard & {
-  row: number;
   column: number;
   owner: CardOwner;
   placedAt: number;
   removed?: boolean;
+  row: number;
 };
 
 export type CardPosition = {
-  row: number;
   column: number;
+  row: number;
 };
 
 export type CardGameState = {
   actionsThisTurn: number;
+  deck: Card[];
   discarded: Card[];
   freeActionsEnabled: boolean;
   hands: Record<string, Card[]>;
+  moveUndoHistory: CardGameSnapshot[];
+  nextPlacementOrder: number;
+  pending: null | PlacedCard;
+  pendingSnapshot: CardGameSnapshot | null;
+  played: PlacedCard[];
   playerIds: PlayerId[];
   round: number;
-  roundScores: Record<string, number>[];
-  deck: Card[];
-  played: PlacedCard[];
-  pending: PlacedCard | null;
-  startingPlayer: PlayerId;
   roundOver: boolean;
-  nextPlacementOrder: number;
-  testHistory: CardGameSnapshot[];
+  roundScores: Record<string, number>[];
+  startingPlayer: PlayerId;
   testFuture: CardGameSnapshot[];
-  moveUndoHistory: CardGameSnapshot[];
+  testHistory: CardGameSnapshot[];
   undoBlocked: boolean;
-  pendingSnapshot: CardGameSnapshot | null;
 };
 
 export const canUndoMove = (G: CardGameState) =>
@@ -119,17 +119,17 @@ export const canUndoMove = (G: CardGameState) =>
 type CardGameSnapshot = {
   actionsThisTurn: number;
   currentPlayer: string;
+  deck: Card[];
   discarded: Card[];
   freeActionsEnabled: boolean;
   hands: Record<string, Card[]>;
-  round: number;
-  roundScores: Record<string, number>[];
-  deck: Card[];
-  played: PlacedCard[];
-  pending: PlacedCard | null;
-  startingPlayer: PlayerId;
-  roundOver: boolean;
   nextPlacementOrder: number;
+  pending: null | PlacedCard;
+  played: PlacedCard[];
+  round: number;
+  roundOver: boolean;
+  roundScores: Record<string, number>[];
+  startingPlayer: PlayerId;
 };
 
 const HAND_SIZE = 5;
@@ -140,6 +140,7 @@ const snapshotGame = (
 ): CardGameSnapshot => ({
   actionsThisTurn: G.actionsThisTurn,
   currentPlayer,
+  deck: G.deck.map((card) => ({ ...card })),
   discarded: G.discarded.map((card) => ({ ...card })),
   freeActionsEnabled: G.freeActionsEnabled,
   hands: Object.fromEntries(
@@ -148,14 +149,13 @@ const snapshotGame = (
       hand.map((card) => ({ ...card })),
     ]),
   ),
-  round: G.round,
-  roundScores: G.roundScores.map((scores) => ({ ...scores })),
-  deck: G.deck.map((card) => ({ ...card })),
-  played: G.played.map((card) => ({ ...card })),
-  pending: G.pending ? { ...G.pending } : null,
-  startingPlayer: G.startingPlayer,
-  roundOver: G.roundOver,
   nextPlacementOrder: G.nextPlacementOrder,
+  pending: G.pending ? { ...G.pending } : null,
+  played: G.played.map((card) => ({ ...card })),
+  round: G.round,
+  roundOver: G.roundOver,
+  roundScores: G.roundScores.map((scores) => ({ ...scores })),
+  startingPlayer: G.startingPlayer,
 });
 
 const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
@@ -262,7 +262,7 @@ const advanceTurn = (
   endTurn({ next: nextPlayer });
 };
 
-const undoMove: MoveFn<CardGameState> = ({ G, ctx, events }) => {
+const undoMove: MoveFn<CardGameState> = ({ ctx, events, G }) => {
   if (!canUndoMove(G)) {
     return;
   }
@@ -284,7 +284,7 @@ const undoMove: MoveFn<CardGameState> = ({ G, ctx, events }) => {
   }
 };
 
-const redoMove: MoveFn<CardGameState> = ({ G, ctx, events }) => {
+const redoMove: MoveFn<CardGameState> = ({ ctx, events, G }) => {
   if (G.pending) {
     return;
   }
@@ -309,56 +309,98 @@ const redoMove: MoveFn<CardGameState> = ({ G, ctx, events }) => {
 };
 
 export const CardGame: Game<CardGameState> = {
-  name: 'card-table',
-  minPlayers: 2,
   maxPlayers: 4,
-
-  setup: ({ random, ctx }) => {
-    const catalog = loadCardCatalog();
-    const deck = random.Shuffle(catalog.deck);
-    const numPlayers = ctx.numPlayers;
-
-    if (!Number.isInteger(numPlayers) || numPlayers < 2 || numPlayers > 4) {
-      throw new Error('Choose between two and four players.');
-    }
-
-    const playerIds = (['0', '1', '2', '3'] as PlayerId[]).slice(0, numPlayers);
-
-    return {
-      actionsThisTurn: 0,
-      discarded: [],
-      freeActionsEnabled: true,
-      hands: Object.fromEntries(
-        playerIds.map((id) => [id, deck.splice(0, HAND_SIZE)]),
-      ),
-      playerIds,
-      round: 1,
-      roundScores: [],
-      deck,
-      played: [
-        {
-          ...catalog.startingCard,
-          row: 0,
-          column: 0,
-          owner: 'neutral',
-          placedAt: 0,
-        },
-      ],
-      pending: null,
-      startingPlayer: '0',
-      roundOver: false,
-      nextPlacementOrder: 1,
-      testHistory: [],
-      testFuture: [],
-      moveUndoHistory: [],
-      undoBlocked: false,
-      pendingSnapshot: null,
-    };
-  },
-
+  minPlayers: 2,
   moves: {
+    confirmPlacement: ({ ctx, events, G }) => {
+      const activeOwner = ctx.currentPlayer as PlayerId;
+
+      if (G.roundOver || !G.pending || G.pending.owner !== activeOwner) {
+        return;
+      }
+      if (!isValidPlacement(G.played, G.pending, G.pending)) {
+        return;
+      }
+
+      const playedCard = G.pending;
+      const beforePlay =
+        G.pendingSnapshot ?? snapshotGame(G, ctx.currentPlayer);
+
+      G.hands[activeOwner] = G.hands[activeOwner].filter(
+        (card) => card.id !== playedCard.id,
+      );
+
+      const overwritten = G.played.find(
+        (card) => positionKey(card) === positionKey(playedCard),
+      );
+
+      if (overwritten) {
+        const { category, effects, id, name, number, type } = overwritten;
+
+        G.discarded.push({
+          id,
+          name,
+          number,
+          type,
+          ...(category ? { category } : {}),
+          ...(effects ? { effects } : {}),
+        });
+      }
+
+      G.played = withPlacedEvent(G.played, playedCard);
+      G.pending = null;
+      G.nextPlacementOrder += 1;
+      recordMoveForUndo(G, ctx.currentPlayer, beforePlay);
+      G.pendingSnapshot = null;
+
+      for (const effect of playedCard.effects ?? []) {
+        if (effect === 'draw-one') {
+          const drawnCard = G.deck.shift();
+
+          if (drawnCard) {
+            G.hands[activeOwner].push(drawnCard);
+            G.testFuture = [];
+            G.moveUndoHistory = [];
+            G.undoBlocked = true;
+          }
+        }
+      }
+
+      advanceTurn(
+        G,
+        ctx.currentPlayer,
+        (options) => {
+          events.endTurn(options);
+        },
+        !playedCard.effects?.includes('free-action') || !G.freeActionsEnabled,
+      );
+    },
+    discardCard: ({ ctx, events, G }, cardId: string) => {
+      if (G.roundOver) {
+        return;
+      }
+
+      const hand = G.hands[ctx.currentPlayer];
+      const index = hand.findIndex((card) => card.id === cardId);
+
+      if (index < 0) {
+        return;
+      }
+
+      const beforeDiscard =
+        G.pendingSnapshot ?? snapshotGame(G, ctx.currentPlayer);
+      const [card] = hand.splice(index, 1);
+
+      G.discarded.push(card);
+      G.pending = null;
+      G.pendingSnapshot = null;
+      recordMoveForUndo(G, ctx.currentPlayer, beforeDiscard);
+      advanceTurn(G, ctx.currentPlayer, (options) => {
+        events.endTurn(options);
+      });
+    },
     manipulate: (
-      { G, ctx, events },
+      { ctx, events, G },
       cardId: string,
       targetId: string,
       destination?: CardPosition | string,
@@ -400,13 +442,13 @@ export const CardGame: Game<CardGameState> = {
       for (const overwritten of G.played.filter(
         (existing) => !played.some((card) => card.id === existing.id),
       )) {
-        const { id, name, type, number, category, effects } = overwritten;
+        const { category, effects, id, name, number, type } = overwritten;
 
         G.discarded.push({
           id,
           name,
-          type,
           number,
+          type,
           ...(category ? { category } : {}),
           ...(effects ? { effects } : {}),
         });
@@ -421,31 +463,30 @@ export const CardGame: Game<CardGameState> = {
         events.endTurn(options);
       });
     },
-    discardCard: ({ G, ctx, events }, cardId: string) => {
+
+    movePendingCard: ({ ctx, G }, position: CardPosition) => {
+      const activeOwner = ctx.currentPlayer as PlayerId;
+
+      if (
+        !G.pending ||
+        G.pending.owner !== activeOwner ||
+        G.played.length === 0
+      ) {
+        return;
+      }
       if (G.roundOver) {
         return;
       }
 
-      const hand = G.hands[ctx.currentPlayer];
-      const index = hand.findIndex((card) => card.id === cardId);
-
-      if (index < 0) {
+      if (!isValidPlacement(G.played, position, G.pending)) {
         return;
       }
 
-      const beforeDiscard =
-        G.pendingSnapshot ?? snapshotGame(G, ctx.currentPlayer);
-      const [card] = hand.splice(index, 1);
-
-      G.discarded.push(card);
-      G.pending = null;
-      G.pendingSnapshot = null;
-      recordMoveForUndo(G, ctx.currentPlayer, beforeDiscard);
-      advanceTurn(G, ctx.currentPlayer, (options) => {
-        events.endTurn(options);
-      });
+      G.pending.row = position.row;
+      G.pending.column = position.column;
     },
-    playCard: ({ G, ctx }, cardId: string, position: CardPosition) => {
+
+    playCard: ({ ctx, G }, cardId: string, position: CardPosition) => {
       const owner = ctx.currentPlayer as PlayerId;
       const sourceHand = G.hands[owner];
       const card = sourceHand.find((candidate) => candidate.id === cardId);
@@ -465,15 +506,17 @@ export const CardGame: Game<CardGameState> = {
 
       G.pending = {
         ...card,
-        row: position.row,
         column: position.column,
         owner,
         placedAt: G.nextPlacementOrder,
+        row: position.row,
       };
     },
 
+    redoTest: redoMove,
+
     replacePendingCard: (
-      { G, ctx },
+      { ctx, G },
       cardId: string,
       position?: CardPosition,
     ) => {
@@ -499,36 +542,14 @@ export const CardGame: Game<CardGameState> = {
 
       G.pending = {
         ...replacement,
-        owner,
-        row: position?.row ?? G.pending.row,
         column: position?.column ?? G.pending.column,
+        owner,
         placedAt: G.pending.placedAt,
+        row: position?.row ?? G.pending.row,
       };
     },
 
-    movePendingCard: ({ G, ctx }, position: CardPosition) => {
-      const activeOwner = ctx.currentPlayer as PlayerId;
-
-      if (
-        !G.pending ||
-        G.pending.owner !== activeOwner ||
-        G.played.length === 0
-      ) {
-        return;
-      }
-      if (G.roundOver) {
-        return;
-      }
-
-      if (!isValidPlacement(G.played, position, G.pending)) {
-        return;
-      }
-
-      G.pending.row = position.row;
-      G.pending.column = position.column;
-    },
-
-    returnPendingCard: ({ G, ctx }) => {
+    returnPendingCard: ({ ctx, G }) => {
       const activeOwner = ctx.currentPlayer as PlayerId;
 
       if (G.roundOver || G.pending?.owner !== activeOwner) {
@@ -538,81 +559,60 @@ export const CardGame: Game<CardGameState> = {
       G.pending = null;
       G.pendingSnapshot = null;
     },
-
-    confirmPlacement: ({ G, ctx, events }) => {
-      const activeOwner = ctx.currentPlayer as PlayerId;
-
-      if (G.roundOver || !G.pending || G.pending.owner !== activeOwner) {
-        return;
-      }
-      if (!isValidPlacement(G.played, G.pending, G.pending)) {
-        return;
-      }
-
-      const playedCard = G.pending;
-      const beforePlay =
-        G.pendingSnapshot ?? snapshotGame(G, ctx.currentPlayer);
-
-      G.hands[activeOwner] = G.hands[activeOwner].filter(
-        (card) => card.id !== playedCard.id,
-      );
-
-      const overwritten = G.played.find(
-        (card) => positionKey(card) === positionKey(playedCard),
-      );
-
-      if (overwritten) {
-        const { id, name, type, number, category, effects } = overwritten;
-
-        G.discarded.push({
-          id,
-          type,
-          name,
-          number,
-          ...(category ? { category } : {}),
-          ...(effects ? { effects } : {}),
-        });
-      }
-
-      G.played = withPlacedEvent(G.played, playedCard);
-      G.pending = null;
-      G.nextPlacementOrder += 1;
-      recordMoveForUndo(G, ctx.currentPlayer, beforePlay);
-      G.pendingSnapshot = null;
-
-      for (const effect of playedCard.effects ?? []) {
-        if (effect === 'draw-one') {
-          const drawnCard = G.deck.shift();
-
-          if (drawnCard) {
-            G.hands[activeOwner].push(drawnCard);
-            G.testFuture = [];
-            G.moveUndoHistory = [];
-            G.undoBlocked = true;
-          }
-        }
-      }
-
-      advanceTurn(
-        G,
-        ctx.currentPlayer,
-        (options) => {
-          events.endTurn(options);
-        },
-        !playedCard.effects?.includes('free-action') || !G.freeActionsEnabled,
-      );
-    },
-
     undoTest: undoMove,
-    redoTest: redoMove,
+  },
+
+  name: 'card-table',
+
+  setup: ({ ctx, random }) => {
+    const catalog = loadCardCatalog();
+    const deck = random.Shuffle(catalog.deck);
+    const numPlayers = ctx.numPlayers;
+
+    if (!Number.isInteger(numPlayers) || numPlayers < 2 || numPlayers > 4) {
+      throw new Error('Choose between two and four players.');
+    }
+
+    const playerIds = (['0', '1', '2', '3'] as PlayerId[]).slice(0, numPlayers);
+
+    return {
+      actionsThisTurn: 0,
+      deck,
+      discarded: [],
+      freeActionsEnabled: true,
+      hands: Object.fromEntries(
+        playerIds.map((id) => [id, deck.splice(0, HAND_SIZE)]),
+      ),
+      moveUndoHistory: [],
+      nextPlacementOrder: 1,
+      pending: null,
+      pendingSnapshot: null,
+      played: [
+        {
+          ...catalog.startingCard,
+          column: 0,
+          owner: 'neutral',
+          placedAt: 0,
+          row: 0,
+        },
+      ],
+      playerIds,
+      round: 1,
+      roundOver: false,
+      roundScores: [],
+      startingPlayer: '0',
+      testFuture: [],
+      testHistory: [],
+      undoBlocked: false,
+    };
   },
 
   turn: {
+    activePlayers: { currentPlayer: 'normal', others: 'undoWindow' },
     order: {
       ...TurnOrder.DEFAULT,
       first: ({ G }) => G.playerIds.indexOf(G.startingPlayer),
     },
-    activePlayers: { currentPlayer: 'normal', others: 'undoWindow' },
     stages: {
       normal: {},
       undoWindow: {
@@ -632,8 +632,8 @@ export function createCardGame(
     ...CardGame,
     setup: (context) => ({
       ...CardGame.setup!(context),
-      startingPlayer,
       freeActionsEnabled,
+      startingPlayer,
     }),
   };
 }

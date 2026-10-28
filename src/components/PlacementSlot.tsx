@@ -14,48 +14,48 @@ import placementSlotStyles from './PlacementSlot.module.css';
 
 type PlacementSlotProps = {
   ariaLabel: string;
-  position?: CardPosition;
-  initial?: boolean;
-  overwrite?: boolean;
   draggedCard: Card | null | undefined;
+  initial?: boolean;
   isDragActive: boolean;
   isPreview: boolean;
-  style?: React.CSSProperties;
   onClick: () => void;
   onDragEnter: (event: React.DragEvent<HTMLElement>) => void;
   onDragOver: (event: React.DragEvent<HTMLElement>) => void;
   onDrop: (event: React.DragEvent<HTMLElement>) => void;
+  overwrite?: boolean;
+  position?: CardPosition;
+  style?: React.CSSProperties;
 };
 
 export function PlacementSlot({
   ariaLabel,
-  position,
-  initial = false,
-  overwrite = false,
   draggedCard,
+  initial = false,
   isDragActive,
   isPreview,
-  style,
   onClick,
   onDragEnter,
   onDragOver,
   onDrop,
+  overwrite = false,
+  position,
+  style,
 }: PlacementSlotProps) {
   const intl = useIntl();
 
   return (
     <button
       aria-label={ariaLabel}
-      data-placement-slot
-      data-drop-position={position ? positionKey(position) : undefined}
       className={clsx(placementSlotStyles.placementSlot, {
-        [placementSlotStyles.initialDropSlot]: initial,
         [placementSlotStyles.dragReady]: isDragActive,
-        [placementSlotStyles.snapPreview]: isPreview,
+        [placementSlotStyles.initialDropSlot]: initial,
         [placementSlotStyles.overwriteSlot]: overwrite,
+        [placementSlotStyles.snapPreview]: isPreview,
       })}
       data-card-type={isPreview ? draggedCard?.type : undefined}
+      data-drop-position={position ? positionKey(position) : undefined}
       data-event-category={isPreview ? draggedCard?.category : undefined}
+      data-placement-slot
       onClick={onClick}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
@@ -79,8 +79,8 @@ export function PlacementSlot({
           </span>
           <small className={placementSlotStyles.releaseLabel}>
             <FormattedMessage
-              id="placement.release"
               defaultMessage="Release to place"
+              id="placement.release"
             />
           </small>
         </>
@@ -92,16 +92,16 @@ export function PlacementSlot({
           {overwrite && (
             <small>
               <FormattedMessage
-                id="placement.overwrite"
                 defaultMessage="Overwrite"
+                id="placement.overwrite"
               />
             </small>
           )}
           {initial && (
             <small>
               <FormattedMessage
-                id="placement.first"
                 defaultMessage="Drop first card"
+                id="placement.first"
               />
             </small>
           )}

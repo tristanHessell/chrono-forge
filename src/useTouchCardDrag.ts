@@ -14,13 +14,13 @@ export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
   useLayoutEffect(() => {
     controller.updateCallbacks({
       ...callbacks,
-      onMove: (point) => {
-        setPreview(point);
-        callbacks.onMove(point);
-      },
       onFinish: () => {
         setPreview(null);
         callbacks.onFinish();
+      },
+      onMove: (point) => {
+        setPreview(point);
+        callbacks.onMove(point);
       },
     });
   });
@@ -33,8 +33,13 @@ export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
   );
 
   return {
-    preview,
     controller,
+    onLostPointerCapture: (event: React.PointerEvent<HTMLElement>) => {
+      controller.cancel(event.pointerId);
+    },
+    onPointerCancel: (event: React.PointerEvent<HTMLElement>) => {
+      controller.cancel(event.pointerId);
+    },
     onPointerDown: (
       event: React.PointerEvent<HTMLElement>,
       cardId: string,
@@ -48,12 +53,7 @@ export function useTouchCardDrag(callbacks: TouchDragCallbacks) {
     onPointerUp: (event: React.PointerEvent<HTMLElement>) => {
       controller.end(event);
     },
-    onPointerCancel: (event: React.PointerEvent<HTMLElement>) => {
-      controller.cancel(event.pointerId);
-    },
-    onLostPointerCapture: (event: React.PointerEvent<HTMLElement>) => {
-      controller.cancel(event.pointerId);
-    },
+    preview,
   };
 }
 

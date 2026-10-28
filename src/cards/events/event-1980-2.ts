@@ -1,9 +1,9 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'technological',
   id: 'event-1980-2',
-  type: 'event',
   name: 'personal-computers',
   number: 1980,
-  category: 'technological',
+  type: 'event',
 } as const satisfies EventCard;

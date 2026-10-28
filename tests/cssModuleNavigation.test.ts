@@ -5,10 +5,10 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 type Result = {
   definitions: {
-    name: string;
-    file: string;
-    cssLine: string;
     cssClass: string;
+    cssLine: string;
+    file: string;
+    name: string;
   }[];
   diagnostics: { code: number; text: string }[];
 };
@@ -32,16 +32,16 @@ describe('cssModuleNavigation', () => {
   it('navigates camelCase default-import references to their original CSS classes', () => {
     expect(result.definitions).toStrictEqual([
       {
-        name: 'gameLogReadable',
-        file: 'src/components/GameLogView.module.css',
-        cssLine: '.game-log-readable {',
         cssClass: 'game-log-readable',
+        cssLine: '.game-log-readable {',
+        file: 'src/components/GameLogView.module.css',
+        name: 'gameLogReadable',
       },
       {
-        name: 'cardTypeName',
-        file: 'src/components/Card.module.css',
-        cssLine: '.card-type-name {',
         cssClass: 'card-type-name',
+        cssLine: '.card-type-name {',
+        file: 'src/components/Card.module.css',
+        name: 'cardTypeName',
       },
     ]);
   });

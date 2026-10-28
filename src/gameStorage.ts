@@ -8,18 +8,18 @@ import type { PlayerSetup } from './playerSetup';
 export const gameStorageKey = 'chrono-forge-saved-game';
 
 export type SavedGameSession = {
-  seed: string;
   numPlayers: PlayerCount;
-  startingPlayer: PlayerId;
   players: PlayerSetup[];
   replayPaused: boolean;
+  seed: string;
+  startingPlayer: PlayerId;
 };
 
 export type SavedGame = SavedGameSession & {
-  version: 1;
-  state: State<CardGameState>;
   initialState: State<CardGameState>;
   log: LogEntry[];
+  state: State<CardGameState>;
+  version: 1;
 };
 
 type GameSave = SavedGameSession &
@@ -105,7 +105,7 @@ function isSavedGame(value: unknown): value is SavedGame {
   return players[0].type === 'human';
 }
 
-export function loadSavedGame(): SavedGame | null {
+export function loadSavedGame(): null | SavedGame {
   if (typeof localStorage === 'undefined') {
     return null;
   }
@@ -153,10 +153,10 @@ export function restoreSavedGame(
   game: SavedGame,
 ) {
   client.store.dispatch({
-    type: 'SYNC',
-    state: game.state,
+    clientOnly: true,
     initialState: game.initialState,
     log: game.log,
-    clientOnly: true,
+    state: game.state,
+    type: 'SYNC',
   });
 }

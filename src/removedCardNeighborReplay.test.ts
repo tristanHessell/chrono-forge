@@ -10,15 +10,15 @@ describe('removedCardNeighborReplay', () => {
     const client = replayGameLog(parseGameLog(JSON.stringify(setup)));
 
     try {
-      const { G, ctx } = client.getState()!;
+      const { ctx, G } = client.getState()!;
       const played = G.played;
       const climate = played.find((card) => card.id === 'event-1990-3')!;
       const silentSpring = played.find((card) => card.id === 'event-1960-3')!;
       const adjacentDestinations = [
-        { row: silentSpring.row - 1, column: silentSpring.column },
-        { row: silentSpring.row + 1, column: silentSpring.column },
-        { row: silentSpring.row, column: silentSpring.column - 1 },
-        { row: silentSpring.row, column: silentSpring.column + 1 },
+        { column: silentSpring.column, row: silentSpring.row - 1 },
+        { column: silentSpring.column, row: silentSpring.row + 1 },
+        { column: silentSpring.column - 1, row: silentSpring.row },
+        { column: silentSpring.column + 1, row: silentSpring.row },
       ];
       const destination = adjacentDestinations.find((position) =>
         getTimeJumpPositions(played, climate.id).some(

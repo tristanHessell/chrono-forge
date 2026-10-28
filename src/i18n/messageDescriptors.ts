@@ -12,195 +12,195 @@ type DescriptorMap<Key extends string> = Record<Key, TypedMessageDescriptor>;
 
 export const categoryMessages = defineMessages({
   environmental: {
-    id: 'card.category.environmental',
     defaultMessage: 'Nature',
+    id: 'card.category.environmental',
   },
-  political: { id: 'card.category.political', defaultMessage: 'Politics' },
-  technological: { id: 'card.category.technological', defaultMessage: 'Tech' },
+  political: { defaultMessage: 'Politics', id: 'card.category.political' },
+  technological: { defaultMessage: 'Tech', id: 'card.category.technological' },
 }) satisfies DescriptorMap<EventCategory>;
 
 export const manipulationNameMessages = defineMessages({
   'remove-event': {
-    id: 'manipulation.remove-event.name',
     defaultMessage: 'Remove Event',
+    id: 'manipulation.remove-event.name',
   },
   'take-control': {
-    id: 'manipulation.take-control.name',
     defaultMessage: 'Take Control',
+    id: 'manipulation.take-control.name',
   },
   'time-jump': {
-    id: 'manipulation.time-jump.name',
     defaultMessage: 'Time Jump',
+    id: 'manipulation.time-jump.name',
   },
   'time-swap': {
-    id: 'manipulation.time-swap.name',
     defaultMessage: 'Time Swap',
+    id: 'manipulation.time-swap.name',
   },
 }) satisfies DescriptorMap<ManipulationAction>;
 
 export const manipulationDescriptionMessages = defineMessages({
   'remove-event': {
-    id: 'manipulation.remove-event.description',
     defaultMessage:
       'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',
+    id: 'manipulation.remove-event.description',
   },
   'take-control': {
-    id: 'manipulation.take-control.description',
     defaultMessage:
       "Gain control of another player's Event card. Its points and any valid bonus become yours. A removed Event stays removed. The starting card cannot be targeted.",
+    id: 'manipulation.take-control.description',
   },
   'time-jump': {
-    id: 'manipulation.time-jump.description',
     defaultMessage:
       "Move an Event card to a valid empty position or overwrite a removed Event. Empty destinations cannot touch another removed Event. A removed card can establish new links to earlier-dated active neighbors even if they were played after it. An overwrite preserves the destination's link directions and discards the replaced Event. Ownership and removed status stay with the moved card. The entire board must remain legal. The starting card cannot move.",
+    id: 'manipulation.time-jump.description',
   },
   'time-swap': {
-    id: 'manipulation.time-swap.description',
     defaultMessage:
       'Swap two Event cards while keeping the board legal. The starting card cannot be swapped.',
+    id: 'manipulation.time-swap.description',
   },
 }) satisfies DescriptorMap<ManipulationAction>;
 
 export const effectNameMessages = defineMessages({
-  'draw-one': { id: 'effect.draw-one.name', defaultMessage: 'Draw one card' },
+  'draw-one': { defaultMessage: 'Draw one card', id: 'effect.draw-one.name' },
   'free-action': {
-    id: 'effect.free-action.name',
     defaultMessage: 'Free action',
+    id: 'effect.free-action.name',
   },
   'timeline-1900-bonus': {
-    id: 'effect.timeline-1900-bonus.name',
     defaultMessage: '1900 timeline bonus',
+    id: 'effect.timeline-1900-bonus.name',
   },
 }) satisfies DescriptorMap<CardEffect>;
 
 export const effectDescriptionMessages = defineMessages({
   'draw-one': {
-    id: 'effect.draw-one.description',
     defaultMessage:
       'When you confirm this Event card, draw one card from the deck into your hand. If the deck is empty, nothing is drawn. Discarding does not trigger this effect.',
+    id: 'effect.draw-one.description',
   },
   'free-action': {
-    id: 'effect.free-action.description',
     defaultMessage:
       'When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.',
+    id: 'effect.free-action.description',
   },
   'timeline-1900-bonus': {
-    id: 'effect.timeline-1900-bonus.description',
     defaultMessage:
       'Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.',
+    id: 'effect.timeline-1900-bonus.description',
   },
 }) satisfies DescriptorMap<CardEffect>;
 
 export const eventNameMessages = defineMessages({
   'assembly-lines': {
-    id: 'card.name.assembly-lines',
     defaultMessage: 'Assembly Lines',
+    id: 'card.name.assembly-lines',
   },
-  'atomic-age': { id: 'card.name.atomic-age', defaultMessage: 'Atomic Age' },
+  'atomic-age': { defaultMessage: 'Atomic Age', id: 'card.name.atomic-age' },
   'civil-rights': {
-    id: 'card.name.civil-rights',
     defaultMessage: 'Civil Rights',
+    id: 'card.name.civil-rights',
   },
   'climate-summit': {
-    id: 'card.name.climate-summit',
     defaultMessage: 'Climate Summit',
+    id: 'card.name.climate-summit',
   },
-  'cold-war': { id: 'card.name.cold-war', defaultMessage: 'Cold War' },
+  'cold-war': { defaultMessage: 'Cold War', id: 'card.name.cold-war' },
   'conservation-movement': {
-    id: 'card.name.conservation-movement',
     defaultMessage: 'Conservation Movement',
+    id: 'card.name.conservation-movement',
   },
   'democratic-change': {
-    id: 'card.name.democratic-change',
     defaultMessage: 'Democratic Change',
+    id: 'card.name.democratic-change',
   },
-  detente: { id: 'card.name.detente', defaultMessage: 'Détente' },
-  'dust-bowl': { id: 'card.name.dust-bowl', defaultMessage: 'Dust Bowl' },
-  'earth-day': { id: 'card.name.earth-day', defaultMessage: 'Earth Day' },
+  detente: { defaultMessage: 'Détente', id: 'card.name.detente' },
+  'dust-bowl': { defaultMessage: 'Dust Bowl', id: 'card.name.dust-bowl' },
+  'earth-day': { defaultMessage: 'Earth Day', id: 'card.name.earth-day' },
   'european-union': {
-    id: 'card.name.european-union',
     defaultMessage: 'European Union',
+    id: 'card.name.european-union',
   },
   'global-conflict': {
-    id: 'card.name.global-conflict',
     defaultMessage: 'Global Conflict',
+    id: 'card.name.global-conflict',
   },
   'green-revolution': {
-    id: 'card.name.green-revolution',
     defaultMessage: 'Green Revolution',
+    id: 'card.name.green-revolution',
   },
   'imperial-alliances': {
-    id: 'card.name.imperial-alliances',
     defaultMessage: 'Imperial Alliances',
+    id: 'card.name.imperial-alliances',
   },
   'internet-expansion': {
-    id: 'card.name.internet-expansion',
     defaultMessage: 'Internet Expansion',
+    id: 'card.name.internet-expansion',
   },
   microprocessor: {
-    id: 'card.name.microprocessor',
     defaultMessage: 'Microprocessor',
+    id: 'card.name.microprocessor',
   },
   'moon-landing': {
-    id: 'card.name.moon-landing',
     defaultMessage: 'Moon Landing',
+    id: 'card.name.moon-landing',
   },
   'national-parks': {
-    id: 'card.name.national-parks',
     defaultMessage: 'National Parks',
+    id: 'card.name.national-parks',
   },
-  'new-deal': { id: 'card.name.new-deal', defaultMessage: 'New Deal' },
-  'ozone-hole': { id: 'card.name.ozone-hole', defaultMessage: 'Ozone Hole' },
+  'new-deal': { defaultMessage: 'New Deal', id: 'card.name.new-deal' },
+  'ozone-hole': { defaultMessage: 'Ozone Hole', id: 'card.name.ozone-hole' },
   'personal-computers': {
-    id: 'card.name.personal-computers',
     defaultMessage: 'Personal Computers',
+    id: 'card.name.personal-computers',
   },
   'powered-flight': {
-    id: 'card.name.powered-flight',
     defaultMessage: 'Powered Flight',
+    id: 'card.name.powered-flight',
   },
   'radar-discovery': {
-    id: 'card.name.radar-discovery',
     defaultMessage: 'Radar Discovery',
+    id: 'card.name.radar-discovery',
   },
-  'radio-age': { id: 'card.name.radio-age', defaultMessage: 'Radio Age' },
+  'radio-age': { defaultMessage: 'Radio Age', id: 'card.name.radio-age' },
   'silent-spring': {
-    id: 'card.name.silent-spring',
     defaultMessage: 'Silent Spring',
+    id: 'card.name.silent-spring',
   },
-  'smog-crisis': { id: 'card.name.smog-crisis', defaultMessage: 'Smog Crisis' },
-  'space-race': { id: 'card.name.space-race', defaultMessage: 'Space Race' },
-  suffrage: { id: 'card.name.suffrage', defaultMessage: 'Suffrage' },
+  'smog-crisis': { defaultMessage: 'Smog Crisis', id: 'card.name.smog-crisis' },
+  'space-race': { defaultMessage: 'Space Race', id: 'card.name.space-race' },
+  suffrage: { defaultMessage: 'Suffrage', id: 'card.name.suffrage' },
   'timeline-origin': {
-    id: 'card.name.timeline-origin',
     defaultMessage: 'Timeline Origin',
+    id: 'card.name.timeline-origin',
   },
   'united-nations': {
-    id: 'card.name.united-nations',
     defaultMessage: 'United Nations',
+    id: 'card.name.united-nations',
   },
   'wildlife-refuges': {
-    id: 'card.name.wildlife-refuges',
     defaultMessage: 'Wildlife Refuges',
+    id: 'card.name.wildlife-refuges',
   },
 }) satisfies DescriptorMap<EventName>;
 
 export const startingEventNameMessage: TypedMessageDescriptor = defineMessages({
   startingEventNameMessage: {
-    id: 'card.event',
     defaultMessage: 'Event',
+    id: 'card.event',
   },
 }).startingEventNameMessage;
 
 export const themeMessages = defineMessages({
-  dark: { id: 'theme.dark', defaultMessage: 'Dark' },
+  dark: { defaultMessage: 'Dark', id: 'theme.dark' },
   'greyscale-dark': {
-    id: 'theme.greyscale-dark',
     defaultMessage: 'Greyscale Dark',
+    id: 'theme.greyscale-dark',
   },
   'greyscale-light': {
-    id: 'theme.greyscale-light',
     defaultMessage: 'Greyscale Light',
+    id: 'theme.greyscale-light',
   },
-  light: { id: 'theme.light', defaultMessage: 'Light' },
+  light: { defaultMessage: 'Light', id: 'theme.light' },
 }) satisfies DescriptorMap<Theme>;

@@ -1,5 +1,5 @@
 import { Client } from 'boardgame.io/client';
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
 import { chooseComputerAction } from './computer';
@@ -29,8 +29,8 @@ describe('computer opponent', () => {
     G.hands['1'] = [event('event-1900-1'), event('event-1910-1')];
 
     expect(chooseComputerAction(G)).toMatchObject({
-      type: 'play',
       cardId: 'event-1910-1',
+      type: 'play',
     });
   });
 
@@ -39,10 +39,10 @@ describe('computer opponent', () => {
 
     G.played.push({
       ...event('event-1900-1'),
-      row: 0,
       column: 1,
       owner: '0',
       placedAt: 1,
+      row: 0,
     });
     G.nextPlacementOrder = 2;
     G.hands['1'] = [event('event-1940-1'), event('event-1990-1')];
@@ -51,9 +51,7 @@ describe('computer opponent', () => {
 
     expect(action?.type).toBe('play');
 
-    if (action?.type !== 'play') {
-      throw new Error('Expected a placement');
-    }
+    assert(action?.type === 'play', 'Expected a placement');
 
     expect(action.cardId).toBe('event-1990-1');
 
@@ -61,9 +59,7 @@ describe('computer opponent', () => {
       (candidate) => candidate.id === action.cardId,
     )!;
 
-    if (card.type !== 'event') {
-      throw new Error('Expected an Event');
-    }
+    assert(card.type === 'event', 'Expected an Event');
 
     expect(isValidPlacement(G.played, action.position, card)).toBe(true);
     expect(
@@ -77,10 +73,10 @@ describe('computer opponent', () => {
   it('discards when all cards are blocked', () => {
     const G = state();
     const surrounding: PlacedCard[] = [
-      { row: -1, column: 0 },
-      { row: 0, column: -1 },
-      { row: 0, column: 1 },
-      { row: 1, column: 0 },
+      { column: 0, row: -1 },
+      { column: -1, row: 0 },
+      { column: 1, row: 0 },
+      { column: 0, row: 1 },
     ].map((position, index) => ({
       ...event('event-1990-1'),
       id: `block-${index}`,
@@ -93,8 +89,8 @@ describe('computer opponent', () => {
     G.hands['1'] = [event('event-1900-1')];
 
     expect(chooseComputerAction(G)).toStrictEqual({
-      type: 'discard',
       cardId: 'event-1900-1',
+      type: 'discard',
     });
   });
 
@@ -103,10 +99,10 @@ describe('computer opponent', () => {
 
     G.pending = {
       ...event('event-1900-1'),
-      row: 0,
       column: 1,
       owner: '1',
       placedAt: 1,
+      row: 0,
     };
 
     expect(chooseComputerAction(G)).toStrictEqual({ type: 'confirm' });

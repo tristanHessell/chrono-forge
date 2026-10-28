@@ -9,7 +9,7 @@ import {
   wouldCreateSquare,
 } from './gameRules';
 
-type MoveContext = { G: CardGameState; ctx: { currentPlayer: string } };
+type MoveContext = { ctx: { currentPlayer: string }; G: CardGameState };
 type PlayCardMove = (
   context: MoveContext,
   cardId: string,
@@ -24,37 +24,37 @@ type ConfirmMove = (
 type HistoryMove = ConfirmMove;
 
 const card = (id: string, row: number, column: number): PlacedCard => ({
+  column,
   id,
   name: 'timeline-origin',
   number: 1,
-  type: 'event',
-  row,
-  column,
   owner: '0',
   placedAt: Number(id.replace(/\D/g, '')) || 1,
+  row,
+  type: 'event',
 });
 
 describe('placement rules', () => {
   it('requires a later date than every adjacent card, including duplicate Event cards', () => {
     const played = [{ ...card('a', 0, 0), number: 1950 }];
-    const position = { row: 0, column: 1 };
+    const position = { column: 1, row: 0 };
 
     for (const number of [1900, 1950]) {
       expect(
         isValidPlacement(played, position, {
           id: 'red',
-          type: 'event',
           name: 'timeline-origin',
           number,
+          type: 'event',
         }),
       ).toBe(false);
     }
 
     const later = {
       id: 'red',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1960,
+      type: 'event' as const,
     };
 
     expect(isValidPlacement(played, position, later)).toBe(true);
@@ -72,10 +72,10 @@ describe('placement rules', () => {
 
     expect(getAvailablePositions(played)).toStrictEqual(
       expect.arrayContaining([
-        { row: -1, column: 0 },
-        { row: 0, column: -1 },
-        { row: 0, column: 1 },
-        { row: 1, column: 0 },
+        { column: 0, row: -1 },
+        { column: -1, row: 0 },
+        { column: 1, row: 0 },
+        { column: 0, row: 1 },
       ]),
     );
   });
@@ -85,20 +85,20 @@ describe('placement rules', () => {
     const opposing = [card('top', -1, 0), card('bottom', 1, 0)];
 
     expect(
-      wouldCreateHeadToHeadMerge(perpendicular, { row: 0, column: 0 }),
+      wouldCreateHeadToHeadMerge(perpendicular, { column: 0, row: 0 }),
     ).toBe(false);
-    expect(isValidPlacement(perpendicular, { row: 0, column: 0 })).toBe(true);
-    expect(wouldCreateHeadToHeadMerge(opposing, { row: 0, column: 0 })).toBe(
+    expect(isValidPlacement(perpendicular, { column: 0, row: 0 })).toBe(true);
+    expect(wouldCreateHeadToHeadMerge(opposing, { column: 0, row: 0 })).toBe(
       true,
     );
-    expect(isValidPlacement(opposing, { row: 0, column: 0 })).toBe(false);
+    expect(isValidPlacement(opposing, { column: 0, row: 0 })).toBe(false);
   });
 
   it('blocks completing a 2×2 square', () => {
     const played = [card('a', 0, 0), card('b', 1, 0), card('c', 0, 1)];
 
-    expect(wouldCreateSquare(played, { row: 1, column: 1 })).toBe(true);
-    expect(isValidPlacement(played, { row: 1, column: 1 })).toBe(false);
+    expect(wouldCreateSquare(played, { column: 1, row: 1 })).toBe(true);
+    expect(isValidPlacement(played, { column: 1, row: 1 })).toBe(false);
   });
 });
 
@@ -141,16 +141,37 @@ describe('card game state transitions', () => {
 
   const makeState = (): CardGameState => ({
     actionsThisTurn: 0,
-    discarded: [],
-    freeActionsEnabled: true,
     deck: [
       {
         id: 'event-c-3',
-        number: 3,
         name: 'timeline-origin',
+        number: 3,
         type: 'event' as const,
       },
     ],
+    discarded: [],
+    freeActionsEnabled: true,
+    hands: {
+      '0': [
+        {
+          id: 'event-a-1',
+          name: 'timeline-origin',
+          number: 1,
+          type: 'event' as const,
+        },
+        {
+          id: 'event-b-2',
+          name: 'timeline-origin',
+          number: 2,
+          type: 'event' as const,
+        },
+      ],
+      '1': [] as Card[],
+    },
+    moveUndoHistory: [],
+    nextPlacementOrder: 1,
+    pending: null,
+    pendingSnapshot: null,
     played: [
       {
         ...card('start', 0, 0),
@@ -160,35 +181,14 @@ describe('card game state transitions', () => {
         placedAt: 0,
       },
     ],
-    pending: null,
-    startingPlayer: '0',
-    roundOver: false,
-    nextPlacementOrder: 1,
-    testHistory: [],
-    testFuture: [],
-    moveUndoHistory: [],
-    undoBlocked: false,
-    pendingSnapshot: null,
-    hands: {
-      '0': [
-        {
-          id: 'event-a-1',
-          number: 1,
-          name: 'timeline-origin',
-          type: 'event' as const,
-        },
-        {
-          id: 'event-b-2',
-          number: 2,
-          name: 'timeline-origin',
-          type: 'event' as const,
-        },
-      ],
-      '1': [] as Card[],
-    },
     playerIds: ['0', '1'],
     round: 1,
+    roundOver: false,
     roundScores: [],
+    startingPlayer: '0',
+    testFuture: [],
+    testHistory: [],
+    undoBlocked: false,
   });
 
   it('keeps a played card pending until confirmation without drawing', () => {
@@ -198,22 +198,22 @@ describe('card game state transitions', () => {
       .confirmPlacement as unknown as ConfirmMove;
     let endedTurn = false;
 
-    playCard({ G, ctx: { currentPlayer: '0' } }, 'event-a-1', {
-      row: 0,
+    playCard({ ctx: { currentPlayer: '0' }, G }, 'event-a-1', {
       column: 1,
+      row: 0,
     });
 
     expect(G.pending?.id).toBe('event-a-1');
     expect(G.hands['0']).toHaveLength(2);
 
     confirmPlacement({
-      G,
       ctx: { currentPlayer: '0' },
       events: {
         endTurn: () => {
           endedTurn = true;
         },
       },
+      G,
     });
 
     expect(G.pending).toBeNull();
@@ -233,20 +233,20 @@ describe('card game state transitions', () => {
     const redoTest = CardGame.moves!.redoTest as unknown as HistoryMove;
     const events = { endTurn: () => undefined };
 
-    playCard({ G, ctx: { currentPlayer: '0' } }, 'event-a-1', {
-      row: 0,
+    playCard({ ctx: { currentPlayer: '0' }, G }, 'event-a-1', {
       column: 1,
+      row: 0,
     });
-    confirmPlacement({ G, ctx: { currentPlayer: '0' }, events });
+    confirmPlacement({ ctx: { currentPlayer: '0' }, events, G });
 
     expect(G.played).toHaveLength(2);
 
-    undoTest({ G, ctx: { currentPlayer: '1' }, events });
+    undoTest({ ctx: { currentPlayer: '1' }, events, G });
 
     expect(G.played).toHaveLength(1);
     expect(G.deck).toHaveLength(1);
 
-    redoTest({ G, ctx: { currentPlayer: '0' }, events });
+    redoTest({ ctx: { currentPlayer: '0' }, events, G });
 
     expect(G.played).toHaveLength(2);
     expect(G.deck).toHaveLength(1);
@@ -257,10 +257,10 @@ describe('card game state transitions', () => {
 
     G.deck = [];
     G.hands['0'] = [
-      { id: 'event-a-1', number: 1, name: 'timeline-origin', type: 'event' },
+      { id: 'event-a-1', name: 'timeline-origin', number: 1, type: 'event' },
     ];
     G.hands['1'] = [
-      { id: 'event-b-2', number: 2, name: 'timeline-origin', type: 'event' },
+      { id: 'event-b-2', name: 'timeline-origin', number: 2, type: 'event' },
     ];
 
     const playCard = CardGame.moves!.playCard as unknown as PlayCardMove;
@@ -268,18 +268,18 @@ describe('card game state transitions', () => {
       .confirmPlacement as unknown as ConfirmMove;
     let nextTurn: EndTurnOptions | undefined;
 
-    playCard({ G, ctx: { currentPlayer: '1' } }, 'event-b-2', {
-      row: 0,
+    playCard({ ctx: { currentPlayer: '1' }, G }, 'event-b-2', {
       column: 1,
+      row: 0,
     });
     confirmPlacement({
-      G,
       ctx: { currentPlayer: '1' },
       events: {
         endTurn: (options) => {
           nextTurn = options;
         },
       },
+      G,
     });
 
     expect(G.hands['1']).toHaveLength(0);

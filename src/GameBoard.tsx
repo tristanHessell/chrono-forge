@@ -68,19 +68,19 @@ import { useComputerOpponent } from './useComputerOpponent';
 import { useTouchCardDrag } from './useTouchCardDrag';
 
 type CardGameMoves = {
+  confirmPlacement: () => void;
+  discardCard: (cardId: string) => void;
   manipulate: (
     cardId: string,
     targetId: string,
     destination?: CardPosition | string,
   ) => void;
-  discardCard: (cardId: string) => void;
-  playCard: (cardId: string, position: CardPosition) => void;
-  replacePendingCard: (cardId: string, position?: CardPosition) => void;
   movePendingCard: (position: CardPosition) => void;
-  returnPendingCard: () => void;
-  confirmPlacement: () => void;
-  undoTest: () => void;
+  playCard: (cardId: string, position: CardPosition) => void;
   redoTest: () => void;
+  replacePendingCard: (cardId: string, position?: CardPosition) => void;
+  returnPendingCard: () => void;
+  undoTest: () => void;
 };
 
 type DraggedCard = {
@@ -90,32 +90,32 @@ type DraggedCard = {
 
 const linkDirections = [
   {
-    row: -1,
-    column: 0,
     className: playedCardStyles.linkTop,
-    outward: '↑',
-    inward: '↓',
-  },
-  {
-    row: 0,
-    column: -1,
-    className: playedCardStyles.linkLeft,
-    outward: '←',
-    inward: '→',
-  },
-  {
-    row: 0,
-    column: 1,
-    className: playedCardStyles.linkRight,
-    outward: '→',
-    inward: '←',
-  },
-  {
-    row: 1,
     column: 0,
+    inward: '↓',
+    outward: '↑',
+    row: -1,
+  },
+  {
+    className: playedCardStyles.linkLeft,
+    column: -1,
+    inward: '→',
+    outward: '←',
+    row: 0,
+  },
+  {
+    className: playedCardStyles.linkRight,
+    column: 1,
+    inward: '←',
+    outward: '→',
+    row: 0,
+  },
+  {
     className: playedCardStyles.linkBottom,
-    outward: '↓',
+    column: 0,
     inward: '↑',
+    outward: '↓',
+    row: 1,
   },
 ] as const;
 
@@ -150,7 +150,7 @@ function setCardDragImage(event: React.DragEvent<HTMLElement>) {
   }, 0);
 }
 
-export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
+export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const intl = useIntl();
   const gameMoves = moves as CardGameMoves;
   const finished = Boolean(ctx.gameover) || G.roundOver;
@@ -172,10 +172,10 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     gameMoves,
   );
 
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<null | string>(null);
   const [detailsCard, setDetailsCard] = useState<Card | null>(null);
   const [manipulationTargetId, setManipulationTargetId] = useState<
-    string | null
+    null | string
   >(null);
   const [draggedCard, setDraggedCard] = useState<DraggedCard | null>(null);
   const [snapPosition, setSnapPosition] = useState<CardPosition | null>(null);
@@ -193,7 +193,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     scrollTop: 0,
   });
   const touchPointsRef = useRef(new Map<number, { x: number; y: number }>());
-  const pinchDistanceRef = useRef<number | null>(null);
+  const pinchDistanceRef = useRef<null | number>(null);
   const draggedCardDetails = draggedCard
     ? draggedCard.source === 'pending'
       ? G.pending
@@ -306,9 +306,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       }
     : undefined;
 
-  const positionStyle = ({ row, column }: CardPosition) => ({
-    gridRow: row - minimumRow + 1,
+  const positionStyle = ({ column, row }: CardPosition) => ({
     gridColumn: column - minimumColumn + 1,
+    gridRow: row - minimumRow + 1,
   });
 
   const linkedCardsByPosition = new Map(
@@ -322,8 +322,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     linkDirections.map((link) => {
       const neighbor = linkedCardsByPosition.get(
         positionKey({
-          row: card.row + link.row,
           column: card.column + link.column,
+          row: card.row + link.row,
         }),
       );
 
@@ -371,7 +371,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     }
 
     if (G.played.length === 0) {
-      gameMoves.playCard(cardId, { row: 0, column: 0 });
+      gameMoves.playCard(cardId, { column: 0, row: 0 });
 
       return;
     }
@@ -549,18 +549,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     return touchDropPosition(G.played, card, key);
   };
   const touchDrag = useTouchCardDrag({
-    onStart: (cardId, source) => {
-      setDraggedCard({ cardId, source });
-      setSelectedCardId(cardId);
-      setManipulationTargetId(null);
-    },
-    onMove: (point) => {
-      setSnapPosition(
-        draggedCard
-          ? touchPosition(point, draggedCard.cardId, draggedCard.source)
-          : null,
-      );
-    },
     onDrop: (cardId, source, point) => {
       if (finished || !isHumanTurn) {
         return;
@@ -598,6 +586,18 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     onFinish: () => {
       finishDrag();
       setSelectedCardId(null);
+    },
+    onMove: (point) => {
+      setSnapPosition(
+        draggedCard
+          ? touchPosition(point, draggedCard.cardId, draggedCard.source)
+          : null,
+      );
+    },
+    onStart: (cardId, source) => {
+      setDraggedCard({ cardId, source });
+      setSelectedCardId(cardId);
+      setManipulationTargetId(null);
     },
   });
 
@@ -659,8 +659,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
     if (
       window.confirm(
         intl.formatMessage({
-          id: 'newGame.confirmCurrent',
           defaultMessage: 'Your current game will be lost. Start a new game?',
+          id: 'newGame.confirmCurrent',
         }),
       )
     ) {
@@ -839,9 +839,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
         [gameBoardStyles.choosingJumpDestination]: choosingJumpDestination,
       })}
       data-touch-dragging={Boolean(touchDrag.preview)}
-      onPointerDownCapture={() => {
-        touchDrag.controller.resetClickSuppression();
-      }}
       onClickCapture={(event) => {
         if (touchDrag.controller.consumeClick()) {
           event.preventDefault();
@@ -862,6 +859,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           finishDrag();
         }
       }}
+      onPointerDownCapture={() => {
+        touchDrag.controller.resetClickSuppression();
+      }}
     >
       <header className={gameBoardStyles.header}>
         <div className={gameBoardStyles.topActions}>
@@ -870,11 +870,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               <path d="m12 2 9 5v10l-9 5-9-5V7z" />
             </svg>
             <div>
-              <FormattedMessage id="brand.name" defaultMessage="Chrono-Forge" />
+              <FormattedMessage defaultMessage="Chrono-Forge" id="brand.name" />
               <small>
                 <FormattedMessage
-                  id="brand.tagline"
                   defaultMessage="Tactical card system"
+                  id="brand.tagline"
                 />
               </small>
             </div>
@@ -888,52 +888,52 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             <span aria-hidden="true" />
             {finished
               ? intl.formatMessage({
-                  id: 'game.over',
                   defaultMessage: 'Game over',
+                  id: 'game.over',
                 })
               : activePlayer.type === 'computer'
                 ? intl.formatMessage(
                     computerPaused
                       ? {
-                          id: 'computer.paused',
                           defaultMessage: 'Computer paused',
+                          id: 'computer.paused',
                         }
                       : {
-                          id: 'computer.thinking',
                           defaultMessage: '{name} is thinking…',
+                          id: 'computer.thinking',
                         },
                     { name: activePlayer.name },
                   )
                 : activeOwner === '0'
                   ? intl.formatMessage({
-                      id: 'turn.you',
                       defaultMessage: 'Your turn',
+                      id: 'turn.you',
                     })
                   : intl.formatMessage<{ readonly name: MessageValue }>(
-                      { id: 'turn.player', defaultMessage: "{name}'s turn" },
+                      { defaultMessage: "{name}'s turn", id: 'turn.player' },
                       { name: activePlayer.name },
                     )}
             {!finished && (
               <small>
                 <FormattedMessage
-                  id="turn.action"
                   defaultMessage="{count, number} / 2"
+                  id="turn.action"
                   values={{ count: G.actionsThisTurn + 1 }}
                 />
               </small>
             )}
           </p>
           <div
-            className={gameBoardStyles.historyControls}
             aria-label={intl.formatMessage({
-              id: 'history.label',
               defaultMessage: 'Move history controls',
+              id: 'history.label',
             })}
+            className={gameBoardStyles.historyControls}
           >
             <button
               aria-label={intl.formatMessage({
-                id: 'history.undoLabel',
                 defaultMessage: 'Undo your last move',
+                id: 'history.undoLabel',
               })}
               className={controlsStyles.historyButton}
               data-icon-button
@@ -952,8 +952,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             </button>
             <button
               aria-label={intl.formatMessage({
-                id: 'history.redoLabel',
                 defaultMessage: 'Redo last action',
+                id: 'history.redoLabel',
               })}
               className={controlsStyles.historyButton}
               data-icon-button
@@ -974,14 +974,14 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           {computerPaused && !finished && activePlayer.type === 'computer' && (
             <button
               className={controlsStyles.historyButton}
-              type="button"
               onClick={() => {
                 setComputerPaused(false);
               }}
+              type="button"
             >
               <FormattedMessage
-                id="computer.resume"
                 defaultMessage="Resume computer"
+                id="computer.resume"
               />
             </button>
           )}
@@ -1000,11 +1000,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
       </header>
 
       <section
-        className={gameBoardStyles.table}
         aria-label={intl.formatMessage({
-          id: 'table.label',
           defaultMessage: 'Card table',
+          id: 'table.label',
         })}
+        className={gameBoardStyles.table}
       >
         <div className={gameBoardStyles.opponentHand}>
           {G.playerIds
@@ -1039,8 +1039,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                     onShowDetails={showCardDetails}
                     owner={id}
                     ownerName={player.name}
-                    playerType={player.type}
                     pendingCardId={G.pending?.id}
+                    playerType={player.type}
                     score={scores[id] ?? 0}
                     selectedCardId={selectedCardId}
                   />
@@ -1054,32 +1054,31 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             <div className={gameBoardStyles.areaControls}>
               <div
                 aria-label={intl.formatMessage<{
+                  // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                   readonly count: number | bigint;
                 }>(
                   {
-                    id: 'deck.label',
                     defaultMessage:
                       '{count, plural, one {# card remaining in the deck} other {# cards remaining in the deck}}',
+                    id: 'deck.label',
                   },
                   { count: G.deck.length },
                 )}
                 className={gameBoardStyles.deckDisplay}
                 role="status"
               >
-                <span>
-                  <FormattedMessage id="deck.title" defaultMessage="Deck" />
-                </span>
                 <div
-                  className={gameBoardStyles.deckCardBack}
                   aria-label={intl.formatMessage<{
+                    // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                     readonly count: number | bigint;
                   }>(
                     {
-                      id: 'deck.remaining',
                       defaultMessage: '{count, number} cards in deck',
+                      id: 'deck.remaining',
                     },
                     { count: G.deck.length },
                   )}
+                  className={gameBoardStyles.deckCardBack}
                 >
                   <strong aria-hidden="true">
                     {intl.formatNumber(G.deck.length)}
@@ -1087,34 +1086,26 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 </div>
               </div>
               <button
-                type="button"
-                data-discard-pile
-                className={clsx(gameBoardStyles.discardPile, {
-                  [gameBoardStyles.discardReady]: draggedCard && !finished,
-                })}
                 aria-label={intl.formatMessage<{
+                  // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                   readonly count: number | bigint;
                 }>(
                   {
-                    id: 'discard.label',
                     defaultMessage:
                       'Discard pile: {count, plural, one {# card} other {# cards}}. Drop a card here or click to discard your selected card. This uses one of your two actions.',
+                    id: 'discard.label',
                   },
                   { count: G.discarded.length },
                 )}
-                title={intl.formatMessage({
-                  id: 'discard.hint',
-                  defaultMessage:
-                    'Drag a card here, or select a card and click here. Discarding uses one of your two actions.',
+                className={clsx(gameBoardStyles.discardPile, {
+                  [gameBoardStyles.discardReady]: draggedCard && !finished,
                 })}
+                data-discard-pile
                 disabled={
                   finished ||
                   !isHumanTurn ||
                   !(draggedCard || selectedCardId || G.pending)
                 }
-                onDragEnter={allowDrop}
-                onDragOver={allowDrop}
-                onDrop={dropOnDiscard}
                 onClick={() => {
                   const cardId = selectedCardId ?? G.pending?.id;
 
@@ -1122,27 +1113,36 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                     discardCard(cardId);
                   }
                 }}
+                onDragEnter={allowDrop}
+                onDragOver={allowDrop}
+                onDrop={dropOnDiscard}
+                title={intl.formatMessage({
+                  defaultMessage:
+                    'Drag a card here, or select a card and click here. Discarding uses one of your two actions.',
+                  id: 'discard.hint',
+                })}
+                type="button"
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
                 </svg>
                 <span>
                   <FormattedMessage
-                    id="discard.title"
                     defaultMessage="Discard"
+                    id="discard.title"
                   />
                   <small>
                     <FormattedMessage
-                      id="discard.count"
                       defaultMessage="{count, number} discarded"
+                      id="discard.count"
                       values={{ count: G.discarded.length }}
                     />
                   </small>
                 </span>
               </button>
               <GameLogControls
-                G={G}
                 currentPlayer={ctx.currentPlayer}
+                G={G}
                 onOpen={() => {
                   setComputerPaused(true);
                   finishDrag();
@@ -1151,16 +1151,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 }}
               />
               <button
-                className={controlsStyles.historyButton}
-                type="button"
                 aria-label={intl.formatMessage({
-                  id: 'roundScores.title',
                   defaultMessage: 'Round scores',
-                })}
-                title={intl.formatMessage({
                   id: 'roundScores.title',
-                  defaultMessage: 'Round scores',
                 })}
+                className={controlsStyles.historyButton}
                 data-icon-button
                 onClick={() => {
                   setComputerPaused(true);
@@ -1170,6 +1165,11 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                   setManipulationTargetId(null);
                   roundScoresDialogRef.current?.showModal();
                 }}
+                title={intl.formatMessage({
+                  defaultMessage: 'Round scores',
+                  id: 'roundScores.title',
+                })}
+                type="button"
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <path d="M4 20h16M6 16v-5h4v5m2 0V5h4v11m2 0V9h4v7" />
@@ -1187,10 +1187,9 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               onZoomChange={adjustBoardZoom}
             />
             <div
-              ref={boardViewportRef}
               aria-label={intl.formatMessage({
-                id: 'board.label',
                 defaultMessage: 'Pannable and zoomable played-card board',
+                id: 'board.label',
               })}
               className={clsx(gameBoardStyles.playedViewport, {
                 [gameBoardStyles.isPanning]: isPanning,
@@ -1199,6 +1198,7 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               onPointerDown={startBoardPan}
               onPointerMove={panBoard}
               onPointerUp={stopBoardPan}
+              ref={boardViewportRef}
             >
               <div
                 className={gameBoardStyles.playedGrid}
@@ -1208,26 +1208,26 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                 {G.played.length === 0 && !G.pending && showPlacementSlots ? (
                   <PlacementSlot
                     ariaLabel={intl.formatMessage({
-                      id: 'placement.center',
                       defaultMessage: 'Drop a card in the center of the table',
+                      id: 'placement.center',
                     })}
-                    position={{ row: 0, column: 0 }}
                     draggedCard={draggedCardDetails}
                     initial
                     isDragActive={Boolean(draggedCard)}
                     isPreview={Boolean(
-                      draggedCardDetails && isSnappedTo({ row: 0, column: 0 }),
+                      draggedCardDetails && isSnappedTo({ column: 0, row: 0 }),
                     )}
                     onClick={() => {
-                      placeSelectedCard({ row: 0, column: 0 });
+                      placeSelectedCard({ column: 0, row: 0 });
                     }}
                     onDragEnter={(event) => {
-                      snapToPosition(event, { row: 0, column: 0 });
+                      snapToPosition(event, { column: 0, row: 0 });
                     }}
                     onDragOver={allowDrop}
                     onDrop={(event) => {
-                      dropCard(event, { row: 0, column: 0 });
+                      dropCard(event, { column: 0, row: 0 });
                     }}
+                    position={{ column: 0, row: 0 }}
                   />
                 ) : (
                   <>
@@ -1247,23 +1247,20 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                       )
                       .map((card) => (
                         <PlayedCard
-                          key={card.id}
-                          style={positionStyle(card)}
                           card={card}
                           isLatest={
                             card.owner !== 'neutral' &&
                             card.id === G.played.at(-1)?.id
                           }
+                          key={card.id}
                           links={renderLinkDirections(card)}
-                          selected={Boolean(
-                            manipulation && manipulationTargetId === card.id,
-                          )}
                           onDragOver={(event) => {
                             allowManipulationDrop(event, card.id);
                           }}
                           onDrop={(event) => {
                             dropManipulationOnTarget(event, card.id);
                           }}
+                          onShowDetails={showCardDetails}
                           onTarget={
                             (manipulation &&
                               manipulationTargetId === card.id) ||
@@ -1306,16 +1303,19 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                                 }
                               : undefined
                           }
-                          onShowDetails={showCardDetails}
+                          selected={Boolean(
+                            manipulation && manipulationTargetId === card.id,
+                          )}
+                          style={positionStyle(card)}
                         />
                       ))}
                     {G.pending && (
                       // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- TODO improve roles for these cards
                       <div
                         aria-label={intl.formatMessage({
-                          id: 'placement.pending',
                           defaultMessage:
                             'Unconfirmed card replacement position',
+                          id: 'placement.pending',
                         })}
                         className={clsx(
                           cardStyles.card,
@@ -1330,13 +1330,32 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                               pendingShowsReplacement,
                           },
                         )}
-                        data-owner={displayedPendingOwner}
-                        data-drop-position={positionKey(G.pending)}
                         data-card-type={displayedPendingCard?.type}
+                        data-drop-position={positionKey(G.pending)}
                         data-event-category={displayedPendingCard?.category}
+                        data-owner={displayedPendingOwner}
                         draggable={isHumanTurn && !finished}
                         key={`${G.pending.id}:${G.pending.row}:${G.pending.column}`}
+                        onDoubleClick={(event) => {
+                          if ((event.target as Element).closest('button')) {
+                            return;
+                          }
+
+                          if (displayedPendingCard) {
+                            showCardDetails(displayedPendingCard);
+                          }
+                        }}
                         onDragEnd={finishDrag}
+                        onDragEnter={(event) => {
+                          snapToPosition(event, G.pending!);
+                        }}
+                        onDragOver={allowDrop}
+                        onDragStart={(event) => {
+                          beginDrag(event, G.pending!.id, 'pending');
+                        }}
+                        onDrop={dropOnPendingCard}
+                        onLostPointerCapture={touchDrag.onLostPointerCapture}
+                        onPointerCancel={touchDrag.onPointerCancel}
                         onPointerDown={(event) => {
                           if (
                             isHumanTurn &&
@@ -1352,25 +1371,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         }}
                         onPointerMove={touchDrag.onPointerMove}
                         onPointerUp={touchDrag.onPointerUp}
-                        onPointerCancel={touchDrag.onPointerCancel}
-                        onLostPointerCapture={touchDrag.onLostPointerCapture}
-                        onDragEnter={(event) => {
-                          snapToPosition(event, G.pending!);
-                        }}
-                        onDragOver={allowDrop}
-                        onDragStart={(event) => {
-                          beginDrag(event, G.pending!.id, 'pending');
-                        }}
-                        onDrop={dropOnPendingCard}
-                        onDoubleClick={(event) => {
-                          if ((event.target as Element).closest('button')) {
-                            return;
-                          }
-
-                          if (displayedPendingCard) {
-                            showCardDetails(displayedPendingCard);
-                          }
-                        }}
                         role="region"
                         style={positionStyle(G.pending)}
                       >
@@ -1386,8 +1386,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                           <CardEventName card={displayedPendingCard} />
                         )}
                         <span
-                          data-card-label
                           className={cardStyles.cardTypeName}
+                          data-card-label
                         >
                           {intl.formatMessage(
                             displayedPendingCard?.category
@@ -1398,8 +1398,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         <span className={cardStyles.ownerBadge}>
                           {displayedPendingOwner === 'neutral'
                             ? intl.formatMessage({
-                                id: 'owner.neutral',
                                 defaultMessage: 'Start',
+                                id: 'owner.neutral',
                               })
                             : getPlayer(
                                 players,
@@ -1408,8 +1408,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         </span>
                         <button
                           aria-label={intl.formatMessage({
-                            id: 'placement.confirmLabel',
                             defaultMessage: 'Confirm card position',
+                            id: 'placement.confirmLabel',
                           })}
                           className={pendingCardStyles.pendingConfirm}
                           data-drag-decoration
@@ -1422,8 +1422,8 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                             event.stopPropagation();
                           }}
                           title={intl.formatMessage({
-                            id: 'placement.confirm',
                             defaultMessage: 'Confirm',
+                            id: 'placement.confirm',
                           })}
                           type="button"
                         >
@@ -1442,26 +1442,22 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                         )
                         .map((position) => (
                           <PlacementSlot
-                            position={position}
-                            overwrite={G.played.some(
-                              (card) =>
-                                card.removed &&
-                                positionKey(card) === positionKey(position),
-                            )}
                             ariaLabel={intl.formatMessage<{
+                              // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                               readonly column: number | bigint;
                               readonly pending: string;
+                              // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                               readonly row: number | bigint;
                             }>(
                               {
-                                id: 'placement.target',
                                 defaultMessage:
                                   '{pending, select, yes {Move pending card} other {Place selected card}} to row {row, number}, column {column, number}',
+                                id: 'placement.target',
                               },
                               {
+                                column: position.column,
                                 pending: G.pending ? 'yes' : 'no',
                                 row: position.row,
-                                column: position.column,
                               },
                             )}
                             draggedCard={draggedCardDetails}
@@ -1480,6 +1476,12 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
                             onDrop={(event) => {
                               dropCard(event, position);
                             }}
+                            overwrite={G.played.some(
+                              (card) =>
+                                card.removed &&
+                                positionKey(card) === positionKey(position),
+                            )}
+                            position={position}
                             style={positionStyle(position)}
                           />
                         ))}
@@ -1493,7 +1495,6 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
           <CardHand
             activeOwner={activeOwner}
             cards={G.hands[handOwner]}
-            touchDrag={touchDrag}
             interactive={isHumanTurn && !finished}
             isReturnTarget={
               draggedCard?.source === 'pending' &&
@@ -1509,18 +1510,19 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
             onShowDetails={showCardDetails}
             owner={handOwner}
             ownerName={handPlayer.name}
-            playerType={handPlayer.type}
             pendingCardId={G.pending?.id}
+            playerType={handPlayer.type}
             score={scores[handOwner] ?? 0}
             selectedCardId={selectedCardId}
+            touchDrag={touchDrag}
           />
         </div>
       </section>
 
       {touchDrag.preview && draggedCardDetails?.type === 'event' && (
         <div
-          className={clsx(cardStyles.card, cardStyles.touchDragPreview)}
           aria-hidden="true"
+          className={clsx(cardStyles.card, cardStyles.touchDragPreview)}
           data-card-type="event"
           data-event-category={draggedCardDetails.category}
           style={{ left: touchDrag.preview.x, top: touchDrag.preview.y }}
@@ -1568,63 +1570,65 @@ export function GameBoard({ G, ctx, moves }: BoardProps<CardGameState>) {
               ? !manipulationTargetId
                 ? manipulationTargets.length
                   ? intl.formatMessage({
-                      id: 'manipulation.choose',
                       defaultMessage:
                         'Choose an Event card on the board. The starting card cannot be targeted.',
+                      id: 'manipulation.choose',
                     })
                   : intl.formatMessage({
-                      id: 'manipulation.noTargets',
                       defaultMessage:
                         'No legal targets for this card. Select another card or discard it.',
+                      id: 'manipulation.noTargets',
                     })
                 : manipulation.action === 'time-jump'
                   ? intl.formatMessage({
-                      id: 'manipulation.jumpDestination',
                       defaultMessage:
                         'Choose a highlighted empty position or removed Event to complete Time Jump.',
+                      id: 'manipulation.jumpDestination',
                     })
                   : intl.formatMessage({
-                      id: 'manipulation.swapDestination',
                       defaultMessage:
                         'Choose a highlighted second Event card to complete Time Swap.',
+                      id: 'manipulation.swapDestination',
                     })
               : G.pending
                 ? intl.formatMessage({
-                    id: 'status.pending',
                     defaultMessage:
                       'Drag it to another slot, back to your hand, or confirm.',
+                    id: 'status.pending',
                   })
                 : draggedCard
                   ? intl.formatMessage({
-                      id: 'status.dragging',
                       defaultMessage:
                         'Drop the card on a highlighted position.',
+                      id: 'status.dragging',
                     })
                   : selectedCardId
                     ? intl.formatMessage({
-                        id: 'status.selected',
                         defaultMessage:
                           'Choose a slot above, below, or beside a card.',
+                        id: 'status.selected',
                       })
                     : activeOwner === '0'
-                      ? intl.formatMessage<{ readonly count: number | bigint }>(
+                      ? // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
+                        intl.formatMessage<{ readonly count: number | bigint }>(
                           {
-                            id: 'status.yourTurn',
                             defaultMessage:
                               'Your turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}',
+                            id: 'status.yourTurn',
                           },
                           { count: G.deck.length },
                         )
                       : intl.formatMessage<{
+                          // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                           readonly count: number | bigint;
                           readonly name: MessageValue;
                         }>(
                           {
-                            id: 'status.playerTurn',
                             defaultMessage:
                               "{name}'s turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}",
+                            id: 'status.playerTurn',
                           },
-                          { name: activePlayer.name, count: G.deck.length },
+                          { count: G.deck.length, name: activePlayer.name },
                         )}
           </p>
         )}

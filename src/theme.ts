@@ -1,8 +1,8 @@
-export type Theme = 'light' | 'dark' | 'greyscale-light' | 'greyscale-dark';
+export type Theme = 'dark' | 'greyscale-dark' | 'greyscale-light' | 'light';
 
 export const storageKey = 'card-table-theme';
 
-export function parseTheme(value: unknown): Theme | null {
+export function parseTheme(value: unknown): null | Theme {
   if (value === 'grayscale' || value === 'greyscale') {
     return 'greyscale-dark';
   }
@@ -24,7 +24,7 @@ export function saveTheme(theme: Theme) {
   }
 }
 
-export function savedTheme(): Theme | null {
+export function savedTheme(): null | Theme {
   try {
     const value = localStorage.getItem(storageKey);
 

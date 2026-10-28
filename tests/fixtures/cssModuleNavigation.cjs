@@ -65,9 +65,9 @@ function request(command, args) {
   const seq = ++sequence;
 
   return new Promise((resolve, reject) => {
-    requests.set(seq, { resolve, reject });
+    requests.set(seq, { reject, resolve });
     server.stdin.write(
-      `${JSON.stringify({ seq, type: 'request', command, arguments: args })}\n`,
+      `${JSON.stringify({ arguments: args, command, seq, type: 'request' })}\n`,
     );
   });
 }
@@ -98,13 +98,13 @@ async function checkNavigation() {
     const definitionFile = readFileSync(definition.file, 'utf8').split('\n');
 
     definitions.push({
-      name,
-      file: path.relative(directory, definition.file),
-      cssLine: definitionFile[definition.start.line - 1].trim(),
       cssClass: definitionFile[definition.start.line - 1].slice(
         definition.start.offset - 1,
         definition.end.offset - 1,
       ),
+      cssLine: definitionFile[definition.start.line - 1].trim(),
+      file: path.relative(directory, definition.file),
+      name,
     });
   }
 

@@ -21,37 +21,37 @@ export type DragPoint = { x: number; y: number };
 export type DragSource = 'hand' | 'pending';
 
 type CaptureTarget = {
-  setPointerCapture: (id: number) => void;
-  releasePointerCapture: (id: number) => void;
   hasPointerCapture: (id: number) => boolean;
+  releasePointerCapture: (id: number) => void;
+  setPointerCapture: (id: number) => void;
 };
 
 export type DragPointer = {
-  pointerId: number;
-  pointerType: string;
-  isPrimary: boolean;
   button: number;
   clientX: number;
   clientY: number;
   currentTarget: CaptureTarget;
+  isPrimary: boolean;
+  pointerId: number;
+  pointerType: string;
   preventDefault: () => void;
 };
 
 export type TouchDragCallbacks = {
-  onStart: (cardId: string, source: DragSource) => void;
-  onMove: (point: DragPoint) => void;
   onDrop: (cardId: string, source: DragSource, point: DragPoint) => void;
   onFinish: () => void;
+  onMove: (point: DragPoint) => void;
+  onStart: (cardId: string, source: DragSource) => void;
 };
 
 export class TouchCardDrag {
   private session: {
-    id: number;
-    cardId: string;
-    source: DragSource;
-    target: CaptureTarget;
-    start: DragPoint;
     active: boolean;
+    cardId: string;
+    id: number;
+    source: DragSource;
+    start: DragPoint;
+    target: CaptureTarget;
   } | null = null;
   private suppressClick = false;
 
@@ -90,12 +90,12 @@ export class TouchCardDrag {
     }
 
     this.session = {
-      id: event.pointerId,
-      cardId,
-      source,
-      target: event.currentTarget,
-      start: { x: event.clientX, y: event.clientY },
       active: false,
+      cardId,
+      id: event.pointerId,
+      source,
+      start: { x: event.clientX, y: event.clientY },
+      target: event.currentTarget,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   }

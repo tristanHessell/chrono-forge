@@ -6,9 +6,9 @@ import manifest from '../package.json';
 
 function lintManifest(packageJsonObject) {
   return new NpmPackageJsonLint({
-    packageJsonObject,
-    packageJsonFilePath: 'package.json',
     config,
+    packageJsonFilePath: 'package.json',
+    packageJsonObject,
   }).lint();
 }
 

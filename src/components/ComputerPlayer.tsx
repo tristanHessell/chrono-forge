@@ -20,17 +20,18 @@ export function ComputerPlayer({ cards, player, score }: Props) {
   return (
     <section
       aria-label={intl.formatMessage<{
+        // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
         readonly count: number | bigint;
         readonly name: MessageValue;
       }>(
         {
-          id: 'computer.summary',
           defaultMessage:
             '{name}, {count, plural, one {# point} other {# points}}',
+          id: 'computer.summary',
         },
         {
-          name: player.name,
           count: score,
+          name: player.name,
         },
       )}
       className={clsx(
@@ -44,8 +45,8 @@ export function ComputerPlayer({ cards, player, score }: Props) {
           <strong>{player.name}</strong>
           <span>
             <FormattedMessage
-              id="score.points"
               defaultMessage="{count, plural, one {# point} other {# points}}"
+              id="score.points"
               values={{
                 count: score,
               }}
@@ -54,11 +55,12 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         </div>
       </div>
       <div
+        // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
         aria-label={intl.formatMessage<{ readonly count: number | bigint }>(
           {
-            id: 'computer.hiddenCards',
             defaultMessage:
               '{count, plural, one {# face-down card} other {# face-down cards}}',
+            id: 'computer.hiddenCards',
           },
           { count: cards.length },
         )}

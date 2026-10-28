@@ -21,12 +21,12 @@ import messages from './i18n/en.json';
 describe('gameLogSummary', () => {
   it('summarises actor, card, coordinates, refill draws, turn changes and history without changing the game', async () => {
     const seed = 'readable-log';
-    const client = Client({ game: { ...CardGame, seed }, debug: false });
+    const client = Client({ debug: false, game: { ...CardGame, seed } });
     const initial = client.getState()!;
     const event = initial.G.hands['0'].find((card) => card.type === 'event')!;
 
-    client.moves.playCard(event.id, { row: 0, column: 1 });
-    client.moves.movePendingCard({ row: -1, column: 0 });
+    client.moves.playCard(event.id, { column: 1, row: 0 });
+    client.moves.movePendingCard({ column: 0, row: -1 });
     client.moves.confirmPlacement();
 
     const discarded = client.getState()!.G.hands['0'][0];
@@ -41,16 +41,16 @@ describe('gameLogSummary', () => {
 
     expect(items).toHaveLength(2);
     expect(items[0]).toMatchObject({
-      index: 1,
-      player: '0',
-      turn: 1,
-      move: 'playEvent',
       card: event,
-      position: { row: -1, column: 0 },
+      index: 1,
+      move: 'playEvent',
+      player: '0',
+      position: { column: 0, row: -1 },
+      turn: 1,
     });
     expect(items[1]).toMatchObject({
-      move: 'discardCard',
       card: discarded,
+      move: 'discardCard',
       nextPlayer: '1',
     });
     expect(items[1].drawn.length).toBeGreaterThan(0);
@@ -120,10 +120,11 @@ describe('gameLogSummary', () => {
           (card) => card.type === 'manipulation' && card.action === action,
         )!;
 
+      // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
       if (action === 'time-jump') {
         client.moves.manipulate(manipulation.id, 'event-1920-3', {
-          row: -1,
           column: 1,
+          row: -1,
         });
       } else if (action === 'time-swap') {
         client.moves.manipulate(

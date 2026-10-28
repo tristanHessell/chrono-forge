@@ -8,14 +8,14 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
-      include: ['src/**/*.test.tsx'],
-      css: { include: [/\.module\.css$/] },
       browser: {
         enabled: true,
-        provider: playwright(),
         headless: true,
         instances: [{ browser: 'chromium' }],
+        provider: playwright(),
       },
+      css: { include: [/\.module\.css$/] },
+      include: ['src/**/*.test.tsx'],
     },
   }),
 );

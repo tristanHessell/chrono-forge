@@ -41,15 +41,15 @@ describe(App, () => {
       getItem: (key: string) =>
         key === gameStorageKey
           ? JSON.stringify({
-              version: 1,
-              seed: 'saved-game-seed',
-              numPlayers: 2,
-              startingPlayer: '0',
-              players: createDefaultPlayers(),
-              replayPaused: false,
-              state: client.store.getState(),
               initialState: client.getInitialState(),
               log: [],
+              numPlayers: 2,
+              players: createDefaultPlayers(),
+              replayPaused: false,
+              seed: 'saved-game-seed',
+              startingPlayer: '0',
+              state: client.store.getState(),
+              version: 1,
             })
           : null,
     });

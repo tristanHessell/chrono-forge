@@ -24,6 +24,7 @@ describe(CardPatternsToggle, () => {
         .element(page.getByText('Colour-independent backgrounds'))
         .toBeInTheDocument();
 
+      // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
       if (value === 'on') {
         await expect.element(page.getByRole('checkbox')).toBeChecked();
       } else {

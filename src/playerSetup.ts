@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import type { PlayerId } from './game';
 import type { PlayerCount } from './playerCount';
 
-export type PlayerType = 'human' | 'computer';
+export type PlayerType = 'computer' | 'human';
 
 export type PlayerSetup = {
   id: PlayerId;

@@ -1,7 +1,7 @@
 import type { ManipulationCard } from '../../game';
 
 export default {
+  action: 'time-swap',
   id: 'time-swap-2',
   type: 'manipulation',
-  action: 'time-swap',
 } as const satisfies ManipulationCard;

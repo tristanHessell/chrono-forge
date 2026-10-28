@@ -19,30 +19,30 @@ describe('simulationStatistics', () => {
     const discarded: Card[] = [
       {
         id: 'discarded-event',
-        type: 'event',
         name: 'timeline-origin',
         number: 1900,
+        type: 'event',
       },
-      { id: 'unused-manipulation', type: 'manipulation', action: 'time-swap' },
-      { id: 'used-manipulation', type: 'manipulation', action: 'remove-event' },
+      { action: 'time-swap', id: 'unused-manipulation', type: 'manipulation' },
+      { action: 'remove-event', id: 'used-manipulation', type: 'manipulation' },
       {
         id: 'overwritten-event',
-        type: 'event',
         name: 'timeline-origin',
         number: 1910,
+        type: 'event',
       },
     ];
     const actions: ComputerAction[] = [
-      { type: 'discard', cardId: 'discarded-event' },
-      { type: 'discard', cardId: 'unused-manipulation' },
+      { cardId: 'discarded-event', type: 'discard' },
+      { cardId: 'unused-manipulation', type: 'discard' },
       {
-        type: 'manipulate',
         cardId: 'used-manipulation',
         targetId: 'overwritten-event',
+        type: 'manipulate',
       },
-      { type: 'play', cardId: 'replacement', position: { row: 0, column: 1 } },
+      { cardId: 'replacement', position: { column: 1, row: 0 }, type: 'play' },
       { type: 'confirm' },
-      { type: 'discard', cardId: 'rejected-discard' },
+      { cardId: 'rejected-discard', type: 'discard' },
     ];
 
     expect(
@@ -55,12 +55,12 @@ describe('simulationStatistics', () => {
 
   it('does not double-count duplicate discard attempts or count attempts that never reached the pile', () => {
     const discarded: Card[] = [
-      { id: 'one', type: 'event', name: 'timeline-origin', number: 1900 },
+      { id: 'one', name: 'timeline-origin', number: 1900, type: 'event' },
     ];
     const actions: ComputerAction[] = [
-      { type: 'discard', cardId: 'one' },
-      { type: 'discard', cardId: 'one' },
-      { type: 'discard', cardId: 'missing' },
+      { cardId: 'one', type: 'discard' },
+      { cardId: 'one', type: 'discard' },
+      { cardId: 'missing', type: 'discard' },
     ];
 
     expect(

@@ -11,8 +11,8 @@ function wheel(deltaY: number, ctrlKey = false) {
   return Object.assign(
     new Event('wheel', { bubbles: true, cancelable: true }),
     {
-      deltaY,
       ctrlKey,
+      deltaY,
     },
   );
 }

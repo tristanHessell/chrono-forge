@@ -82,28 +82,28 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
 
   return (
     <dialog
-      ref={dialogRef}
+      aria-labelledby={titleId}
       className={clsx(
         dialogStyles.gameLogDialog,
         roundScoresDialogStyles.roundScoresDialog,
       )}
-      aria-labelledby={titleId}
+      ref={dialogRef}
     >
       <div className={dialogStyles.gameLogHeader}>
         <h2 id={titleId}>
           <FormattedMessage
-            id="roundScores.title"
             defaultMessage="Round scores"
+            id="roundScores.title"
           />
         </h2>
         <button
-          className={dialogStyles.gameLogClose}
-          type="button"
           aria-label={intl.formatMessage({
-            id: 'roundScores.close',
             defaultMessage: 'Close round scores dialog',
+            id: 'roundScores.close',
           })}
+          className={dialogStyles.gameLogClose}
           onClick={() => dialogRef.current?.close()}
+          type="button"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="m6 6 12 12M18 6 6 18" />
@@ -112,59 +112,59 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
       </div>
       <p>
         <FormattedMessage
-          id="roundScores.overview"
           defaultMessage="Points for each player across rounds."
+          id="roundScores.overview"
         />
       </p>
       {rows.length === 0 ? (
         <p className={roundScoresDialogStyles.emptyMessage}>
           <FormattedMessage
-            id="roundScores.empty"
             defaultMessage="No rounds played yet."
+            id="roundScores.empty"
           />
         </p>
       ) : (
         <>
           <div
+            aria-label={intl.formatMessage({
+              defaultMessage: 'Score display mode',
+              id: 'roundScores.viewLabel',
+            })}
             className={roundScoresDialogStyles.viewToggle}
             role="group"
-            aria-label={intl.formatMessage({
-              id: 'roundScores.viewLabel',
-              defaultMessage: 'Score display mode',
-            })}
           >
             <button
+              aria-pressed={viewMode === 'round'}
               className={clsx(
                 roundScoresDialogStyles.toggleButton,
                 viewMode === 'round' &&
                   roundScoresDialogStyles.toggleButtonActive,
               )}
-              type="button"
-              aria-pressed={viewMode === 'round'}
               onClick={() => {
                 setViewMode('round');
               }}
+              type="button"
             >
               <FormattedMessage
-                id="roundScores.modeRound"
                 defaultMessage="Round points"
+                id="roundScores.modeRound"
               />
             </button>
             <button
+              aria-pressed={viewMode === 'total'}
               className={clsx(
                 roundScoresDialogStyles.toggleButton,
                 viewMode === 'total' &&
                   roundScoresDialogStyles.toggleButtonActive,
               )}
-              type="button"
-              aria-pressed={viewMode === 'total'}
               onClick={() => {
                 setViewMode('total');
               }}
+              type="button"
             >
               <FormattedMessage
-                id="roundScores.modeTotal"
                 defaultMessage="Cumulative"
+                id="roundScores.modeTotal"
               />
             </button>
           </div>
@@ -177,8 +177,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                     scope="col"
                   >
                     <FormattedMessage
-                      id="roundScores.round"
                       defaultMessage="Round"
+                      id="roundScores.round"
                     />
                   </th>
                   {playerIds.map((id) => (
@@ -209,15 +209,15 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                       scope="row"
                     >
                       <FormattedMessage
-                        id="roundScores.roundNumber"
                         defaultMessage="Round {count, number}"
+                        id="roundScores.roundNumber"
                         values={{ count: row.roundNumber }}
                       />
                       {row.isInProgress && (
                         <span className={roundScoresDialogStyles.currentBadge}>
                           <FormattedMessage
-                            id="roundScores.inProgress"
                             defaultMessage="(in progress)"
+                            id="roundScores.inProgress"
                           />
                         </span>
                       )}
@@ -246,22 +246,24 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                             >
                               {viewMode === 'round'
                                 ? intl.formatMessage<{
+                                    // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                                     readonly count: number | bigint;
                                   }>(
                                     {
-                                      id: 'roundScores.totalHint',
                                       defaultMessage: 'total: {count, number}',
+                                      id: 'roundScores.totalHint',
                                     },
                                     {
                                       count: cumulative,
                                     },
                                   )
                                 : intl.formatMessage<{
+                                    // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
                                     readonly count: number | bigint;
                                   }>(
                                     {
-                                      id: 'roundScores.roundHint',
                                       defaultMessage: 'round: {count, number}',
+                                      id: 'roundScores.roundHint',
                                     },
                                     {
                                       count: roundScore,
@@ -279,8 +281,8 @@ export function RoundScoresDialog({ dialogRef, G }: Props) {
                 <tr className={roundScoresDialogStyles.totalRow}>
                   <th className={roundScoresDialogStyles.roundCell} scope="row">
                     <FormattedMessage
-                      id="roundScores.total"
                       defaultMessage="Total"
+                      id="roundScores.total"
                     />
                   </th>
                   {playerIds.map((id) => (

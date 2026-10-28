@@ -29,7 +29,7 @@ describe('cardCatalog', () => {
       ['./cards/**/*.ts', '!./cards/index.ts'],
       { eager: true },
     );
-    const { startingCard, deck } = loadCardCatalog();
+    const { deck, startingCard } = loadCardCatalog();
     const cards = [startingCard, ...deck];
 
     expect(Object.keys(modules)).toHaveLength(47);
@@ -42,9 +42,9 @@ describe('cardCatalog', () => {
 
     expect(startingCard).toStrictEqual({
       id: 'starting-0',
-      type: 'event',
       name: 'timeline-origin',
       number: 0,
+      type: 'event',
     });
   });
 

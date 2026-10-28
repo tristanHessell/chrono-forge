@@ -13,20 +13,20 @@ describe('eventCategory', () => {
     'labels %s cards and preserves category styling on the board and drag preview',
     async (category) => {
       const card: PlacedCard = {
-        id: 'test',
-        type: 'event',
         category,
+        column: 1,
+        id: 'test',
         name: 'imperial-alliances',
         number: 1900,
-        row: 0,
-        column: 1,
         owner: '0',
         placedAt: 1,
+        row: 0,
+        type: 'event',
       };
 
       render(
         <IntlProvider locale="en" messages={messages}>
-          <PlayedCard card={card} style={{}} links={null} isLatest />
+          <PlayedCard card={card} isLatest links={null} style={{}} />
           <PlacementSlot
             ariaLabel="Place here"
             draggedCard={card}

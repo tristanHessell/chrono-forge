@@ -1,9 +1,9 @@
 import type { EventCard } from '../../game';
 
 export default {
+  category: 'environmental',
   id: 'event-1930-3',
-  type: 'event',
   name: 'dust-bowl',
   number: 1930,
-  category: 'environmental',
+  type: 'event',
 } as const satisfies EventCard;

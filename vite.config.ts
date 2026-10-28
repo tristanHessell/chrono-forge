@@ -6,10 +6,10 @@ import { extractMessagesPlugin } from './scripts/message-catalog.ts';
 
 export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/chrono-forge/' : '/',
-  plugins: [extractMessagesPlugin(), react(), cssModuleTypesPlugin()],
   css: {
     modules: {
       localsConvention: 'camelCaseOnly',
     },
   },
+  plugins: [extractMessagesPlugin(), react(), cssModuleTypesPlugin()],
 });

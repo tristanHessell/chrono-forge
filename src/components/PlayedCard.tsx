@@ -20,49 +20,49 @@ import ownershipStyles from './Ownership.module.css';
 import playedCardStyles from './PlayedCard.module.css';
 
 type PlayedCardProps = {
-  card: PlacedCard | EventCard;
-  style?: React.CSSProperties;
-  links?: React.ReactNode;
+  card: EventCard | PlacedCard;
   isLatest?: boolean;
-  onTarget?: () => void;
-  onShowDetails?: (card: EventCard) => void;
+  links?: React.ReactNode;
   onDragOver?: (event: React.DragEvent<HTMLDivElement>) => void;
   onDrop?: (event: React.DragEvent<HTMLDivElement>) => void;
+  onShowDetails?: (card: EventCard) => void;
+  onTarget?: () => void;
   selected?: boolean;
+  style?: React.CSSProperties;
 };
 
 export function PlayedCard({
   card,
-  style,
-  links,
   isLatest,
-  onTarget,
-  onShowDetails,
+  links,
   onDragOver,
   onDrop,
+  onShowDetails,
+  onTarget,
   selected,
+  style,
 }: PlayedCardProps) {
-  const targetClickTimerRef = useRef<number | null>(null);
+  const targetClickTimerRef = useRef<null | number>(null);
   const intl = useIntl();
   const players = use(PlayerSetupContext);
   const owner = 'owner' in card ? card.owner : 'neutral';
   const ownerName =
     owner === 'neutral'
-      ? intl.formatMessage({ id: 'owner.neutral', defaultMessage: 'Start' })
+      ? intl.formatMessage({ defaultMessage: 'Start', id: 'owner.neutral' })
       : getPlayer(players, owner).name;
   const ownerDescription =
     owner === 'neutral'
       ? intl.formatMessage({
-          id: 'card.owner.start',
           defaultMessage: 'starting card',
+          id: 'card.owner.start',
         })
       : owner === '0'
         ? intl.formatMessage({
-            id: 'card.owner.you',
             defaultMessage: 'placed by you',
+            id: 'card.owner.you',
           })
         : intl.formatMessage<{ readonly name: MessageValue }>(
-            { id: 'card.owner.player', defaultMessage: 'placed by {name}' },
+            { defaultMessage: 'placed by {name}', id: 'card.owner.player' },
             { name: ownerName },
           );
 
@@ -78,26 +78,29 @@ export function PlayedCard({
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- TODO this element is interactive, the whole app needs to be modified to handle roles better
     <div
+      aria-describedby={`${card.id}-details-description`}
       aria-label={intl.formatMessage<{
         readonly category: string;
         readonly latest: string;
         readonly name: MessageValue;
+        // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
         readonly number: number | bigint;
         readonly owner: MessageValue;
       }>(
         {
-          id: 'card.label',
           defaultMessage:
             '{name}, {category, select, political {Politics} technological {Tech} environmental {Nature} other {Event}} card {number, number, ::group-off}, {owner}{latest, select, yes {, latest played card} other {}}',
+          id: 'card.label',
         },
         {
+          category: card.category ?? 'neutral',
+          latest: isLatest ? 'yes' : 'no',
           name: intl.formatMessage(eventCardNameMessage(card)),
           number: card.number,
-          category: card.category ?? 'neutral',
           owner: ownerDescription,
-          latest: isLatest ? 'yes' : 'no',
         },
       )}
+      aria-pressed={onTarget ? Boolean(selected) : undefined}
       className={clsx(
         cardStyles.card,
         playedCardStyles.playedCard,
@@ -106,8 +109,8 @@ export function PlayedCard({
           : ownershipStyles[`owner${owner}`],
         {
           [playedCardStyles.latestCard]: isLatest,
-          [playedCardStyles.manipulationTarget]: Boolean(onTarget),
           [playedCardStyles.manipulationSelected]: selected,
+          [playedCardStyles.manipulationTarget]: Boolean(onTarget),
           [playedCardStyles.removedCard]:
             'removed' in card && Boolean(card.removed),
         },
@@ -117,12 +120,6 @@ export function PlayedCard({
       data-owner={'owner' in card ? owner : undefined}
       data-position={'row' in card ? positionKey(card) : undefined}
       data-removed={'removed' in card ? card.removed || undefined : undefined}
-      role={onTarget || onShowDetails ? 'button' : 'img'}
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- TODO this element is interactive, the whole app needs to be modified to handle roles better
-      tabIndex={
-        onTarget || onShowDetails || card.effects?.length ? 0 : undefined
-      }
-      aria-pressed={onTarget ? Boolean(selected) : undefined}
       onClick={(event) => {
         if (!onTarget) {
           return;
@@ -173,17 +170,21 @@ export function PlayedCard({
           onTarget();
         }
       }}
-      aria-describedby={`${card.id}-details-description`}
+      role={onTarget || onShowDetails ? 'button' : 'img'}
       style={style}
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- TODO this element is interactive, the whole app needs to be modified to handle roles better
+      tabIndex={
+        onTarget || onShowDetails || card.effects?.length ? 0 : undefined
+      }
     >
       {links}
       <AriaDescription id={`${card.id}-details-description`}>
         {[
           'removed' in card && card.removed
             ? intl.formatMessage({
-                id: 'card.removedDescription',
                 defaultMessage:
                   'Removed Event: scores no points and does not qualify for bonuses. It still has its date and links, can be moved or swapped, and can be overwritten by a valid Event.',
+                id: 'card.removedDescription',
               })
             : card.effects?.length
               ? intl.formatList(
@@ -194,9 +195,9 @@ export function PlayedCard({
               : '',
           onShowDetails
             ? intl.formatMessage({
-                id: 'card.detailsHint',
                 defaultMessage:
                   'Double-click or press Alt + Enter to view card details.',
+                id: 'card.detailsHint',
               })
             : '',
         ]
@@ -209,8 +210,8 @@ export function PlayedCard({
       <span className={cardStyles.cardTypeName}>
         {'removed' in card && card.removed
           ? intl.formatMessage({
-              id: 'card.removed',
               defaultMessage: 'Removed',
+              id: 'card.removed',
             })
           : intl.formatMessage(
               card.category

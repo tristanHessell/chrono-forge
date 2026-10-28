@@ -5,13 +5,13 @@ import { calculateScores } from './scoring';
 
 export type ComputerAction =
   | {
-      type: 'manipulate';
       cardId: string;
-      targetId: string;
       destination?: CardPosition | string;
+      targetId: string;
+      type: 'manipulate';
     }
-  | { type: 'play'; cardId: string; position: CardPosition }
-  | { type: 'discard'; cardId: string }
+  | { cardId: string; position: CardPosition; type: 'play' }
+  | { cardId: string; type: 'discard' }
   | { type: 'confirm' };
 
 // Uses only the public board and this player's hand, never the other hand or deck order.
@@ -85,10 +85,10 @@ export function chooseComputerAction(
           if (value >= 0 && (!best || value > best.value)) {
             best = {
               action: {
-                type: 'manipulate',
                 cardId: card.id,
-                targetId: target.id,
                 destination,
+                targetId: target.id,
+                type: 'manipulate',
               },
               value,
             };
@@ -101,10 +101,10 @@ export function chooseComputerAction(
     for (const position of getAvailablePositions(G.played, card)) {
       const played = withPlacedEvent(G.played, {
         ...card,
-        row: position.row,
         column: position.column,
         owner,
         placedAt: G.nextPlacementOrder,
+        row: position.row,
       });
       const points = (calculateScores(played)[owner] ?? 0) - before;
       const remaining = hand.filter((candidate) => candidate.id !== card.id);
@@ -126,7 +126,7 @@ export function chooseComputerAction(
         (Math.abs(position.row) + Math.abs(position.column)) * 0.01;
 
       if (!best || value > best.value) {
-        best = { action: { type: 'play', cardId: card.id, position }, value };
+        best = { action: { cardId: card.id, position, type: 'play' }, value };
       }
     }
   }
@@ -139,5 +139,5 @@ export function chooseComputerAction(
     (a, b) => (a.number ?? Infinity) - (b.number ?? Infinity),
   )[0];
 
-  return { type: 'discard', cardId: blocked.id };
+  return { cardId: blocked.id, type: 'discard' };
 }

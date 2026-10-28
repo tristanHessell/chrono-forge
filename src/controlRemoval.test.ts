@@ -1,5 +1,5 @@
 import { Client } from 'boardgame.io/client';
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 
 import { chooseComputerAction } from './computer';
 import {
@@ -23,46 +23,46 @@ import { calculateScoreBreakdown } from './scoring';
 
 const board = (): PlacedCard[] => [
   {
+    column: 0,
     id: 'start',
-    type: 'event',
     name: 'timeline-origin',
     number: 0,
-    row: 0,
-    column: 0,
     owner: 'neutral',
     placedAt: 0,
+    row: 0,
+    type: 'event',
   },
   {
+    column: 1,
     id: 'source',
-    type: 'event',
     name: 'timeline-origin',
     number: 1900,
-    row: 0,
-    column: 1,
     owner: '1',
     placedAt: 1,
+    row: 0,
+    type: 'event',
   },
   {
+    column: 2,
+    effects: ['timeline-1900-bonus'],
     id: 'bonus',
-    type: 'event',
     name: 'timeline-origin',
     number: 1990,
-    effects: ['timeline-1900-bonus'],
-    row: 0,
-    column: 2,
     owner: '1',
     placedAt: 2,
+    row: 0,
+    type: 'event',
   },
   {
+    column: 0,
+    effects: ['draw-one'],
     id: 'draw',
-    type: 'event',
     name: 'timeline-origin',
     number: 1940,
-    effects: ['draw-one'],
-    row: 1,
-    column: 0,
     owner: '2',
     placedAt: 3,
+    row: 1,
+    type: 'event',
   },
 ];
 
@@ -77,39 +77,39 @@ function clientFor(
       ...CardGame,
       setup: (context): CardGameState => ({
         ...CardGame.setup!(context),
-        played,
         actionsThisTurn,
-        nextPlacementOrder: 4,
+        deck: [
+          {
+            id: 'drawn',
+            name: 'timeline-origin',
+            number: 1980,
+            type: 'event',
+          },
+        ],
         hands: {
           '0': [
-            { id: 'manipulation', type: 'manipulation', action },
+            { action, id: 'manipulation', type: 'manipulation' },
             {
+              effects: ['draw-one'],
               id: 'replacement',
-              type: 'event',
               name: 'timeline-origin',
               number: replacementNumber,
-              effects: ['draw-one'],
+              type: 'event',
             },
           ],
           '1': [
             {
               id: 'other',
-              type: 'event',
               name: 'timeline-origin',
               number: 1950,
+              type: 'event',
             },
           ],
           '2': [],
           '3': [],
         },
-        deck: [
-          {
-            id: 'drawn',
-            type: 'event',
-            name: 'timeline-origin',
-            number: 1980,
-          },
-        ],
+        nextPlacementOrder: 4,
+        played,
       }),
     },
     numPlayers: 4,
@@ -201,43 +201,51 @@ describe('take Control and Remove Event', () => {
     expect(calculateScoreBreakdown(controlled)['3']?.total ?? 0).toBe(0);
   });
 
-  it.each(['take-control', 'remove-event'] as const)(
-    'protects the start and rejects invalid %s targets',
-    (action) => {
-      const client = clientFor(action);
-      const before = client.getState()!.G;
+  it('protects the start and rejects invalid take-controls targets', () => {
+    const action = 'take-control';
+    const client = clientFor(action);
+    const before = client.getState()!.G;
 
-      client.moves.manipulate('manipulation', 'start');
-      client.moves.manipulate('manipulation', 'unknown');
-      client.moves.manipulate('other', 'bonus');
+    client.moves.manipulate('manipulation', 'start');
+    client.moves.manipulate('manipulation', 'unknown');
+    client.moves.manipulate('other', 'bonus');
 
-      expect(client.getState()!.G).toStrictEqual(before);
+    expect(client.getState()!.G).toStrictEqual(before);
 
-      if (action === 'take-control') {
-        expect(applyManipulation(board(), action, 'bonus', '1')).toBeNull();
-      } else {
-        const removed = applyManipulation(board(), action, 'bonus', '0')!;
+    expect(applyManipulation(board(), action, 'bonus', '1')).toBeNull();
+  });
 
-        expect(applyManipulation(removed, action, 'bonus', '0')).toBeNull();
-      }
-    },
-  );
+  it('protects the start and rejects invalid remove-events targets', () => {
+    const action = 'remove-event';
+    const client = clientFor(action);
+    const before = client.getState()!.G;
+
+    client.moves.manipulate('manipulation', 'start');
+    client.moves.manipulate('manipulation', 'unknown');
+    client.moves.manipulate('other', 'bonus');
+
+    expect(client.getState()!.G).toStrictEqual(before);
+
+    const removed = applyManipulation(board(), action, 'bonus', '0')!;
+
+    expect(applyManipulation(removed, action, 'bonus', '0')).toBeNull();
+  });
 
   it('moves and swaps removed Events, preserving their status and identity', () => {
     const removed = applyManipulation(board(), 'remove-event', 'bonus', '0')!;
-    const moved = applyTimeJump(removed, 'bonus', { row: -1, column: 1 })!;
+    const moved = applyTimeJump(removed, 'bonus', { column: 1, row: -1 })!;
     const swapped = applyTimeSwap(removed, 'bonus', 'draw')!;
 
     expect(moved.find((card) => card.id === 'bonus')).toMatchObject({
-      removed: true,
-      row: -1,
       column: 1,
       owner: '1',
+      removed: true,
+      row: -1,
     });
     expect(swapped.find((card) => card.id === 'bonus')).toMatchObject({
+      column: 0,
       removed: true,
       row: 1,
-      column: 0,
     });
     expect(isValidBoard(moved)).toBe(true);
     expect(isValidBoard(swapped)).toBe(true);
@@ -269,11 +277,11 @@ describe('overwriting removed Events', () => {
     const replacement = before.hands['0'][1];
 
     expect(getAvailablePositions(before.played, replacement)).toContainEqual({
-      row: 0,
       column: 2,
+      row: 0,
     });
 
-    client.moves.playCard('replacement', { row: 0, column: 2 });
+    client.moves.playCard('replacement', { column: 2, row: 0 });
 
     expect(client.getState()!.G.pending?.id).toBe('replacement');
     expect(
@@ -289,10 +297,10 @@ describe('overwriting removed Events', () => {
     expect(
       after.played.find((card) => card.id === 'replacement'),
     ).toMatchObject({
-      row: 0,
       column: 2,
       owner: '0',
       placedAt: 2,
+      row: 0,
     });
     expect(
       after.played.find((card) => card.id === 'replacement')?.removed,
@@ -324,7 +332,7 @@ describe('overwriting removed Events', () => {
     const client = clientFor('take-control', removedBoard());
     const before = client.getState()!.G;
 
-    client.moves.playCard('replacement', { row: 0, column: 2 });
+    client.moves.playCard('replacement', { column: 2, row: 0 });
     client.moves.returnPendingCard();
 
     expect(client.getState()!.G.played).toStrictEqual(before.played);
@@ -336,9 +344,9 @@ describe('overwriting removed Events', () => {
   it('rejects occupied active cards and overwrites with invalid upstream or downstream dates', () => {
     const event = {
       id: 'new',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1990,
+      type: 'event' as const,
     };
     const bridge = board()
       .slice(0, 3)
@@ -346,22 +354,22 @@ describe('overwriting removed Events', () => {
         card.id === 'source'
           ? { ...card, removed: true }
           : card.id === 'bonus'
-            ? { ...card, number: 1950, row: -1, column: 1 }
+            ? { ...card, column: 1, number: 1950, row: -1 }
             : card,
       );
 
-    expect(isValidPlacement(board(), { row: 0, column: 2 }, event)).toBe(false);
+    expect(isValidPlacement(board(), { column: 2, row: 0 }, event)).toBe(false);
     expect(
       isValidPlacement(
         removedBoard(),
-        { row: 0, column: 2 },
+        { column: 2, row: 0 },
         { ...event, number: 1900 },
       ),
     ).toBe(false);
-    expect(isValidPlacement(bridge, { row: 0, column: 1 }, event)).toBe(false);
+    expect(isValidPlacement(bridge, { column: 1, row: 0 }, event)).toBe(false);
     expect(getAvailablePositions(bridge, event)).not.toContainEqual({
-      row: 0,
       column: 1,
+      row: 0,
     });
   });
 
@@ -372,15 +380,15 @@ describe('overwriting removed Events', () => {
       const client = clientFor('take-control', played, 0, number);
       const replacement = client.getState()!.G.hands['0'][1];
 
-      expect(isValidPlacement(played, { row: 0, column: 1 }, replacement)).toBe(
+      expect(isValidPlacement(played, { column: 1, row: 0 }, replacement)).toBe(
         true,
       );
       expect(getAvailablePositions(played, replacement)).toContainEqual({
-        row: 0,
         column: 1,
+        row: 0,
       });
 
-      client.moves.playCard('replacement', { row: 0, column: 1 });
+      client.moves.playCard('replacement', { column: 1, row: 0 });
       client.moves.confirmPlacement();
 
       const after = client.getState()!.G;
@@ -389,8 +397,8 @@ describe('overwriting removed Events', () => {
         after.played.find((card) => card.id === 'replacement'),
       ).toMatchObject({
         number,
-        placedAt: 1,
         owner: '0',
+        placedAt: 1,
       });
       expect(after.discarded.map((card) => card.id)).toStrictEqual(['source']);
       expect(isValidBoard(after.played)).toBe(true);
@@ -407,16 +415,16 @@ describe('overwriting removed Events', () => {
     const removed = applyManipulation(board(), 'remove-event', 'source', '0')!;
     const event = {
       id: 'new',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1990,
+      type: 'event' as const,
     };
 
-    expect(isValidPlacement(removed, { row: 1, column: 1 }, event)).toBe(true);
+    expect(isValidPlacement(removed, { column: 1, row: 1 }, event)).toBe(true);
     expect(
       isValidPlacement(
         removed,
-        { row: -1, column: 1 },
+        { column: 1, row: -1 },
         { ...event, number: 1900 },
       ),
     ).toBe(true);
@@ -425,26 +433,26 @@ describe('overwriting removed Events', () => {
   it('allows a 1970 Event below New Deal beside a removed 1990 Event', () => {
     const played = board().map((card) =>
       card.id === 'start'
-        ? { ...card, row: 0, column: -2 }
+        ? { ...card, column: -2, row: 0 }
         : card.id === 'source'
           ? {
               ...card,
+              column: -2,
               name: 'new-deal' as const,
               number: 1930,
               row: 1,
-              column: -2,
             }
           : card.id === 'draw'
-            ? { ...card, number: 1950, row: 1, column: -1, placedAt: 2 }
-            : { ...card, row: 2, column: -1, placedAt: 3, removed: true },
+            ? { ...card, column: -1, number: 1950, placedAt: 2, row: 1 }
+            : { ...card, column: -1, placedAt: 3, removed: true, row: 2 },
     );
-    const position = { row: 2, column: -2 };
+    const position = { column: -2, row: 2 };
 
     const event = {
       id: 'event-1970',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1970,
+      type: 'event' as const,
     };
 
     expect(isValidBoard(played)).toBe(true);
@@ -462,62 +470,62 @@ describe('overwriting removed Events', () => {
     const played = applyManipulation(board(), 'remove-event', 'source', '0')!;
     const event = {
       id: 'new',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1940,
+      type: 'event' as const,
     };
-    const position = { row: -1, column: 1 };
+    const position = { column: 1, row: -1 };
 
     expect(isValidPlacement(board(), position, event)).toBe(true);
     expect(isValidPlacement(played, position, event)).toBe(true);
     expect(isValidPlacement(played, position)).toBe(true);
     expect(getAvailablePositions(played, event)).toContainEqual(position);
     expect(getAvailablePositions(played)).toContainEqual(position);
-    expect(isValidPlacement(played, { row: 0, column: 1 }, event)).toBe(true);
-    expect(isValidPlacement(played, { row: -1, column: 0 }, event)).toBe(true);
+    expect(isValidPlacement(played, { column: 1, row: 0 }, event)).toBe(true);
+    expect(isValidPlacement(played, { column: 0, row: -1 }, event)).toBe(true);
     expect(isValidBoard(played)).toBe(true);
   });
 
   it('allows a card beside the 1900 Event beside a removed 1920 Event', () => {
     const played: PlacedCard[] = [
       {
+        column: 0,
         id: 'start',
-        type: 'event',
         name: 'timeline-origin',
         number: 0,
-        row: 0,
-        column: 0,
         owner: 'neutral',
         placedAt: 0,
+        row: 0,
+        type: 'event',
       },
       {
+        column: 0,
         id: 'event-1900',
-        type: 'event',
         name: 'timeline-origin',
         number: 1900,
-        row: -1,
-        column: 0,
         owner: '0',
         placedAt: 1,
+        row: -1,
+        type: 'event',
       },
       {
+        column: -1,
         id: 'event-1920',
-        type: 'event',
         name: 'timeline-origin',
         number: 1920,
-        row: 0,
-        column: -1,
         owner: '1',
         placedAt: 2,
         removed: true,
+        row: 0,
+        type: 'event',
       },
     ];
-    const position = { row: -1, column: -1 };
+    const position = { column: -1, row: -1 };
     const event = {
       id: 'event-1940',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1940,
+      type: 'event' as const,
     };
 
     expect(isValidPlacement(played, position, event)).toBe(true);
@@ -531,15 +539,15 @@ describe('overwriting removed Events', () => {
         card.id === 'source' ? { ...card, removed: true } : card,
       );
 
-    played.push({ ...board()[2], row: -1, column: 0, number: 1910 });
+    played.push({ ...board()[2], column: 0, number: 1910, row: -1 });
 
     const event = {
       id: 'new',
-      type: 'event' as const,
       name: 'timeline-origin' as const,
       number: 1940,
+      type: 'event' as const,
     };
-    const position = { row: -1, column: 1 };
+    const position = { column: 1, row: -1 };
     const client = clientFor('take-control', played);
     const before = client.getState()!.G;
 
@@ -548,9 +556,9 @@ describe('overwriting removed Events', () => {
     client.moves.playCard('replacement', position);
 
     expect(client.getState()!.G.pending).toMatchObject({
+      column: 1,
       id: 'replacement',
       row: -1,
-      column: 1,
     });
     expect(client.getState()!.G.played).toStrictEqual(before.played);
   });
@@ -569,9 +577,7 @@ describe('computer control/removal decisions', () => {
 
       expect(choice?.type).toBe('manipulate');
 
-      if (choice?.type !== 'manipulate') {
-        throw new Error('Expected a Manipulation');
-      }
+      assert(choice?.type === 'manipulate', 'Expected a Manipulation');
 
       expect(
         applyManipulation(

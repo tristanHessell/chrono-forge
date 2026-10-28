@@ -15,7 +15,7 @@ describe('history', () => {
         (candidate) => candidate.type === 'event' && !candidate.effects?.length,
       )!;
 
-    client.moves.playCard(card.id, { row: 0, column: 1 });
+    client.moves.playCard(card.id, { column: 1, row: 0 });
     client.moves.confirmPlacement();
 
     expect(canUndoMove(client.getState()!.G)).toBe(true);
@@ -32,13 +32,13 @@ describe('history', () => {
     expect(client.getState()!.G.played).toHaveLength(2);
 
     client.moves.undoTest();
-    client.moves.playCard(card.id, { row: 1, column: 0 });
+    client.moves.playCard(card.id, { column: 0, row: 1 });
     client.moves.confirmPlacement();
 
     expect(client.getState()!.G.played[1]).toMatchObject({
+      column: 0,
       id: card.id,
       row: 1,
-      column: 0,
     });
     expect(client.getState()!.G.testFuture).toStrictEqual([]);
   });
