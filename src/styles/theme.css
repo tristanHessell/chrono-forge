@@ -19,7 +19,7 @@
   --event-card-color: #2878b8;
   --focus-ring: var(--card-cyan);
   --grid-line: rgb(102 229 245 / 7.5%);
-  --manipulation-card-color: #65449f;
+  --command-card-color: #65449f;
   --neutral-owner-color: #bfcfe2;
   --page-bg: #070d1b;
   --page-glow: rgb(40 84 157 / 28%);
@@ -72,7 +72,7 @@
   --effect-icon-background: #252525;
   --environmental-card-border: #b7b7b7;
   --event-card-color: #6c6c6c;
-  --manipulation-card-color: #525252;
+  --command-card-color: #525252;
   --neutral-owner-color: #cdcdcd;
   --player-one-color: #b8b8b8;
   --player-three-color: #ccc;

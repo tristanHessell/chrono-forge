@@ -11,8 +11,8 @@ import {
   restoreHandOrder,
 } from '../handOrder';
 import {
+  commandDescriptionMessages,
   effectDescriptionMessages,
-  manipulationDescriptionMessages,
 } from '../i18n/messageDescriptors';
 import type { PlayerType } from '../playerSetup';
 import type { TouchCardDragHandlers } from '../useTouchCardDrag';
@@ -380,9 +380,9 @@ export function CardHand({
               >
                 <AriaDescription id="">
                   {[
-                    card.type === 'manipulation'
+                    card.type === 'command'
                       ? intl.formatMessage(
-                          manipulationDescriptionMessages[card.action],
+                          commandDescriptionMessages[card.action],
                         )
                       : '',
                     ...(card.type === 'event'

@@ -1,6 +1,6 @@
+import { applyCommand, getTimeJumpPositions } from './commandRules';
 import type { CardGameState, CardPosition, PlayerId } from './game';
 import { getAvailablePositions, withPlacedEvent } from './gameRules';
-import { applyManipulation, getTimeJumpPositions } from './manipulationRules';
 import { calculateScores } from './scoring';
 
 export type ComputerAction =
@@ -36,7 +36,7 @@ export function chooseComputerAction(
   let best: { action: ComputerAction; value: number } | null = null;
 
   for (const card of hand) {
-    if (card.type === 'manipulation') {
+    if (card.type === 'command') {
       const rivals = G.playerIds.filter((id) => id !== owner);
       const beforeRival = rivals.reduce(
         (total, id) => total + (calculateScores(G.played)[id] ?? 0),
@@ -56,7 +56,7 @@ export function chooseComputerAction(
               : [undefined];
 
         for (const destination of destinations) {
-          const played = applyManipulation(
+          const played = applyCommand(
             G.played,
             card.action,
             target.id,

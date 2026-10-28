@@ -2,9 +2,9 @@ import { defineMessages, type TypedMessageDescriptor } from 'react-intl';
 
 import type {
   CardEffect,
+  CommandAction,
   EventCategory,
   EventName,
-  ManipulationAction,
 } from '../game';
 import type { Theme } from '../theme';
 
@@ -19,47 +19,47 @@ export const categoryMessages = defineMessages({
   technological: { defaultMessage: 'Tech', id: 'card.category.technological' },
 }) satisfies DescriptorMap<EventCategory>;
 
-export const manipulationNameMessages = defineMessages({
+export const commandNameMessages = defineMessages({
   'remove-event': {
     defaultMessage: 'Remove Event',
-    id: 'manipulation.remove-event.name',
+    id: 'command.remove-event.name',
   },
   'take-control': {
     defaultMessage: 'Take Control',
-    id: 'manipulation.take-control.name',
+    id: 'command.take-control.name',
   },
   'time-jump': {
     defaultMessage: 'Time Jump',
-    id: 'manipulation.time-jump.name',
+    id: 'command.time-jump.name',
   },
   'time-swap': {
     defaultMessage: 'Time Swap',
-    id: 'manipulation.time-swap.name',
+    id: 'command.time-swap.name',
   },
-}) satisfies DescriptorMap<ManipulationAction>;
+}) satisfies DescriptorMap<CommandAction>;
 
-export const manipulationDescriptionMessages = defineMessages({
+export const commandDescriptionMessages = defineMessages({
   'remove-event': {
     defaultMessage:
       'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',
-    id: 'manipulation.remove-event.description',
+    id: 'command.remove-event.description',
   },
   'take-control': {
     defaultMessage:
       "Gain control of another player's Event card. Its points and any valid bonus become yours. A removed Event stays removed. The starting card cannot be targeted.",
-    id: 'manipulation.take-control.description',
+    id: 'command.take-control.description',
   },
   'time-jump': {
     defaultMessage:
       "Move an Event card to a valid empty position or overwrite a removed Event. Empty destinations cannot touch another removed Event. A removed card can establish new links to earlier-dated active neighbors even if they were played after it. An overwrite preserves the destination's link directions and discards the replaced Event. Ownership and removed status stay with the moved card. The entire board must remain legal. The starting card cannot move.",
-    id: 'manipulation.time-jump.description',
+    id: 'command.time-jump.description',
   },
   'time-swap': {
     defaultMessage:
       'Swap two Event cards while keeping the board legal. The starting card cannot be swapped.',
-    id: 'manipulation.time-swap.description',
+    id: 'command.time-swap.description',
   },
-}) satisfies DescriptorMap<ManipulationAction>;
+}) satisfies DescriptorMap<CommandAction>;
 
 export const effectNameMessages = defineMessages({
   'draw-one': { defaultMessage: 'Draw one card', id: 'effect.draw-one.name' },

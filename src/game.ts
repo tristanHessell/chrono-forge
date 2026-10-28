@@ -2,8 +2,8 @@ import type { Game, MoveFn } from 'boardgame.io';
 import { TurnOrder } from 'boardgame.io/core';
 
 import { loadCardCatalog } from './cardCatalog';
+import { applyCommand } from './commandRules';
 import { isValidPlacement, positionKey, withPlacedEvent } from './gameRules';
-import { applyManipulation } from './manipulationRules';
 import { calculateScores } from './scoring';
 
 export {
@@ -49,7 +49,7 @@ export type EventName =
   | 'timeline-origin'
   | 'united-nations'
   | 'wildlife-refuges';
-export type ManipulationAction =
+export type CommandAction =
   'remove-event' | 'take-control' | 'time-jump' | 'time-swap';
 
 export type EventCard = {
@@ -65,16 +65,16 @@ export type EventCard = {
   type: 'event';
 };
 
-export type ManipulationCard = {
-  action: ManipulationAction;
+export type CommandCard = {
+  action: CommandAction;
   category?: never;
   effects?: never;
   id: string;
   number?: never;
-  type: 'manipulation';
+  type: 'command';
 };
 
-export type Card = EventCard | ManipulationCard;
+export type Card = CommandCard | EventCard;
 
 export type PlayerId = '0' | '1' | '2' | '3';
 export type CardOwner = 'neutral' | PlayerId;
@@ -418,11 +418,11 @@ export const CardGame: Game<CardGameState> = {
 
       const card = hand[index];
 
-      if (card.type !== 'manipulation') {
+      if (card.type !== 'command') {
         return;
       }
 
-      const played = applyManipulation(
+      const played = applyCommand(
         G.played,
         card.action,
         targetId,

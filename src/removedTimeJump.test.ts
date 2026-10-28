@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import setup from './fixtures/removed-time-jump.json';
-import { exportGameLog, parseGameLog, replayGameLog } from './gameLog';
 import {
   applyTimeJump,
   getTimeJumpPositions,
   isValidBoard,
-} from './manipulationRules';
+} from './commandRules';
+import setup from './fixtures/removed-time-jump.json';
+import { exportGameLog, parseGameLog, replayGameLog } from './gameLog';
 
 // TODO move this test to the be colocated with the fixture
 
@@ -51,7 +51,7 @@ describe('removedTimeJump', () => {
         (card) => card.id === 'event-1920-3',
       )!;
       const jump = before.G.hands['0'].find(
-        (card) => card.type === 'manipulation' && card.action === 'time-jump',
+        (card) => card.type === 'command' && card.action === 'time-jump',
       )!;
 
       expect(target).toMatchObject({ placedAt: 1, removed: true });

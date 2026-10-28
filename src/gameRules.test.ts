@@ -129,9 +129,7 @@ describe('card game state transitions', () => {
     const deck = [...G.hands['0'], ...G.hands['1'], ...G.deck];
 
     expect(deck.filter((card) => card.type === 'event')).toHaveLength(30);
-    expect(deck.filter((card) => card.type === 'manipulation')).toHaveLength(
-      16,
-    );
+    expect(deck.filter((card) => card.type === 'command')).toHaveLength(16);
     expect(new Set(deck.map((card) => card.id)).size).toBe(46);
 
     for (let date = 1900; date <= 1990; date += 10) {

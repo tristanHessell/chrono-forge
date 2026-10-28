@@ -101,7 +101,7 @@ Logs from sessions before the log feature cannot be recovered.
 
 Run `npm run test:simulation` when you want to compare the two computer seats
 over 100 games. This uses the real game client, including card effects,
-Manipulations, turn refills, discards, and end-game scoring. Player 1 starts each
+Commands, turn refills, discards, and end-game scoring. Player 1 starts each
 game; all players use the same strategy, with a different shuffle seed per game.
 Two players is the default; choose three or four with `SIMULATION_PLAYERS`:
 
@@ -118,7 +118,7 @@ batch wall-clock time and average rounds per game. A round is one rotation throu
 the seats, including the final partial round; empty-handed seats are skipped.
 Each tied game records all tied leaders, separately from outright wins.
 Discard counts include only cards explicitly discarded from a hand, including
-unused Manipulations discarded that way. Used Manipulations and overwritten Events
+unused Commands discarded that way. Used Commands and overwritten Events
 are excluded, even though they remain in the physical discard pile.
 Average scores and activity
 counts include completed games only. To repeat the same batch, run:
@@ -145,7 +145,7 @@ Card backgrounds identify categories without colour: Politics uses stripes, Tech
 Use **Colour-independent backgrounds** in Menu to turn these patterns on or off.
 The browser saves this setting separately from the theme.
 Choose **All cards** to inspect the complete catalog and its distribution.
-The catalog shows each copy, its ID, Event categories, Manipulation types, and the starting card.
+The catalog shows each copy, its ID, Event categories, Command types, and the starting card.
 Its counts come from the configured deck, not the remaining cards in the current game.
 Choose 2, 3, or 4 players with the Players selector (this starts a new game).
 Player 0 is you; the other seats are computers, with visible hands and individually
@@ -218,8 +218,8 @@ table. Players place their first cards adjacent to it.
 
 Cards use a horizontal, landscape layout in both hands and on the table. The
 46-card deck contains 30 Event cards showing decades from 1900 to 1990, with three
-copies of each decade, plus sixteen Manipulation cards. Cards use a discriminated
-union with `type: 'event'` or `type: 'manipulation'`.
+copies of each decade, plus sixteen Command cards. Cards use a discriminated
+union with `type: 'event'` or `type: 'command'`.
 All 1940 cards have a `draw-one` effect in the catalog:
 confirming one draws a card into the active player's hand before turn
 progression. An empty deck skips the draw, and discarding never triggers effects.
@@ -231,7 +231,7 @@ Cards on the table display the icon without a tooltip.
 
 There are four each of **Time Jump**, **Time Swap**, **Take Control**, and
 **Remove Event**, all listed in
-the TypeScript catalog. Select a Manipulation card in your hand, then select a highlighted
+the TypeScript catalog. Select a Command card in your hand, then select a highlighted
 Event on the board. For Time Jump, choose a highlighted empty destination or
 overwrite a removed Event; for
 Time Swap, choose a highlighted second Event.
@@ -253,10 +253,10 @@ disconnect the remaining timeline.
 Time Jump cannot move a card into an empty space adjacent to another removed
 Event, even when the moved card is also removed. Valid overwrites remain allowed;
 the moving card's old position is excluded when checking removed neighbors.
-Each use costs one action and puts the Manipulation card in the discard pile;
+Each use costs one action and puts the Command card in the discard pile;
 it does not earn a base point or trigger the moved Events' play effects again.
 Bonuses are recalculated for the resulting timelines. The computer also uses
-Manipulation cards, and all operations support undo/redo.
+Command cards, and all operations support undo/redo.
 
 **Take Control** changes another player's Event to your ownership, transferring
 its base point and any valid bonus. It preserves the Event's date, position,
@@ -290,7 +290,7 @@ cards score no points. Totals include base points plus valid bonuses and update
 with undo/redo. At game end, the result shows every player's breakdown and announces the
 winner or a tie.
 The game initially deals five cards to each player. Each turn consists of two
-actions: confirm an Event on the board, use a Manipulation, or discard a card.
+actions: confirm an Event on the board, use a Command, or discard a card.
 A confirmed 1910 Event does not count toward these two actions. Selecting,
 moving, or replacing an unconfirmed card does not use an action. After the second action,
 draw enough cards to refill the active player's hand to five, then pass the turn.
@@ -315,5 +315,5 @@ deck while preserving the played board.
 
 See [CLAUDE.md](./CLAUDE.md#architecture) for the source module map and test guidance.
 
-Read the [game rules](./docs/game-rules.md), [Manipulation rules](./docs/manipulations.md),
+Read the [game rules](./docs/game-rules.md), [Command rules](./docs/commands.md),
 and [computer opponent notes](./docs/computer-opponent.md) for detailed gameplay guidance.

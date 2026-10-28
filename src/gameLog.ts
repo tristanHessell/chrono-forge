@@ -81,7 +81,7 @@ export function currentGameLog(
         );
       });
 
-      // A discarded Manipulation leaves the board unchanged.
+      // A discarded Command leaves the board unchanged.
       if (changed.length) {
         const target = changed[0];
         const moved = after.played.find((card) => card.id === target.id)!;

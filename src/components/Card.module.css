@@ -77,7 +77,7 @@
 }
 
 .card .card-event-name,
-.card .manipulation-name {
+.card .command-name {
   align-self: center;
   color: rgb(255 255 255 / 92%);
   display: block;
@@ -106,7 +106,7 @@
   writing-mode: vertical-rl;
 }
 
-.card .manipulation-name {
+.card .command-name {
   padding: 0;
 }
 
@@ -120,7 +120,7 @@
 }
 
 .card[data-event-category] .card-type-name,
-.card[data-card-type='manipulation'] .card-type-name {
+.card[data-card-type='command'] .card-type-name {
   align-self: center;
   font-size: 0.5rem;
   letter-spacing: 0.04em;

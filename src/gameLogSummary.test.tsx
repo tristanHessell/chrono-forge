@@ -114,26 +114,22 @@ describe('gameLogSummary', () => {
     'highlights the %s card and every referenced target',
     async (action) => {
       const client = replayGameLog(parseGameLog(JSON.stringify(setup)));
-      const manipulation = client
+      const command = client
         .getState()!
         .G.hands['0'].find(
-          (card) => card.type === 'manipulation' && card.action === action,
+          (card) => card.type === 'command' && card.action === action,
         )!;
 
       // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
       if (action === 'time-jump') {
-        client.moves.manipulate(manipulation.id, 'event-1920-3', {
+        client.moves.manipulate(command.id, 'event-1920-3', {
           column: 1,
           row: -1,
         });
       } else if (action === 'time-swap') {
-        client.moves.manipulate(
-          manipulation.id,
-          'event-1920-3',
-          'event-1910-2',
-        );
+        client.moves.manipulate(command.id, 'event-1920-3', 'event-1910-2');
       } else {
-        client.moves.manipulate(manipulation.id, 'event-1940-3');
+        client.moves.manipulate(command.id, 'event-1940-3');
       }
 
       const state = client.getState()!;
@@ -150,13 +146,13 @@ describe('gameLogSummary', () => {
         action === 'time-swap' ? 8 : 7,
       );
       await expect
-        .element(page.getByCSS('strong[data-card-type="manipulation"]').first())
+        .element(page.getByCSS('strong[data-card-type="command"]').first())
         .toHaveTextContent('Remove Event');
       await expect
-        .element(page.getByCSS('strong[data-card-type="manipulation"]').first())
+        .element(page.getByCSS('strong[data-card-type="command"]').first())
         .toHaveClass(...logStyles.logCardReference.split(' '));
       expect(
-        page.getByText(messages[`manipulation.${action}.name`], {
+        page.getByText(messages[`command.${action}.name`], {
           exact: true,
         }),
       ).toHaveLength(1);

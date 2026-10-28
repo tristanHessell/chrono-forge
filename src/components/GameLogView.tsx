@@ -6,7 +6,7 @@ import { eventCardNameMessage } from '../eventCardName';
 import type { Card, PlayerId } from '../game';
 import type { GameLog } from '../gameLog';
 import { summarizeGameLog } from '../gameLogSummary';
-import { manipulationNameMessages } from '../i18n/messageDescriptors';
+import { commandNameMessages } from '../i18n/messageDescriptors';
 import { getPlayer, PlayerSetupContext } from '../playerSetup';
 import gameLogViewStyles from './GameLogView.module.css';
 import ownershipStyles from './Ownership.module.css';
@@ -36,8 +36,8 @@ export function GameLogView({ log }: { log: GameLog }) {
         id: 'log.unknownCard',
       });
     }
-    if (card.type === 'manipulation') {
-      return intl.formatMessage(manipulationNameMessages[card.action]);
+    if (card.type === 'command') {
+      return intl.formatMessage(commandNameMessages[card.action]);
     }
 
     return intl.formatMessage(eventCardNameMessage(card));
@@ -135,7 +135,7 @@ export function GameLogView({ log }: { log: GameLog }) {
                     id: 'log.action.discard',
                   };
                 case 'manipulate':
-                  return item.card?.type === 'manipulation'
+                  return item.card?.type === 'command'
                     ? {
                         defaultMessage:
                           item.card.action === 'time-jump'

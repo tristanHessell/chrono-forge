@@ -1,12 +1,13 @@
 import { Client } from 'boardgame.io/client';
 import { assert, describe, expect, it } from 'vitest';
 
+import { applyCommand, applyTimeJump, applyTimeSwap } from './commandRules';
 import { chooseComputerAction } from './computer';
 import {
   canUndoMove,
   CardGame,
   type CardGameState,
-  type ManipulationAction,
+  type CommandAction,
   type PlacedCard,
 } from './game';
 import {
@@ -14,11 +15,6 @@ import {
   isValidBoard,
   isValidPlacement,
 } from './gameRules';
-import {
-  applyManipulation,
-  applyTimeJump,
-  applyTimeSwap,
-} from './manipulationRules';
 import { calculateScoreBreakdown } from './scoring';
 
 const board = (): PlacedCard[] => [
@@ -67,7 +63,7 @@ const board = (): PlacedCard[] => [
 ];
 
 function clientFor(
-  action: ManipulationAction,
+  action: CommandAction,
   played = board(),
   actionsThisTurn = 0,
   replacementNumber = 1940,
@@ -88,7 +84,7 @@ function clientFor(
         ],
         hands: {
           '0': [
-            { action, id: 'manipulation', type: 'manipulation' },
+            { action, id: 'command', type: 'command' },
             {
               effects: ['draw-one'],
               id: 'replacement',
@@ -123,7 +119,7 @@ describe('take Control and Remove Event', () => {
       const client = clientFor('take-control');
       const before = client.getState()!.G;
 
-      client.moves.manipulate('manipulation', target);
+      client.moves.manipulate('command', target);
 
       const after = client.getState()!.G;
       const original = before.played.find((card) => card.id === target)!;
@@ -133,9 +129,7 @@ describe('take Control and Remove Event', () => {
         owner: '0',
       });
       expect(after.deck).toStrictEqual(before.deck);
-      expect(after.discarded.map((card) => card.id)).toStrictEqual([
-        'manipulation',
-      ]);
+      expect(after.discarded.map((card) => card.id)).toStrictEqual(['command']);
       expect(after.actionsThisTurn).toBe(1);
       expect(calculateScoreBreakdown(after.played)['0']?.total ?? 0).toBe(
         target === 'bonus' ? 2 : 1,
@@ -158,7 +152,7 @@ describe('take Control and Remove Event', () => {
       const client = clientFor('remove-event');
       const before = client.getState()!.G;
 
-      client.moves.manipulate('manipulation', target);
+      client.moves.manipulate('command', target);
 
       const after = client.getState()!.G;
 
@@ -186,13 +180,8 @@ describe('take Control and Remove Event', () => {
   );
 
   it('keeps a removed Event removed when control changes', () => {
-    const removed = applyManipulation(board(), 'remove-event', 'bonus', '0')!;
-    const controlled = applyManipulation(
-      removed,
-      'take-control',
-      'bonus',
-      '3',
-    )!;
+    const removed = applyCommand(board(), 'remove-event', 'bonus', '0')!;
+    const controlled = applyCommand(removed, 'take-control', 'bonus', '3')!;
 
     expect(controlled.find((card) => card.id === 'bonus')).toMatchObject({
       owner: '3',
@@ -206,13 +195,13 @@ describe('take Control and Remove Event', () => {
     const client = clientFor(action);
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'start');
-    client.moves.manipulate('manipulation', 'unknown');
+    client.moves.manipulate('command', 'start');
+    client.moves.manipulate('command', 'unknown');
     client.moves.manipulate('other', 'bonus');
 
     expect(client.getState()!.G).toStrictEqual(before);
 
-    expect(applyManipulation(board(), action, 'bonus', '1')).toBeNull();
+    expect(applyCommand(board(), action, 'bonus', '1')).toBeNull();
   });
 
   it('protects the start and rejects invalid remove-events targets', () => {
@@ -220,19 +209,19 @@ describe('take Control and Remove Event', () => {
     const client = clientFor(action);
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'start');
-    client.moves.manipulate('manipulation', 'unknown');
+    client.moves.manipulate('command', 'start');
+    client.moves.manipulate('command', 'unknown');
     client.moves.manipulate('other', 'bonus');
 
     expect(client.getState()!.G).toStrictEqual(before);
 
-    const removed = applyManipulation(board(), action, 'bonus', '0')!;
+    const removed = applyCommand(board(), action, 'bonus', '0')!;
 
-    expect(applyManipulation(removed, action, 'bonus', '0')).toBeNull();
+    expect(applyCommand(removed, action, 'bonus', '0')).toBeNull();
   });
 
   it('moves and swaps removed Events, preserving their status and identity', () => {
-    const removed = applyManipulation(board(), 'remove-event', 'bonus', '0')!;
+    const removed = applyCommand(board(), 'remove-event', 'bonus', '0')!;
     const moved = applyTimeJump(removed, 'bonus', { column: 1, row: -1 })!;
     const swapped = applyTimeSwap(removed, 'bonus', 'draw')!;
 
@@ -254,7 +243,7 @@ describe('take Control and Remove Event', () => {
   it('restores turn ownership and the removed status across second-action undo/redo', () => {
     const client = clientFor('remove-event', board(), 1);
 
-    client.moves.manipulate('manipulation', 'bonus');
+    client.moves.manipulate('command', 'bonus');
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(canUndoMove(client.getState()!.G)).toBe(false);
@@ -269,7 +258,7 @@ describe('take Control and Remove Event', () => {
 
 describe('overwriting removed Events', () => {
   const removedBoard = () =>
-    applyManipulation(board(), 'remove-event', 'bonus', '0')!;
+    applyCommand(board(), 'remove-event', 'bonus', '0')!;
 
   it('offers the removed position, confirms an overwrite, discards the old Event, and supports history', () => {
     const client = clientFor('take-control', removedBoard());
@@ -307,7 +296,7 @@ describe('overwriting removed Events', () => {
     ).toBeUndefined();
     expect(after.discarded.map((card) => card.id)).toStrictEqual(['bonus']);
     expect(after.hands['0'].map((card) => card.id)).toStrictEqual([
-      'manipulation',
+      'command',
       'drawn',
     ]);
     expect(isValidBoard(after.played)).toBe(true);
@@ -376,7 +365,7 @@ describe('overwriting removed Events', () => {
   it.each([1900, 1940, 1980])(
     'allows a valid %s Event to overwrite a removed card in the middle of a timeline',
     (number) => {
-      const played = applyManipulation(board(), 'remove-event', 'source', '0')!;
+      const played = applyCommand(board(), 'remove-event', 'source', '0')!;
       const client = clientFor('take-control', played, 0, number);
       const replacement = client.getState()!.G.hands['0'][1];
 
@@ -412,7 +401,7 @@ describe('overwriting removed Events', () => {
   );
 
   it('ignores removed Events in date checks but treats their positions as open for squares', () => {
-    const removed = applyManipulation(board(), 'remove-event', 'source', '0')!;
+    const removed = applyCommand(board(), 'remove-event', 'source', '0')!;
     const event = {
       id: 'new',
       name: 'timeline-origin' as const,
@@ -467,7 +456,7 @@ describe('overwriting removed Events', () => {
   });
 
   it('allows placements beside removed Events while keeping overwrites and existing links valid', () => {
-    const played = applyManipulation(board(), 'remove-event', 'source', '0')!;
+    const played = applyCommand(board(), 'remove-event', 'source', '0')!;
     const event = {
       id: 'new',
       name: 'timeline-origin' as const,
@@ -577,10 +566,10 @@ describe('computer control/removal decisions', () => {
 
       expect(choice?.type).toBe('manipulate');
 
-      assert(choice?.type === 'manipulate', 'Expected a Manipulation');
+      assert(choice?.type === 'manipulate', 'Expected a Command');
 
       expect(
-        applyManipulation(
+        applyCommand(
           G.played,
           action,
           choice.targetId,

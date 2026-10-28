@@ -17,6 +17,11 @@ import {
   fitBoardZoom,
   listenForBoardWheel,
 } from './boardZoom';
+import {
+  applyCommand,
+  applyTimeSwap,
+  getTimeJumpPositions,
+} from './commandRules';
 import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
@@ -52,11 +57,6 @@ import {
   categoryMessages,
   startingEventNameMessage,
 } from './i18n/messageDescriptors';
-import {
-  applyManipulation,
-  applyTimeSwap,
-  getTimeJumpPositions,
-} from './manipulationRules';
 import { getPlayer, type PlayerSetup, PlayerSetupContext } from './playerSetup';
 import { calculateScores } from './scoring';
 import {
@@ -174,9 +174,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
 
   const [selectedCardId, setSelectedCardId] = useState<null | string>(null);
   const [detailsCard, setDetailsCard] = useState<Card | null>(null);
-  const [manipulationTargetId, setManipulationTargetId] = useState<
-    null | string
-  >(null);
+  const [commandTargetId, setCommandTargetId] = useState<null | string>(null);
   const [draggedCard, setDraggedCard] = useState<DraggedCard | null>(null);
   const [snapPosition, setSnapPosition] = useState<CardPosition | null>(null);
   const [boardZoom, setBoardZoom] = useState(1);
@@ -210,45 +208,35 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       .flat()
       .find((card) => card.id === selectedCardId) ??
     G.pending;
-  const manipulation =
-    placementCard?.type === 'manipulation' &&
-    isHumanTurn &&
-    !finished &&
-    !G.pending
+  const command =
+    placementCard?.type === 'command' && isHumanTurn && !finished && !G.pending
       ? placementCard
       : null;
-  const manipulationTargets = manipulation
+  const commandTargets = command
     ? G.played.filter(
         (card) =>
           card.owner !== 'neutral' &&
-          (manipulation.action === 'time-jump'
+          (command.action === 'time-jump'
             ? getTimeJumpPositions(G.played, card.id).length > 0
-            : manipulation.action === 'take-control' ||
-                manipulation.action === 'remove-event'
+            : command.action === 'take-control' ||
+                command.action === 'remove-event'
               ? Boolean(
-                  applyManipulation(
-                    G.played,
-                    manipulation.action,
-                    card.id,
-                    activeOwner,
-                  ),
+                  applyCommand(G.played, command.action, card.id, activeOwner),
                 )
-              : manipulationTargetId
-                ? Boolean(
-                    applyTimeSwap(G.played, manipulationTargetId, card.id),
-                  )
+              : commandTargetId
+                ? Boolean(applyTimeSwap(G.played, commandTargetId, card.id))
                 : G.played.some((other) =>
                     applyTimeSwap(G.played, card.id, other.id),
                   )),
       )
     : [];
-  const availablePositions = manipulation
-    ? manipulation.action === 'time-jump' && manipulationTargetId
-      ? getTimeJumpPositions(G.played, manipulationTargetId)
+  const availablePositions = command
+    ? command.action === 'time-jump' && commandTargetId
+      ? getTimeJumpPositions(G.played, commandTargetId)
       : []
     : getAvailablePositions(G.played, placementCard ?? undefined);
   const choosingJumpDestination = Boolean(
-    manipulation?.action === 'time-jump' && manipulationTargetId,
+    command?.action === 'time-jump' && commandTargetId,
   );
 
   useLayoutEffect(() => {
@@ -350,11 +338,11 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     });
 
   const chooseCard = (cardId: string) => {
-    setManipulationTargetId(null);
+    setCommandTargetId(null);
 
     if (
       G.hands[activeOwner].find((card) => card.id === cardId)?.type ===
-      'manipulation'
+      'command'
     ) {
       if (G.pending) {
         gameMoves.returnPendingCard();
@@ -380,11 +368,11 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   };
 
   const placeSelectedCard = (position: CardPosition) => {
-    if (manipulation && manipulationTargetId) {
+    if (command && commandTargetId) {
       lastJumpDestinationRef.current = position;
-      gameMoves.manipulate(manipulation.id, manipulationTargetId, position);
+      gameMoves.manipulate(command.id, commandTargetId, position);
       setSelectedCardId(null);
-      setManipulationTargetId(null);
+      setCommandTargetId(null);
 
       return;
     }
@@ -419,7 +407,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     setCardDragImage(event);
     setDraggedCard({ cardId, source });
     setSelectedCardId(null);
-    setManipulationTargetId(null);
+    setCommandTargetId(null);
   };
 
   const readDraggedCard = (event: React.DragEvent<HTMLElement>) => {
@@ -467,23 +455,23 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     event.dataTransfer.dropEffect = 'move';
   };
 
-  const allowManipulationDrop = (
+  const allowCommandDrop = (
     event: React.DragEvent<HTMLElement>,
     targetId: string,
   ) => {
     const droppedCard = readDraggedCard(event);
 
     if (
-      manipulation &&
+      command &&
       droppedCard?.source === 'hand' &&
-      droppedCard.cardId === manipulation.id &&
-      manipulationTargets.some((target) => target.id === targetId)
+      droppedCard.cardId === command.id &&
+      commandTargets.some((target) => target.id === targetId)
     ) {
       allowDrop(event);
     }
   };
 
-  const dropManipulationOnTarget = (
+  const dropCommandOnTarget = (
     event: React.DragEvent<HTMLElement>,
     targetId: string,
   ) => {
@@ -492,23 +480,23 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     const droppedCard = readDraggedCard(event);
 
     if (
-      !manipulation ||
+      !command ||
       droppedCard?.source !== 'hand' ||
-      droppedCard.cardId !== manipulation.id ||
-      !manipulationTargets.some((target) => target.id === targetId)
+      droppedCard.cardId !== command.id ||
+      !commandTargets.some((target) => target.id === targetId)
     ) {
       return;
     }
     if (
-      manipulation.action === 'take-control' ||
-      manipulation.action === 'remove-event'
+      command.action === 'take-control' ||
+      command.action === 'remove-event'
     ) {
-      gameMoves.manipulate(manipulation.id, targetId);
+      gameMoves.manipulate(command.id, targetId);
       setSelectedCardId(null);
-      setManipulationTargetId(null);
+      setCommandTargetId(null);
     } else {
-      setSelectedCardId(manipulation.id);
-      setManipulationTargetId(targetId);
+      setSelectedCardId(command.id);
+      setCommandTargetId(targetId);
     }
 
     setDraggedCard(null);
@@ -597,7 +585,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     onStart: (cardId, source) => {
       setDraggedCard({ cardId, source });
       setSelectedCardId(cardId);
-      setManipulationTargetId(null);
+      setCommandTargetId(null);
     },
   });
 
@@ -849,12 +837,12 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         if (
           event.key === 'Escape' &&
           !event.defaultPrevented &&
-          manipulation &&
+          command &&
           !(event.target as Element).closest('dialog[open]')
         ) {
           event.preventDefault();
           setSelectedCardId(null);
-          setManipulationTargetId(null);
+          setCommandTargetId(null);
           touchDrag.controller.cancel();
           finishDrag();
         }
@@ -992,7 +980,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
               touchDrag.controller.cancel();
               finishDrag();
               setSelectedCardId(null);
-              setManipulationTargetId(null);
+              setCommandTargetId(null);
               cardCatalogDialogRef.current?.showModal();
             }}
           />
@@ -1147,7 +1135,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   setComputerPaused(true);
                   finishDrag();
                   setSelectedCardId(null);
-                  setManipulationTargetId(null);
+                  setCommandTargetId(null);
                 }}
               />
               <button
@@ -1162,7 +1150,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   touchDrag.controller.cancel();
                   finishDrag();
                   setSelectedCardId(null);
-                  setManipulationTargetId(null);
+                  setCommandTargetId(null);
                   roundScoresDialogRef.current?.showModal();
                 }}
                 title={intl.formatMessage({
@@ -1255,56 +1243,52 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                           key={card.id}
                           links={renderLinkDirections(card)}
                           onDragOver={(event) => {
-                            allowManipulationDrop(event, card.id);
+                            allowCommandDrop(event, card.id);
                           }}
                           onDrop={(event) => {
-                            dropManipulationOnTarget(event, card.id);
+                            dropCommandOnTarget(event, card.id);
                           }}
                           onShowDetails={showCardDetails}
                           onTarget={
-                            (manipulation &&
-                              manipulationTargetId === card.id) ||
-                            manipulationTargets.some(
+                            (command && commandTargetId === card.id) ||
+                            commandTargets.some(
                               (target) => target.id === card.id,
                             )
                               ? () => {
-                                  if (manipulationTargetId === card.id) {
-                                    setManipulationTargetId(null);
+                                  if (commandTargetId === card.id) {
+                                    setCommandTargetId(null);
 
                                     return;
                                   }
                                   if (
-                                    manipulation?.action === 'take-control' ||
-                                    manipulation?.action === 'remove-event'
+                                    command?.action === 'take-control' ||
+                                    command?.action === 'remove-event'
                                   ) {
-                                    gameMoves.manipulate(
-                                      manipulation.id,
-                                      card.id,
-                                    );
+                                    gameMoves.manipulate(command.id, card.id);
                                     setSelectedCardId(null);
-                                    setManipulationTargetId(null);
+                                    setCommandTargetId(null);
 
                                     return;
                                   }
                                   if (
-                                    manipulation?.action === 'time-swap' &&
-                                    manipulationTargetId
+                                    command?.action === 'time-swap' &&
+                                    commandTargetId
                                   ) {
                                     gameMoves.manipulate(
-                                      manipulation.id,
-                                      manipulationTargetId,
+                                      command.id,
+                                      commandTargetId,
                                       card.id,
                                     );
                                     setSelectedCardId(null);
-                                    setManipulationTargetId(null);
+                                    setCommandTargetId(null);
                                   } else {
-                                    setManipulationTargetId(card.id);
+                                    setCommandTargetId(card.id);
                                   }
                                 }
                               : undefined
                           }
                           selected={Boolean(
-                            manipulation && manipulationTargetId === card.id,
+                            command && commandTargetId === card.id,
                           )}
                           style={positionStyle(card)}
                         />
@@ -1563,32 +1547,30 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         {finished ? (
           <GameResults played={G.played} playerIds={G.playerIds} />
         ) : (
-          <p
-            className={clsx(manipulation && gameBoardStyles.manipulationPrompt)}
-          >
-            {manipulation
-              ? !manipulationTargetId
-                ? manipulationTargets.length
+          <p className={clsx(command && gameBoardStyles.commandPrompt)}>
+            {command
+              ? !commandTargetId
+                ? commandTargets.length
                   ? intl.formatMessage({
                       defaultMessage:
                         'Choose an Event card on the board. The starting card cannot be targeted.',
-                      id: 'manipulation.choose',
+                      id: 'command.choose',
                     })
                   : intl.formatMessage({
                       defaultMessage:
                         'No legal targets for this card. Select another card or discard it.',
-                      id: 'manipulation.noTargets',
+                      id: 'command.noTargets',
                     })
-                : manipulation.action === 'time-jump'
+                : command.action === 'time-jump'
                   ? intl.formatMessage({
                       defaultMessage:
                         'Choose a highlighted empty position or removed Event to complete Time Jump.',
-                      id: 'manipulation.jumpDestination',
+                      id: 'command.jumpDestination',
                     })
                   : intl.formatMessage({
                       defaultMessage:
                         'Choose a highlighted second Event card to complete Time Swap.',
-                      id: 'manipulation.swapDestination',
+                      id: 'command.swapDestination',
                     })
               : G.pending
                 ? intl.formatMessage({

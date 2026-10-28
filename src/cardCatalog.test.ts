@@ -56,7 +56,7 @@ describe('cardCatalog', () => {
         (_, decade) => `event-${1900 + decade * 10}-${copy}`,
       ),
     );
-    const manipulationIds = [
+    const commandIds = [
       'time-jump',
       'time-swap',
       'take-control',
@@ -65,7 +65,7 @@ describe('cardCatalog', () => {
 
     expect(deck.map((card) => card.id)).toStrictEqual([
       ...eventIds,
-      ...manipulationIds,
+      ...commandIds,
     ]);
   });
 
@@ -132,9 +132,9 @@ describe('cardCatalog', () => {
     expect(loadCardCatalog()).toStrictEqual(definitions);
   });
 
-  it('lists four of each Manipulation without Event dates or categories', () => {
+  it('lists four of each Commands without Event dates or categories', () => {
     const cards = loadCardCatalog().deck.filter(
-      (card) => card.type === 'manipulation',
+      (card) => card.type === 'command',
     );
 
     expect(cards).toHaveLength(16);
