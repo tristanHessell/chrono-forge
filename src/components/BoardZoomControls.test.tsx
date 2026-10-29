@@ -14,6 +14,8 @@ describe(BoardZoomControls, () => {
   ] as const)(
     'renders accessible floating controls at zoom %s',
     async (zoom, percent, disabled) => {
+      expect.assertions(7);
+
       render(
         <IntlProvider locale="en" messages={messages}>
           <BoardZoomControls

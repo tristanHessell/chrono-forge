@@ -99,7 +99,9 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
     // eslint-disable-next-line vitest/no-conditional-in-test -- TODO refactor this test to avoid conditional logic
     if (numPlayers === 4) {
+      // eslint-disable-next-line vitest/no-conditional-expect -- TODO refactor this test to avoid conditional logic
       expect(client.getState()!.G.roundOver).toBe(false);
+      // eslint-disable-next-line vitest/no-conditional-expect -- TODO refactor this test to avoid conditional logic
       expect(client.getState()!.ctx.currentPlayer).toBe('3');
 
       client.moves.discardCard('last-3');
