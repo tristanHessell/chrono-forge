@@ -81,7 +81,7 @@ describe('cardCatalog', () => {
           .filter((card) => card.number === year)
           .map((card) => card.category)
           .sort(),
-      ).toStrictEqual(['environmental', 'political', 'technological']);
+      ).toStrictEqual(['nature', 'politics', 'tech']);
     }
 
     expect(

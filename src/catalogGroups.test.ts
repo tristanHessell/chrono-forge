@@ -13,9 +13,9 @@ describe(catalogGroups, () => {
     expect(ids.sort()).toStrictEqual(deck.map((card) => card.id).sort());
     expect(new Set(ids).size).toBe(deck.length);
     expect(groups.map((group) => group.id)).toStrictEqual([
-      'event:political',
-      'event:technological',
-      'event:environmental',
+      'event:politics',
+      'event:tech',
+      'event:nature',
       'command:time-jump',
       'command:time-swap',
       'command:take-control',

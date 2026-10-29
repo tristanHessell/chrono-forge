@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'technological',
+  category: 'tech',
   id: 'event-1980-2',
   name: 'personal-computers',
   number: 1980,

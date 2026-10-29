@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'environmental',
+  category: 'nature',
   id: 'event-1930-3',
   name: 'dust-bowl',
   number: 1930,

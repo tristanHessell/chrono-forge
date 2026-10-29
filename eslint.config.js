@@ -201,8 +201,7 @@ export default defineConfig(
       'vitest/max-nested-describe': 'error',
       'vitest/no-alias-methods': 'error',
       'vitest/no-commented-out-tests': 'error',
-      // TODO enforce this
-      'vitest/no-conditional-expect': 'warn',
+      'vitest/no-conditional-expect': 'error',
       'vitest/no-conditional-in-test': 'error',
       'vitest/no-conditional-tests': 'error',
       'vitest/no-disabled-tests': 'error',
@@ -269,8 +268,7 @@ export default defineConfig(
       // This rule doesn't seem particularly useful, off as it gets noisy, quickly.
       'vitest/require-mock-type-parameters': 'off',
       'vitest/require-test-timeout': 'off',
-      // TODO enforce this
-      'vitest/require-to-throw-message': 'warn',
+      'vitest/require-to-throw-message': 'error',
       'vitest/require-top-level-describe': 'error',
       'vitest/unbound-method': 'error',
       'vitest/valid-describe-callback': 'error',

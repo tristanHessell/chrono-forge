@@ -18,7 +18,7 @@ function renderCardDetails(card: Card) {
 describe(CardDetailsDialog, () => {
   it('shows the date and every effect description in one dialog', async () => {
     renderCardDetails({
-      category: 'technological',
+      category: 'tech',
       effects: ['draw-one', 'free-action', 'timeline-1900-bonus'],
       id: 'test-event',
       name: 'internet-expansion',

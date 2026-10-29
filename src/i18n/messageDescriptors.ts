@@ -11,12 +11,12 @@ import type { Theme } from '../theme';
 type DescriptorMap<Key extends string> = Record<Key, TypedMessageDescriptor>;
 
 export const categoryMessages = defineMessages({
-  environmental: {
+  nature: {
     defaultMessage: 'Nature',
-    id: 'card.category.environmental',
+    id: 'card.category.nature',
   },
-  political: { defaultMessage: 'Politics', id: 'card.category.political' },
-  technological: { defaultMessage: 'Tech', id: 'card.category.technological' },
+  politics: { defaultMessage: 'Politics', id: 'card.category.politics' },
+  tech: { defaultMessage: 'Tech', id: 'card.category.tech' },
 }) satisfies DescriptorMap<EventCategory>;
 
 export const commandNameMessages = defineMessages({

@@ -11,31 +11,31 @@
   --card-pattern-size: 20px 20px;
 }
 
-.appearance[data-event-category='political'] {
+.appearance[data-event-category='politics'] {
   --card-pattern: repeating-linear-gradient(
     135deg,
     transparent 0 10px,
     rgb(255 255 255 / 24%) 10px 14px
   );
-  --category-border: var(--political-card-border);
+  --category-border: var(--politics-card-border);
 }
 
-.appearance[data-event-category='technological'] {
+.appearance[data-event-category='tech'] {
   --card-pattern: conic-gradient(
     from 90deg at 2px 2px,
     transparent 25%,
     rgb(255 255 255 / 24%) 0
   );
   --card-pattern-size: 18px 18px;
-  --category-border: var(--technological-card-border);
+  --category-border: var(--tech-card-border);
 }
 
-.appearance[data-event-category='environmental'] {
+.appearance[data-event-category='nature'] {
   --card-pattern: radial-gradient(
     circle,
     rgb(255 255 255 / 35%) 2.5px,
     transparent 3px
   );
   --card-pattern-size: 14px 14px;
-  --category-border: var(--environmental-card-border);
+  --category-border: var(--nature-card-border);
 }

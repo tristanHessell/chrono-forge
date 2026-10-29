@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   id: 'event-1930-1',
   name: 'new-deal',
   number: 1930,

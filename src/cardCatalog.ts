@@ -45,9 +45,9 @@ function readCard(definition: {
 
   if (
     category !== undefined &&
-    category !== 'political' &&
-    category !== 'technological' &&
-    category !== 'environmental'
+    category !== 'politics' &&
+    category !== 'tech' &&
+    category !== 'nature'
   ) {
     throw new Error(`Unknown Event category: ${category}`);
   }

@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   id: 'event-1970-1',
   name: 'detente',
   number: 1970,

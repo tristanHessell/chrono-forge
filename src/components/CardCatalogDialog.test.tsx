@@ -58,13 +58,13 @@ describe(CardCatalogDialog, () => {
     expect(page.getByText('10 cards', { exact: true })).toHaveLength(3);
     expect(page.getByText('4 cards', { exact: true })).toHaveLength(4);
     expect(
-      page.getByCSS('[data-event-category="political"]').length,
+      page.getByCSS('[data-event-category="politics"]').length,
     ).toBeGreaterThan(0);
     expect(
-      page.getByCSS('[data-event-category="technological"]').length,
+      page.getByCSS('[data-event-category="tech"]').length,
     ).toBeGreaterThan(0);
     expect(
-      page.getByCSS('[data-event-category="environmental"]').length,
+      page.getByCSS('[data-event-category="nature"]').length,
     ).toBeGreaterThan(0);
     expect(
       page.getByCSS('[aria-label="Draw one card"]').length,

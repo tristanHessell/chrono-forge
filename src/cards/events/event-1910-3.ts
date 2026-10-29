@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'environmental',
+  category: 'nature',
   effects: ['free-action'],
   id: 'event-1910-3',
   name: 'national-parks',

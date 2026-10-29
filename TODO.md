@@ -18,22 +18,16 @@ Refactor `GameBoard` to be a much smaller file
 
 ---
 
-Rename category `Political` -> `Politics`.
-Rename category `Environmental` -> `Nature`
-Rename category `Technological` -> `Tech`
-
----
-
 UI Experiment:
 Change the Event cards to have the colour stripe on the right (where the category is), rather than around the card
 
 ---
 
-Add Technology (yellow) Effects
+Add Tech (yellow) Effects
 
-Add Political (red) Effects
+Add Politics (red) Effects
 
-Add Environmental (green) Effects
+Add Nature (green) Effects
 
 ---
 
@@ -96,3 +90,15 @@ Use a different name as `Chrono-Forge` is taken.
 ---
 
 Don't allow svg's to be defined inline - they must come from a named component
+
+---
+
+No number parameters in functions (must use object instead).
+
+---
+
+Show scores in a line chart.
+
+Which library?
+
+---

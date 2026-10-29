@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'environmental',
+  category: 'nature',
   id: 'event-1950-3',
   name: 'smog-crisis',
   number: 1950,

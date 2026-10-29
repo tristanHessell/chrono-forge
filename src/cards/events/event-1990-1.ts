@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   effects: ['timeline-1900-bonus'],
   id: 'event-1990-1',
   name: 'european-union',

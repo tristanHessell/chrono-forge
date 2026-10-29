@@ -19,7 +19,7 @@ import { PlayedCard } from './PlayedCard';
 import playedStyles from './PlayedCard.module.css';
 
 const card: Event = {
-  category: 'technological',
+  category: 'tech',
   column: 1,
   effects: ['draw-one'],
   id: 'styled-event',
@@ -170,8 +170,6 @@ describe('componentStyles', () => {
       .element(slot)
       .toHaveClass(...appearanceStyles.appearance.split(' '));
     await expect.element(slot).toHaveAttribute('data-placement-slot');
-    await expect
-      .element(slot)
-      .toHaveAttribute('data-event-category', 'technological');
+    await expect.element(slot).toHaveAttribute('data-event-category', 'tech');
   });
 });

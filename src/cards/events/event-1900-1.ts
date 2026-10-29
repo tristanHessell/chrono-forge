@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   id: 'event-1900-1',
   name: 'imperial-alliances',
   number: 1900,
