@@ -1,9 +1,4 @@
-import type {
-  CardPosition,
-  ManipulationAction,
-  PlacedCard,
-  PlayerId,
-} from './game';
+import type { CardPosition, CommandAction, PlacedCard, PlayerId } from './game';
 import {
   ADJACENT_OFFSETS,
   areAdjacent,
@@ -15,9 +10,9 @@ import {
 // This preserves arrow/date rules and keeps every timeline connected to the start.
 export { isValidBoard } from './gameRules';
 
-export function applyManipulation(
+export function applyCommand(
   played: PlacedCard[],
-  action: ManipulationAction,
+  action: CommandAction,
   targetId: string,
   owner: PlayerId,
   destination?: CardPosition | string,

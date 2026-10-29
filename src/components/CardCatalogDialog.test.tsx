@@ -54,7 +54,6 @@ describe(CardCatalogDialog, () => {
     await expect.element(body).toMatchTextContent('Politics10 cards');
     await expect.element(body).toMatchTextContent('Tech10 cards');
     await expect.element(body).toMatchTextContent('Nature10 cards');
-    await expect.element(body).not.toMatchTextContent('Manipulation');
     await expect.element(body).toMatchTextContent('Starting card1');
     expect(page.getByText('10 cards', { exact: true })).toHaveLength(3);
     expect(page.getByText('4 cards', { exact: true })).toHaveLength(4);

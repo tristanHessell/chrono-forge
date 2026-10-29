@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import type { Card } from '../game';
 import {
   categoryMessages,
-  manipulationNameMessages,
+  commandNameMessages,
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
@@ -17,7 +17,7 @@ export function HandCardFace({ card }: { card: Card }) {
   return (
     <>
       <CardEffects
-        effects={card.type === 'manipulation' ? [card.action] : card.effects}
+        effects={card.type === 'command' ? [card.action] : card.effects}
       />
       {card.type === 'event' && (
         <span aria-hidden="true" className={cardStyles.handCardNumber}>
@@ -25,20 +25,18 @@ export function HandCardFace({ card }: { card: Card }) {
         </span>
       )}
       <strong
-        className={clsx(
-          card.type === 'manipulation' && cardStyles.manipulationName,
-        )}
+        className={clsx(card.type === 'command' && cardStyles.commandName)}
       >
         {card.type === 'event'
           ? intl.formatNumber(card.number, { useGrouping: false })
-          : intl.formatMessage(manipulationNameMessages[card.action])}
+          : intl.formatMessage(commandNameMessages[card.action])}
       </strong>
       {card.type === 'event' && <CardEventName card={card} />}
       <span className={cardStyles.cardTypeName}>
-        {card.type === 'manipulation'
+        {card.type === 'command'
           ? intl.formatMessage({
               defaultMessage: 'Command',
-              id: 'card.manipulation',
+              id: 'card.command',
             })
           : card.category
             ? intl.formatMessage(categoryMessages[card.category])

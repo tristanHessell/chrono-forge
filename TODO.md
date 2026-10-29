@@ -18,7 +18,6 @@ Refactor `GameBoard` to be a much smaller file
 
 ---
 
-Rename `Manipulations` -> `Commands`
 Rename category `Political` -> `Politics`.
 Rename category `Environmental` -> `Nature`
 Rename category `Technological` -> `Tech`

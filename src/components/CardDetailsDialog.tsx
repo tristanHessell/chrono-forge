@@ -6,10 +6,10 @@ import { eventCardNameMessage } from '../eventCardName';
 import type { Card } from '../game';
 import {
   categoryMessages,
+  commandDescriptionMessages,
+  commandNameMessages,
   effectDescriptionMessages,
   effectNameMessages,
-  manipulationDescriptionMessages,
-  manipulationNameMessages,
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
 import cardStyles from './Card.module.css';
@@ -31,25 +31,25 @@ export function CardDetailsDialog({
     card?.type === 'event'
       ? intl.formatMessage(eventCardNameMessage(card))
       : card
-        ? intl.formatMessage(manipulationNameMessages[card.action])
+        ? intl.formatMessage(commandNameMessages[card.action])
         : '';
   const cardType =
-    card?.type === 'manipulation'
+    card?.type === 'command'
       ? intl.formatMessage({
           defaultMessage: 'Command',
-          id: 'card.manipulation',
+          id: 'card.command',
         })
       : card?.category
         ? intl.formatMessage(categoryMessages[card.category])
         : intl.formatMessage(startingEventNameMessage);
   const effects =
-    card?.type === 'manipulation'
+    card?.type === 'command'
       ? [
           {
             description: intl.formatMessage(
-              manipulationDescriptionMessages[card.action],
+              commandDescriptionMessages[card.action],
             ),
-            name: intl.formatMessage(manipulationNameMessages[card.action]),
+            name: intl.formatMessage(commandNameMessages[card.action]),
           },
         ]
       : card?.effects?.map((effect) => ({

@@ -7,7 +7,7 @@ import { catalogGroups } from '../catalogGroups';
 import type { Card } from '../game';
 import {
   categoryMessages,
-  manipulationNameMessages,
+  commandNameMessages,
   startingEventNameMessage,
 } from '../i18n/messageDescriptors';
 import { AriaDescription } from './AriaDescription';
@@ -183,7 +183,7 @@ export function CardCatalogDialog({
             [
               intl.formatMessage({
                 defaultMessage: 'Command',
-                id: 'card.manipulation',
+                id: 'card.command',
               }),
               deck.length - events,
             ],
@@ -231,7 +231,7 @@ export function CardCatalogDialog({
                   defaultMessage: 'Event',
                   id: 'card.event',
                 })
-            : intl.formatMessage(manipulationNameMessages[card.action]);
+            : intl.formatMessage(commandNameMessages[card.action]);
 
         return (
           <section className={cardCatalogDialogStyles.catalogGroup} key={id}>

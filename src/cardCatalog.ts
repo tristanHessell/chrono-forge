@@ -1,5 +1,5 @@
 import definitions from './cards';
-import type { Card, CardEffect, EventName, ManipulationAction } from './game';
+import type { Card, CardEffect, CommandAction, EventName } from './game';
 
 function readCard(definition: {
   action?: string;
@@ -10,7 +10,7 @@ function readCard(definition: {
   number?: number;
   type: string;
 }): Card {
-  if (definition.type === 'manipulation') {
+  if (definition.type === 'command') {
     if (
       !definition.id ||
       !['time-jump', 'time-swap', 'take-control', 'remove-event'].includes(
@@ -21,13 +21,13 @@ function readCard(definition: {
       definition.effects !== undefined ||
       definition.name !== undefined
     ) {
-      throw new Error(`Invalid Manipulation card: ${definition.id}`);
+      throw new Error(`Invalid Command card: ${definition.id}`);
     }
 
     return {
-      action: definition.action as ManipulationAction,
+      action: definition.action as CommandAction,
       id: definition.id,
-      type: 'manipulation',
+      type: 'command',
     };
   }
   if (

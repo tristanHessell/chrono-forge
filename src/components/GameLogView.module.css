@@ -49,7 +49,7 @@
   margin: 0.2rem 0;
 }
 
-.log-card-reference[data-card-type='manipulation'] {
+.log-card-reference[data-card-type='command'] {
   border-color: #b58cff;
 }
 

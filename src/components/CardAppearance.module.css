@@ -2,8 +2,8 @@
   --card-color: var(--event-card-color);
 }
 
-.appearance[data-card-type='manipulation'] {
-  --card-color: var(--manipulation-card-color);
+.appearance[data-card-type='command'] {
+  --card-color: var(--command-card-color);
   --card-pattern: repeating-conic-gradient(
     rgb(255 255 255 / 20%) 0% 25%,
     transparent 0% 50%

@@ -1,6 +1,12 @@
 import { Client } from 'boardgame.io/client';
 import { assert, describe, expect, it } from 'vitest';
 
+import {
+  applyTimeJump,
+  applyTimeSwap,
+  getTimeJumpPositions,
+  isValidBoard,
+} from './commandRules';
 import { chooseComputerAction } from './computer';
 import {
   type Card,
@@ -9,12 +15,6 @@ import {
   type PlacedCard,
 } from './game';
 import { isValidPlacement } from './gameRules';
-import {
-  applyTimeJump,
-  applyTimeSwap,
-  getTimeJumpPositions,
-  isValidBoard,
-} from './manipulationRules';
 import { calculateScores } from './scoring';
 
 const board = (): PlacedCard[] => [
@@ -76,10 +76,10 @@ function clientFor(
   action: 'time-jump' | 'time-swap',
   overrides: Partial<CardGameState> = {},
 ) {
-  const manipulation: Card = {
+  const command: Card = {
     action,
-    id: 'manipulation',
-    type: 'manipulation',
+    id: 'command',
+    type: 'command',
   };
 
   return Client({
@@ -101,7 +101,7 @@ function clientFor(
         hands: {
           ...CardGame.setup!(context).hands,
           '0': [
-            manipulation,
+            command,
             {
               id: 'spare',
               name: 'timeline-origin',
@@ -124,7 +124,7 @@ function clientFor(
   });
 }
 
-describe('manipulation rules', () => {
+describe('command rules', () => {
   it.each([false, true])(
     'overwrites a removed Event with Time Jump, preserving the moved card status (%s)',
     (removed) => {
@@ -183,14 +183,14 @@ describe('manipulation rules', () => {
     const client = clientFor('time-jump', { played });
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'c', { column: 0, row: 2 });
+    client.moves.command('command', 'c', { column: 0, row: 2 });
 
     const after = client.getState()!.G;
 
     expect(after.played).toHaveLength(before.played.length - 1);
     expect(after.discarded.map((card) => card.id)).toStrictEqual([
       'd',
-      'manipulation',
+      'command',
     ]);
     expect(after.discarded[0]).not.toHaveProperty('removed');
     expect(after.hands['0'].map((card) => card.id)).toStrictEqual(['spare']);
@@ -330,7 +330,7 @@ describe('manipulation rules', () => {
     expect(applyTimeSwap(board(), first, second)).toBeNull();
   });
 
-  it('does not allow a Manipulation card to be placed as an Event', () => {
+  it('does not allow a Command card to be placed as an Event', () => {
     expect(
       isValidPlacement(
         board(),
@@ -338,22 +338,22 @@ describe('manipulation rules', () => {
         {
           action: 'time-jump',
           id: 'jump',
-          type: 'manipulation',
+          type: 'command',
         },
       ),
     ).toBe(false);
   });
 });
 
-describe('manipulation game moves', () => {
+describe('command game moves', () => {
   it.each(['time-jump', 'time-swap'] as const)(
     'uses %s as one action and supports undo/redo',
     (action) => {
       const client = clientFor(action);
       const before = client.getState()!;
 
-      client.moves.manipulate(
-        'manipulation',
+      client.moves.command(
+        'command',
         'c',
         action === 'time-jump' ? { column: 1, row: -1 } : 'd',
       );
@@ -383,10 +383,10 @@ describe('manipulation game moves', () => {
     },
   );
 
-  it('blocks undo when a second-action manipulation refills the hand', () => {
+  it('blocks undo when a second-action command refills the hand', () => {
     const client = clientFor('time-jump', { actionsThisTurn: 1 });
 
-    client.moves.manipulate('manipulation', 'c', { column: 1, row: -1 });
+    client.moves.command('command', 'c', { column: 1, row: -1 });
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.hands['0']).toHaveLength(2);
@@ -404,29 +404,29 @@ describe('manipulation game moves', () => {
     const client = clientFor('time-jump');
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'a', { column: 0, row: -1 });
-    client.moves.manipulate('manipulation', 'c', 'd');
-    client.moves.manipulate('spare', 'c', { column: 1, row: -1 });
-    client.moves.manipulate('other', 'c', { column: 1, row: -1 });
+    client.moves.command('command', 'a', { column: 0, row: -1 });
+    client.moves.command('command', 'c', 'd');
+    client.moves.command('spare', 'c', { column: 1, row: -1 });
+    client.moves.command('other', 'c', { column: 1, row: -1 });
 
     expect(client.getState()!.G).toStrictEqual(before);
   });
 
-  it('does not manipulate during an unconfirmed placement or after game end', () => {
+  it('does not command during an unconfirmed placement or after game end', () => {
     const client = clientFor('time-jump');
 
     client.moves.playCard('spare', { column: 0, row: -1 });
 
     const before = client.getState()!.G;
 
-    client.moves.manipulate('manipulation', 'c', { column: 1, row: -1 });
+    client.moves.command('command', 'c', { column: 1, row: -1 });
 
     expect(client.getState()!.G).toStrictEqual(before);
 
     const ended = clientFor('time-jump', { roundOver: true });
     const final = ended.getState()!.G;
 
-    ended.moves.manipulate('manipulation', 'c', { column: 1, row: -1 });
+    ended.moves.command('command', 'c', { column: 1, row: -1 });
 
     expect(ended.getState()!.G).toStrictEqual(final);
   });
@@ -442,11 +442,11 @@ describe('manipulation game moves', () => {
       };
       const choice = chooseComputerAction(G);
 
-      expect(choice?.type).toBe('manipulate');
+      expect(choice?.type).toBe('command');
 
-      assert(choice?.type === 'manipulate', 'Expected Manipulation');
+      assert(choice?.type === 'command', 'Expected Command');
 
-      expect(choice.cardId).toBe('manipulation');
+      expect(choice.cardId).toBe('command');
 
       const result =
         typeof choice.destination === 'string'

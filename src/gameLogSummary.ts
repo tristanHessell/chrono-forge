@@ -41,7 +41,7 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
         ? (G.pending ?? undefined)
         : cards.find((card) => card.id === args[0]);
       const destination =
-        move === 'manipulate'
+        move === 'command'
           ? args[2]
           : move === 'movePendingCard'
             ? args[0]
@@ -56,7 +56,7 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
 
       return {
         card,
-        drawn: ['playEvent', 'discardCard', 'manipulate'].includes(move)
+        drawn: ['playEvent', 'discardCard', 'command'].includes(move)
           ? after.G.hands[ctx.currentPlayer].filter(
               (card) => !oldHandIds.has(card.id),
             )
@@ -73,11 +73,11 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
             ? (destination as CardPosition)
             : undefined,
         secondTarget:
-          move === 'manipulate'
+          move === 'command'
             ? cards.find((card) => card.id === destination)
             : undefined,
         target:
-          move === 'manipulate'
+          move === 'command'
             ? cards.find((card) => card.id === args[1])
             : undefined,
         turn: ctx.turn,

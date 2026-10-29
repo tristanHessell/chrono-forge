@@ -34,7 +34,7 @@ describe.each([2, 3, 4] as const)('%i-player seeded replay', (numPlayers) => {
       } else if (action.type === 'discard') {
         client.moves.discardCard(action.cardId);
       } else {
-        client.moves.manipulate(
+        client.moves.command(
           action.cardId,
           action.targetId,
           action.destination,

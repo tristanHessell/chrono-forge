@@ -2,8 +2,8 @@ import type { Game, MoveFn } from 'boardgame.io';
 import { TurnOrder } from 'boardgame.io/core';
 
 import { loadCardCatalog } from './cardCatalog';
+import { applyCommand } from './commandRules';
 import { isValidPlacement, positionKey, withPlacedEvent } from './gameRules';
-import { applyManipulation } from './manipulationRules';
 import { calculateScores } from './scoring';
 
 export {
@@ -49,7 +49,7 @@ export type EventName =
   | 'timeline-origin'
   | 'united-nations'
   | 'wildlife-refuges';
-export type ManipulationAction =
+export type CommandAction =
   'remove-event' | 'take-control' | 'time-jump' | 'time-swap';
 
 export type EventCard = {
@@ -65,16 +65,16 @@ export type EventCard = {
   type: 'event';
 };
 
-export type ManipulationCard = {
-  action: ManipulationAction;
+export type CommandCard = {
+  action: CommandAction;
   category?: never;
   effects?: never;
   id: string;
   number?: never;
-  type: 'manipulation';
+  type: 'command';
 };
 
-export type Card = EventCard | ManipulationCard;
+export type Card = CommandCard | EventCard;
 
 export type PlayerId = '0' | '1' | '2' | '3';
 export type CardOwner = 'neutral' | PlayerId;
@@ -312,6 +312,70 @@ export const CardGame: Game<CardGameState> = {
   maxPlayers: 4,
   minPlayers: 2,
   moves: {
+    command: (
+      { ctx, events, G },
+      cardId: string,
+      targetId: string,
+      destination?: CardPosition | string,
+    ) => {
+      if (G.roundOver || G.pending) {
+        return;
+      }
+
+      const hand = G.hands[ctx.currentPlayer];
+      const index = hand.findIndex((card) => card.id === cardId);
+
+      if (index < 0) {
+        return;
+      }
+
+      const card = hand[index];
+
+      if (card.type !== 'command') {
+        return;
+      }
+
+      const played = applyCommand(
+        G.played,
+        card.action,
+        targetId,
+        ctx.currentPlayer as PlayerId,
+        destination,
+      );
+
+      if (!played) {
+        return;
+      }
+
+      recordMoveForUndo(
+        G,
+        ctx.currentPlayer,
+        snapshotGame(G, ctx.currentPlayer),
+      );
+      for (const overwritten of G.played.filter(
+        (existing) => !played.some((card) => card.id === existing.id),
+      )) {
+        const { category, effects, id, name, number, type } = overwritten;
+
+        G.discarded.push({
+          id,
+          name,
+          number,
+          type,
+          ...(category ? { category } : {}),
+          ...(effects ? { effects } : {}),
+        });
+      }
+      G.played = played;
+      G.nextPlacementOrder = Math.max(
+        G.nextPlacementOrder,
+        ...played.map((event) => event.placedAt + 1),
+      );
+      G.discarded.push(...hand.splice(index, 1));
+      advanceTurn(G, ctx.currentPlayer, (options) => {
+        events.endTurn(options);
+      });
+    },
     confirmPlacement: ({ ctx, events, G }) => {
       const activeOwner = ctx.currentPlayer as PlayerId;
 
@@ -395,70 +459,6 @@ export const CardGame: Game<CardGameState> = {
       G.pending = null;
       G.pendingSnapshot = null;
       recordMoveForUndo(G, ctx.currentPlayer, beforeDiscard);
-      advanceTurn(G, ctx.currentPlayer, (options) => {
-        events.endTurn(options);
-      });
-    },
-    manipulate: (
-      { ctx, events, G },
-      cardId: string,
-      targetId: string,
-      destination?: CardPosition | string,
-    ) => {
-      if (G.roundOver || G.pending) {
-        return;
-      }
-
-      const hand = G.hands[ctx.currentPlayer];
-      const index = hand.findIndex((card) => card.id === cardId);
-
-      if (index < 0) {
-        return;
-      }
-
-      const card = hand[index];
-
-      if (card.type !== 'manipulation') {
-        return;
-      }
-
-      const played = applyManipulation(
-        G.played,
-        card.action,
-        targetId,
-        ctx.currentPlayer as PlayerId,
-        destination,
-      );
-
-      if (!played) {
-        return;
-      }
-
-      recordMoveForUndo(
-        G,
-        ctx.currentPlayer,
-        snapshotGame(G, ctx.currentPlayer),
-      );
-      for (const overwritten of G.played.filter(
-        (existing) => !played.some((card) => card.id === existing.id),
-      )) {
-        const { category, effects, id, name, number, type } = overwritten;
-
-        G.discarded.push({
-          id,
-          name,
-          number,
-          type,
-          ...(category ? { category } : {}),
-          ...(effects ? { effects } : {}),
-        });
-      }
-      G.played = played;
-      G.nextPlacementOrder = Math.max(
-        G.nextPlacementOrder,
-        ...played.map((event) => event.placedAt + 1),
-      );
-      G.discarded.push(...hand.splice(index, 1));
       advanceTurn(G, ctx.currentPlayer, (options) => {
         events.endTurn(options);
       });

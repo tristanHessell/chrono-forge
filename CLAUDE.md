@@ -106,7 +106,7 @@ The other seats use computer players.
   Preserve the deck order to keep existing seeded replays compatible.
 - `src/cardCatalog.ts` validates the catalog and copies its cards for each game.
 - `src/gameRules.ts` contains pure placement rules and destination discovery.
-- `src/manipulationRules.ts` validates and applies Manipulations.
+- `src/commandRules.ts` validates and applies Commands.
 - `src/scoring.ts` calculates base points and timeline bonuses.
 - `src/computer.ts` chooses actions from the computer's hand and the public board.
   Do not give the computer access to other hands or the deck order.
@@ -171,7 +171,7 @@ The boardgame.io developer panel uses the library's own English text.
 Keep unit tests beside the source in `*.test.ts` or `*.test.tsx` files.
 Vitest processes CSS modules to test scoped classes and shared compositions.
 The `tests/` directory contains tests for the quality tools.
-Add regression tests for changes to placement rules, Manipulations, scoring, turns, or replay behaviour.
+Add regression tests for changes to placement rules, Commands, scoring, turns, or replay behaviour.
 Use deterministic seeds or fixtures to reproduce game cases.
 
 The manual simulations use the real game client.
@@ -179,7 +179,7 @@ The manual simulations use the real game client.
 Do not add these simulations to `npm run check` or the pull request workflow.
 Simulation reports belong in the ignored `simulation-results/` directory.
 Count only explicit hand discards in the discard statistics.
-Exclude used Manipulations and overwritten Events from those statistics.
+Exclude used Commands and overwritten Events from those statistics.
 
 ## Code style
 

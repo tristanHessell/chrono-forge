@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import { applyTimeJump, getTimeJumpPositions } from './commandRules';
 import setup from './fixtures/removed-card-neighbor-replay.json';
 import { parseGameLog, replayGameLog } from './gameLog';
 import { areAdjacent, isValidBoard } from './gameRules';
-import { applyTimeJump, getTimeJumpPositions } from './manipulationRules';
 
 describe('removedCardNeighborReplay', () => {
   it('allows Climate Summit to reconnect beside Silent Spring in the supplied replay', () => {
@@ -32,7 +32,7 @@ describe('removedCardNeighborReplay', () => {
       expect(destination).toBeDefined();
 
       const jump = G.hands[ctx.currentPlayer].find(
-        (card) => card.type === 'manipulation' && card.action === 'time-jump',
+        (card) => card.type === 'command' && card.action === 'time-jump',
       );
 
       expect(jump).toBeDefined();
@@ -46,7 +46,7 @@ describe('removedCardNeighborReplay', () => {
       );
       expect(isValidBoard(jumped)).toBe(true);
 
-      client.moves.manipulate(jump!.id, climate.id, destination);
+      client.moves.command(jump!.id, climate.id, destination);
 
       expect(client.getState()!.G.played).toStrictEqual(jumped);
     } finally {

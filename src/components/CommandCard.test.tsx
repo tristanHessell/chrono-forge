@@ -9,7 +9,7 @@ import { CardHand } from './CardHand';
 
 // TODO move this to CardHand.
 
-describe('manipulationCard', () => {
+describe('commandCard', () => {
   it.each(['time-jump', 'time-swap', 'take-control', 'remove-event'] as const)(
     'renders %s without an Event date or category',
     (action) => {
@@ -17,7 +17,7 @@ describe('manipulationCard', () => {
         <IntlProvider locale="en" messages={messages}>
           <CardHand
             activeOwner="0"
-            cards={[{ action, id: 'test', type: 'manipulation' }]}
+            cards={[{ action, id: 'test', type: 'command' }]}
             isReturnTarget={false}
             onChoose={() => {}}
             onDragEnd={() => {}}
@@ -34,14 +34,14 @@ describe('manipulationCard', () => {
         </IntlProvider>,
       );
 
-      expect(page.getByCSS('[data-card-type="manipulation"]')).toHaveLength(1);
+      expect(page.getByCSS('[data-card-type="command"]')).toHaveLength(1);
       expect(
-        page.getByText(messages[`manipulation.${action}.name`], {
+        page.getByText(messages[`command.${action}.name`], {
           exact: true,
         }),
       ).toHaveLength(1);
       expect(
-        page.getByCSS(`[class~="${cardStyles.manipulationName}"]`),
+        page.getByCSS(`[class~="${cardStyles.commandName}"]`),
       ).toHaveLength(1);
       expect(page.getByCSS('[class*="hand-corner-number"]')).toHaveLength(0);
       expect(page.getByCSS('[data-event-category]')).toHaveLength(0);

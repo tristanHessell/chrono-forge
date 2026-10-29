@@ -7,7 +7,7 @@ export function catalogGroups(deck: Card[]) {
     const key =
       card.type === 'event'
         ? `event:${card.category ?? 'neutral'}`
-        : `manipulation:${card.action}`;
+        : `command:${card.action}`;
     const cards = groups.get(key) ?? [];
 
     cards.push(card);
