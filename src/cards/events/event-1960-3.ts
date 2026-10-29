@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'environmental',
+  category: 'nature',
   id: 'event-1960-3',
   name: 'silent-spring',
   number: 1960,

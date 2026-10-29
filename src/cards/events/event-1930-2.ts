@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'technological',
+  category: 'tech',
   id: 'event-1930-2',
   name: 'radar-discovery',
   number: 1930,

@@ -140,31 +140,41 @@ describe('computer opponent', () => {
         )!;
         const action = chooseComputerAction(before.G, owner);
 
-        expect(action).not.toBeNull();
+        assert(action, 'Expected a computer action');
 
-        if (action?.type === 'play') {
-          const hand = before.G.hands[owner];
-          const card = hand.find(
-            (candidate) => candidate.id === action.cardId,
-          )!;
+        switch (action.type) {
+          case 'play': {
+            const hand = before.G.hands[owner];
+            const card = hand.find(
+              (candidate) => candidate.id === action.cardId,
+            )!;
 
-          expect(isValidPlacement(before.G.played, action.position, card)).toBe(
-            true,
-          );
+            assert(
+              isValidPlacement(before.G.played, action.position, card),
+              'Expected a valid placement',
+            );
 
-          client.moves.playCard(action.cardId, action.position);
+            client.moves.playCard(action.cardId, action.position);
 
-          expect(client.getState()!.G.pending?.id).toBe(card.id);
-        } else if (action?.type === 'confirm') {
-          client.moves.confirmPlacement();
-        } else if (action?.type === 'discard') {
-          client.moves.discardCard(action.cardId);
-        } else if (action?.type === 'command') {
-          client.moves.command(
-            action.cardId,
-            action.targetId,
-            action.destination,
-          );
+            assert(
+              client.getState()!.G.pending?.id === card.id,
+              'Expected the correct card to be pending',
+            );
+            break;
+          }
+          case 'confirm':
+            client.moves.confirmPlacement();
+            break;
+          case 'discard':
+            client.moves.discardCard(action.cardId);
+            break;
+          case 'command':
+            client.moves.command(
+              action.cardId,
+              action.targetId,
+              action.destination,
+            );
+            break;
         }
 
         moves += 1;

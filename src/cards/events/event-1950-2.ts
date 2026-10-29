@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'technological',
+  category: 'tech',
   id: 'event-1950-2',
   name: 'space-race',
   number: 1950,

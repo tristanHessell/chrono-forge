@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   id: 'event-1980-1',
   name: 'democratic-change',
   number: 1980,

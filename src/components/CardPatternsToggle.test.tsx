@@ -14,6 +14,8 @@ describe(CardPatternsToggle, () => {
     async (value) => {
       vi.stubGlobal('localStorage', { getItem: () => value });
 
+      expect.assertions(2);
+
       render(
         <IntlProvider locale="en" messages={messages}>
           <CardPatternsToggle />

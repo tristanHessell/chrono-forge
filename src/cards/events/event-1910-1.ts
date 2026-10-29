@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   effects: ['free-action'],
   id: 'event-1910-1',
   name: 'global-conflict',

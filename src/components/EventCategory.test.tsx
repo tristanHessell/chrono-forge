@@ -9,7 +9,7 @@ import { PlacementSlot } from './PlacementSlot';
 import { PlayedCard } from './PlayedCard';
 
 describe('eventCategory', () => {
-  it.each(['political', 'technological', 'environmental'] as const)(
+  it.each(['politics', 'tech', 'nature'] as const)(
     'labels %s cards and preserves category styling on the board and drag preview',
     async (category) => {
       const card: PlacedCard = {

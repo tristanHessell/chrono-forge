@@ -16,10 +16,10 @@
   --command-card-color: #65449f;
   --control-bg: #14273d;
   --effect-icon-background: #10283f;
-  --environmental-card-border: #4cdb88;
   --event-card-color: #2878b8;
   --focus-ring: var(--card-cyan);
   --grid-line: rgb(102 229 245 / 7.5%);
+  --nature-card-border: #4cdb88;
   --neutral-owner-color: #bfcfe2;
   --page-bg: #070d1b;
   --page-glow: rgb(40 84 157 / 28%);
@@ -27,13 +27,13 @@
   --player-three-color: #97e19a;
   --player-two-color: #ffba78;
   --player-zero-color: #76e5ef;
-  --political-card-border: #ff6262;
+  --politics-card-border: #ff6262;
   --slot-bg: #18384d;
   --slot-hover: #245269;
   --slot-text: #a4f3ff;
   --table-bg: #101c30;
   --table-shadow: 0 2rem 5rem rgb(0 0 0 / 25%);
-  --technological-card-border: #f5d547;
+  --tech-card-border: #f5d547;
   --text: #e4f4ff;
   --text-muted: #93afc6;
   --text-secondary: #b5d0e4;
@@ -71,15 +71,15 @@
   --card-tint-rgb: 47, 47, 47;
   --command-card-color: #525252;
   --effect-icon-background: #252525;
-  --environmental-card-border: #b7b7b7;
   --event-card-color: #6c6c6c;
+  --nature-card-border: #b7b7b7;
   --neutral-owner-color: #cdcdcd;
   --player-one-color: #b8b8b8;
   --player-three-color: #ccc;
   --player-two-color: #c4c4c4;
   --player-zero-color: #cecece;
-  --political-card-border: #838383;
-  --technological-card-border: #d2d2d2;
+  --politics-card-border: #838383;
+  --tech-card-border: #d2d2d2;
 }
 
 :root[data-theme='greyscale-dark'],

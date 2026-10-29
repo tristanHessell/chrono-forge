@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'technological',
+  category: 'tech',
   effects: ['draw-one'],
   id: 'event-1940-2',
   name: 'atomic-age',

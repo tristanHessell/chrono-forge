@@ -88,12 +88,18 @@ describe('gameLog', () => {
       JSON.stringify({ ...valid, numPlayers: 5 }),
       JSON.stringify({ ...valid, actions: [{ type: 'RESET' }] }),
     ]) {
-      expect(() => parseGameLog(input)).toThrow();
+      expect(() => parseGameLog(input)).toThrow('');
     }
 
-    expect(() => replayGameLog(valid, -1)).toThrow();
-    expect(() => replayGameLog(valid, 1)).toThrow();
-    expect(() => replayGameLog(valid, 0.5)).toThrow();
+    expect(() => replayGameLog(valid, -1)).toThrow(
+      'Choose a valid action number.',
+    );
+    expect(() => replayGameLog(valid, 1)).toThrow(
+      'Choose a valid action number.',
+    );
+    expect(() => replayGameLog(valid, 0.5)).toThrow(
+      'Choose a valid action number.',
+    );
   });
 
   it('keeps confirmed actions in the exported replay', () => {
@@ -296,7 +302,7 @@ describe('gameLog', () => {
       version: 2,
     });
 
-    expect(() => replayGameLog(parseGameLog(text))).toThrow();
+    expect(() => replayGameLog(parseGameLog(text))).toThrow('');
     expect(client.getState()).toStrictEqual(before);
 
     client.stop();

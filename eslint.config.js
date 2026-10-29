@@ -125,13 +125,16 @@ export default defineConfig(
           prefer: 'type-imports',
         },
       ],
+      // TODO enforce this rule
       '@typescript-eslint/no-non-null-assertion': 'off',
+      // TODO configure this rule
       '@typescript-eslint/restrict-template-expressions': 'off',
       'formatjs/enforce-default-message': ['error', 'literal'],
       // We don't need descriptions at the moment, to enable if l10n becomes a priority
       'formatjs/enforce-description': 'off',
       'formatjs/enforce-id': 'error',
       'formatjs/enforce-message-types': ['error', { generateTypes: true }],
+      // We are enforcing `enforce-message-types`, so we don't need this rule
       'formatjs/enforce-placeholders': 'off',
       'formatjs/enforce-plural-rules': [
         'error',
@@ -176,7 +179,7 @@ export default defineConfig(
         },
       ],
       'react-refresh/only-export-components': [
-        'warn',
+        'error',
         { allowConstantExport: true },
       ],
     },
@@ -201,8 +204,7 @@ export default defineConfig(
       'vitest/max-nested-describe': 'error',
       'vitest/no-alias-methods': 'error',
       'vitest/no-commented-out-tests': 'error',
-      // TODO enforce this
-      'vitest/no-conditional-expect': 'warn',
+      'vitest/no-conditional-expect': ['error', { expectAssertions: true }],
       'vitest/no-conditional-in-test': 'error',
       'vitest/no-conditional-tests': 'error',
       'vitest/no-disabled-tests': 'error',
@@ -212,6 +214,7 @@ export default defineConfig(
       'vitest/no-hooks': 'off',
       'vitest/no-identical-title': 'error',
       'vitest/no-import-node-test': 'error',
+      // We absolutely want to use the vitest imports
       'vitest/no-importing-vitest-globals': 'off',
       'vitest/no-interpolation-in-snapshots': 'error',
       'vitest/no-large-snapshots': 'error',
@@ -231,6 +234,7 @@ export default defineConfig(
       'vitest/padding-around-expect-groups': 'error',
       'vitest/padding-around-test-blocks': 'error',
       'vitest/prefer-called-exactly-once-with': 'error',
+      // We don't need to enforce this as we are enforcing `prefer-called-times`.
       'vitest/prefer-called-once': 'off',
       'vitest/prefer-called-times': 'error',
       'vitest/prefer-called-with': 'error',
@@ -269,8 +273,7 @@ export default defineConfig(
       // This rule doesn't seem particularly useful, off as it gets noisy, quickly.
       'vitest/require-mock-type-parameters': 'off',
       'vitest/require-test-timeout': 'off',
-      // TODO enforce this
-      'vitest/require-to-throw-message': 'warn',
+      'vitest/require-to-throw-message': 'error',
       'vitest/require-top-level-describe': 'error',
       'vitest/unbound-method': 'error',
       'vitest/valid-describe-callback': 'error',

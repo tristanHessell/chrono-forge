@@ -89,7 +89,7 @@ export function PlayedCard({
       }>(
         {
           defaultMessage:
-            '{name}, {category, select, political {Politics} technological {Tech} environmental {Nature} other {Event}} card {number, number, ::group-off}, {owner}{latest, select, yes {, latest played card} other {}}',
+            '{name}, {category, select, politics {Politics} tech {Tech} nature {Nature} other {Event}} card {number, number, ::group-off}, {owner}{latest, select, yes {, latest played card} other {}}',
           id: 'card.label',
         },
         {

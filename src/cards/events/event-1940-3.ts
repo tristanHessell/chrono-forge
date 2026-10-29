@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'environmental',
+  category: 'nature',
   effects: ['draw-one'],
   id: 'event-1940-3',
   name: 'green-revolution',

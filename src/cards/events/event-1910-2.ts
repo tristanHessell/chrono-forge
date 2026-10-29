@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'technological',
+  category: 'tech',
   effects: ['free-action'],
   id: 'event-1910-2',
   name: 'assembly-lines',

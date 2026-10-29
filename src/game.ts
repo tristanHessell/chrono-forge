@@ -16,7 +16,7 @@ export {
 } from './gameRules';
 
 export type CardEffect = 'draw-one' | 'free-action' | 'timeline-1900-bonus';
-export type EventCategory = 'environmental' | 'political' | 'technological';
+export type EventCategory = 'nature' | 'politics' | 'tech';
 export type EventName =
   | 'assembly-lines'
   | 'atomic-age'

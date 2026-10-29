@@ -1,7 +1,7 @@
 import type { EventCard } from '../../game';
 
 export default {
-  category: 'political',
+  category: 'politics',
   effects: ['draw-one'],
   id: 'event-1940-1',
   name: 'united-nations',
