@@ -151,6 +151,14 @@ export function applyGameLogAction(
     ) {
       throw new Error('Event confirmation was rejected.');
     }
+  } else if (
+    action.type === 'MAKE_MOVE' &&
+    action.payload.type === 'manipulate'
+  ) {
+    client.store.dispatch({
+      ...action,
+      payload: { ...action.payload, type: 'command' },
+    });
   } else {
     client.store.dispatch(action);
   }
@@ -373,7 +381,18 @@ export function parseGameLog(text: string): GameLog {
       throw new Error('Invalid game log action.');
     }
 
-    actions.push(candidate as unknown as LogEntry['action']);
+    const normalizedCandidate =
+      candidate.type === 'MAKE_MOVE' && payload.type === 'manipulate'
+        ? {
+            ...candidate,
+            payload: {
+              ...payload,
+              type: 'command',
+            },
+          }
+        : candidate;
+
+    actions.push(normalizedCandidate as unknown as LogEntry['action']);
   }
 
   for (const action of actions) {
