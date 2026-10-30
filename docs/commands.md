@@ -65,6 +65,9 @@ Swap two Event cards. The board must stay legal after the swap. The starting
 card cannot be swapped. The swap keeps the placement order when it stays legal.
 Otherwise, the game recalculates the order to match the Event dates.
 
+When you swap leaf Events, both cards must satisfy all neighbor date rules.
+A card moved to a leaf position must have a later date than the incoming neighbor.
+
 ## Take Control
 
 Take control of another player's Event. The Event keeps its date, position,
