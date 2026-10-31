@@ -30,14 +30,6 @@
   position: relative;
 }
 
-.hand-heading {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.5rem;
-  justify-content: space-between;
-}
-
 .hand-identity {
   align-items: center;
   display: flex;
@@ -49,37 +41,6 @@
   display: grid;
   gap: 0.1rem;
   text-transform: uppercase;
-}
-
-.hand-identity-text > span {
-  color: var(--text-muted);
-  font-size: 0.62rem;
-}
-
-.hand-order {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  gap: 0.25rem;
-}
-
-.hand-order button {
-  background: var(--control-bg);
-  border: 1px solid var(--border);
-  border-radius: 0.2rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 0.65rem;
-  padding: 0.2rem 0.5rem;
-}
-
-.hand-order button[aria-pressed='true'] {
-  border-color: var(--accent-text);
-  color: var(--accent-text);
-}
-
-.hand-order button:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
 }
 
 .hand-fan {

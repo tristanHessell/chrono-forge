@@ -7,7 +7,7 @@ import messages from '../i18n/en.json';
 import { CardHand } from './CardHand';
 
 describe(CardHand, () => {
-  it('shows the player avatar and score above the current hand', async () => {
+  it('shows the player avatar without a date sort button or score', async () => {
     render(
       <IntlProvider locale="en" messages={messages}>
         <CardHand
@@ -23,7 +23,6 @@ describe(CardHand, () => {
           ownerName="You"
           pendingCardId={undefined}
           playerType="human"
-          score={4}
           selectedCardId={null}
         />
       </IntlProvider>,
@@ -31,8 +30,9 @@ describe(CardHand, () => {
 
     expect(page.getByLabelText('You, human')).toHaveLength(1);
     expect(page.getByLabelText('Your hand drop area')).toHaveLength(1);
+    expect(page.getByRole('button', { name: 'Date' })).toHaveLength(0);
     await expect
       .element(page.getByText('4 points', { exact: true }))
-      .toBeInTheDocument();
+      .not.toBeInTheDocument();
   });
 });

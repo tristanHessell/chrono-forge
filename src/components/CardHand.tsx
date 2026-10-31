@@ -4,12 +4,7 @@ import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card, CardOwner } from '../game';
-import {
-  type HandOrder,
-  moveHandCard,
-  orderHand,
-  restoreHandOrder,
-} from '../handOrder';
+import { moveHandCard, restoreHandOrder } from '../handOrder';
 import {
   commandDescriptionMessages,
   effectDescriptionMessages,
@@ -38,7 +33,6 @@ type CardHandProps = {
   ownerName: string;
   pendingCardId: string | undefined;
   playerType: PlayerType;
-  score: number;
   selectedCardId: null | string;
   touchDrag?: TouchCardDragHandlers;
 };
@@ -58,26 +52,21 @@ export function CardHand({
   ownerName,
   pendingCardId,
   playerType,
-  score,
   selectedCardId,
   touchDrag,
 }: CardHandProps) {
   const intl = useIntl();
   const isOpponent = owner !== '0';
-  const [order, setOrder] = useState<HandOrder | null>(null);
   const [manualIds, setManualIds] = useState<string[]>([]);
   const [draggedId, setDraggedId] = useState<null | string>(null);
   const [dragStartIds, setDragStartIds] = useState<string[]>([]);
-  const orderedCards = order
-    ? orderHand(cards, order)
-    : restoreHandOrder(cards, manualIds);
+  const orderedCards = restoreHandOrder(cards, manualIds);
   const reorder = (sourceId: string, targetId: string, before: boolean) => {
     setManualIds(
       moveHandCard(orderedCards, sourceId, targetId, before).map(
         (card) => card.id,
       ),
     );
-    setOrder(null);
   };
   const finishHandDrag = () => {
     setDraggedId(null);
@@ -147,77 +136,33 @@ export function CardHand({
 
   return (
     <>
-      <div className={cardHandStyles.handHeading}>
-        <div className={cardHandStyles.handIdentity}>
-          <PlayerAvatar
-            compact
-            name={ownerName}
-            owner={owner}
-            type={playerType}
-          />
-          <div className={cardHandStyles.handIdentityText}>
-            <p
-              className={clsx(
-                cardHandStyles.areaLabel,
-                ownershipStyles[`owner${owner}`],
-              )}
-            >
-              {owner === '0'
-                ? intl.formatMessage({
-                    defaultMessage: 'You',
-                    id: 'hand.yourTitle',
-                  })
-                : intl.formatMessage<{ readonly name: MessageValue }>(
-                    {
-                      defaultMessage: "{name}'s hand",
-                      id: 'hand.playerTitle',
-                    },
-                    { name: ownerName },
-                  )}
-            </p>
-            <span>
-              <FormattedMessage
-                defaultMessage="{count, plural, one {# point} other {# points}}"
-                id="score.points"
-                values={{
-                  count: score,
-                }}
-              />
-            </span>
-          </div>
-        </div>
-        <div
-          aria-label={
-            owner === '0'
+      <div className={cardHandStyles.handIdentity}>
+        <PlayerAvatar
+          compact
+          name={ownerName}
+          owner={owner}
+          type={playerType}
+        />
+        <div className={cardHandStyles.handIdentityText}>
+          <p
+            className={clsx(
+              cardHandStyles.areaLabel,
+              ownershipStyles[`owner${owner}`],
+            )}
+          >
+            {owner === '0'
               ? intl.formatMessage({
-                  defaultMessage: 'Order your hand',
-                  id: 'hand.yourOrderLabel',
+                  defaultMessage: 'You',
+                  id: 'hand.yourTitle',
                 })
               : intl.formatMessage<{ readonly name: MessageValue }>(
                   {
-                    defaultMessage: "Order {name}'s hand",
-                    id: 'hand.orderLabel',
+                    defaultMessage: "{name}'s hand",
+                    id: 'hand.playerTitle',
                   },
                   { name: ownerName },
-                )
-          }
-          className={cardHandStyles.handOrder}
-          role="group"
-        >
-          {(['date'] as const).map((value) => (
-            <button
-              aria-pressed={order === value}
-              key={value}
-              onClick={() => {
-                setOrder(value);
-                setHoveredCardId(null);
-                setFocusedCardId(null);
-              }}
-              type="button"
-            >
-              <FormattedMessage defaultMessage="Date" id="hand.orderDate" />
-            </button>
-          ))}
+                )}
+          </p>
         </div>
       </div>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- TODO this will need to change once we use role="application" */}
