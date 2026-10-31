@@ -1027,7 +1027,6 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                     ownerName={player.name}
                     pendingCardId={G.pending?.id}
                     playerType={player.type}
-                    score={scores[id] ?? 0}
                     selectedCardId={selectedCardId}
                   />
                 </div>
@@ -1162,6 +1161,13 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                 </svg>
               </button>
             </div>
+            <span className={gameBoardStyles.playerScore} data-player-score>
+              <FormattedMessage
+                defaultMessage="{count, plural, one {# point} other {# points}}"
+                id="score.points"
+                values={{ count: scores[handOwner] ?? 0 }}
+              />
+            </span>
           </div>
           <div className={gameBoardStyles.boardSurface}>
             <BoardZoomControls
@@ -1494,7 +1500,6 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
             ownerName={handPlayer.name}
             pendingCardId={G.pending?.id}
             playerType={handPlayer.type}
-            score={scores[handOwner] ?? 0}
             selectedCardId={selectedCardId}
             touchDrag={touchDrag}
           />

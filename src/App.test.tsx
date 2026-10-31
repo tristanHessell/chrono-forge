@@ -31,7 +31,7 @@ describe(App, () => {
     expect(page.getByRole('region', { name: 'Card table' })).toHaveLength(0);
   });
 
-  it('offers to continue the saved game from the title screen', async () => {
+  it('shows the player score beside the deck after continuing a saved game', async () => {
     const client = Client({
       game: { ...createCardGame('0'), seed: 'saved-game-seed' },
       numPlayers: 2,
@@ -63,5 +63,15 @@ describe(App, () => {
     await expect
       .element(page.getByRole('button', { name: 'Continue game' }))
       .toBeVisible();
+
+    await page.getByRole('button', { name: 'Continue game' }).click();
+
+    await expect
+      .element(page.getByRole('region', { name: 'Card table' }))
+      .toBeVisible();
+
+    await expect
+      .element(page.getByCSS('[data-player-score]'))
+      .toHaveTextContent('0 points');
   });
 });

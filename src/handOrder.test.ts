@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Card } from './game';
-import { moveHandCard, orderHand, restoreHandOrder } from './handOrder';
+import { moveHandCard, restoreHandOrder } from './handOrder';
 
 const cards: Card[] = [
   { id: 'event-a-1950', name: 'timeline-origin', number: 1950, type: 'event' },
@@ -48,29 +48,5 @@ describe('hand ordering', () => {
       cards[0],
       cards[3],
     ]);
-    expect(
-      orderHand(restoreHandOrder(cards, ids), 'date').map(
-        (card) => card.number,
-      ),
-    ).toStrictEqual([1900, 1900, 1950, 1990]);
-  });
-
-  it('orders by date ascending, preserving dealt order for matching dates', () => {
-    expect(orderHand(cards, 'date').map((card) => card.id)).toStrictEqual([
-      'event-b-1900',
-      'event-c-1900',
-      'event-a-1950',
-      'event-c-1990',
-    ]);
-  });
-
-  it('preserves the dealt order and original card objects', () => {
-    const before = [...cards];
-
-    orderHand(cards, 'date');
-
-    expect(cards).toStrictEqual(before);
-    expect(orderHand(cards, null)).toStrictEqual(before);
-    expect(orderHand(cards, 'date')[0]).toBe(cards[2]);
   });
 });

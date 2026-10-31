@@ -1,17 +1,5 @@
 import type { Card } from './game';
 
-export type HandOrder = 'date';
-
-export function orderHand(cards: Card[], order: HandOrder | null): Card[] {
-  if (!order) {
-    return [...cards];
-  }
-
-  return [...cards].sort(
-    (a, b) => (a.number ?? Infinity) - (b.number ?? Infinity),
-  );
-}
-
 export function restoreHandOrder(cards: Card[], ids: string[]): Card[] {
   const remaining = new Map(cards.map((card) => [card.id, card]));
   const ordered: Card[] = [];

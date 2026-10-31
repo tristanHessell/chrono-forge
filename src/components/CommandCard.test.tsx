@@ -28,7 +28,6 @@ describe('commandCard', () => {
             ownerName="You"
             pendingCardId={undefined}
             playerType="human"
-            score={0}
             selectedCardId={null}
           />
         </IntlProvider>,
