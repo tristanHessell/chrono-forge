@@ -823,9 +823,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- element interactions are a catch all here, rather than it being a truly interactive element.
     <main
-      className={clsx(gameBoardStyles.gameShell, {
-        [gameBoardStyles.choosingJumpDestination]: choosingJumpDestination,
-      })}
+      className={gameBoardStyles.gameShell}
       data-touch-dragging={Boolean(touchDrag.preview)}
       onClickCapture={(event) => {
         if (touchDrag.controller.consumeClick()) {
