@@ -61,16 +61,6 @@
   padding-top: 0.5rem;
 }
 
-/* Keep Time Jump destinations reachable until the player completes or cancels it. */
-.choosing-jump-destination .opponent-hand,
-.choosing-jump-destination .hand {
-  display: none;
-}
-
-.choosing-jump-destination .table {
-  grid-template-rows: [board-start] minmax(0, 1fr) [board-end];
-}
-
 .play-area {
   border-bottom: 1px solid var(--border);
   display: flex;
