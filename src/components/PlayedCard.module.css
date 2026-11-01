@@ -1,4 +1,6 @@
 .link-arrow {
+  --link-arrow-offset: -0.825rem;
+
   background: var(--card-gold);
   border: 1px solid rgb(var(--card-cream-rgb), 0.8);
   border-radius: 50%;
@@ -41,26 +43,36 @@
 
 .link-top {
   left: 50%;
-  top: -0.65rem;
+  top: var(--link-arrow-offset);
   transform: translateX(-50%);
 }
 
 .link-right {
-  right: -0.65rem;
+  right: var(--link-arrow-offset);
   top: 50%;
   transform: translateY(-50%);
 }
 
 .link-bottom {
-  bottom: -0.65rem;
+  bottom: var(--link-arrow-offset);
   left: 50%;
   transform: translateX(-50%);
 }
 
 .link-left {
-  left: -0.65rem;
+  left: var(--link-arrow-offset);
   top: 50%;
   transform: translateY(-50%);
+}
+
+@media (width <= 540px) {
+  .link-arrow {
+    --link-arrow-offset: -1.025rem;
+
+    font-size: 1rem;
+    height: 1.5rem;
+    width: 1.5rem;
+  }
 }
 
 .command-target[data-card-type] {
