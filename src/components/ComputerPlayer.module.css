@@ -41,6 +41,14 @@
   white-space: nowrap;
 }
 
+.identity .player-turn {
+  color: var(--accent-text);
+  display: grid;
+  font-size: 0.68rem;
+  font-weight: 800;
+  gap: 0.1rem;
+}
+
 .hidden-cards {
   display: flex;
   flex-wrap: nowrap;

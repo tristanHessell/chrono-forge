@@ -9,12 +9,20 @@ import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
 type Props = {
+  actionsThisTurn: number;
+  active: boolean;
   cards: Card[];
   player: PlayerSetup;
   score: number;
 };
 
-export function ComputerPlayer({ cards, player, score }: Props) {
+export function ComputerPlayer({
+  actionsThisTurn,
+  active,
+  cards,
+  player,
+  score,
+}: Props) {
   const intl = useIntl();
 
   return (
@@ -38,6 +46,7 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         computerPlayerStyles.computerPlayer,
         ownershipStyles[`owner${player.id}`],
       )}
+      data-current-turn={active}
       data-player-score={player.id}
     >
       <div className={computerPlayerStyles.identity}>
@@ -53,6 +62,23 @@ export function ComputerPlayer({ cards, player, score }: Props) {
               }}
             />
           </span>
+          {active && (
+            <div className={computerPlayerStyles.playerTurn}>
+              <span>
+                <FormattedMessage
+                  defaultMessage="Current player"
+                  id="turn.currentPlayer"
+                />
+              </span>
+              <span>
+                <FormattedMessage
+                  defaultMessage="{count, plural, one {# action left} other {# actions left}}"
+                  id="turn.actionsLeft"
+                  values={{ count: Math.max(0, 2 - actionsThisTurn) }}
+                />
+              </span>
+            </div>
+          )}
         </div>
       </div>
       <div
@@ -60,8 +86,8 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         aria-label={intl.formatMessage<{ readonly count: number | bigint }>(
           {
             defaultMessage:
-              '{count, plural, one {# face-down card} other {# face-down cards}}',
-            id: 'computer.hiddenCards',
+              '{count, plural, one {# card in hand} other {# cards in hand}}',
+            id: 'player.handCount',
           },
           { count: cards.length },
         )}

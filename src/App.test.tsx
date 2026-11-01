@@ -36,6 +36,9 @@ describe(App, () => {
       game: { ...createCardGame('0'), seed: 'saved-game-seed' },
       numPlayers: 2,
     });
+    const players = createDefaultPlayers().map((player) =>
+      player.id === '1' ? { ...player, type: 'human' } : player,
+    );
 
     vi.stubGlobal('localStorage', {
       getItem: (key: string) =>
@@ -44,7 +47,7 @@ describe(App, () => {
               initialState: client.getInitialState(),
               log: [],
               numPlayers: 2,
-              players: createDefaultPlayers(),
+              players,
               replayPaused: false,
               seed: 'saved-game-seed',
               startingPlayer: '0',
@@ -71,8 +74,24 @@ describe(App, () => {
       .toBeVisible();
 
     await expect
-      .element(page.getByCSS('[data-player-score="0"] > div > span'))
+      .element(
+        page.getByCSS('[data-player-score="0"] > div > span:nth-of-type(1)'),
+      )
       .toHaveTextContent('0 points');
+    await expect
+      .element(
+        page.getByCSS(
+          '[data-player-score="0"][data-current-turn="true"] > div > div > span:first-child',
+        ),
+      )
+      .toHaveTextContent('Current player');
+    await expect
+      .element(
+        page.getByCSS(
+          '[data-player-score="0"][data-current-turn="true"] > div > div > span:nth-child(2)',
+        ),
+      )
+      .toHaveTextContent('2 actions left');
     expect(
       page.getByCSS(
         '[data-player-row] > [data-player-score="0"] + [data-player-score="1"]',
@@ -81,6 +100,12 @@ describe(App, () => {
     expect(
       page.getByCSS('[data-player-score="0"] [aria-label="You, human"]'),
     ).toHaveLength(1);
+    expect(
+      page.getByCSS('[data-player-score="1"] [aria-label="5 cards in hand"]'),
+    ).toHaveLength(1);
+    expect(
+      page.getByCSS('[data-player-row] [data-hand-owner="1"]'),
+    ).toHaveLength(0);
     expect(
       page.getByCSS(
         '[aria-label="Your hand drop area"] [aria-label="You, human"]',

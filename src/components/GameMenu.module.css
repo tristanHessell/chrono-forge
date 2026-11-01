@@ -12,6 +12,10 @@
   white-space: nowrap;
 }
 
+.menu-label {
+  display: inline;
+}
+
 .game-menu > summary svg {
   fill: none;
   height: 1rem;
@@ -46,4 +50,10 @@
 .game-menu-panel > button {
   text-align: left;
   width: 100%;
+}
+
+@media (width <= 540px) {
+  .menu-label {
+    display: none;
+  }
 }

@@ -98,6 +98,12 @@
   white-space: nowrap;
 }
 
+.opponent-hand [data-current-turn='true'] {
+  border-radius: 0.25rem;
+  outline: 2px solid var(--owner-foreground-color, var(--owner-color));
+  outline-offset: 2px;
+}
+
 .player-score > div {
   display: grid;
   gap: 0.1rem;
@@ -300,34 +306,19 @@
   text-transform: uppercase;
 }
 
-.turn-indicator {
-  align-items: center;
-  border: 1px solid var(--owner-foreground-color, var(--owner-color));
-  border-radius: 0.25rem;
-  color: var(--text);
-  display: inline-flex;
-  flex-wrap: nowrap;
-  font-size: 0.78rem;
-  font-weight: 800;
-  gap: 0.45rem;
-  letter-spacing: 0.04em;
-  margin: 0;
-  padding: 0.62rem 0.85rem;
-  white-space: nowrap;
-}
-
 .history-controls {
   display: inline-flex;
   flex-wrap: nowrap;
   gap: 0.35rem;
 }
 
-.turn-indicator span {
-  background: var(--owner-foreground-color, var(--owner-color));
-  border-radius: 50%;
-  box-shadow: 0 0 0.7rem var(--owner-foreground-color, var(--owner-color));
-  height: 0.65rem;
-  width: 0.65rem;
+.player-turn {
+  color: var(--accent-text);
+  display: grid;
+  font-size: 0.68rem;
+  font-weight: 800;
+  gap: 0.1rem;
+  white-space: nowrap;
 }
 
 .discard-pile > svg {
@@ -360,7 +351,6 @@
   }
 
   .game-brand {
-    flex-basis: 100%;
     font-size: 0.8rem;
   }
 
@@ -380,9 +370,16 @@
     width: 100%;
   }
 
-  .top-actions .history-controls,
-  .history-controls > button {
-    flex: 1;
+  .opponent-hand {
+    flex-wrap: wrap;
+  }
+
+  .opponent-hand > [data-player-score] {
+    flex: 1 1 calc(50% - 0.375rem);
+  }
+
+  .history-controls > button[data-icon-button] {
+    padding: 0.35rem;
   }
 
   .area-heading {
