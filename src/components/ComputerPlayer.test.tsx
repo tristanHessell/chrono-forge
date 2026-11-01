@@ -17,6 +17,8 @@ describe(ComputerPlayer, () => {
     render(
       <IntlProvider locale="en" messages={messages}>
         <ComputerPlayer
+          actionsThisTurn={1}
+          active
           cards={cards}
           player={{ id: '1', name: 'Sally', type: 'computer' }}
           score={3}
@@ -30,6 +32,9 @@ describe(ComputerPlayer, () => {
       .toBeInTheDocument();
     await expect
       .element(page.getByText('3 points', { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText('Turn · Action 2 / 2'))
       .toBeInTheDocument();
     expect(page.getByLabelText('2 face-down cards')).toHaveLength(1);
     await expect

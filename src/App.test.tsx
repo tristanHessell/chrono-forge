@@ -71,8 +71,17 @@ describe(App, () => {
       .toBeVisible();
 
     await expect
-      .element(page.getByCSS('[data-player-score="0"] > div > span'))
+      .element(
+        page.getByCSS('[data-player-score="0"] > div > span:nth-of-type(1)'),
+      )
       .toHaveTextContent('0 points');
+    await expect
+      .element(
+        page.getByCSS(
+          '[data-player-score="0"][data-current-turn="true"] > div > span:nth-of-type(2)',
+        ),
+      )
+      .toHaveTextContent('Turn · Action 1 / 2');
     expect(
       page.getByCSS(
         '[data-player-row] > [data-player-score="0"] + [data-player-score="1"]',

@@ -9,12 +9,20 @@ import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
 type Props = {
+  actionsThisTurn: number;
+  active: boolean;
   cards: Card[];
   player: PlayerSetup;
   score: number;
 };
 
-export function ComputerPlayer({ cards, player, score }: Props) {
+export function ComputerPlayer({
+  actionsThisTurn,
+  active,
+  cards,
+  player,
+  score,
+}: Props) {
   const intl = useIntl();
 
   return (
@@ -38,6 +46,7 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         computerPlayerStyles.computerPlayer,
         ownershipStyles[`owner${player.id}`],
       )}
+      data-current-turn={active}
       data-player-score={player.id}
     >
       <div className={computerPlayerStyles.identity}>
@@ -53,6 +62,15 @@ export function ComputerPlayer({ cards, player, score }: Props) {
               }}
             />
           </span>
+          {active && (
+            <span className={computerPlayerStyles.playerTurn}>
+              <FormattedMessage
+                defaultMessage="Turn · Action {count, number} / 2"
+                id="turn.action"
+                values={{ count: actionsThisTurn + 1 }}
+              />
+            </span>
+          )}
         </div>
       </div>
       <div

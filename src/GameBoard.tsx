@@ -24,6 +24,7 @@ import { PlayedBoard } from './components/PlayedBoard';
 import { RoundScoresDialog } from './components/RoundScoresDialog';
 import { SettingsDialog } from './components/SettingsDialog';
 import {
+  canUndoMove,
   type Card,
   type CardGameState,
   type CardPosition,
@@ -613,11 +614,9 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       }}
     >
       <GameBoardHeader
-        activeOwner={activeOwner}
         activePlayer={activePlayer}
         computerPaused={computerPaused}
         finished={finished}
-        G={G}
         onNewGame={requestNewGame}
         onOpenCatalog={() => {
           setComputerPaused(true);
@@ -629,20 +628,8 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           cardCatalogDialogRef.current?.showModal();
         }}
         onOpenSettings={() => settingsDialogRef.current?.showModal()}
-        onRedo={() => {
-          setComputerPaused(true);
-          finishDrag();
-          setSelectedCardId(null);
-          gameMoves.redoTest();
-        }}
         onResumeComputer={() => {
           setComputerPaused(false);
-        }}
-        onUndo={() => {
-          setComputerPaused(true);
-          finishDrag();
-          setSelectedCardId(null);
-          gameMoves.undoTest();
         }}
       />
 
@@ -654,9 +641,11 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         className={gameBoardStyles.table}
       >
         <GameBoardPlayers
+          actionsThisTurn={G.actionsThisTurn}
           activeOwner={activeOwner}
           cards={G.hands}
           draggedPendingCard={draggedCard?.source === 'pending'}
+          finished={finished}
           handOwner={handOwner}
           handPlayer={handPlayer}
           onChooseCard={chooseCard}
@@ -766,6 +755,54 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   </small>
                 </span>
               </button>
+              <div
+                aria-label={intl.formatMessage({
+                  defaultMessage: 'Move history controls',
+                  id: 'history.label',
+                })}
+                className={gameBoardStyles.historyControls}
+              >
+                <button
+                  aria-label={intl.formatMessage({
+                    defaultMessage: 'Undo your last move',
+                    id: 'history.undoLabel',
+                  })}
+                  className={controlsStyles.historyButton}
+                  data-icon-button
+                  disabled={!canUndoMove(G)}
+                  onClick={() => {
+                    setComputerPaused(true);
+                    finishDrag();
+                    setSelectedCardId(null);
+                    gameMoves.undoTest();
+                  }}
+                  type="button"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M3 7v6h6M21 17a9 9 0 0 0-15-6.7L3 13" />
+                  </svg>
+                </button>
+                <button
+                  aria-label={intl.formatMessage({
+                    defaultMessage: 'Redo last action',
+                    id: 'history.redoLabel',
+                  })}
+                  className={controlsStyles.historyButton}
+                  data-icon-button
+                  disabled={G.testFuture.length === 0}
+                  onClick={() => {
+                    setComputerPaused(true);
+                    finishDrag();
+                    setSelectedCardId(null);
+                    gameMoves.redoTest();
+                  }}
+                  type="button"
+                >
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M21 7v6h-6M3 17a9 9 0 0 1 15-6.7L21 13" />
+                  </svg>
+                </button>
+              </div>
               <GameLogControls
                 currentPlayer={ctx.currentPlayer}
                 G={G}

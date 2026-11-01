@@ -300,34 +300,17 @@
   text-transform: uppercase;
 }
 
-.turn-indicator {
-  align-items: center;
-  border: 1px solid var(--owner-foreground-color, var(--owner-color));
-  border-radius: 0.25rem;
-  color: var(--text);
-  display: inline-flex;
-  flex-wrap: nowrap;
-  font-size: 0.78rem;
-  font-weight: 800;
-  gap: 0.45rem;
-  letter-spacing: 0.04em;
-  margin: 0;
-  padding: 0.62rem 0.85rem;
-  white-space: nowrap;
-}
-
 .history-controls {
   display: inline-flex;
   flex-wrap: nowrap;
   gap: 0.35rem;
 }
 
-.turn-indicator span {
-  background: var(--owner-foreground-color, var(--owner-color));
-  border-radius: 50%;
-  box-shadow: 0 0 0.7rem var(--owner-foreground-color, var(--owner-color));
-  height: 0.65rem;
-  width: 0.65rem;
+.player-turn {
+  color: var(--accent-text);
+  font-size: 0.58rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .discard-pile > svg {
@@ -380,9 +363,8 @@
     width: 100%;
   }
 
-  .top-actions .history-controls,
-  .history-controls > button {
-    flex: 1;
+  .history-controls > button[data-icon-button] {
+    padding: 0.35rem;
   }
 
   .area-heading {

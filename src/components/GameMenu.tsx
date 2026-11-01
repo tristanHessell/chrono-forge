@@ -65,7 +65,9 @@ export function GameMenu({ onNewGame, onOpenCatalog, onOpenSettings }: Props) {
         <svg aria-hidden="true" viewBox="0 0 16 16">
           <path d="M2 3h12M2 8h12M2 13h12" />
         </svg>
-        <FormattedMessage defaultMessage="Menu" id="menu.toggle" />
+        <span className={gameMenuStyles.menuLabel}>
+          <FormattedMessage defaultMessage="Menu" id="menu.toggle" />
+        </span>
       </summary>
       <div
         aria-label={intl.formatMessage({

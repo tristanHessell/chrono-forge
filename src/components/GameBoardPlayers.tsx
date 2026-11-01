@@ -10,9 +10,11 @@ import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
 
 type GameBoardPlayersProps = {
+  actionsThisTurn: number;
   activeOwner: PlayerId;
   cards: CardGameState['hands'];
   draggedPendingCard: boolean;
+  finished: boolean;
   handOwner: PlayerId;
   handPlayer: PlayerSetup;
   onChooseCard: (cardId: string) => void;
@@ -30,9 +32,11 @@ type GameBoardPlayersProps = {
 };
 
 export function GameBoardPlayers({
+  actionsThisTurn,
   activeOwner,
   cards,
   draggedPendingCard,
+  finished,
   handOwner,
   handPlayer,
   onChooseCard,
@@ -58,6 +62,7 @@ export function GameBoardPlayers({
                 gameBoardStyles.playerScore,
                 ownershipStyles[`owner${handOwner}`],
               )}
+              data-current-turn={activeOwner === handOwner && !finished}
               data-player-score={id}
               key={id}
             >
@@ -71,6 +76,15 @@ export function GameBoardPlayers({
                     values={{ count: scores[handOwner] ?? 0 }}
                   />
                 </span>
+                {activeOwner === handOwner && !finished && (
+                  <span className={gameBoardStyles.playerTurn}>
+                    <FormattedMessage
+                      defaultMessage="Turn · Action {count, number} / 2"
+                      id="turn.action"
+                      values={{ count: actionsThisTurn + 1 }}
+                    />
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -80,6 +94,8 @@ export function GameBoardPlayers({
 
         return player.type === 'computer' ? (
           <ComputerPlayer
+            actionsThisTurn={actionsThisTurn}
+            active={activeOwner === id && !finished}
             cards={cards[id]}
             key={id}
             player={player}
