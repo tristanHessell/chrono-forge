@@ -65,9 +65,9 @@ export function ComputerPlayer({
           {active && (
             <span className={computerPlayerStyles.playerTurn}>
               <FormattedMessage
-                defaultMessage="Turn · Action {count, number} / 2"
-                id="turn.action"
-                values={{ count: actionsThisTurn + 1 }}
+                defaultMessage="Current player · {count, plural, one {# action left} other {# actions left}}"
+                id="turn.remaining"
+                values={{ count: Math.max(0, 2 - actionsThisTurn) }}
               />
             </span>
           )}
@@ -78,8 +78,8 @@ export function ComputerPlayer({
         aria-label={intl.formatMessage<{ readonly count: number | bigint }>(
           {
             defaultMessage:
-              '{count, plural, one {# face-down card} other {# face-down cards}}',
-            id: 'computer.hiddenCards',
+              '{count, plural, one {# card in hand} other {# cards in hand}}',
+            id: 'player.handCount',
           },
           { count: cards.length },
         )}

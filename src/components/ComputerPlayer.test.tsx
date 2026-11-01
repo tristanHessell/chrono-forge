@@ -13,20 +13,20 @@ const cards = [
 ] satisfies Card[];
 
 describe(ComputerPlayer, () => {
-  it('shows computer identity and score without revealing its cards', async () => {
+  it('shows a human player summary without revealing their cards', async () => {
     render(
       <IntlProvider locale="en" messages={messages}>
         <ComputerPlayer
           actionsThisTurn={1}
           active
           cards={cards}
-          player={{ id: '1', name: 'Sally', type: 'computer' }}
+          player={{ id: '1', name: 'Sally', type: 'human' }}
           score={3}
         />
       </IntlProvider>,
     );
 
-    expect(page.getByLabelText('Sally, AI')).toHaveLength(1);
+    expect(page.getByLabelText('Sally, human')).toHaveLength(1);
     await expect
       .element(page.getByText('Sally', { exact: true }))
       .toBeInTheDocument();
@@ -34,9 +34,9 @@ describe(ComputerPlayer, () => {
       .element(page.getByText('3 points', { exact: true }))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText('Turn · Action 2 / 2'))
+      .element(page.getByText('Current player · 1 action left'))
       .toBeInTheDocument();
-    expect(page.getByLabelText('2 face-down cards')).toHaveLength(1);
+    expect(page.getByLabelText('2 cards in hand')).toHaveLength(1);
     await expect
       .element(page.getByText('2', { exact: true }))
       .toBeInTheDocument();

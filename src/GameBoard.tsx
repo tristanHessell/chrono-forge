@@ -644,24 +644,12 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           actionsThisTurn={G.actionsThisTurn}
           activeOwner={activeOwner}
           cards={G.hands}
-          draggedPendingCard={draggedCard?.source === 'pending'}
           finished={finished}
           handOwner={handOwner}
           handPlayer={handPlayer}
-          onChooseCard={chooseCard}
-          onDragEnd={finishDrag}
-          onDragOver={allowDrop}
-          onDragStart={(event, cardId) => {
-            beginDrag(event, cardId, 'hand');
-          }}
-          onDrop={returnCardToHand}
-          onShowDetails={showCardDetails}
-          pendingCardId={G.pending?.id}
-          pendingOwner={G.pending?.owner}
           playerIds={G.playerIds}
           players={players}
           scores={scores}
-          selectedCardId={selectedCardId}
         />
 
         <div className={gameBoardStyles.playArea}>

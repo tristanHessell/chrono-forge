@@ -1,10 +1,9 @@
 import clsx from 'clsx';
 import { FormattedMessage } from 'react-intl';
 
-import type { Card, CardGameState, CardOwner, PlayerId } from '../game';
+import type { CardGameState, PlayerId } from '../game';
 import gameBoardStyles from '../GameBoard.module.css';
 import { getPlayer, type PlayerSetup } from '../playerSetup';
-import { CardHand } from './CardHand';
 import { ComputerPlayer } from './ComputerPlayer';
 import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
@@ -13,44 +12,24 @@ type GameBoardPlayersProps = {
   actionsThisTurn: number;
   activeOwner: PlayerId;
   cards: CardGameState['hands'];
-  draggedPendingCard: boolean;
   finished: boolean;
   handOwner: PlayerId;
   handPlayer: PlayerSetup;
-  onChooseCard: (cardId: string) => void;
-  onDragEnd: () => void;
-  onDragOver: (event: React.DragEvent<HTMLElement>) => void;
-  onDragStart: (event: React.DragEvent<HTMLElement>, cardId: string) => void;
-  onDrop: (event: React.DragEvent<HTMLElement>) => void;
-  onShowDetails: (card: Card) => void;
-  pendingCardId?: string;
-  pendingOwner?: CardOwner;
   playerIds: PlayerId[];
   players: PlayerSetup[];
   scores: Record<string, number>;
-  selectedCardId: null | string;
 };
 
 export function GameBoardPlayers({
   actionsThisTurn,
   activeOwner,
   cards,
-  draggedPendingCard,
   finished,
   handOwner,
   handPlayer,
-  onChooseCard,
-  onDragEnd,
-  onDragOver,
-  onDragStart,
-  onDrop,
-  onShowDetails,
-  pendingCardId,
-  pendingOwner,
   playerIds,
   players,
   scores,
-  selectedCardId,
 }: GameBoardPlayersProps) {
   return (
     <div className={gameBoardStyles.opponentHand} data-player-row>
@@ -79,9 +58,9 @@ export function GameBoardPlayers({
                 {activeOwner === handOwner && !finished && (
                   <span className={gameBoardStyles.playerTurn}>
                     <FormattedMessage
-                      defaultMessage="Turn · Action {count, number} / 2"
-                      id="turn.action"
-                      values={{ count: actionsThisTurn + 1 }}
+                      defaultMessage="Current player · {count, plural, one {# action left} other {# actions left}}"
+                      id="turn.remaining"
+                      values={{ count: Math.max(0, 2 - actionsThisTurn) }}
                     />
                   </span>
                 )}
@@ -92,7 +71,7 @@ export function GameBoardPlayers({
 
         const player = getPlayer(players, id);
 
-        return player.type === 'computer' ? (
+        return (
           <ComputerPlayer
             actionsThisTurn={actionsThisTurn}
             active={activeOwner === id && !finished}
@@ -101,26 +80,6 @@ export function GameBoardPlayers({
             player={player}
             score={scores[id] ?? 0}
           />
-        ) : (
-          <div className={gameBoardStyles.computerHand} key={id}>
-            <CardHand
-              activeOwner={activeOwner}
-              cards={cards[id]}
-              interactive={false}
-              isReturnTarget={draggedPendingCard && pendingOwner === id}
-              onChoose={onChooseCard}
-              onDragEnd={onDragEnd}
-              onDragOver={onDragOver}
-              onDragStart={onDragStart}
-              onDrop={onDrop}
-              onShowDetails={onShowDetails}
-              owner={id}
-              ownerName={player.name}
-              pendingCardId={pendingCardId}
-              playerType={player.type}
-              selectedCardId={selectedCardId}
-            />
-          </div>
         );
       })}
     </div>

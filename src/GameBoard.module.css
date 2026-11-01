@@ -98,6 +98,12 @@
   white-space: nowrap;
 }
 
+.opponent-hand [data-current-turn='true'] {
+  border-radius: 0.25rem;
+  outline: 2px solid var(--owner-foreground-color, var(--owner-color));
+  outline-offset: 2px;
+}
+
 .player-score > div {
   display: grid;
   gap: 0.1rem;
@@ -308,7 +314,7 @@
 
 .player-turn {
   color: var(--accent-text);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   font-weight: 800;
   white-space: nowrap;
 }
