@@ -18,7 +18,10 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
   const client = replayGameLog(log, 0);
 
   try {
-    return log.actions.map((action, index) => {
+    const items: GameLogItem[] = [];
+
+    for (let index = 0; index < log.actions.length; index += 1) {
+      const action = log.actions[index];
       const { ctx, G } = client.getState()!;
       const args: unknown[] = Array.isArray(action.payload.args)
         ? action.payload.args
@@ -47,21 +50,36 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
             ? args[0]
             : args[1];
 
+      if (move === 'confirmTurn') {
+        applyGameLogAction(client, action);
+
+        continue;
+      }
+
       applyGameLogAction(client, action);
+
+      if (
+        client.getState()!.G.turnPendingConfirmation &&
+        log.actions[index + 1]?.type === 'MAKE_MOVE' &&
+        log.actions[index + 1].payload.type === 'confirmTurn'
+      ) {
+        applyGameLogAction(client, log.actions[index + 1]);
+        index += 1;
+      }
 
       const after = client.getState()!;
       const oldHandIds = new Set(
         G.hands[ctx.currentPlayer].map((card) => card.id),
       );
 
-      return {
+      items.push({
         card,
         drawn: ['playEvent', 'discardCard', 'command'].includes(move)
           ? after.G.hands[ctx.currentPlayer].filter(
               (card) => !oldHandIds.has(card.id),
             )
           : [],
-        index: index + 1,
+        index: items.length + 1,
         move,
         nextPlayer:
           after.ctx.currentPlayer !== ctx.currentPlayer
@@ -81,8 +99,10 @@ export function summarizeGameLog(log: GameLog): GameLogItem[] {
             ? cards.find((card) => card.id === args[1])
             : undefined,
         turn: ctx.turn,
-      };
-    });
+      });
+    }
+
+    return items;
   } finally {
     client.stop();
   }

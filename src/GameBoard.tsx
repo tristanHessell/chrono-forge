@@ -55,6 +55,7 @@ type CardGameMoves = {
     destination?: CardPosition | string,
   ) => void;
   confirmPlacement: () => void;
+  confirmTurn: () => void;
   discardCard: (cardId: string) => void;
   movePendingCard: (position: CardPosition) => void;
   playCard: (cardId: string, position: CardPosition) => void;
@@ -104,6 +105,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const intl = useIntl();
   const gameMoves = moves as CardGameMoves;
   const finished = Boolean(ctx.gameover) || G.roundOver;
+  const inputDisabled = finished || Boolean(G.turnPendingConfirmation);
   const activeOwner = ctx.currentPlayer as PlayerId;
   const players = use(PlayerSetupContext);
   const activePlayer = getPlayer(players, activeOwner);
@@ -151,7 +153,10 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       .find((card) => card.id === selectedCardId) ??
     G.pending;
   const command =
-    placementCard?.type === 'command' && isHumanTurn && !finished && !G.pending
+    placementCard?.type === 'command' &&
+    isHumanTurn &&
+    !inputDisabled &&
+    !G.pending
       ? placementCard
       : null;
   const commandTargets = command
@@ -213,7 +218,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   );
 
   const showPlacementSlots =
-    !finished && Boolean(selectedCardId || draggedCard);
+    !inputDisabled && Boolean(selectedCardId || draggedCard);
   // Reserve slot space even when hidden so selecting a card doesn't shift the board.
   const chooseCard = (cardId: string) => {
     const chosenCard = G.hands[activeOwner].find((card) => card.id === cardId);
@@ -442,7 +447,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   };
   const touchDrag = useTouchCardDrag({
     onDrop: (cardId, source, point) => {
-      if (finished || !isHumanTurn) {
+      if (inputDisabled || !isHumanTurn) {
         return;
       }
 
@@ -525,7 +530,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
 
     const droppedCard = readDraggedCard(event);
 
-    if (droppedCard && !finished) {
+    if (droppedCard && !inputDisabled) {
       discardCard(droppedCard.cardId);
     }
   };
@@ -644,12 +649,18 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           actionsThisTurn={G.actionsThisTurn}
           activeOwner={activeOwner}
           cards={G.hands}
+          confirmTurn={() => {
+            finishDrag();
+            setSelectedCardId(null);
+            gameMoves.confirmTurn();
+          }}
           finished={finished}
           handOwner={handOwner}
           handPlayer={handPlayer}
           playerIds={G.playerIds}
           players={players}
           scores={scores}
+          turnPendingConfirmation={Boolean(G.turnPendingConfirmation)}
         />
 
         <div className={gameBoardStyles.playArea}>
@@ -701,11 +712,11 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   { count: G.discarded.length },
                 )}
                 className={clsx(gameBoardStyles.discardPile, {
-                  [gameBoardStyles.discardReady]: draggedCard && !finished,
+                  [gameBoardStyles.discardReady]: draggedCard && !inputDisabled,
                 })}
                 data-discard-pile
                 disabled={
-                  finished ||
+                  inputDisabled ||
                   !isHumanTurn ||
                   !(draggedCard || selectedCardId || G.pending)
                 }
@@ -839,7 +850,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
             commandTargets={commandTargets}
             draggedCardDetails={draggedCardDetails}
             draggedCardSource={draggedCard?.source ?? null}
-            finished={finished}
+            finished={inputDisabled}
             G={G}
             isDragActive={Boolean(draggedCard)}
             isHumanTurn={isHumanTurn}
@@ -910,7 +921,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           <CardHand
             activeOwner={activeOwner}
             cards={G.hands[handOwner]}
-            interactive={isHumanTurn && !finished}
+            interactive={isHumanTurn && !inputDisabled}
             isReturnTarget={
               draggedCard?.source === 'pending' &&
               G.pending?.owner === handOwner

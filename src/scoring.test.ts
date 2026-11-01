@@ -71,6 +71,7 @@ describe('base scoring', () => {
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
 
     client.moves.confirmPlacement();
+    client.moves.confirmTurn();
 
     expect(client.getState()!.G.roundOver).toBe(true);
     expect(
@@ -179,10 +180,11 @@ describe('1900 timeline bonus', () => {
     client.moves.confirmPlacement();
 
     expect(calculateScores(client.getState()!.G.played)['0']).toBe(4);
-    expect(canUndoMove(client.getState()!.G)).toBe(false);
+    expect(canUndoMove(client.getState()!.G)).toBe(true);
 
     client.moves.undoTest();
 
-    expect(calculateScores(client.getState()!.G.played)['0']).toBe(4);
+    expect(calculateScores(client.getState()!.G.played)['0']).toBe(2);
+    expect(canUndoMove(client.getState()!.G)).toBe(false);
   });
 });

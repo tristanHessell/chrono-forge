@@ -34,6 +34,7 @@ describe('gameLogSummary', () => {
     client.moves.discardCard(discarded.id);
     client.moves.undoTest();
     client.moves.redoTest();
+    client.moves.confirmTurn();
 
     const before = client.getState()!;
     const log = parseGameLog(exportGameLog(seed, 2, client.log));

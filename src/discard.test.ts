@@ -73,6 +73,10 @@ describe('discarding', () => {
 
       client.moves.discardCard(hand[0].id);
 
+      if (client.getState()!.G.turnPendingConfirmation) {
+        client.moves.confirmTurn();
+      }
+
       const after = client.getState()!;
 
       expect(after.G.discarded).toHaveLength(count);

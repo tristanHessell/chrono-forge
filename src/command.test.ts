@@ -594,6 +594,7 @@ describe('command game moves', () => {
     const client = clientFor('time-jump', { actionsThisTurn: 1 });
 
     client.moves.command('command', 'c', { column: 1, row: -1 });
+    client.moves.confirmTurn();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.hands['0']).toHaveLength(2);
