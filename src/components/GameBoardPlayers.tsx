@@ -1,12 +1,7 @@
-import clsx from 'clsx';
-import { FormattedMessage } from 'react-intl';
-
 import type { CardGameState, PlayerId } from '../game';
 import gameBoardStyles from '../GameBoard.module.css';
 import { getPlayer, type PlayerSetup } from '../playerSetup';
-import { ComputerPlayer } from './ComputerPlayer';
-import ownershipStyles from './Ownership.module.css';
-import { PlayerAvatar } from './PlayerAvatar';
+import { PlayerRow } from './PlayerRow';
 
 type GameBoardPlayersProps = {
   actionsThisTurn: number;
@@ -15,7 +10,6 @@ type GameBoardPlayersProps = {
   confirmTurn: () => void;
   finished: boolean;
   handOwner: PlayerId;
-  handPlayer: PlayerSetup;
   playerIds: PlayerId[];
   players: PlayerSetup[];
   scores: Record<string, number>;
@@ -29,7 +23,6 @@ export function GameBoardPlayers({
   confirmTurn,
   finished,
   handOwner,
-  handPlayer,
   playerIds,
   players,
   scores,
@@ -38,72 +31,18 @@ export function GameBoardPlayers({
   return (
     <div className={gameBoardStyles.opponentHand} data-player-row>
       {playerIds.map((id) => {
-        if (id === handOwner) {
-          return (
-            <div
-              className={clsx(
-                gameBoardStyles.playerScore,
-                ownershipStyles[`owner${handOwner}`],
-              )}
-              data-current-turn={activeOwner === handOwner && !finished}
-              data-player-score={id}
-              key={id}
-            >
-              <PlayerAvatar compact {...handPlayer} owner={handOwner} />
-              <div>
-                <strong>{handPlayer.name}</strong>
-                <span>
-                  <FormattedMessage
-                    defaultMessage="{count, plural, one {# point} other {# points}}"
-                    id="score.points"
-                    values={{ count: scores[handOwner] ?? 0 }}
-                  />
-                </span>
-                {activeOwner === handOwner && !finished && (
-                  <div className={gameBoardStyles.playerTurn}>
-                    <span>
-                      <FormattedMessage
-                        defaultMessage="Current player"
-                        id="turn.currentPlayer"
-                      />
-                    </span>
-                    {turnPendingConfirmation ? (
-                      <button
-                        className={gameBoardStyles.confirmTurn}
-                        onClick={confirmTurn}
-                        type="button"
-                      >
-                        <FormattedMessage
-                          defaultMessage="End turn"
-                          id="turn.confirm"
-                        />
-                      </button>
-                    ) : (
-                      <span>
-                        <FormattedMessage
-                          defaultMessage="{count, plural, one {# action left} other {# actions left}}"
-                          id="turn.actionsLeft"
-                          values={{ count: Math.max(0, 2 - actionsThisTurn) }}
-                        />
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        }
-
         const player = getPlayer(players, id);
 
         return (
-          <ComputerPlayer
+          <PlayerRow
             actionsThisTurn={actionsThisTurn}
             active={activeOwner === id && !finished}
             cards={cards[id]}
+            confirmTurn={id === handOwner ? confirmTurn : undefined}
             key={id}
             player={player}
             score={scores[id] ?? 0}
+            turnPendingConfirmation={turnPendingConfirmation}
           />
         );
       })}

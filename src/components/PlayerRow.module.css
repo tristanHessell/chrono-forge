@@ -1,0 +1,140 @@
+.player-row {
+  align-items: center;
+  display: grid;
+  flex: 1;
+  gap: 0.5rem;
+  grid-template-columns:
+    [identity-start] minmax(0, 1fr)
+    [identity-end cards-start] auto [cards-end];
+  grid-template-rows: [row-start] auto [row-end];
+  min-width: 0;
+  padding: 0.25rem;
+}
+
+.identity {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  min-width: 0;
+  text-transform: uppercase;
+}
+
+.player-details {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.player-details strong {
+  color: var(--owner-foreground-color, var(--owner-color));
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-details > span {
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.player-turn {
+  color: var(--accent-text);
+  display: grid;
+  font-size: 0.68rem;
+  font-weight: 800;
+  gap: 0.1rem;
+  grid-column: 1 / -1;
+  visibility: hidden;
+  white-space: nowrap;
+}
+
+.player-turn[data-active='true'] {
+  visibility: visible;
+}
+
+.confirm-turn {
+  background: var(--control-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.15rem 0.35rem;
+}
+
+.confirm-turn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.hidden-cards {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  min-height: 1.7rem;
+  min-width: 2.5rem;
+  padding-right: 0.8rem;
+  position: relative;
+  width: fit-content;
+}
+
+.card-back {
+  box-shadow: 0.15rem 0.15rem 0 rgb(0 0 0 / 20%);
+  composes: card-back from './CardBack.module.css';
+  display: grid;
+  flex: 0 0 auto;
+  height: 1.7rem;
+  place-items: center;
+  width: 2.5rem;
+}
+
+.card-back + .card-back {
+  margin-left: -1.7rem;
+}
+
+.card-count {
+  color: #f7f2e8;
+  font-size: 0.9rem;
+  line-height: 1;
+  z-index: 1;
+}
+
+@media (width <= 540px) {
+  .player-row {
+    gap: 0.35rem;
+  }
+
+  .identity {
+    gap: 0.3rem;
+  }
+
+  .identity > [role='img'] {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  .identity > [role='img'] svg {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  .player-details > span {
+    font-size: 0.55rem;
+  }
+
+  .hidden-cards {
+    padding-right: 0.4rem;
+  }
+
+  .card-back {
+    height: 1.3rem;
+    width: 1.8rem;
+  }
+
+  .card-back + .card-back {
+    margin-left: -1.15rem;
+  }
+}

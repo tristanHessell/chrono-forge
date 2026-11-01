@@ -4,24 +4,28 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { Card } from '../game';
 import type { PlayerSetup } from '../playerSetup';
-import computerPlayerStyles from './ComputerPlayer.module.css';
 import ownershipStyles from './Ownership.module.css';
 import { PlayerAvatar } from './PlayerAvatar';
+import playerRowStyles from './PlayerRow.module.css';
 
 type Props = {
   actionsThisTurn: number;
   active: boolean;
   cards: Card[];
+  confirmTurn?: () => void;
   player: PlayerSetup;
   score: number;
+  turnPendingConfirmation?: boolean;
 };
 
-export function ComputerPlayer({
+export function PlayerRow({
   actionsThisTurn,
   active,
   cards,
+  confirmTurn,
   player,
   score,
+  turnPendingConfirmation = false,
 }: Props) {
   const intl = useIntl();
 
@@ -43,15 +47,15 @@ export function ComputerPlayer({
         },
       )}
       className={clsx(
-        computerPlayerStyles.computerPlayer,
+        playerRowStyles.playerRow,
         ownershipStyles[`owner${player.id}`],
       )}
       data-current-turn={active}
       data-player-score={player.id}
     >
-      <div className={computerPlayerStyles.identity}>
+      <div className={playerRowStyles.identity}>
         <PlayerAvatar compact {...player} owner={player.id} />
-        <div>
+        <div className={playerRowStyles.playerDetails} data-player-details>
           <strong>{player.name}</strong>
           <span>
             <FormattedMessage
@@ -62,23 +66,6 @@ export function ComputerPlayer({
               }}
             />
           </span>
-          {active && (
-            <div className={computerPlayerStyles.playerTurn}>
-              <span>
-                <FormattedMessage
-                  defaultMessage="Current player"
-                  id="turn.currentPlayer"
-                />
-              </span>
-              <span>
-                <FormattedMessage
-                  defaultMessage="{count, plural, one {# action left} other {# actions left}}"
-                  id="turn.actionsLeft"
-                  values={{ count: Math.max(0, 2 - actionsThisTurn) }}
-                />
-              </span>
-            </div>
-          )}
         </div>
       </div>
       <div
@@ -91,22 +78,52 @@ export function ComputerPlayer({
           },
           { count: cards.length },
         )}
-        className={computerPlayerStyles.hiddenCards}
+        className={playerRowStyles.hiddenCards}
         role="img"
       >
         {cards.map((card, index) => (
           <span
             aria-hidden="true"
-            className={computerPlayerStyles.cardBack}
+            className={playerRowStyles.cardBack}
             key={card.id}
           >
             {index === cards.length - 1 && (
-              <strong className={computerPlayerStyles.cardCount}>
+              <strong className={playerRowStyles.cardCount}>
                 {intl.formatNumber(cards.length)}
               </strong>
             )}
           </span>
         ))}
+      </div>
+      <div
+        aria-hidden={!active}
+        className={playerRowStyles.playerTurn}
+        data-active={active}
+        data-player-turn
+      >
+        <span>
+          <FormattedMessage
+            defaultMessage="Current player"
+            id="turn.currentPlayer"
+          />
+        </span>
+        {confirmTurn && turnPendingConfirmation ? (
+          <button
+            className={playerRowStyles.confirmTurn}
+            onClick={confirmTurn}
+            type="button"
+          >
+            <FormattedMessage defaultMessage="End turn" id="turn.confirm" />
+          </button>
+        ) : (
+          <span>
+            <FormattedMessage
+              defaultMessage="{count, plural, one {# action left} other {# actions left}}"
+              id="turn.actionsLeft"
+              values={{ count: Math.max(0, 2 - actionsThisTurn) }}
+            />
+          </span>
+        )}
       </div>
     </section>
   );

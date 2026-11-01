@@ -10,13 +10,13 @@ import cardStyles from './Card.module.css';
 import appearanceStyles from './CardAppearance.module.css';
 import cardBackStyles from './CardBack.module.css';
 import effectStyles from './CardEffect.module.css';
-import computerPlayerStyles from './ComputerPlayer.module.css';
 import logStyles from './GameLogView.module.css';
 import ownerStyles from './Ownership.module.css';
 import { PlacementSlot } from './PlacementSlot';
 import slotStyles from './PlacementSlot.module.css';
 import { PlayedCard } from './PlayedCard';
 import playedStyles from './PlayedCard.module.css';
+import playerRowStyles from './PlayerRow.module.css';
 
 const card: Event = {
   category: 'tech',
@@ -63,7 +63,7 @@ describe('componentStyles', () => {
   it('uses the same card back artwork for the deck and computer hands', () => {
     for (const value of [
       gameBoardStyles.deckCardBack,
-      computerPlayerStyles.cardBack,
+      playerRowStyles.cardBack,
     ]) {
       expect(value.split(' ')).toContain(cardBackStyles.cardBack);
     }

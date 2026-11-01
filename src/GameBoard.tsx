@@ -656,7 +656,6 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           }}
           finished={finished}
           handOwner={handOwner}
-          handPlayer={handPlayer}
           playerIds={G.playerIds}
           players={players}
           scores={scores}

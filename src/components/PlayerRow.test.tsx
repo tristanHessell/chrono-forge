@@ -5,23 +5,25 @@ import { page } from 'vitest/browser';
 import { render } from '../../tests/render';
 import type { Card } from '../game';
 import messages from '../i18n/en.json';
-import { ComputerPlayer } from './ComputerPlayer';
+import { PlayerRow } from './PlayerRow';
 
 const cards = [
   { id: 'hidden-1', name: 'timeline-origin', number: 1900, type: 'event' },
   { id: 'hidden-2', name: 'timeline-origin', number: 1910, type: 'event' },
 ] satisfies Card[];
 
-describe(ComputerPlayer, () => {
+describe(PlayerRow, () => {
   it('shows a human player summary without revealing their cards', async () => {
     render(
       <IntlProvider locale="en" messages={messages}>
-        <ComputerPlayer
+        <PlayerRow
           actionsThisTurn={1}
           active
           cards={cards}
+          confirmTurn={() => {}}
           player={{ id: '1', name: 'Sally', type: 'human' }}
           score={3}
+          turnPendingConfirmation
         />
       </IntlProvider>,
     );
@@ -36,17 +38,17 @@ describe(ComputerPlayer, () => {
     await expect
       .element(
         page.getByCSS(
-          '[data-player-score="1"][data-current-turn="true"] > div > div > div > span:first-child',
+          '[data-player-score="1"][data-current-turn="true"] [data-player-turn] > span:first-child',
         ),
       )
       .toBeInTheDocument();
     await expect
       .element(
         page.getByCSS(
-          '[data-player-score="1"][data-current-turn="true"] > div > div > div > span:nth-child(2)',
+          '[data-player-score="1"][data-current-turn="true"] [data-active="true"] button',
         ),
       )
-      .toHaveTextContent('1 action left');
+      .toHaveTextContent('End turn');
     await expect
       .element(
         page.getByCSS('[data-player-score="1"] [aria-label="2 cards in hand"]'),
@@ -61,5 +63,25 @@ describe(ComputerPlayer, () => {
     await expect
       .element(page.getByCSS('body'))
       .not.toMatchTextContent("Sally's hand");
+  });
+
+  it('keeps the turn status in the layout when the player is inactive', () => {
+    render(
+      <IntlProvider locale="en" messages={messages}>
+        <PlayerRow
+          actionsThisTurn={0}
+          active={false}
+          cards={cards}
+          player={{ id: '1', name: 'Sally', type: 'human' }}
+          score={3}
+        />
+      </IntlProvider>,
+    );
+
+    expect(
+      page.getByCSS(
+        '[data-player-score="1"] [data-active="false"][aria-hidden="true"]',
+      ),
+    ).toHaveLength(1);
   });
 });
