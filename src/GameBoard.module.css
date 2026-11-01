@@ -85,11 +85,29 @@
 }
 
 .player-score {
-  color: var(--text);
-  font-size: 0.78rem;
-  font-weight: 700;
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: nowrap;
+  font-size: 0.62rem;
+  font-weight: 600;
+  gap: 0.5rem;
   margin-left: auto;
+  text-transform: uppercase;
   white-space: nowrap;
+}
+
+.player-score > div {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.player-score strong {
+  color: var(--owner-foreground-color, var(--owner-color));
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .discard-pile {
