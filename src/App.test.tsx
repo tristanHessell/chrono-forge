@@ -75,20 +75,20 @@ describe(App, () => {
 
     await expect
       .element(
-        page.getByCSS('[data-player-score="0"] > div > span:nth-of-type(1)'),
+        page.getByCSS('[data-player-score="0"] [data-player-details] > span'),
       )
       .toHaveTextContent('0 points');
     await expect
       .element(
         page.getByCSS(
-          '[data-player-score="0"][data-current-turn="true"] > div > div > span:first-child',
+          '[data-player-score="0"] [data-player-turn] > span:first-child',
         ),
       )
       .toHaveTextContent('Current player');
     await expect
       .element(
         page.getByCSS(
-          '[data-player-score="0"][data-current-turn="true"] > div > div > span:nth-child(2)',
+          '[data-player-score="0"] [data-player-turn] > span:nth-child(2)',
         ),
       )
       .toHaveTextContent('2 actions left');

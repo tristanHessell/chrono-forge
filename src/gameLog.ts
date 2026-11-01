@@ -126,6 +126,17 @@ export function currentGameLog(
       payload: { args, playerID: before.currentPlayer, type },
       type: 'MAKE_MOVE',
     });
+
+    if (
+      (G.rulesVersion ?? 0) >= 6 &&
+      before.currentPlayer === '0' &&
+      (after.currentPlayer !== '0' || after.roundOver)
+    ) {
+      actions.push({
+        payload: { args: [], playerID: '0', type: 'confirmTurn' },
+        type: 'MAKE_MOVE',
+      });
+    }
   }
 
   return {
@@ -151,6 +162,15 @@ export function applyGameLogAction(
   client: ReplayClient,
   action: LogEntry['action'],
 ) {
+  const state = client.getState()!;
+
+  if (
+    state.G.turnPendingConfirmation &&
+    action.payload.playerID !== state.ctx.currentPlayer
+  ) {
+    client.moves.confirmTurn();
+  }
+
   if (action.type === 'MAKE_MOVE' && action.payload.type === 'playEvent') {
     if (action.payload.playerID !== client.getState()!.ctx.currentPlayer) {
       throw new Error('Confirmed Event belongs to a different player turn.');
@@ -363,6 +383,7 @@ export function parseGameLog(text: string): GameLog {
     (parsed.version !== 1 && parsed.version !== 2) ||
     (parsed.rulesVersion !== 2 &&
       parsed.rulesVersion !== 4 &&
+      parsed.rulesVersion !== 5 &&
       parsed.rulesVersion !== CURRENT_RULES_VERSION) ||
     (parsed.rulesVersion !== 2 &&
       !isPlayerId(parsed.startingPlayer, parsed.numPlayers)) ||
@@ -430,7 +451,14 @@ export function parseGameLog(text: string): GameLog {
       const names =
         action.type === 'MAKE_MOVE'
           ? parsed.version === 2
-            ? ['playEvent', 'discardCard', 'command', 'undoTest', 'redoTest']
+            ? [
+                'confirmTurn',
+                'playEvent',
+                'discardCard',
+                'command',
+                'undoTest',
+                'redoTest',
+              ]
             : Object.keys(CardGame.moves!)
           : [
               'endTurn',

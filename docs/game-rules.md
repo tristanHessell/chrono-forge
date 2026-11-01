@@ -26,10 +26,14 @@ Event does not use one of these actions. A player can still take up to two
 other actions that turn. Selecting, moving, or replacing an unconfirmed Event
 does not use an action.
 
-After the second action, the active player draws cards until their hand has five
-cards, then the next player takes a turn. If a player has no cards before their
-second action, their turn ends and they refill. When the deck has fewer cards
-than needed, the player draws only the cards that remain.
+After their last action, the human player must confirm the end of their turn.
+They can undo their last move before they confirm. Computer players end their
+turns automatically.
+
+When a turn ends, the active player draws cards until their hand has five cards.
+If a player has no cards before their second action, they can end their turn
+early. When the deck has fewer cards than needed, the player draws only the
+cards that remain.
 
 After the deck runs out, players take up to two actions with their remaining
 hands. Empty hands are skipped. The game ends when all hands and the deck are

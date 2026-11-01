@@ -192,6 +192,7 @@
   "titleScreen.continue": "Continue game",
   "titleScreen.start": "Start a new game",
   "turn.actionsLeft": "{count, plural, one {# action left} other {# actions left}}",
+  "turn.confirm": "End turn",
   "turn.currentPlayer": "Current player",
   "zoom.fitAll": "Fit all",
   "zoom.in": "Zoom in",

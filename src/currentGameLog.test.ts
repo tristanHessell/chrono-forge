@@ -44,6 +44,13 @@ describe(currentGameLog, () => {
         index += 1
       ) {
         const { ctx, G } = client.getState()!;
+
+        if (G.turnPendingConfirmation) {
+          client.moves.confirmTurn();
+
+          continue;
+        }
+
         const action = chooseComputerAction(G, ctx.currentPlayer as '0')!;
 
         if (action.type === 'play') {
@@ -66,12 +73,20 @@ describe(currentGameLog, () => {
       const replay = replayGameLog(log);
 
       expect(state.G.roundOver).toBe(true);
-      expect(log.actions).toHaveLength(state.G.testHistory.length);
+      expect(
+        log.actions.filter(
+          (action) =>
+            action.type === 'MAKE_MOVE' &&
+            ['playEvent', 'discardCard', 'command'].includes(
+              action.payload.type,
+            ),
+        ),
+      ).toHaveLength(state.G.testHistory.length);
       expect(
         log.actions.every(
           (action) =>
             action.type === 'MAKE_MOVE' &&
-            ['playEvent', 'discardCard', 'command'].includes(
+            ['confirmTurn', 'playEvent', 'discardCard', 'command'].includes(
               action.payload.type,
             ),
         ),

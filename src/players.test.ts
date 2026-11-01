@@ -40,6 +40,10 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
 
       client.moves.discardCard(client.getState()!.G.hands[id][0].id);
 
+      if (id === 0) {
+        client.moves.confirmTurn();
+      }
+
       expect(client.getState()!.G.hands[id]).toHaveLength(5);
     }
 
@@ -91,6 +95,7 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
     });
 
     client.moves.discardCard('last-0');
+    client.moves.confirmTurn();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('2');
     expect(client.getState()!.G.roundOver).toBe(false);

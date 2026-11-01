@@ -77,6 +77,8 @@ describe('cardEffects', () => {
 
         client.moves.confirmPlacement();
 
+        client.moves.confirmTurn();
+
         const after = client.getState()!;
         const hand = player === '0' ? after.G.hands['0'] : after.G.hands['1'];
         const otherHand =
@@ -106,6 +108,7 @@ describe('cardEffects', () => {
 
       client.moves.playCard('event-1940-1', { column: 1, row: 0 });
       client.moves.confirmPlacement();
+      client.moves.confirmTurn();
 
       const after = client.getState()!;
 
@@ -200,6 +203,7 @@ describe('cardEffects', () => {
 
       client.moves.playCard(hand[2].id, { column: 3, row: 0 });
       client.moves.confirmPlacement();
+      client.moves.confirmTurn();
 
       const afterTurn = client.getState()!;
 
