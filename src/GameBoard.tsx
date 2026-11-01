@@ -1,57 +1,34 @@
 import type { BoardProps } from 'boardgame.io/react';
 import clsx from 'clsx';
-import {
-  use,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
-import type { MessageValue } from 'react-intl';
+import { use, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import {
-  changeBoardZoom,
-  changeBoardZoomByPinch,
-  fitBoardZoom,
-  listenForBoardWheel,
-} from './boardZoom';
 import {
   applyCommand,
   applyTimeSwap,
   getTimeJumpPositions,
 } from './commandRules';
-import { BoardZoomControls } from './components/BoardZoomControls';
 import cardStyles from './components/Card.module.css';
 import { CardCatalogDialog } from './components/CardCatalogDialog';
 import { CardDetailsDialog } from './components/CardDetailsDialog';
 import { CardEffects } from './components/CardEffect';
 import { CardEventName } from './components/CardEventName';
 import { CardHand } from './components/CardHand';
-import { ComputerPlayer } from './components/ComputerPlayer';
 import controlsStyles from './components/Controls.module.css';
+import { GameBoardFooter } from './components/GameBoardFooter';
+import { GameBoardHeader } from './components/GameBoardHeader';
+import { GameBoardPlayers } from './components/GameBoardPlayers';
 import { GameLogControls } from './components/GameLogControls';
-import { GameMenu } from './components/GameMenu';
-import { GameResults } from './components/GameResults';
 import { NewGameDialog } from './components/NewGameDialog';
-import ownershipStyles from './components/Ownership.module.css';
-import pendingCardStyles from './components/PendingCard.module.css';
-import { PlacementSlot } from './components/PlacementSlot';
-import { PlayedCard } from './components/PlayedCard';
-import playedCardStyles from './components/PlayedCard.module.css';
-import { PlayerAvatar } from './components/PlayerAvatar';
+import { PlayedBoard } from './components/PlayedBoard';
 import { RoundScoresDialog } from './components/RoundScoresDialog';
 import { SettingsDialog } from './components/SettingsDialog';
 import {
-  canUndoMove,
   type Card,
   type CardGameState,
   type CardPosition,
   getAvailablePositions,
-  type PlacedCard,
   type PlayerId,
-  positionKey,
 } from './game';
 import gameBoardStyles from './GameBoard.module.css';
 import { GameLogContext } from './gameLogContext';
@@ -66,6 +43,7 @@ import {
   type DragSource,
   touchDropPosition,
 } from './touchCardDrag';
+import { useBoardViewport } from './useBoardViewport';
 import { useComputerOpponent } from './useComputerOpponent';
 import { useTouchCardDrag } from './useTouchCardDrag';
 
@@ -89,37 +67,6 @@ type DraggedCard = {
   cardId: string;
   source: 'hand' | 'pending';
 };
-
-const linkDirections = [
-  {
-    className: playedCardStyles.linkTop,
-    column: 0,
-    direction: 'down',
-    inward: '↓',
-    row: -1,
-  },
-  {
-    className: playedCardStyles.linkLeft,
-    column: -1,
-    direction: 'right',
-    inward: '→',
-    row: 0,
-  },
-  {
-    className: playedCardStyles.linkRight,
-    column: 1,
-    direction: 'left',
-    inward: '←',
-    row: 0,
-  },
-  {
-    className: playedCardStyles.linkBottom,
-    column: 0,
-    direction: 'up',
-    inward: '↑',
-    row: 1,
-  },
-] as const;
 
 function setCardDragImage(event: React.DragEvent<HTMLElement>) {
   const preview = event.currentTarget.cloneNode(true) as HTMLElement;
@@ -179,22 +126,10 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const [commandTargetId, setCommandTargetId] = useState<null | string>(null);
   const [draggedCard, setDraggedCard] = useState<DraggedCard | null>(null);
   const [snapPosition, setSnapPosition] = useState<CardPosition | null>(null);
-  const [boardZoom, setBoardZoom] = useState(1);
-  const [isPanning, setIsPanning] = useState(false);
-  const boardViewportRef = useRef<HTMLDivElement>(null);
   const cardCatalogDialogRef = useRef<HTMLDialogElement>(null);
   const newGameDialogRef = useRef<HTMLDialogElement>(null);
   const roundScoresDialogRef = useRef<HTMLDialogElement>(null);
   const settingsDialogRef = useRef<HTMLDialogElement>(null);
-  const lastJumpDestinationRef = useRef<CardPosition | null>(null);
-  const panStartRef = useRef({
-    pointerX: 0,
-    pointerY: 0,
-    scrollLeft: 0,
-    scrollTop: 0,
-  });
-  const touchPointsRef = useRef(new Map<number, { x: number; y: number }>());
-  const pinchDistanceRef = useRef<null | number>(null);
   const draggedCardDetails = draggedCard
     ? draggedCard.source === 'pending'
       ? G.pending
@@ -242,105 +177,9 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     command?.action === 'time-jump' && commandTargetId,
   );
 
-  useLayoutEffect(() => {
-    const viewport = boardViewportRef.current;
-    const position = lastJumpDestinationRef.current;
-
-    if (!viewport || choosingJumpDestination || !position) {
-      return;
-    }
-
-    const movedCard = viewport.querySelector<HTMLElement>(
-      `[data-position="${positionKey(position)}"]`,
-    );
-
-    if (movedCard) {
-      const cardBounds = movedCard.getBoundingClientRect();
-      const viewBounds = viewport.getBoundingClientRect();
-
-      viewport.scrollLeft +=
-        cardBounds.left +
-        cardBounds.width / 2 -
-        viewBounds.left -
-        viewBounds.width / 2;
-      viewport.scrollTop +=
-        cardBounds.top +
-        cardBounds.height / 2 -
-        viewBounds.top -
-        viewBounds.height / 2;
-    }
-
-    lastJumpDestinationRef.current = null;
-  }, [choosingJumpDestination, G.played]);
-
   const showPlacementSlots =
     !finished && Boolean(selectedCardId || draggedCard);
   // Reserve slot space even when hidden so selecting a card doesn't shift the board.
-  const visiblePositions = !finished
-    ? [...G.played, ...getAvailablePositions(G.played), ...availablePositions]
-    : [...G.played];
-
-  if (G.pending) {
-    visiblePositions.push(G.pending);
-  }
-
-  const rows = visiblePositions.map(({ row }) => row);
-  const columns = visiblePositions.map(({ column }) => column);
-  const minimumRow = Math.min(...rows);
-  const maximumRow = Math.max(...rows);
-  const minimumColumn = Math.min(...columns);
-  const maximumColumn = Math.max(...columns);
-  const gridStyle = G.played.length
-    ? {
-        gridTemplateColumns: `repeat(${maximumColumn - minimumColumn + 1}, var(--card-width))`,
-        gridTemplateRows: `repeat(${maximumRow - minimumRow + 1}, var(--card-height))`,
-      }
-    : undefined;
-
-  const positionStyle = ({ column, row }: CardPosition) => ({
-    gridColumn: column - minimumColumn + 1,
-    gridRow: row - minimumRow + 1,
-  });
-
-  const linkedCardsByPosition = new Map(
-    [...G.played, ...(G.pending ? [G.pending] : [])].map((card) => [
-      positionKey(card),
-      card,
-    ]),
-  );
-
-  const renderLinkDirections = (card: PlacedCard) =>
-    linkDirections.map((link) => {
-      const neighbor = linkedCardsByPosition.get(
-        positionKey({
-          column: card.column + link.column,
-          row: card.row + link.row,
-        }),
-      );
-
-      if (!neighbor) {
-        return null;
-      }
-
-      const pointsOutward = card.placedAt < neighbor.placedAt;
-
-      if (pointsOutward) {
-        return null;
-      }
-
-      return (
-        <span
-          aria-hidden="true"
-          className={clsx(playedCardStyles.linkArrow, link.className)}
-          data-direction={link.direction}
-          data-drag-decoration
-          key={link.className}
-        >
-          {link.inward}
-        </span>
-      );
-    });
-
   const chooseCard = (cardId: string) => {
     setCommandTargetId(null);
 
@@ -373,7 +212,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
 
   const placeSelectedCard = (position: CardPosition) => {
     if (command && commandTargetId) {
-      lastJumpDestinationRef.current = position;
+      rememberJumpDestination(position);
       gameMoves.command(command.id, commandTargetId, position);
       setSelectedCardId(null);
       setCommandTargetId(null);
@@ -592,6 +431,24 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       setCommandTargetId(null);
     },
   });
+  const {
+    adjustBoardZoom,
+    boardViewportRef,
+    boardZoom,
+    fitBoardToViewport,
+    isPanning,
+    panBoard,
+    rememberJumpDestination,
+    resetBoardZoom,
+    startBoardPan,
+    stopBoardPan,
+  } = useBoardViewport({
+    choosingJumpDestination,
+    onCancelTouchDrag: () => {
+      touchDrag.controller.cancel();
+    },
+    played: G.played,
+  });
 
   const discardCard = (cardId: string) => {
     gameMoves.discardCard(cardId);
@@ -660,170 +517,6 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     }
   };
 
-  const adjustBoardZoom = useCallback((change: number) => {
-    setBoardZoom((current) => changeBoardZoom(current, change));
-  }, []);
-
-  const fitBoardToViewport = useCallback(() => {
-    const viewport = boardViewportRef.current;
-    const grid = viewport?.querySelector<HTMLElement>('[data-board-grid]');
-
-    if (!viewport || !grid) {
-      return;
-    }
-
-    const gridBounds = grid.getBoundingClientRect();
-    const viewportStyles = getComputedStyle(viewport);
-    const availableWidth =
-      viewport.clientWidth -
-      parseFloat(viewportStyles.paddingLeft) -
-      parseFloat(viewportStyles.paddingRight);
-    const availableHeight =
-      viewport.clientHeight -
-      parseFloat(viewportStyles.paddingTop) -
-      parseFloat(viewportStyles.paddingBottom);
-
-    setBoardZoom((current) =>
-      fitBoardZoom(
-        current,
-        gridBounds.width,
-        gridBounds.height,
-        availableWidth,
-        availableHeight,
-      ),
-    );
-    viewport.scrollLeft = 0;
-    viewport.scrollTop = 0;
-  }, []);
-
-  useEffect(() => {
-    const viewport = boardViewportRef.current;
-
-    if (!viewport) {
-      return;
-    }
-
-    return listenForBoardWheel(viewport, adjustBoardZoom);
-  }, [adjustBoardZoom]);
-
-  const startBoardPan = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'touch') {
-      touchPointsRef.current.set(event.pointerId, {
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      if (touchPointsRef.current.size === 2) {
-        const [first, second] = [...touchPointsRef.current.values()];
-        const distance = Math.hypot(first.x - second.x, first.y - second.y);
-
-        pinchDistanceRef.current = distance || null;
-        touchDrag.controller.cancel();
-        setIsPanning(false);
-
-        return;
-      }
-      if (touchPointsRef.current.size > 2) {
-        pinchDistanceRef.current = null;
-        setIsPanning(false);
-
-        return;
-      }
-    }
-
-    if (
-      event.button !== 0 ||
-      pinchDistanceRef.current ||
-      (event.target as Element).closest(
-        '[data-card-type], [data-placement-slot]',
-      )
-    ) {
-      return;
-    }
-
-    panStartRef.current = {
-      pointerX: event.clientX,
-      pointerY: event.clientY,
-      scrollLeft: event.currentTarget.scrollLeft,
-      scrollTop: event.currentTarget.scrollTop,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setIsPanning(true);
-  };
-
-  const panBoard = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'touch') {
-      const touchPoint = touchPointsRef.current.get(event.pointerId);
-
-      if (touchPoint) {
-        touchPoint.x = event.clientX;
-        touchPoint.y = event.clientY;
-
-        if (pinchDistanceRef.current && touchPointsRef.current.size === 2) {
-          const [first, second] = [...touchPointsRef.current.values()];
-          const distance = Math.hypot(first.x - second.x, first.y - second.y);
-          const previousDistance = pinchDistanceRef.current;
-
-          pinchDistanceRef.current = distance;
-          setBoardZoom((current) =>
-            changeBoardZoomByPinch(current, previousDistance, distance),
-          );
-
-          return;
-        }
-      }
-      if (pinchDistanceRef.current) {
-        return;
-      }
-    }
-
-    if (!isPanning) {
-      return;
-    }
-
-    event.currentTarget.scrollLeft =
-      panStartRef.current.scrollLeft -
-      (event.clientX - panStartRef.current.pointerX);
-    event.currentTarget.scrollTop =
-      panStartRef.current.scrollTop -
-      (event.clientY - panStartRef.current.pointerY);
-  };
-
-  const stopBoardPan = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'touch') {
-      touchPointsRef.current.delete(event.pointerId);
-
-      if (touchPointsRef.current.size < 2) {
-        pinchDistanceRef.current = null;
-      }
-    }
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    if (isPanning) {
-      setIsPanning(false);
-    }
-  };
-
-  const isSnappedTo = (position: CardPosition) =>
-    snapPosition && positionKey(snapPosition) === positionKey(position);
-
-  const pendingShowsReplacement = Boolean(
-    G.pending &&
-    draggedCard?.source === 'hand' &&
-    draggedCardDetails &&
-    draggedCardDetails.type === 'event' &&
-    isSnappedTo(G.pending),
-  );
-  const displayedPendingCard =
-    pendingShowsReplacement && draggedCardDetails?.type === 'event'
-      ? draggedCardDetails
-      : G.pending;
-  const displayedPendingOwner = pendingShowsReplacement
-    ? activeOwner
-    : G.pending?.owner;
-
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- element interactions are a catch all here, rather than it being a truly interactive element.
     <main
@@ -853,142 +546,38 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         touchDrag.controller.resetClickSuppression();
       }}
     >
-      <header className={gameBoardStyles.header}>
-        <div className={gameBoardStyles.topActions}>
-          <div className={gameBoardStyles.gameBrand}>
-            <svg aria-hidden="true" viewBox="0 0 24 24">
-              <path d="m12 2 9 5v10l-9 5-9-5V7z" />
-            </svg>
-            <div>
-              <FormattedMessage defaultMessage="Chrono-Forge" id="brand.name" />
-              <small>
-                <FormattedMessage
-                  defaultMessage="Tactical card system"
-                  id="brand.tagline"
-                />
-              </small>
-            </div>
-          </div>
-          <p
-            className={clsx(
-              gameBoardStyles.turnIndicator,
-              ownershipStyles[`owner${activeOwner}`],
-            )}
-          >
-            <span aria-hidden="true" />
-            {finished
-              ? intl.formatMessage({
-                  defaultMessage: 'Game over',
-                  id: 'game.over',
-                })
-              : activePlayer.type === 'computer'
-                ? intl.formatMessage(
-                    computerPaused
-                      ? {
-                          defaultMessage: 'Computer paused',
-                          id: 'computer.paused',
-                        }
-                      : {
-                          defaultMessage: '{name} is thinking…',
-                          id: 'computer.thinking',
-                        },
-                    { name: activePlayer.name },
-                  )
-                : activeOwner === '0'
-                  ? intl.formatMessage({
-                      defaultMessage: 'Your turn',
-                      id: 'turn.you',
-                    })
-                  : intl.formatMessage<{ readonly name: MessageValue }>(
-                      { defaultMessage: "{name}'s turn", id: 'turn.player' },
-                      { name: activePlayer.name },
-                    )}
-            {!finished && (
-              <small>
-                <FormattedMessage
-                  defaultMessage="{count, number} / 2"
-                  id="turn.action"
-                  values={{ count: G.actionsThisTurn + 1 }}
-                />
-              </small>
-            )}
-          </p>
-          <div
-            aria-label={intl.formatMessage({
-              defaultMessage: 'Move history controls',
-              id: 'history.label',
-            })}
-            className={gameBoardStyles.historyControls}
-          >
-            <button
-              aria-label={intl.formatMessage({
-                defaultMessage: 'Undo your last move',
-                id: 'history.undoLabel',
-              })}
-              className={controlsStyles.historyButton}
-              data-icon-button
-              disabled={!canUndoMove(G)}
-              onClick={() => {
-                setComputerPaused(true);
-                finishDrag();
-                setSelectedCardId(null);
-                gameMoves.undoTest();
-              }}
-              type="button"
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M3 7v6h6M21 17a9 9 0 0 0-15-6.7L3 13" />
-              </svg>
-            </button>
-            <button
-              aria-label={intl.formatMessage({
-                defaultMessage: 'Redo last action',
-                id: 'history.redoLabel',
-              })}
-              className={controlsStyles.historyButton}
-              data-icon-button
-              disabled={G.testFuture.length === 0}
-              onClick={() => {
-                setComputerPaused(true);
-                finishDrag();
-                setSelectedCardId(null);
-                gameMoves.redoTest();
-              }}
-              type="button"
-            >
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M21 7v6h-6M3 17a9 9 0 0 1 15-6.7L21 13" />
-              </svg>
-            </button>
-          </div>
-          {computerPaused && !finished && activePlayer.type === 'computer' && (
-            <button
-              className={controlsStyles.historyButton}
-              onClick={() => {
-                setComputerPaused(false);
-              }}
-              type="button"
-            >
-              <FormattedMessage
-                defaultMessage="Resume computer"
-                id="computer.resume"
-              />
-            </button>
-          )}
-          <GameMenu
-            onNewGame={requestNewGame}
-            onOpenCatalog={() => {
-              setComputerPaused(true);
-              touchDrag.controller.cancel();
-              finishDrag();
-              setSelectedCardId(null);
-              setCommandTargetId(null);
-              cardCatalogDialogRef.current?.showModal();
-            }}
-            onOpenSettings={() => settingsDialogRef.current?.showModal()}
-          />
-        </div>
-      </header>
+      <GameBoardHeader
+        activeOwner={activeOwner}
+        activePlayer={activePlayer}
+        computerPaused={computerPaused}
+        finished={finished}
+        G={G}
+        onNewGame={requestNewGame}
+        onOpenCatalog={() => {
+          setComputerPaused(true);
+          touchDrag.controller.cancel();
+          finishDrag();
+          setSelectedCardId(null);
+          setCommandTargetId(null);
+          cardCatalogDialogRef.current?.showModal();
+        }}
+        onOpenSettings={() => settingsDialogRef.current?.showModal()}
+        onRedo={() => {
+          setComputerPaused(true);
+          finishDrag();
+          setSelectedCardId(null);
+          gameMoves.redoTest();
+        }}
+        onResumeComputer={() => {
+          setComputerPaused(false);
+        }}
+        onUndo={() => {
+          setComputerPaused(true);
+          finishDrag();
+          setSelectedCardId(null);
+          gameMoves.undoTest();
+        }}
+      />
 
       <section
         aria-label={intl.formatMessage({
@@ -997,69 +586,27 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         })}
         className={gameBoardStyles.table}
       >
-        <div className={gameBoardStyles.opponentHand} data-player-row>
-          {G.playerIds.map((id) => {
-            if (id === handOwner) {
-              return (
-                <div
-                  className={clsx(
-                    gameBoardStyles.playerScore,
-                    ownershipStyles[`owner${handOwner}`],
-                  )}
-                  data-player-score={id}
-                  key={id}
-                >
-                  <PlayerAvatar compact {...handPlayer} owner={handOwner} />
-                  <div>
-                    <strong>{handPlayer.name}</strong>
-                    <span>
-                      <FormattedMessage
-                        defaultMessage="{count, plural, one {# point} other {# points}}"
-                        id="score.points"
-                        values={{ count: scores[handOwner] ?? 0 }}
-                      />
-                    </span>
-                  </div>
-                </div>
-              );
-            }
-
-            const player = getPlayer(players, id);
-
-            return player.type === 'computer' ? (
-              <ComputerPlayer
-                cards={G.hands[id]}
-                key={id}
-                player={player}
-                score={scores[id] ?? 0}
-              />
-            ) : (
-              <div className={gameBoardStyles.computerHand} key={id}>
-                <CardHand
-                  activeOwner={activeOwner}
-                  cards={G.hands[id]}
-                  interactive={false}
-                  isReturnTarget={
-                    draggedCard?.source === 'pending' && G.pending?.owner === id
-                  }
-                  onChoose={chooseCard}
-                  onDragEnd={finishDrag}
-                  onDragOver={allowDrop}
-                  onDragStart={(event, cardId) => {
-                    beginDrag(event, cardId, 'hand');
-                  }}
-                  onDrop={returnCardToHand}
-                  onShowDetails={showCardDetails}
-                  owner={id}
-                  ownerName={player.name}
-                  pendingCardId={G.pending?.id}
-                  playerType={player.type}
-                  selectedCardId={selectedCardId}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <GameBoardPlayers
+          activeOwner={activeOwner}
+          cards={G.hands}
+          draggedPendingCard={draggedCard?.source === 'pending'}
+          handOwner={handOwner}
+          handPlayer={handPlayer}
+          onChooseCard={chooseCard}
+          onDragEnd={finishDrag}
+          onDragOver={allowDrop}
+          onDragStart={(event, cardId) => {
+            beginDrag(event, cardId, 'hand');
+          }}
+          onDrop={returnCardToHand}
+          onShowDetails={showCardDetails}
+          pendingCardId={G.pending?.id}
+          pendingOwner={G.pending?.owner}
+          playerIds={G.playerIds}
+          players={players}
+          scores={scores}
+          selectedCardId={selectedCardId}
+        />
 
         <div className={gameBoardStyles.playArea}>
           <div className={gameBoardStyles.areaHeading}>
@@ -1189,315 +736,69 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
               </button>
             </div>
           </div>
-          <div className={gameBoardStyles.boardSurface}>
-            <BoardZoomControls
-              boardZoom={boardZoom}
-              onFitAll={fitBoardToViewport}
-              onResetZoom={() => {
-                setBoardZoom(1);
-              }}
-              onZoomChange={adjustBoardZoom}
-            />
-            <div
-              aria-label={intl.formatMessage({
-                defaultMessage: 'Pannable and zoomable played-card board',
-                id: 'board.label',
-              })}
-              className={clsx(gameBoardStyles.playedViewport, {
-                [gameBoardStyles.isPanning]: isPanning,
-              })}
-              onPointerCancel={stopBoardPan}
-              onPointerDown={startBoardPan}
-              onPointerMove={panBoard}
-              onPointerUp={stopBoardPan}
-              ref={boardViewportRef}
-            >
-              <div
-                className={gameBoardStyles.playedGrid}
-                data-board-grid
-                style={{ ...gridStyle, zoom: boardZoom }}
-              >
-                {G.played.length === 0 && !G.pending && showPlacementSlots ? (
-                  <PlacementSlot
-                    ariaLabel={intl.formatMessage({
-                      defaultMessage: 'Drop a card in the center of the table',
-                      id: 'placement.center',
-                    })}
-                    draggedCard={draggedCardDetails}
-                    initial
-                    isDragActive={Boolean(draggedCard)}
-                    isPreview={Boolean(
-                      draggedCardDetails && isSnappedTo({ column: 0, row: 0 }),
-                    )}
-                    onClick={() => {
-                      placeSelectedCard({ column: 0, row: 0 });
-                    }}
-                    onDragEnter={(event) => {
-                      snapToPosition(event, { column: 0, row: 0 });
-                    }}
-                    onDragOver={allowDrop}
-                    onDrop={(event) => {
-                      dropCard(event, { column: 0, row: 0 });
-                    }}
-                    position={{ column: 0, row: 0 }}
-                  />
-                ) : (
-                  <>
-                    {G.played
-                      .filter(
-                        (card) =>
-                          !card.removed ||
-                          !(
-                            (G.pending &&
-                              positionKey(card) === positionKey(G.pending)) ||
-                            (showPlacementSlots &&
-                              availablePositions.some(
-                                (position) =>
-                                  positionKey(position) === positionKey(card),
-                              ))
-                          ),
-                      )
-                      .map((card) => (
-                        <PlayedCard
-                          card={card}
-                          isLatest={
-                            card.owner !== 'neutral' &&
-                            card.id === G.played.at(-1)?.id
-                          }
-                          key={card.id}
-                          links={renderLinkDirections(card)}
-                          onDragOver={(event) => {
-                            allowCommandDrop(event, card.id);
-                          }}
-                          onDrop={(event) => {
-                            dropCommandOnTarget(event, card.id);
-                          }}
-                          onShowDetails={showCardDetails}
-                          onTarget={
-                            (command && commandTargetId === card.id) ||
-                            commandTargets.some(
-                              (target) => target.id === card.id,
-                            )
-                              ? () => {
-                                  if (commandTargetId === card.id) {
-                                    setCommandTargetId(null);
+          <PlayedBoard
+            activeOwner={activeOwner}
+            availablePositions={availablePositions}
+            boardViewportRef={boardViewportRef}
+            boardZoom={boardZoom}
+            command={command}
+            commandTargetId={commandTargetId}
+            commandTargets={commandTargets}
+            draggedCardDetails={draggedCardDetails}
+            draggedCardSource={draggedCard?.source ?? null}
+            finished={finished}
+            G={G}
+            isDragActive={Boolean(draggedCard)}
+            isHumanTurn={isHumanTurn}
+            isPanning={isPanning}
+            onAllowCommandDrop={allowCommandDrop}
+            onAllowDrop={allowDrop}
+            onBeginDrag={beginDrag}
+            onConfirmPlacement={() => {
+              gameMoves.confirmPlacement();
+            }}
+            onDragEnd={finishDrag}
+            onDropCard={dropCard}
+            onDropCommandOnTarget={dropCommandOnTarget}
+            onDropPendingCard={dropOnPendingCard}
+            onFitAll={fitBoardToViewport}
+            onPanBoard={panBoard}
+            onPlaceSelectedCard={placeSelectedCard}
+            onResetZoom={resetBoardZoom}
+            onShowDetails={showCardDetails}
+            onSnapToPosition={snapToPosition}
+            onStartBoardPan={startBoardPan}
+            onStopBoardPan={stopBoardPan}
+            onTargetCard={(card) => {
+              if (commandTargetId === card.id) {
+                setCommandTargetId(null);
 
-                                    return;
-                                  }
-                                  if (
-                                    command?.action === 'take-control' ||
-                                    command?.action === 'remove-event'
-                                  ) {
-                                    gameMoves.command(command.id, card.id);
-                                    setSelectedCardId(null);
-                                    setCommandTargetId(null);
+                return;
+              }
+              if (
+                command?.action === 'take-control' ||
+                command?.action === 'remove-event'
+              ) {
+                gameMoves.command(command.id, card.id);
+                setSelectedCardId(null);
+                setCommandTargetId(null);
 
-                                    return;
-                                  }
-                                  if (
-                                    command?.action === 'time-swap' &&
-                                    commandTargetId
-                                  ) {
-                                    gameMoves.command(
-                                      command.id,
-                                      commandTargetId,
-                                      card.id,
-                                    );
-                                    setSelectedCardId(null);
-                                    setCommandTargetId(null);
-                                  } else {
-                                    setCommandTargetId(card.id);
-                                  }
-                                }
-                              : undefined
-                          }
-                          selected={Boolean(
-                            command && commandTargetId === card.id,
-                          )}
-                          style={positionStyle(card)}
-                        />
-                      ))}
-                    {G.pending && (
-                      // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- TODO improve roles for these cards
-                      <div
-                        aria-label={intl.formatMessage({
-                          defaultMessage:
-                            'Unconfirmed card replacement position',
-                          id: 'placement.pending',
-                        })}
-                        className={clsx(
-                          cardStyles.card,
-                          pendingCardStyles.pendingCard,
-                          displayedPendingOwner === 'neutral'
-                            ? ownershipStyles.ownerNeutral
-                            : ownershipStyles[
-                                `owner${displayedPendingOwner ?? activeOwner}`
-                              ],
-                          {
-                            [pendingCardStyles.replacementTarget]:
-                              pendingShowsReplacement,
-                          },
-                        )}
-                        data-card-type={displayedPendingCard?.type}
-                        data-drop-position={positionKey(G.pending)}
-                        data-event-category={displayedPendingCard?.category}
-                        data-owner={displayedPendingOwner}
-                        draggable={isHumanTurn && !finished}
-                        key={`${G.pending.id}:${G.pending.row}:${G.pending.column}`}
-                        onDoubleClick={(event) => {
-                          if ((event.target as Element).closest('button')) {
-                            return;
-                          }
-
-                          if (displayedPendingCard) {
-                            showCardDetails(displayedPendingCard);
-                          }
-                        }}
-                        onDragEnd={finishDrag}
-                        onDragEnter={(event) => {
-                          snapToPosition(event, G.pending!);
-                        }}
-                        onDragOver={allowDrop}
-                        onDragStart={(event) => {
-                          beginDrag(event, G.pending!.id, 'pending');
-                        }}
-                        onDrop={dropOnPendingCard}
-                        onLostPointerCapture={touchDrag.onLostPointerCapture}
-                        onPointerCancel={touchDrag.onPointerCancel}
-                        onPointerDown={(event) => {
-                          if (
-                            isHumanTurn &&
-                            !finished &&
-                            !(event.target as Element).closest('button')
-                          ) {
-                            touchDrag.onPointerDown(
-                              event,
-                              G.pending!.id,
-                              'pending',
-                            );
-                          }
-                        }}
-                        onPointerMove={touchDrag.onPointerMove}
-                        onPointerUp={touchDrag.onPointerUp}
-                        role="region"
-                        style={positionStyle(G.pending)}
-                      >
-                        {renderLinkDirections(G.pending)}
-                        <CardEffects effects={displayedPendingCard?.effects} />
-                        <strong>
-                          {displayedPendingCard &&
-                            intl.formatNumber(displayedPendingCard.number, {
-                              useGrouping: false,
-                            })}
-                        </strong>
-                        {displayedPendingCard && (
-                          <CardEventName card={displayedPendingCard} />
-                        )}
-                        <span
-                          className={cardStyles.cardTypeName}
-                          data-card-label
-                        >
-                          {intl.formatMessage(
-                            displayedPendingCard?.category
-                              ? categoryMessages[displayedPendingCard.category]
-                              : startingEventNameMessage,
-                          )}
-                        </span>
-                        <span className={cardStyles.ownerBadge}>
-                          {displayedPendingOwner === 'neutral'
-                            ? intl.formatMessage({
-                                defaultMessage: 'Start',
-                                id: 'owner.neutral',
-                              })
-                            : getPlayer(
-                                players,
-                                displayedPendingOwner ?? activeOwner,
-                              ).name}
-                        </span>
-                        <button
-                          aria-label={intl.formatMessage({
-                            defaultMessage: 'Confirm card position',
-                            id: 'placement.confirmLabel',
-                          })}
-                          className={pendingCardStyles.pendingConfirm}
-                          data-drag-decoration
-                          disabled={!isHumanTurn || finished}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            gameMoves.confirmPlacement();
-                          }}
-                          onPointerDown={(event) => {
-                            event.stopPropagation();
-                          }}
-                          title={intl.formatMessage({
-                            defaultMessage: 'Confirm',
-                            id: 'placement.confirm',
-                          })}
-                          type="button"
-                        >
-                          <svg aria-hidden="true" viewBox="0 0 24 24">
-                            <path d="m5 12 5 5L20 7" />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
-                    {showPlacementSlots &&
-                      availablePositions
-                        .filter(
-                          (position) =>
-                            !G.pending ||
-                            positionKey(position) !== positionKey(G.pending),
-                        )
-                        .map((position) => (
-                          <PlacementSlot
-                            ariaLabel={intl.formatMessage<{
-                              // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
-                              readonly column: number | bigint;
-                              readonly pending: string;
-                              // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
-                              readonly row: number | bigint;
-                            }>(
-                              {
-                                defaultMessage:
-                                  '{pending, select, yes {Move pending card} other {Place selected card}} to row {row, number}, column {column, number}',
-                                id: 'placement.target',
-                              },
-                              {
-                                column: position.column,
-                                pending: G.pending ? 'yes' : 'no',
-                                row: position.row,
-                              },
-                            )}
-                            draggedCard={draggedCardDetails}
-                            isDragActive={Boolean(draggedCard)}
-                            isPreview={Boolean(
-                              draggedCardDetails && isSnappedTo(position),
-                            )}
-                            key={positionKey(position)}
-                            onClick={() => {
-                              placeSelectedCard(position);
-                            }}
-                            onDragEnter={(event) => {
-                              snapToPosition(event, position);
-                            }}
-                            onDragOver={allowDrop}
-                            onDrop={(event) => {
-                              dropCard(event, position);
-                            }}
-                            overwrite={G.played.some(
-                              (card) =>
-                                card.removed &&
-                                positionKey(card) === positionKey(position),
-                            )}
-                            position={position}
-                            style={positionStyle(position)}
-                          />
-                        ))}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+                return;
+              }
+              if (command?.action === 'time-swap' && commandTargetId) {
+                gameMoves.command(command.id, commandTargetId, card.id);
+                setSelectedCardId(null);
+                setCommandTargetId(null);
+              } else {
+                setCommandTargetId(card.id);
+              }
+            }}
+            onZoomChange={adjustBoardZoom}
+            players={players}
+            showPlacementSlots={showPlacementSlots}
+            snapPosition={snapPosition}
+            touchDrag={touchDrag}
+          />
         </div>
         <div className={gameBoardStyles.hand}>
           <CardHand
@@ -1568,78 +869,20 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       />
       <RoundScoresDialog dialogRef={roundScoresDialogRef} G={G} />
       <SettingsDialog dialogRef={settingsDialogRef} />
-      <footer className={gameBoardStyles.footer}>
-        {finished ? (
-          <GameResults played={G.played} playerIds={G.playerIds} />
-        ) : (
-          <p className={clsx(command && gameBoardStyles.commandPrompt)}>
-            {command
-              ? !commandTargetId
-                ? commandTargets.length
-                  ? intl.formatMessage({
-                      defaultMessage:
-                        'Choose an Event card on the board. The starting card cannot be targeted.',
-                      id: 'command.choose',
-                    })
-                  : intl.formatMessage({
-                      defaultMessage:
-                        'No legal targets for this card. Select another card or discard it.',
-                      id: 'command.noTargets',
-                    })
-                : command.action === 'time-jump'
-                  ? intl.formatMessage({
-                      defaultMessage:
-                        'Choose a highlighted empty position or removed Event to complete Time Jump.',
-                      id: 'command.jumpDestination',
-                    })
-                  : intl.formatMessage({
-                      defaultMessage:
-                        'Choose a highlighted second Event card to complete Time Swap.',
-                      id: 'command.swapDestination',
-                    })
-              : G.pending
-                ? intl.formatMessage({
-                    defaultMessage:
-                      'Drag it to another slot, back to your hand, or confirm.',
-                    id: 'status.pending',
-                  })
-                : draggedCard
-                  ? intl.formatMessage({
-                      defaultMessage:
-                        'Drop the card on a highlighted position.',
-                      id: 'status.dragging',
-                    })
-                  : selectedCardId
-                    ? intl.formatMessage({
-                        defaultMessage:
-                          'Choose a slot above, below, or beside a card.',
-                        id: 'status.selected',
-                      })
-                    : activeOwner === '0'
-                      ? // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
-                        intl.formatMessage<{ readonly count: number | bigint }>(
-                          {
-                            defaultMessage:
-                              'Your turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}',
-                            id: 'status.yourTurn',
-                          },
-                          { count: G.deck.length },
-                        )
-                      : intl.formatMessage<{
-                          // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
-                          readonly count: number | bigint;
-                          readonly name: MessageValue;
-                        }>(
-                          {
-                            defaultMessage:
-                              "{name}'s turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}",
-                            id: 'status.playerTurn',
-                          },
-                          { count: G.deck.length, name: activePlayer.name },
-                        )}
-          </p>
-        )}
-      </footer>
+      <GameBoardFooter
+        activeOwner={activeOwner}
+        activePlayer={activePlayer}
+        commandAction={command?.action}
+        commandTargetCount={commandTargets.length}
+        commandTargetId={commandTargetId}
+        deckCount={G.deck.length}
+        draggedCard={Boolean(draggedCard)}
+        finished={finished}
+        pending={Boolean(G.pending)}
+        played={G.played}
+        playerIds={G.playerIds}
+        selectedCardId={selectedCardId}
+      />
     </main>
   );
 }
