@@ -57,8 +57,13 @@ describe('touch card dragging', () => {
       const move = pointer({ clientY: 390, pointerType });
 
       drag.start(pointer({ pointerType }), 'event');
+
+      expect(drag.dragging).toBe(false);
+      expect(drag.pointerId).toBe(1);
+
       drag.move(move);
 
+      expect(drag.dragging).toBe(true);
       expect(callbacks.onStart).toHaveBeenCalledExactlyOnceWith(
         'event',
         'hand',
@@ -80,6 +85,8 @@ describe('touch card dragging', () => {
       );
       expect(callbacks.onFinish).toHaveBeenCalledExactlyOnceWith();
       expect(drag.tracking).toBe(false);
+      expect(drag.dragging).toBe(false);
+      expect(drag.pointerId).toBeNull();
       expect(drag.consumeClick()).toBe(true);
       expect(drag.consumeClick()).toBe(false);
     },
