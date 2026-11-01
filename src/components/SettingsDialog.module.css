@@ -1,0 +1,33 @@
+.settings-dialog {
+  --dialog-width: 520px;
+}
+
+.settings-options {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+}
+
+.settings-option {
+  align-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+}
+
+.settings-option input {
+  accent-color: var(--accent-text);
+  flex: none;
+}
+
+.settings-version {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin: 0 0 1rem;
+  text-align: right;
+}

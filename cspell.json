@@ -30,6 +30,7 @@
     "redeals",
     "unstub",
     "vitest",
+    "worktrees",
     "zoomable"
   ]
 }

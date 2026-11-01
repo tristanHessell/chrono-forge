@@ -16,6 +16,29 @@
   z-index: 3;
 }
 
+:global(:root[data-arrows='off']) .link-arrow {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :global(:root[data-arrow-animation='on']) .link-arrow[data-direction='down'] {
+    animation: arrow-flow-down 700ms ease-in-out infinite alternate;
+  }
+
+  :global(:root[data-arrow-animation='on']) .link-arrow[data-direction='left'] {
+    animation: arrow-flow-left 700ms ease-in-out infinite alternate;
+  }
+
+  :global(:root[data-arrow-animation='on'])
+    .link-arrow[data-direction='right'] {
+    animation: arrow-flow-right 700ms ease-in-out infinite alternate;
+  }
+
+  :global(:root[data-arrow-animation='on']) .link-arrow[data-direction='up'] {
+    animation: arrow-flow-up 700ms ease-in-out infinite alternate;
+  }
+}
+
 .link-top {
   left: 50%;
   top: -0.65rem;
@@ -84,4 +107,44 @@
   place-self: start center;
   pointer-events: none;
   text-transform: uppercase;
+}
+
+@keyframes arrow-flow-down {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: 0 0.25rem;
+  }
+}
+
+@keyframes arrow-flow-left {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: -0.25rem 0;
+  }
+}
+
+@keyframes arrow-flow-right {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: 0.25rem 0;
+  }
+}
+
+@keyframes arrow-flow-up {
+  from {
+    translate: 0 0;
+  }
+
+  to {
+    translate: 0 -0.25rem;
+  }
 }
