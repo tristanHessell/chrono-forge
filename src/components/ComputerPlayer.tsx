@@ -63,13 +63,21 @@ export function ComputerPlayer({
             />
           </span>
           {active && (
-            <span className={computerPlayerStyles.playerTurn}>
-              <FormattedMessage
-                defaultMessage="Current player · {count, plural, one {# action left} other {# actions left}}"
-                id="turn.remaining"
-                values={{ count: Math.max(0, 2 - actionsThisTurn) }}
-              />
-            </span>
+            <div className={computerPlayerStyles.playerTurn}>
+              <span>
+                <FormattedMessage
+                  defaultMessage="Current player"
+                  id="turn.currentPlayer"
+                />
+              </span>
+              <span>
+                <FormattedMessage
+                  defaultMessage="{count, plural, one {# action left} other {# actions left}}"
+                  id="turn.actionsLeft"
+                  values={{ count: Math.max(0, 2 - actionsThisTurn) }}
+                />
+              </span>
+            </div>
           )}
         </div>
       </div>

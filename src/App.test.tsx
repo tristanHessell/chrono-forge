@@ -81,10 +81,17 @@ describe(App, () => {
     await expect
       .element(
         page.getByCSS(
-          '[data-player-score="0"][data-current-turn="true"] > div > span:nth-of-type(2)',
+          '[data-player-score="0"][data-current-turn="true"] > div > div > span:first-child',
         ),
       )
-      .toHaveTextContent('Current player · 2 actions left');
+      .toHaveTextContent('Current player');
+    await expect
+      .element(
+        page.getByCSS(
+          '[data-player-score="0"][data-current-turn="true"] > div > div > span:nth-child(2)',
+        ),
+      )
+      .toHaveTextContent('2 actions left');
     expect(
       page.getByCSS(
         '[data-player-row] > [data-player-score="0"] + [data-player-score="1"]',

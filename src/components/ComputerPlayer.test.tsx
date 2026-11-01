@@ -34,7 +34,23 @@ describe(ComputerPlayer, () => {
       .element(page.getByText('3 points', { exact: true }))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText('Current player · 1 action left'))
+      .element(
+        page.getByCSS(
+          '[data-player-score="1"][data-current-turn="true"] > div > div > div > span:first-child',
+        ),
+      )
+      .toBeInTheDocument();
+    await expect
+      .element(
+        page.getByCSS(
+          '[data-player-score="1"][data-current-turn="true"] > div > div > div > span:nth-child(2)',
+        ),
+      )
+      .toHaveTextContent('1 action left');
+    await expect
+      .element(
+        page.getByCSS('[data-player-score="1"] [aria-label="2 cards in hand"]'),
+      )
       .toBeInTheDocument();
     expect(page.getByLabelText('2 cards in hand')).toHaveLength(1);
     await expect
