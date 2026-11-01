@@ -30,6 +30,7 @@ describe(CardHand, () => {
 
     expect(page.getByLabelText('You, human')).toHaveLength(1);
     expect(page.getByLabelText('Your hand drop area')).toHaveLength(1);
+    expect(page.getByText('You', { exact: true })).toHaveLength(0);
     expect(page.getByRole('button', { name: 'Date' })).toHaveLength(0);
     await expect
       .element(page.getByText('4 points', { exact: true }))
