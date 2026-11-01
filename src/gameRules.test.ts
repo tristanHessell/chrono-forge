@@ -113,7 +113,7 @@ describe('card game state transitions', () => {
 
     expect(G.hands['0']).toHaveLength(5);
     expect(G.hands['1']).toHaveLength(5);
-    expect(G.deck).toHaveLength(36);
+    expect(G.deck).toHaveLength(40);
     expect(G.startingPlayer).toBe('0');
     expect(G.played).toStrictEqual([
       expect.objectContaining({
@@ -123,14 +123,14 @@ describe('card game state transitions', () => {
       }),
     ]);
     expect(new Set([...G.hands['0'], ...G.hands['1'], ...G.deck]).size).toBe(
-      46,
+      50,
     );
 
     const deck = [...G.hands['0'], ...G.hands['1'], ...G.deck];
 
     expect(deck.filter((card) => card.type === 'event')).toHaveLength(30);
-    expect(deck.filter((card) => card.type === 'command')).toHaveLength(16);
-    expect(new Set(deck.map((card) => card.id)).size).toBe(46);
+    expect(deck.filter((card) => card.type === 'command')).toHaveLength(20);
+    expect(new Set(deck.map((card) => card.id)).size).toBe(50);
 
     for (let date = 1900; date <= 1990; date += 10) {
       expect(deck.filter((card) => card.number === date)).toHaveLength(3);

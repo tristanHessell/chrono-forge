@@ -124,6 +124,9 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const [selectedCardId, setSelectedCardId] = useState<null | string>(null);
   const [detailsCard, setDetailsCard] = useState<Card | null>(null);
   const [commandTargetId, setCommandTargetId] = useState<null | string>(null);
+  const [commandMode, setCommandMode] = useState<'replace' | 'restore' | null>(
+    null,
+  );
   const [draggedCard, setDraggedCard] = useState<DraggedCard | null>(null);
   const [snapPosition, setSnapPosition] = useState<CardPosition | null>(null);
   const cardCatalogDialogRef = useRef<HTMLDialogElement>(null);
@@ -156,16 +159,47 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           card.owner !== 'neutral' &&
           (command.action === 'time-jump'
             ? getTimeJumpPositions(G.played, card.id).length > 0
-            : command.action === 'take-control' ||
-                command.action === 'remove-event'
-              ? Boolean(
-                  applyCommand(G.played, command.action, card.id, activeOwner),
-                )
-              : commandTargetId
-                ? Boolean(applyTimeSwap(G.played, commandTargetId, card.id))
-                : G.played.some((other) =>
-                    applyTimeSwap(G.played, card.id, other.id),
-                  )),
+            : command.action === 'event-reclaim'
+              ? commandMode === 'restore'
+                ? Boolean(
+                    card.removed &&
+                    applyCommand(
+                      G.played,
+                      command.action,
+                      card.id,
+                      activeOwner,
+                    ),
+                  )
+                : commandMode === 'replace' &&
+                  G.hands[activeOwner].some(
+                    (replacement) =>
+                      replacement.type === 'event' &&
+                      Boolean(
+                        applyCommand(
+                          G.played,
+                          command.action,
+                          card.id,
+                          activeOwner,
+                          replacement.id,
+                          replacement,
+                        ),
+                      ),
+                  )
+              : command.action === 'take-control' ||
+                  command.action === 'remove-event'
+                ? Boolean(
+                    applyCommand(
+                      G.played,
+                      command.action,
+                      card.id,
+                      activeOwner,
+                    ),
+                  )
+                : commandTargetId
+                  ? Boolean(applyTimeSwap(G.played, commandTargetId, card.id))
+                  : G.played.some((other) =>
+                      applyTimeSwap(G.played, card.id, other.id),
+                    )),
       )
     : [];
   const availablePositions = command
@@ -181,16 +215,38 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     !finished && Boolean(selectedCardId || draggedCard);
   // Reserve slot space even when hidden so selecting a card doesn't shift the board.
   const chooseCard = (cardId: string) => {
+    const chosenCard = G.hands[activeOwner].find((card) => card.id === cardId);
+
+    if (command?.action === 'event-reclaim' && chosenCard?.type === 'event') {
+      if (
+        commandMode === 'replace' &&
+        commandTargetId &&
+        applyCommand(
+          G.played,
+          command.action,
+          commandTargetId,
+          activeOwner,
+          chosenCard.id,
+          chosenCard,
+        )
+      ) {
+        gameMoves.command(command.id, commandTargetId, chosenCard.id);
+        setSelectedCardId(null);
+        setCommandTargetId(null);
+        setCommandMode(null);
+      }
+
+      return;
+    }
+
     setCommandTargetId(null);
 
-    if (
-      G.hands[activeOwner].find((card) => card.id === cardId)?.type ===
-      'command'
-    ) {
+    if (chosenCard?.type === 'command') {
       if (G.pending) {
         gameMoves.returnPendingCard();
       }
 
+      setCommandMode(null);
       setSelectedCardId((current) => (current === cardId ? null : cardId));
 
       return;
@@ -216,6 +272,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       gameMoves.command(command.id, commandTargetId, position);
       setSelectedCardId(null);
       setCommandTargetId(null);
+      setCommandMode(null);
 
       return;
     }
@@ -251,6 +308,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     setDraggedCard({ cardId, source });
     setSelectedCardId(null);
     setCommandTargetId(null);
+    setCommandMode(null);
   };
 
   const readDraggedCard = (event: React.DragEvent<HTMLElement>) => {
@@ -332,11 +390,13 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     }
     if (
       command.action === 'take-control' ||
-      command.action === 'remove-event'
+      command.action === 'remove-event' ||
+      (command.action === 'event-reclaim' && commandMode === 'restore')
     ) {
       gameMoves.command(command.id, targetId);
       setSelectedCardId(null);
       setCommandTargetId(null);
+      setCommandMode(null);
     } else {
       setSelectedCardId(command.id);
       setCommandTargetId(targetId);
@@ -429,6 +489,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       setDraggedCard({ cardId, source });
       setSelectedCardId(cardId);
       setCommandTargetId(null);
+      setCommandMode(null);
     },
   });
   const {
@@ -454,6 +515,8 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     gameMoves.discardCard(cardId);
     finishDrag();
     setSelectedCardId(null);
+    setCommandTargetId(null);
+    setCommandMode(null);
   };
 
   const dropOnDiscard = (event: React.DragEvent<HTMLElement>) => {
@@ -499,6 +562,8 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const startNewGame = (nextPlayers: PlayerSetup[]) => {
     setComputerPaused(false);
     setSelectedCardId(null);
+    setCommandTargetId(null);
+    setCommandMode(null);
     setDraggedCard(null);
     setSnapPosition(null);
     newGame(nextPlayers);
@@ -538,6 +603,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           event.preventDefault();
           setSelectedCardId(null);
           setCommandTargetId(null);
+          setCommandMode(null);
           touchDrag.controller.cancel();
           finishDrag();
         }
@@ -559,6 +625,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           finishDrag();
           setSelectedCardId(null);
           setCommandTargetId(null);
+          setCommandMode(null);
           cardCatalogDialogRef.current?.showModal();
         }}
         onOpenSettings={() => settingsDialogRef.current?.showModal()}
@@ -722,6 +789,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   finishDrag();
                   setSelectedCardId(null);
                   setCommandTargetId(null);
+                  setCommandMode(null);
                   roundScoresDialogRef.current?.showModal();
                 }}
                 title={intl.formatMessage({
@@ -776,12 +844,24 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                 return;
               }
               if (
+                command?.action === 'event-reclaim' &&
+                commandMode === 'restore'
+              ) {
+                gameMoves.command(command.id, card.id);
+                setSelectedCardId(null);
+                setCommandTargetId(null);
+                setCommandMode(null);
+
+                return;
+              }
+              if (
                 command?.action === 'take-control' ||
                 command?.action === 'remove-event'
               ) {
                 gameMoves.command(command.id, card.id);
                 setSelectedCardId(null);
                 setCommandTargetId(null);
+                setCommandMode(null);
 
                 return;
               }
@@ -789,6 +869,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                 gameMoves.command(command.id, commandTargetId, card.id);
                 setSelectedCardId(null);
                 setCommandTargetId(null);
+                setCommandMode(null);
               } else {
                 setCommandTargetId(card.id);
               }
@@ -873,11 +954,16 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         activeOwner={activeOwner}
         activePlayer={activePlayer}
         commandAction={command?.action}
+        commandMode={commandMode}
         commandTargetCount={commandTargets.length}
         commandTargetId={commandTargetId}
         deckCount={G.deck.length}
         draggedCard={Boolean(draggedCard)}
         finished={finished}
+        onChooseCommandMode={(mode) => {
+          setCommandMode(mode);
+          setCommandTargetId(null);
+        }}
         pending={Boolean(G.pending)}
         played={G.played}
         playerIds={G.playerIds}

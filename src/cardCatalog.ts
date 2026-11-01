@@ -13,9 +13,13 @@ function readCard(definition: {
   if (definition.type === 'command') {
     if (
       !definition.id ||
-      !['time-jump', 'time-swap', 'take-control', 'remove-event'].includes(
-        definition.action ?? '',
-      ) ||
+      ![
+        'event-reclaim',
+        'time-jump',
+        'time-swap',
+        'take-control',
+        'remove-event',
+      ].includes(definition.action ?? '') ||
       definition.category !== undefined ||
       definition.number !== undefined ||
       definition.effects !== undefined ||
@@ -87,14 +91,21 @@ export function readEffects(
   return effects;
 }
 
-export function loadCardCatalog() {
+export function loadCardCatalog(includeEventReclaim = true) {
   const startingCard = readCard(definitions.startingCard);
 
   if (startingCard.type !== 'event') {
     throw new Error('The starting card must be an Event.');
   }
 
-  const deck = definitions.deck.map(readCard);
+  const deck = definitions.deck
+    .filter(
+      (definition) =>
+        includeEventReclaim ||
+        definition.type !== 'command' ||
+        definition.action !== 'event-reclaim',
+    )
+    .map(readCard);
 
   if (
     deck.some((card) => card.type === 'event' && (!card.category || !card.name))

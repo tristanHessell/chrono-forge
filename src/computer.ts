@@ -1,5 +1,5 @@
 import { applyCommand, getTimeJumpPositions } from './commandRules';
-import type { CardGameState, CardPosition, PlayerId } from './game';
+import type { CardGameState, CardPosition, EventCard, PlayerId } from './game';
 import { getAvailablePositions, withPlacedEvent } from './gameRules';
 import { calculateScores } from './scoring';
 
@@ -53,15 +53,30 @@ export function chooseComputerAction(
               ? G.played
                   .filter((candidate) => candidate.id > target.id)
                   .map((candidate) => candidate.id)
-              : [undefined];
+              : card.action === 'event-reclaim'
+                ? [
+                    ...(target.removed ? [undefined] : []),
+                    ...hand
+                      .filter((candidate) => candidate.type === 'event')
+                      .map((candidate) => candidate.id),
+                  ]
+                : [undefined];
 
         for (const destination of destinations) {
+          const replacement =
+            card.action === 'event-reclaim' && typeof destination === 'string'
+              ? hand.find(
+                  (candidate): candidate is EventCard =>
+                    candidate.id === destination && candidate.type === 'event',
+                )
+              : undefined;
           const played = applyCommand(
             G.played,
             card.action,
             target.id,
             owner,
             destination,
+            replacement,
           );
 
           if (!played) {
@@ -72,6 +87,7 @@ export function chooseComputerAction(
           const futurePlays = hand.filter(
             (candidate) =>
               candidate.id !== card.id &&
+              candidate.id !== destination &&
               getAvailablePositions(played, candidate).length,
           ).length;
           const value =

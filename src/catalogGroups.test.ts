@@ -20,6 +20,7 @@ describe(catalogGroups, () => {
       'command:time-swap',
       'command:take-control',
       'command:remove-event',
+      'command:event-reclaim',
     ]);
     expect(deck).toStrictEqual(original);
   });

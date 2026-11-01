@@ -48,6 +48,10 @@ function isCardGameState(value: unknown): value is CardGameState {
     typeof value.actionsThisTurn === 'number' &&
     Array.isArray(value.discarded) &&
     typeof value.freeActionsEnabled === 'boolean' &&
+    (value.rulesVersion === undefined ||
+      value.rulesVersion === 2 ||
+      value.rulesVersion === 4 ||
+      value.rulesVersion === 5) &&
     isRecord(value.hands) &&
     Array.isArray(value.playerIds) &&
     Number.isInteger(value.round) &&

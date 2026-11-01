@@ -47,7 +47,13 @@ export function CardEffect({ effect }: { effect?: CommandAction | Effect }) {
         viewBox="0 0 24 24"
         width="18"
       >
-        {effect === 'draw-one' ? (
+        {effect === 'event-reclaim' ? (
+          <>
+            <path d="M5 5h9a5 5 0 0 1 0 10H8" />
+            <path d="m8 11-3 4 3 4" />
+            <path d="M12 8h5" />
+          </>
+        ) : effect === 'draw-one' ? (
           <path d="M5 5V3h12v3M3 8h12v13H3zM18 9v8m-4-4h8" />
         ) : effect === 'free-action' ? (
           <path d="m14 2-9 12h7l-2 8 9-12h-7z" />

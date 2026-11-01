@@ -1,4 +1,10 @@
-import type { CardPosition, CommandAction, PlacedCard, PlayerId } from './game';
+import type {
+  CardPosition,
+  CommandAction,
+  EventCard,
+  PlacedCard,
+  PlayerId,
+} from './game';
 import {
   ADJACENT_OFFSETS,
   areAdjacent,
@@ -16,6 +22,7 @@ export function applyCommand(
   targetId: string,
   owner: PlayerId,
   destination?: CardPosition | string,
+  replacement?: EventCard,
 ): null | PlacedCard[] {
   if (action === 'time-jump') {
     return destination && typeof destination === 'object'
@@ -26,6 +33,17 @@ export function applyCommand(
     return typeof destination === 'string'
       ? applyTimeSwap(played, targetId, destination)
       : null;
+  }
+  if (action === 'event-reclaim') {
+    if (typeof destination === 'string') {
+      return replacement?.id === destination
+        ? applyEventReclaim(played, targetId, owner, replacement)
+        : null;
+    }
+
+    return destination || replacement
+      ? null
+      : applyEventReclaim(played, targetId, owner);
   }
 
   const target = played.find((card) => card.id === targetId);
@@ -45,6 +63,58 @@ export function applyCommand(
         : { ...card, removed: true }
       : card,
   );
+}
+
+export function applyEventReclaim(
+  played: PlacedCard[],
+  targetId: string,
+  owner: PlayerId,
+  replacement?: EventCard,
+): null | PlacedCard[] {
+  const target = played.find((card) => card.id === targetId);
+
+  if (!target || target.owner === 'neutral') {
+    return null;
+  }
+  if (!replacement) {
+    if (!target.removed) {
+      return null;
+    }
+
+    const restored = played.map((card) => {
+      if (card.id !== targetId) {
+        return card;
+      }
+
+      const active = { ...card };
+
+      delete active.removed;
+
+      return active;
+    });
+
+    return isValidBoard(restored) ? restored : null;
+  }
+  if (
+    replacement.id === targetId ||
+    played.some((card) => card.id === replacement.id)
+  ) {
+    return null;
+  }
+
+  const result = played.map((card) =>
+    card.id === targetId
+      ? {
+          ...replacement,
+          column: target.column,
+          owner,
+          placedAt: target.placedAt,
+          row: target.row,
+        }
+      : card,
+  );
+
+  return isValidBoard(result) ? result : null;
 }
 
 export function applyTimeJump(

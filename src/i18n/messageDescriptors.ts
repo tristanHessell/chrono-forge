@@ -20,6 +20,10 @@ export const categoryMessages = defineMessages({
 }) satisfies DescriptorMap<EventCategory>;
 
 export const commandNameMessages = defineMessages({
+  'event-reclaim': {
+    defaultMessage: 'Event Reclaim',
+    id: 'command.event-reclaim.name',
+  },
   'remove-event': {
     defaultMessage: 'Remove Event',
     id: 'command.remove-event.name',
@@ -39,6 +43,11 @@ export const commandNameMessages = defineMessages({
 }) satisfies DescriptorMap<CommandAction>;
 
 export const commandDescriptionMessages = defineMessages({
+  'event-reclaim': {
+    defaultMessage:
+      'Choose to replace any Event on the board with an Event from your hand, or restore a removed Event. The board must remain legal. The replaced Event is discarded. The new Event belongs to you and triggers its effect. Restoring an Event keeps its owner and does not trigger its effect again. The starting card cannot be targeted.',
+    id: 'command.event-reclaim.description',
+  },
   'remove-event': {
     defaultMessage:
       'Mark an Event as removed. It stays on the board but scores no points or bonuses and no longer qualifies as a 1900 bonus source. It can still be moved, swapped, or overwritten with a valid Event. The starting card cannot be targeted.',

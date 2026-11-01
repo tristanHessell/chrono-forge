@@ -48,15 +48,15 @@ describe(CardCatalogDialog, () => {
 
     const body = page.getByCSS('body');
 
-    await expect.element(body).toMatchTextContent('Deck cards46');
+    await expect.element(body).toMatchTextContent('Deck cards50');
     await expect.element(body).toMatchTextContent('Event30');
-    await expect.element(body).toMatchTextContent('Command16');
+    await expect.element(body).toMatchTextContent('Command20');
     await expect.element(body).toMatchTextContent('Politics10 cards');
     await expect.element(body).toMatchTextContent('Tech10 cards');
     await expect.element(body).toMatchTextContent('Nature10 cards');
     await expect.element(body).toMatchTextContent('Starting card1');
     expect(page.getByText('10 cards', { exact: true })).toHaveLength(3);
-    expect(page.getByText('4 cards', { exact: true })).toHaveLength(4);
+    expect(page.getByText('4 cards', { exact: true })).toHaveLength(5);
     expect(
       page.getByCSS('[data-event-category="politics"]').length,
     ).toBeGreaterThan(0);

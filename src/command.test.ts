@@ -2,6 +2,8 @@ import { Client } from 'boardgame.io/client';
 import { assert, describe, expect, it } from 'vitest';
 
 import {
+  applyCommand,
+  applyEventReclaim,
   applyTimeJump,
   applyTimeSwap,
   getTimeJumpPositions,
@@ -14,6 +16,7 @@ import {
   type CardGameState,
   type PlacedCard,
 } from './game';
+import { currentGameLog } from './gameLog';
 import { isValidPlacement } from './gameRules';
 import { calculateScores } from './scoring';
 
@@ -73,7 +76,7 @@ const board = (): PlacedCard[] => [
 ];
 
 function clientFor(
-  action: 'time-jump' | 'time-swap',
+  action: 'event-reclaim' | 'time-jump' | 'time-swap',
   overrides: Partial<CardGameState> = {},
 ) {
   const command: Card = {
@@ -98,7 +101,7 @@ function clientFor(
         nextPlacementOrder: 5,
         played: board(),
         ...overrides,
-        hands: {
+        hands: overrides.hands ?? {
           ...CardGame.setup!(context).hands,
           '0': [
             command,
@@ -125,6 +128,59 @@ function clientFor(
 }
 
 describe('command rules', () => {
+  it('replaces an Event from hand or restores a removed Event', () => {
+    const played = board().map((card) =>
+      card.id === 'd' ? { ...card, removed: true } : card,
+    );
+    const replacement = {
+      effects: ['draw-one'] as const,
+      id: 'replacement',
+      name: 'timeline-origin' as const,
+      number: 1950,
+      type: 'event' as const,
+    };
+    const replaced = applyEventReclaim(played, 'c', '0', replacement);
+
+    expect(replaced).not.toBeNull();
+    expect(replaced?.find((card) => card.id === 'c')).toBeUndefined();
+    expect(replaced?.find((card) => card.id === 'replacement')).toMatchObject({
+      column: 2,
+      effects: ['draw-one'],
+      owner: '0',
+      placedAt: 3,
+      row: 0,
+    });
+    expect(
+      applyEventReclaim(played, 'c', '0', { ...replacement, number: 1900 }),
+    ).toBeNull();
+
+    const restored = applyEventReclaim(played, 'd', '0');
+
+    expect(restored?.find((card) => card.id === 'd')).not.toHaveProperty(
+      'removed',
+    );
+    expect(applyEventReclaim(played, 'c', '0')).toBeNull();
+    expect(
+      applyEventReclaim(
+        [
+          ...played,
+          {
+            column: 0,
+            id: 'later-earlier-event',
+            name: 'timeline-origin',
+            number: 1950,
+            owner: '1',
+            placedAt: 5,
+            row: 3,
+            type: 'event',
+          },
+        ],
+        'd',
+        '0',
+      ),
+    ).toBeNull();
+  });
+
   it.each([false, true])(
     'overwrites a removed Event with Time Jump, preserving the moved card status (%s)',
     (removed) => {
@@ -346,6 +402,157 @@ describe('command rules', () => {
 });
 
 describe('command game moves', () => {
+  it('undoes and redoes Event Reclaim replacements', () => {
+    const client = clientFor('event-reclaim', {
+      hands: {
+        '0': [
+          { action: 'event-reclaim', id: 'command', type: 'command' },
+          {
+            id: 'spare',
+            name: 'timeline-origin',
+            number: 1950,
+            type: 'event',
+          },
+          {
+            id: 'reserve',
+            name: 'timeline-origin',
+            number: 1960,
+            type: 'event',
+          },
+        ],
+        '1': [
+          {
+            id: 'other',
+            name: 'timeline-origin',
+            number: 1970,
+            type: 'event',
+          },
+        ],
+      },
+    });
+    const before = client.getState()!.G;
+
+    client.moves.command('command', 'c', 'spare');
+
+    const after = client.getState()!.G;
+
+    client.moves.undoTest();
+
+    expect(client.getState()!.G.played).toStrictEqual(before.played);
+    expect(client.getState()!.G.hands['0']).toStrictEqual(before.hands['0']);
+    expect(client.getState()!.G.discarded).toStrictEqual(before.discarded);
+
+    client.moves.redoTest();
+
+    expect(client.getState()!.G.played).toStrictEqual(after.played);
+    expect(client.getState()!.G.hands['0']).toStrictEqual(after.hands['0']);
+    expect(client.getState()!.G.discarded).toStrictEqual(after.discarded);
+
+    client.stop();
+  });
+
+  it('replaces an Event, triggers its effect, and records the replacement in the game log', () => {
+    const eventWithDraw = {
+      effects: ['draw-one', 'free-action'] as const,
+      id: 'spare',
+      name: 'timeline-origin' as const,
+      number: 1950,
+      type: 'event' as const,
+    };
+    const client = clientFor('event-reclaim', {
+      hands: {
+        '0': [
+          { action: 'event-reclaim', id: 'command', type: 'command' },
+          eventWithDraw,
+        ],
+        '1': [
+          {
+            id: 'other',
+            name: 'timeline-origin',
+            number: 1960,
+            type: 'event',
+          },
+        ],
+      },
+    });
+
+    client.moves.command('command', 'c', 'spare');
+
+    const after = client.getState()!.G;
+
+    expect(after.played.find((card) => card.id === 'spare')).toMatchObject({
+      number: 1950,
+      owner: '0',
+    });
+    expect(after.played.find((card) => card.id === 'c')).toBeUndefined();
+    expect(after.discarded.map((card) => card.id)).toStrictEqual([
+      'c',
+      'command',
+    ]);
+    expect(after.hands['0'].map((card) => card.id)).toStrictEqual(['draw']);
+    expect(after.deck).toStrictEqual([]);
+    expect(after.undoBlocked).toBe(true);
+    expect(after.actionsThisTurn).toBe(0);
+    expect(
+      currentGameLog('event-reclaim-test', after, '0').actions[0],
+    ).toMatchObject({
+      payload: {
+        args: ['command', 'c', 'spare'],
+        type: 'command',
+      },
+    });
+
+    client.stop();
+  });
+
+  it('restores a removed Event without changing its owner', () => {
+    const played = board().map((card) =>
+      card.id === 'd' ? { ...card, removed: true } : card,
+    );
+    const client = clientFor('event-reclaim', { played });
+
+    client.moves.command('command', 'd');
+
+    expect(
+      client.getState()!.G.played.find((card) => card.id === 'd'),
+    ).toMatchObject({
+      owner: '0',
+    });
+    expect(
+      client.getState()!.G.played.find((card) => card.id === 'd'),
+    ).not.toHaveProperty('removed');
+    expect(client.getState()!.G.discarded.map((card) => card.id)).toStrictEqual(
+      ['command'],
+    );
+
+    client.stop();
+  });
+
+  it('lets the computer restore a removed Event', () => {
+    const played = board().map((card) =>
+      card.id === 'd' ? { ...card, owner: '1' as const, removed: true } : card,
+    );
+    const client = clientFor('event-reclaim', { played });
+    const G = client.getState()!.G;
+    const computerState = {
+      ...G,
+      hands: { ...G.hands, '1': [G.hands['0'][0]] },
+    };
+    const choice = chooseComputerAction(computerState);
+
+    expect(choice?.type).toBe('command');
+
+    assert(choice?.type === 'command', 'Expected Command');
+
+    expect(choice.cardId).toBe('command');
+    expect(choice.destination).toBeUndefined();
+    expect(
+      applyCommand(computerState.played, 'event-reclaim', choice.targetId, '1'),
+    ).not.toBeNull();
+
+    client.stop();
+  });
+
   it.each(['time-jump', 'time-swap'] as const)(
     'uses %s as one action and supports undo/redo',
     (action) => {
