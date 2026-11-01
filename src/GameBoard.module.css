@@ -80,8 +80,15 @@
 .area-controls {
   align-items: center;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.area-controls > * {
+  flex: 0 0 auto;
 }
 
 .player-score {
@@ -391,10 +398,6 @@
 
   .opponent-hand > [data-player-score] {
     flex: 1 1 calc(50% - 0.375rem);
-  }
-
-  .history-controls > button[data-icon-button] {
-    padding: 0.35rem;
   }
 
   .area-heading {
