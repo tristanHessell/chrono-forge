@@ -42,6 +42,7 @@ import { PlayedCard } from './components/PlayedCard';
 import playedCardStyles from './components/PlayedCard.module.css';
 import { PlayerAvatar } from './components/PlayerAvatar';
 import { RoundScoresDialog } from './components/RoundScoresDialog';
+import { SettingsDialog } from './components/SettingsDialog';
 import {
   canUndoMove,
   type Card,
@@ -93,29 +94,29 @@ const linkDirections = [
   {
     className: playedCardStyles.linkTop,
     column: 0,
+    direction: 'down',
     inward: '↓',
-    outward: '↑',
     row: -1,
   },
   {
     className: playedCardStyles.linkLeft,
     column: -1,
+    direction: 'right',
     inward: '→',
-    outward: '←',
     row: 0,
   },
   {
     className: playedCardStyles.linkRight,
     column: 1,
+    direction: 'left',
     inward: '←',
-    outward: '→',
     row: 0,
   },
   {
     className: playedCardStyles.linkBottom,
     column: 0,
+    direction: 'up',
     inward: '↑',
-    outward: '↓',
     row: 1,
   },
 ] as const;
@@ -184,6 +185,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const cardCatalogDialogRef = useRef<HTMLDialogElement>(null);
   const newGameDialogRef = useRef<HTMLDialogElement>(null);
   const roundScoresDialogRef = useRef<HTMLDialogElement>(null);
+  const settingsDialogRef = useRef<HTMLDialogElement>(null);
   const lastJumpDestinationRef = useRef<CardPosition | null>(null);
   const panStartRef = useRef({
     pointerX: 0,
@@ -330,6 +332,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         <span
           aria-hidden="true"
           className={clsx(playedCardStyles.linkArrow, link.className)}
+          data-direction={link.direction}
           data-drag-decoration
           key={link.className}
         >
@@ -982,6 +985,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
               setCommandTargetId(null);
               cardCatalogDialogRef.current?.showModal();
             }}
+            onOpenSettings={() => settingsDialogRef.current?.showModal()}
           />
         </div>
       </header>
@@ -1560,6 +1564,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         }}
       />
       <RoundScoresDialog dialogRef={roundScoresDialogRef} G={G} />
+      <SettingsDialog dialogRef={settingsDialogRef} />
       <footer className={gameBoardStyles.footer}>
         {finished ? (
           <GameResults played={G.played} playerIds={G.playerIds} />

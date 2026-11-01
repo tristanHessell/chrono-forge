@@ -40,6 +40,8 @@ Do not base a new task on an earlier task's unmerged branch.
 Use a different base only when the user requests it or the task requires an existing branch.
 For a continuation, keep the task's existing branch unless the user requests a new base.
 
+Create each task worktree under `.worktrees/` in the repository root.
+
 1. Check the current branch and working tree before switching branches.
 2. Preserve existing changes and commits.
    Do not discard unrelated work.

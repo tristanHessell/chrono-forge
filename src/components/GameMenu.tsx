@@ -1,18 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { CardPatternsToggle } from './CardPatternsToggle';
 import controlsStyles from './Controls.module.css';
 import gameMenuStyles from './GameMenu.module.css';
 import { focusMovedOutside } from './menuFocus';
-import { ThemeToggle } from './ThemeToggle';
 
 type Props = {
   onNewGame: () => void;
   onOpenCatalog: () => void;
+  onOpenSettings: () => void;
 };
 
-export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
+export function GameMenu({ onNewGame, onOpenCatalog, onOpenSettings }: Props) {
   const intl = useIntl();
   const menuRef = useRef<HTMLDetailsElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
@@ -86,8 +85,16 @@ export function GameMenu({ onNewGame, onOpenCatalog }: Props) {
         >
           <FormattedMessage defaultMessage="New game" id="game.new" />
         </button>
-        <ThemeToggle />
-        <CardPatternsToggle />
+        <button
+          className={controlsStyles.historyButton}
+          onClick={() => {
+            closeMenu(true);
+            onOpenSettings();
+          }}
+          type="button"
+        >
+          <FormattedMessage defaultMessage="Settings" id="settings.title" />
+        </button>
         <button
           className={controlsStyles.historyButton}
           onClick={() => {

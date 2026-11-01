@@ -40,6 +40,7 @@ describe('english messages', () => {
           theme: 'dark',
           total: 4,
           type: 'computer',
+          version: '0.1.0',
           winner: '0',
         },
       );
