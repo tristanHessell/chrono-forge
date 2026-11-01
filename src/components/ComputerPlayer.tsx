@@ -38,6 +38,7 @@ export function ComputerPlayer({ cards, player, score }: Props) {
         computerPlayerStyles.computerPlayer,
         ownershipStyles[`owner${player.id}`],
       )}
+      data-player-score={player.id}
     >
       <div className={computerPlayerStyles.identity}>
         <PlayerAvatar compact {...player} owner={player.id} />

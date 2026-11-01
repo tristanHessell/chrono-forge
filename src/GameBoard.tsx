@@ -997,46 +997,68 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
         })}
         className={gameBoardStyles.table}
       >
-        <div className={gameBoardStyles.opponentHand}>
-          {G.playerIds
-            .filter((id) => id !== handOwner)
-            .map((id) => {
-              const player = getPlayer(players, id);
-
-              return player.type === 'computer' ? (
-                <ComputerPlayer
-                  cards={G.hands[id]}
+        <div className={gameBoardStyles.opponentHand} data-player-row>
+          {G.playerIds.map((id) => {
+            if (id === handOwner) {
+              return (
+                <div
+                  className={clsx(
+                    gameBoardStyles.playerScore,
+                    ownershipStyles[`owner${handOwner}`],
+                  )}
+                  data-player-score={id}
                   key={id}
-                  player={player}
-                  score={scores[id] ?? 0}
-                />
-              ) : (
-                <div className={gameBoardStyles.computerHand} key={id}>
-                  <CardHand
-                    activeOwner={activeOwner}
-                    cards={G.hands[id]}
-                    interactive={false}
-                    isReturnTarget={
-                      draggedCard?.source === 'pending' &&
-                      G.pending?.owner === id
-                    }
-                    onChoose={chooseCard}
-                    onDragEnd={finishDrag}
-                    onDragOver={allowDrop}
-                    onDragStart={(event, cardId) => {
-                      beginDrag(event, cardId, 'hand');
-                    }}
-                    onDrop={returnCardToHand}
-                    onShowDetails={showCardDetails}
-                    owner={id}
-                    ownerName={player.name}
-                    pendingCardId={G.pending?.id}
-                    playerType={player.type}
-                    selectedCardId={selectedCardId}
-                  />
+                >
+                  <PlayerAvatar compact {...handPlayer} owner={handOwner} />
+                  <div>
+                    <strong>{handPlayer.name}</strong>
+                    <span>
+                      <FormattedMessage
+                        defaultMessage="{count, plural, one {# point} other {# points}}"
+                        id="score.points"
+                        values={{ count: scores[handOwner] ?? 0 }}
+                      />
+                    </span>
+                  </div>
                 </div>
               );
-            })}
+            }
+
+            const player = getPlayer(players, id);
+
+            return player.type === 'computer' ? (
+              <ComputerPlayer
+                cards={G.hands[id]}
+                key={id}
+                player={player}
+                score={scores[id] ?? 0}
+              />
+            ) : (
+              <div className={gameBoardStyles.computerHand} key={id}>
+                <CardHand
+                  activeOwner={activeOwner}
+                  cards={G.hands[id]}
+                  interactive={false}
+                  isReturnTarget={
+                    draggedCard?.source === 'pending' && G.pending?.owner === id
+                  }
+                  onChoose={chooseCard}
+                  onDragEnd={finishDrag}
+                  onDragOver={allowDrop}
+                  onDragStart={(event, cardId) => {
+                    beginDrag(event, cardId, 'hand');
+                  }}
+                  onDrop={returnCardToHand}
+                  onShowDetails={showCardDetails}
+                  owner={id}
+                  ownerName={player.name}
+                  pendingCardId={G.pending?.id}
+                  playerType={player.type}
+                  selectedCardId={selectedCardId}
+                />
+              </div>
+            );
+          })}
         </div>
 
         <div className={gameBoardStyles.playArea}>
@@ -1165,25 +1187,6 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   <path d="M4 20h16M6 16v-5h4v5m2 0V5h4v11m2 0V9h4v7" />
                 </svg>
               </button>
-            </div>
-            <div
-              className={clsx(
-                gameBoardStyles.playerScore,
-                ownershipStyles[`owner${handOwner}`],
-              )}
-              data-player-score
-            >
-              <PlayerAvatar compact {...handPlayer} owner={handOwner} />
-              <div>
-                <strong>{handPlayer.name}</strong>
-                <span>
-                  <FormattedMessage
-                    defaultMessage="{count, plural, one {# point} other {# points}}"
-                    id="score.points"
-                    values={{ count: scores[handOwner] ?? 0 }}
-                  />
-                </span>
-              </div>
             </div>
           </div>
           <div className={gameBoardStyles.boardSurface}>

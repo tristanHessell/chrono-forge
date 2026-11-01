@@ -147,27 +147,22 @@ export function CardHand({
             type={playerType}
           />
         )}
-        <div className={cardHandStyles.handIdentityText}>
-          <p
-            className={clsx(
-              cardHandStyles.areaLabel,
-              ownershipStyles[`owner${owner}`],
-            )}
-          >
-            {owner === '0'
-              ? intl.formatMessage({
-                  defaultMessage: 'You',
-                  id: 'hand.yourTitle',
-                })
-              : intl.formatMessage<{ readonly name: MessageValue }>(
-                  {
-                    defaultMessage: "{name}'s hand",
-                    id: 'hand.playerTitle',
-                  },
-                  { name: ownerName },
-                )}
-          </p>
-        </div>
+        {owner !== '0' && (
+          <div className={cardHandStyles.handIdentityText}>
+            <p
+              className={clsx(
+                cardHandStyles.areaLabel,
+                ownershipStyles[`owner${owner}`],
+              )}
+            >
+              <FormattedMessage
+                defaultMessage="{name}'s hand"
+                id="hand.playerTitle"
+                values={{ name: ownerName }}
+              />
+            </p>
+          </div>
+        )}
       </div>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions -- TODO this will need to change once we use role="application" */}
       <div
