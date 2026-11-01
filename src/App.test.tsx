@@ -31,7 +31,7 @@ describe(App, () => {
     expect(page.getByRole('region', { name: 'Card table' })).toHaveLength(0);
   });
 
-  it('shows the player score beside the deck after continuing a saved game', async () => {
+  it('shows the player avatar and score beside the deck after continuing a saved game', async () => {
     const client = Client({
       game: { ...createCardGame('0'), seed: 'saved-game-seed' },
       numPlayers: 2,
@@ -71,7 +71,15 @@ describe(App, () => {
       .toBeVisible();
 
     await expect
-      .element(page.getByCSS('[data-player-score]'))
+      .element(page.getByCSS('[data-player-score] > div > span'))
       .toHaveTextContent('0 points');
+    expect(
+      page.getByCSS('[data-player-score] [aria-label="You, human"]'),
+    ).toHaveLength(1);
+    expect(
+      page.getByCSS(
+        '[aria-label="Your hand drop area"] [aria-label="You, human"]',
+      ),
+    ).toHaveLength(0);
   });
 });

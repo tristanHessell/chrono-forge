@@ -40,6 +40,7 @@ import pendingCardStyles from './components/PendingCard.module.css';
 import { PlacementSlot } from './components/PlacementSlot';
 import { PlayedCard } from './components/PlayedCard';
 import playedCardStyles from './components/PlayedCard.module.css';
+import { PlayerAvatar } from './components/PlayerAvatar';
 import { RoundScoresDialog } from './components/RoundScoresDialog';
 import {
   canUndoMove,
@@ -1161,13 +1162,25 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                 </svg>
               </button>
             </div>
-            <span className={gameBoardStyles.playerScore} data-player-score>
-              <FormattedMessage
-                defaultMessage="{count, plural, one {# point} other {# points}}"
-                id="score.points"
-                values={{ count: scores[handOwner] ?? 0 }}
-              />
-            </span>
+            <div
+              className={clsx(
+                gameBoardStyles.playerScore,
+                ownershipStyles[`owner${handOwner}`],
+              )}
+              data-player-score
+            >
+              <PlayerAvatar compact {...handPlayer} owner={handOwner} />
+              <div>
+                <strong>{handPlayer.name}</strong>
+                <span>
+                  <FormattedMessage
+                    defaultMessage="{count, plural, one {# point} other {# points}}"
+                    id="score.points"
+                    values={{ count: scores[handOwner] ?? 0 }}
+                  />
+                </span>
+              </div>
+            </div>
           </div>
           <div className={gameBoardStyles.boardSurface}>
             <BoardZoomControls
@@ -1501,6 +1514,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
             pendingCardId={G.pending?.id}
             playerType={handPlayer.type}
             selectedCardId={selectedCardId}
+            showAvatar={false}
             touchDrag={touchDrag}
           />
         </div>

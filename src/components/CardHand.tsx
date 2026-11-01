@@ -34,6 +34,7 @@ type CardHandProps = {
   pendingCardId: string | undefined;
   playerType: PlayerType;
   selectedCardId: null | string;
+  showAvatar?: boolean;
   touchDrag?: TouchCardDragHandlers;
 };
 
@@ -53,6 +54,7 @@ export function CardHand({
   pendingCardId,
   playerType,
   selectedCardId,
+  showAvatar = true,
   touchDrag,
 }: CardHandProps) {
   const intl = useIntl();
@@ -137,12 +139,14 @@ export function CardHand({
   return (
     <>
       <div className={cardHandStyles.handIdentity}>
-        <PlayerAvatar
-          compact
-          name={ownerName}
-          owner={owner}
-          type={playerType}
-        />
+        {showAvatar && (
+          <PlayerAvatar
+            compact
+            name={ownerName}
+            owner={owner}
+            type={playerType}
+          />
+        )}
         <div className={cardHandStyles.handIdentityText}>
           <p
             className={clsx(
