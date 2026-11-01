@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { MessageValue } from 'react-intl';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -62,6 +62,8 @@ export function CardHand({
   const [manualIds, setManualIds] = useState<string[]>([]);
   const [draggedId, setDraggedId] = useState<null | string>(null);
   const [dragStartIds, setDragStartIds] = useState<string[]>([]);
+  const handDropAreaRef = useRef<HTMLDivElement>(null);
+  const touchDraggedIdRef = useRef<null | string>(null);
   const orderedCards = restoreHandOrder(cards, manualIds);
   const reorder = (sourceId: string, targetId: string, before: boolean) => {
     setManualIds(
@@ -70,25 +72,9 @@ export function CardHand({
       ),
     );
   };
-  const finishHandDrag = () => {
-    setDraggedId(null);
-    setHoveredCardId(null);
-    onDragEnd();
-  };
-  const previewHandReorder = (event: React.DragEvent<HTMLDivElement>) => {
-    if (!draggedId) {
-      if (isReturnTarget) {
-        onDragOver(event);
-      }
-
-      return;
-    }
-
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-
+  const reorderHandAt = (sourceId: string, clientX: number) => {
     const fan =
-      event.currentTarget.querySelector<HTMLElement>('[data-hand-fan]');
+      handDropAreaRef.current?.querySelector<HTMLElement>('[data-hand-fan]');
     const cardElement = fan?.querySelector<HTMLElement>('[data-hand-card]');
 
     if (!fan || !cardElement || orderedCards.length < 2) {
@@ -107,18 +93,73 @@ export function CardHand({
       0,
       Math.min(
         orderedCards.length - 1,
-        Math.round((event.clientX - bounds.left - cardWidth / 2) / step),
+        Math.round((clientX - bounds.left - cardWidth / 2) / step),
       ),
     );
-    const sourceIndex = orderedCards.findIndex((card) => card.id === draggedId);
+    const sourceIndex = orderedCards.findIndex((card) => card.id === sourceId);
 
     if (sourceIndex !== targetIndex) {
       reorder(
-        draggedId,
+        sourceId,
         orderedCards[targetIndex].id,
         targetIndex < sourceIndex,
       );
     }
+  };
+  const finishHandDrag = () => {
+    setDraggedId(null);
+    setHoveredCardId(null);
+    onDragEnd();
+  };
+  const previewHandReorder = (event: React.DragEvent<HTMLDivElement>) => {
+    if (!draggedId) {
+      if (isReturnTarget) {
+        onDragOver(event);
+      }
+
+      return;
+    }
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    reorderHandAt(draggedId, event.clientX);
+  };
+  const pointerIsInHand = (event: React.PointerEvent<HTMLElement>) =>
+    document
+      .elementFromPoint(event.clientX, event.clientY)
+      ?.closest<HTMLElement>('[data-hand-owner]')?.dataset.handOwner === owner;
+  const moveTouchCard = (event: React.PointerEvent<HTMLElement>) => {
+    touchDrag?.onPointerMove(event);
+
+    const sourceId = touchDraggedIdRef.current;
+
+    if (
+      sourceId &&
+      touchDrag?.controller.pointerId === event.pointerId &&
+      touchDrag.controller.dragging &&
+      pointerIsInHand(event)
+    ) {
+      reorderHandAt(sourceId, event.clientX);
+    }
+  };
+  const endTouchCard = (event: React.PointerEvent<HTMLElement>) => {
+    const sourceId = touchDraggedIdRef.current;
+    const ownsPointer = touchDrag?.controller.pointerId === event.pointerId;
+
+    if (
+      sourceId &&
+      ownsPointer &&
+      touchDrag.controller.dragging &&
+      pointerIsInHand(event)
+    ) {
+      reorderHandAt(sourceId, event.clientX);
+    }
+
+    if (ownsPointer) {
+      touchDraggedIdRef.current = null;
+    }
+
+    touchDrag?.onPointerUp(event);
   };
   const [hoveredCardId, setHoveredCardId] = useState<null | string>(null);
   const [focusedCardId, setFocusedCardId] = useState<null | string>(null);
@@ -208,6 +249,7 @@ export function CardHand({
             onDrop(event);
           }
         }}
+        ref={handDropAreaRef}
       >
         <div
           className={cardHandStyles.handFan}
@@ -309,11 +351,34 @@ export function CardHand({
                     reorder(card.id, orderedCards[targetIndex].id, before);
                   }
                 }}
-                onLostPointerCapture={touchDrag?.onLostPointerCapture}
-                onPointerCancel={touchDrag?.onPointerCancel}
+                onLostPointerCapture={(event) => {
+                  if (touchDrag?.controller.pointerId === event.pointerId) {
+                    touchDraggedIdRef.current = null;
+                  }
+
+                  touchDrag?.onLostPointerCapture(event);
+                }}
+                onPointerCancel={(event) => {
+                  if (touchDrag?.controller.pointerId === event.pointerId) {
+                    touchDraggedIdRef.current = null;
+                  }
+
+                  touchDrag?.onPointerCancel(event);
+                }}
                 onPointerDown={
                   card.type === 'event' && interactive && activeOwner === owner
-                    ? (event) => touchDrag?.onPointerDown(event, card.id)
+                    ? (event) => {
+                        if (
+                          ['touch', 'pen'].includes(event.pointerType) &&
+                          event.isPrimary &&
+                          event.button === 0 &&
+                          touchDrag
+                        ) {
+                          touchDraggedIdRef.current = card.id;
+                        }
+
+                        touchDrag?.onPointerDown(event, card.id);
+                      }
                     : undefined
                 }
                 onPointerEnter={() => {
@@ -322,8 +387,8 @@ export function CardHand({
                 onPointerLeave={() => {
                   setHoveredCardId(null);
                 }}
-                onPointerMove={touchDrag?.onPointerMove}
-                onPointerUp={touchDrag?.onPointerUp}
+                onPointerMove={moveTouchCard}
+                onPointerUp={endTouchCard}
                 style={{ '--hand-index': index } as React.CSSProperties}
                 type="button"
               >

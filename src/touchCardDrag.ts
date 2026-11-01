@@ -65,6 +65,14 @@ export class TouchCardDrag {
     return this.session !== null;
   }
 
+  get dragging() {
+    return this.session?.active ?? false;
+  }
+
+  get pointerId() {
+    return this.session?.id ?? null;
+  }
+
   resetClickSuppression() {
     if (!this.session) {
       this.suppressClick = false;
