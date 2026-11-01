@@ -244,6 +244,7 @@ describe('take Control and Remove Event', () => {
     const client = clientFor('remove-event', board(), 1);
 
     client.moves.command('command', 'bonus');
+    client.moves.confirmTurn();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(canUndoMove(client.getState()!.G)).toBe(false);

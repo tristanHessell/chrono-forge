@@ -57,6 +57,10 @@ describe('history', () => {
           : state.G.hands['1'];
 
       client.moves.discardCard(hand[0].id);
+
+      if (client.getState()!.G.turnPendingConfirmation) {
+        client.moves.confirmTurn();
+      }
     }
 
     const before = client.getState()!;
@@ -66,6 +70,7 @@ describe('history', () => {
         : before.G.hands['1'];
 
     client.moves.discardCard(hand[0].id);
+    client.moves.confirmTurn();
 
     const after = client.getState()!;
 
@@ -94,6 +99,7 @@ describe('history', () => {
     for (let count = 0; count < 2; count += 1) {
       client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
     }
+    client.moves.confirmTurn();
 
     expect(canUndoMove(client.getState()!.G)).toBe(true);
     expect(client.getState()!.ctx.currentPlayer).toBe('1');

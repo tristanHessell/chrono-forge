@@ -135,6 +135,14 @@ describe('computer opponent', () => {
 
       while (!client.getState()!.G.roundOver && moves < 150) {
         const before = client.getState()!;
+
+        if (before.G.turnPendingConfirmation) {
+          client.moves.confirmTurn();
+          moves += 1;
+
+          continue;
+        }
+
         const owner = before.G.playerIds.find(
           (id) => id === before.ctx.currentPlayer,
         )!;

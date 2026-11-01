@@ -12,24 +12,28 @@ type GameBoardPlayersProps = {
   actionsThisTurn: number;
   activeOwner: PlayerId;
   cards: CardGameState['hands'];
+  confirmTurn: () => void;
   finished: boolean;
   handOwner: PlayerId;
   handPlayer: PlayerSetup;
   playerIds: PlayerId[];
   players: PlayerSetup[];
   scores: Record<string, number>;
+  turnPendingConfirmation: boolean;
 };
 
 export function GameBoardPlayers({
   actionsThisTurn,
   activeOwner,
   cards,
+  confirmTurn,
   finished,
   handOwner,
   handPlayer,
   playerIds,
   players,
   scores,
+  turnPendingConfirmation,
 }: GameBoardPlayersProps) {
   return (
     <div className={gameBoardStyles.opponentHand} data-player-row>
@@ -63,13 +67,26 @@ export function GameBoardPlayers({
                         id="turn.currentPlayer"
                       />
                     </span>
-                    <span>
-                      <FormattedMessage
-                        defaultMessage="{count, plural, one {# action left} other {# actions left}}"
-                        id="turn.actionsLeft"
-                        values={{ count: Math.max(0, 2 - actionsThisTurn) }}
-                      />
-                    </span>
+                    {turnPendingConfirmation ? (
+                      <button
+                        className={gameBoardStyles.confirmTurn}
+                        onClick={confirmTurn}
+                        type="button"
+                      >
+                        <FormattedMessage
+                          defaultMessage="End turn"
+                          id="turn.confirm"
+                        />
+                      </button>
+                    ) : (
+                      <span>
+                        <FormattedMessage
+                          defaultMessage="{count, plural, one {# action left} other {# actions left}}"
+                          id="turn.actionsLeft"
+                          values={{ count: Math.max(0, 2 - actionsThisTurn) }}
+                        />
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

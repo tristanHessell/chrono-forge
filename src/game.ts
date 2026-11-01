@@ -79,9 +79,9 @@ export type Card = CommandCard | EventCard;
 export type PlayerId = '0' | '1' | '2' | '3';
 export type CardOwner = 'neutral' | PlayerId;
 
-export const CURRENT_RULES_VERSION = 5;
+export const CURRENT_RULES_VERSION = 6;
 
-export type CardGameRulesVersion = 2 | 4 | typeof CURRENT_RULES_VERSION;
+export type CardGameRulesVersion = 2 | 4 | 5 | typeof CURRENT_RULES_VERSION;
 
 export type PlacedCard = EventCard & {
   column: number;
@@ -115,6 +115,7 @@ export type CardGameState = {
   startingPlayer: PlayerId;
   testFuture: CardGameSnapshot[];
   testHistory: CardGameSnapshot[];
+  turnPendingConfirmation?: boolean;
   undoBlocked: boolean;
 };
 
@@ -135,6 +136,7 @@ type CardGameSnapshot = {
   roundOver: boolean;
   roundScores: Record<string, number>[];
   startingPlayer: PlayerId;
+  turnPendingConfirmation?: boolean;
 };
 
 const HAND_SIZE = 5;
@@ -161,6 +163,7 @@ const snapshotGame = (
   roundOver: G.roundOver,
   roundScores: G.roundScores.map((scores) => ({ ...scores })),
   startingPlayer: G.startingPlayer,
+  turnPendingConfirmation: G.turnPendingConfirmation ?? false,
 });
 
 const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
@@ -176,6 +179,7 @@ const restoreSnapshot = (G: CardGameState, snapshot: CardGameSnapshot) => {
   G.startingPlayer = snapshot.startingPlayer;
   G.roundOver = snapshot.roundOver;
   G.nextPlacementOrder = snapshot.nextPlacementOrder;
+  G.turnPendingConfirmation = snapshot.turnPendingConfirmation ?? false;
 };
 
 const clearMoveHistory = (G: CardGameState) => {
@@ -202,22 +206,12 @@ const recordMoveForUndo = (
   G.undoBlocked = false;
 };
 
-const advanceTurn = (
+const finishTurn = (
   G: CardGameState,
   currentPlayer: string,
   endTurn: (options?: { next: string }) => void,
-  countsAsAction = true,
 ) => {
-  if (countsAsAction) {
-    G.actionsThisTurn += 1;
-  }
-
   const hand = G.hands[currentPlayer];
-
-  if (G.actionsThisTurn < 2 && hand.length > 0) {
-    return;
-  }
-
   const drawCount = Math.max(0, HAND_SIZE - hand.length);
   const drawnCards = G.deck.splice(0, drawCount);
 
@@ -265,6 +259,35 @@ const advanceTurn = (
   }
 
   endTurn({ next: nextPlayer });
+};
+
+const advanceTurn = (
+  G: CardGameState,
+  currentPlayer: string,
+  endTurn: (options?: { next: string }) => void,
+  countsAsAction = true,
+) => {
+  if (countsAsAction) {
+    G.actionsThisTurn += 1;
+  }
+
+  const hand = G.hands[currentPlayer];
+
+  if (
+    (G.rulesVersion ?? 0) >= 6 &&
+    currentPlayer === '0' &&
+    (G.actionsThisTurn >= 2 || hand.length === 0)
+  ) {
+    G.turnPendingConfirmation = true;
+
+    return;
+  }
+
+  if (G.actionsThisTurn < 2 && hand.length > 0) {
+    return;
+  }
+
+  finishTurn(G, currentPlayer, endTurn);
 };
 
 const undoMove: MoveFn<CardGameState> = ({ ctx, events, G }) => {
@@ -321,7 +344,7 @@ function setupCardGame(
   { ctx, random }: CardGameSetupContext,
   rulesVersion: CardGameRulesVersion,
 ): CardGameState {
-  const catalog = loadCardCatalog(rulesVersion === CURRENT_RULES_VERSION);
+  const catalog = loadCardCatalog(rulesVersion >= 5);
   const deck = random.Shuffle(catalog.deck);
   const numPlayers = ctx.numPlayers;
 
@@ -360,6 +383,7 @@ function setupCardGame(
     startingPlayer: '0',
     testFuture: [],
     testHistory: [],
+    turnPendingConfirmation: false,
     undoBlocked: false,
   };
 }
@@ -374,7 +398,7 @@ export const CardGame: Game<CardGameState> = {
       targetId: string,
       destination?: CardPosition | string,
     ) => {
-      if (G.roundOver || G.pending) {
+      if (G.roundOver || G.pending || G.turnPendingConfirmation) {
         return;
       }
 
@@ -482,7 +506,12 @@ export const CardGame: Game<CardGameState> = {
     confirmPlacement: ({ ctx, events, G }) => {
       const activeOwner = ctx.currentPlayer as PlayerId;
 
-      if (G.roundOver || !G.pending || G.pending.owner !== activeOwner) {
+      if (
+        G.roundOver ||
+        G.turnPendingConfirmation ||
+        !G.pending ||
+        G.pending.owner !== activeOwner
+      ) {
         return;
       }
       if (!isValidPlacement(G.played, G.pending, G.pending)) {
@@ -542,8 +571,18 @@ export const CardGame: Game<CardGameState> = {
         !playedCard.effects?.includes('free-action') || !G.freeActionsEnabled,
       );
     },
+    confirmTurn: ({ ctx, events, G }) => {
+      if (!G.turnPendingConfirmation || ctx.currentPlayer !== '0') {
+        return;
+      }
+
+      G.turnPendingConfirmation = false;
+      finishTurn(G, ctx.currentPlayer, (options) => {
+        events.endTurn(options);
+      });
+    },
     discardCard: ({ ctx, events, G }, cardId: string) => {
-      if (G.roundOver) {
+      if (G.roundOver || G.turnPendingConfirmation) {
         return;
       }
 
@@ -572,6 +611,7 @@ export const CardGame: Game<CardGameState> = {
 
       if (
         !G.pending ||
+        G.turnPendingConfirmation ||
         G.pending.owner !== activeOwner ||
         G.played.length === 0
       ) {
@@ -596,6 +636,7 @@ export const CardGame: Game<CardGameState> = {
 
       if (
         G.roundOver ||
+        G.turnPendingConfirmation ||
         !card ||
         card.type !== 'event' ||
         G.pending ||
@@ -623,7 +664,7 @@ export const CardGame: Game<CardGameState> = {
       cardId: string,
       position?: CardPosition,
     ) => {
-      if (G.roundOver || !G.pending) {
+      if (G.roundOver || G.turnPendingConfirmation || !G.pending) {
         return;
       }
 
@@ -655,7 +696,11 @@ export const CardGame: Game<CardGameState> = {
     returnPendingCard: ({ ctx, G }) => {
       const activeOwner = ctx.currentPlayer as PlayerId;
 
-      if (G.roundOver || G.pending?.owner !== activeOwner) {
+      if (
+        G.roundOver ||
+        G.turnPendingConfirmation ||
+        G.pending?.owner !== activeOwner
+      ) {
         return;
       }
 

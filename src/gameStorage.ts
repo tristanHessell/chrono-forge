@@ -51,7 +51,10 @@ function isCardGameState(value: unknown): value is CardGameState {
     (value.rulesVersion === undefined ||
       value.rulesVersion === 2 ||
       value.rulesVersion === 4 ||
-      value.rulesVersion === 5) &&
+      value.rulesVersion === 5 ||
+      value.rulesVersion === 6) &&
+    (value.turnPendingConfirmation === undefined ||
+      typeof value.turnPendingConfirmation === 'boolean') &&
     isRecord(value.hands) &&
     Array.isArray(value.playerIds) &&
     Number.isInteger(value.round) &&

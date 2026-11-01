@@ -2,7 +2,7 @@ import { Client } from 'boardgame.io/client';
 import { describe, expect, it } from 'vitest';
 
 import { loadCardCatalog } from './cardCatalog';
-import { type Card, CardGame, createCardGame } from './game';
+import { canUndoMove, type Card, CardGame, createCardGame } from './game';
 
 describe('turnFlow', () => {
   it('starts with the player selected when the game is created', () => {
@@ -26,6 +26,10 @@ describe('turnFlow', () => {
 
       for (let action = 0; action < 2; action += 1) {
         client.moves.discardCard(client.getState()!.G.hands[playerId][0].id);
+      }
+
+      if (playerId === '0') {
+        client.moves.confirmTurn();
       }
     }
 
@@ -53,11 +57,69 @@ describe('turnFlow', () => {
 
     const second = client.getState()!;
 
-    expect(second.ctx.currentPlayer).toBe('1');
-    expect(second.G.actionsThisTurn).toBe(0);
-    expect(second.G.hands['0']).toHaveLength(5);
-    expect(second.G.deck).toHaveLength(38);
-    expect(second.G.hands['1']).toStrictEqual(initial.hands['1']);
+    expect(second.ctx.currentPlayer).toBe('0');
+    expect(second.G.turnPendingConfirmation).toBe(true);
+    expect(second.G.actionsThisTurn).toBe(2);
+    expect(second.G.hands['0']).toHaveLength(3);
+
+    client.moves.confirmTurn();
+
+    const afterConfirmation = client.getState()!;
+
+    expect(afterConfirmation.ctx.currentPlayer).toBe('1');
+    expect(afterConfirmation.G.turnPendingConfirmation).toBe(false);
+    expect(afterConfirmation.G.actionsThisTurn).toBe(0);
+    expect(afterConfirmation.G.hands['0']).toHaveLength(5);
+    expect(afterConfirmation.G.deck).toHaveLength(38);
+    expect(afterConfirmation.G.hands['1']).toStrictEqual(initial.hands['1']);
+  });
+
+  it('lets the human undo the last action before confirming their turn', () => {
+    const client = Client({
+      game: { ...CardGame, seed: 'confirm-turn-undo' },
+      numPlayers: 2,
+    });
+
+    client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
+    client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
+
+    const awaitingConfirmation = client.getState()!;
+
+    expect(awaitingConfirmation.G.turnPendingConfirmation).toBe(true);
+    expect(canUndoMove(awaitingConfirmation.G)).toBe(true);
+
+    client.moves.discardCard(awaitingConfirmation.G.hands['0'][0].id);
+
+    expect(client.getState()!.G.hands['0']).toStrictEqual(
+      awaitingConfirmation.G.hands['0'],
+    );
+
+    client.moves.undoTest();
+
+    expect(client.getState()!.G.turnPendingConfirmation).toBe(false);
+    expect(client.getState()!.G.actionsThisTurn).toBe(1);
+    expect(client.getState()!.ctx.currentPlayer).toBe('0');
+
+    client.moves.redoTest();
+    client.moves.confirmTurn();
+
+    expect(client.getState()!.ctx.currentPlayer).toBe('1');
+  });
+
+  it('keeps automatic turn changes for older game rules', () => {
+    const client = Client({
+      game: {
+        ...createCardGame('0', true, 5),
+        seed: 'old-turn-rules',
+      },
+      numPlayers: 2,
+    });
+
+    client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
+    client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
+
+    expect(client.getState()!.G.turnPendingConfirmation).toBe(false);
+    expect(client.getState()!.ctx.currentPlayer).toBe('1');
   });
 
   it('counts a confirmed play and a discard as the two actions', () => {
@@ -81,6 +143,10 @@ describe('turnFlow', () => {
     expect(client.getState()!.ctx.currentPlayer).toBe('0');
 
     client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
+
+    expect(client.getState()!.G.turnPendingConfirmation).toBe(true);
+
+    client.moves.confirmTurn();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.hands['0']).toHaveLength(5);
@@ -112,6 +178,10 @@ describe('turnFlow', () => {
     client.moves.confirmPlacement();
 
     expect(client.getState()!.G.played).toHaveLength(3);
+    expect(client.getState()!.G.turnPendingConfirmation).toBe(true);
+
+    client.moves.confirmTurn();
+
     expect(client.getState()!.G.hands['0']).toHaveLength(5);
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.actionsThisTurn).toBe(0);
@@ -136,6 +206,7 @@ describe('turnFlow', () => {
 
       client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
       client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
+      client.moves.confirmTurn();
 
       expect(client.getState()!.G.hands['0']).toHaveLength(3 + count);
       expect(client.getState()!.G.deck).toStrictEqual([]);
@@ -159,6 +230,11 @@ describe('turnFlow', () => {
     });
 
     client.moves.discardCard(card.id);
+
+    expect(client.getState()!.G.roundOver).toBe(false);
+    expect(client.getState()!.G.turnPendingConfirmation).toBe(true);
+
+    client.moves.confirmTurn();
 
     expect(client.getState()!.G.roundOver).toBe(true);
     expect(client.getState()!.G.hands['0']).toStrictEqual([]);
@@ -195,6 +271,10 @@ describe('turnFlow', () => {
 
     client.moves.discardCard(client.getState()!.G.hands['0'][0].id);
 
+    expect(client.getState()!.G.turnPendingConfirmation).toBe(true);
+
+    client.moves.confirmTurn();
+
     expect(client.getState()!.G.hands['0']).toHaveLength(5);
     expect(client.getState()!.G.deck).toHaveLength(deck.length - 2);
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
@@ -230,6 +310,7 @@ describe('turnFlow', () => {
     client.moves.confirmPlacement();
     client.moves.playCard(p0Cards[1].id, { column: 2, row: 0 });
     client.moves.confirmPlacement();
+    client.moves.confirmTurn();
 
     expect(client.getState()!.ctx.currentPlayer).toBe('1');
     expect(client.getState()!.G.round).toBe(1);

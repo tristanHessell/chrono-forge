@@ -22,6 +22,14 @@ describe.each([2, 3, 4] as const)('%i-player seeded replay', (numPlayers) => {
       index += 1
     ) {
       const { ctx, G } = client.getState()!;
+
+      if (G.turnPendingConfirmation) {
+        client.moves.confirmTurn();
+        states.push(client.getState()!);
+
+        continue;
+      }
+
       const action = chooseComputerAction(G, ctx.currentPlayer as '0');
 
       if (!action) {
@@ -140,7 +148,7 @@ describe('gameLog', () => {
       '{}',
       JSON.stringify({ ...valid, version: 99 }),
       JSON.stringify({ ...valid, rulesVersion: 3 }),
-      JSON.stringify({ ...valid, rulesVersion: 6 }),
+      JSON.stringify({ ...valid, rulesVersion: 7 }),
       JSON.stringify({ ...valid, numPlayers: 5 }),
       JSON.stringify({ ...valid, actions: [{ type: 'RESET' }] }),
     ]) {
@@ -167,13 +175,14 @@ describe('gameLog', () => {
 
     client.moves.discardCard(first);
     client.moves.discardCard(second);
+    client.moves.confirmTurn();
 
-    expect(exported().actions).toHaveLength(2);
+    expect(exported().actions).toHaveLength(3);
     expect(canUndoMove(client.getState()!.G)).toBe(false);
 
     client.moves.undoTest();
 
-    expect(exported().actions).toHaveLength(2);
+    expect(exported().actions).toHaveLength(3);
 
     client.stop();
   });
