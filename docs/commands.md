@@ -84,6 +84,18 @@ as occupied for the 2×2 square check.
 
 The command cannot target the starting card or an Event that is already removed.
 
+## Event Reclaim
+
+Choose one mode. Replace any non-starting Event on the board with an Event from
+your hand, or restore a removed Event.
+
+For replacement, the new Event takes the target's position and link directions.
+The entire board must remain legal. The replaced Event enters the discard pile.
+The new Event belongs to you and triggers its play effects.
+
+For restoration, the removed Event keeps its owner and position. It scores again
+and does not trigger its effects again. The entire board must remain legal.
+
 ## Overwrite a removed Event
 
 Play a valid Event from your hand into a removed Event's position. The new Event

@@ -1,5 +1,5 @@
 import { Client } from 'boardgame.io/client';
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 
 import { chooseComputerAction } from './computer';
 import { canUndoMove, CardGame, createCardGame } from './game';
@@ -76,6 +76,61 @@ describe.each([2, 3, 4] as const)('%i-player seeded replay', (numPlayers) => {
 });
 
 describe('gameLog', () => {
+  it('replays Event Reclaim replacement actions', () => {
+    let seed: string | undefined;
+
+    for (let index = 0; index < 100; index += 1) {
+      const candidate = `event-reclaim-replay-${index}`;
+      const client = Client({
+        debug: false,
+        game: { ...CardGame, seed: candidate },
+      });
+      const hand = client.getState()!.G.hands['0'];
+      const eventCount = hand.filter((card) => card.type === 'event').length;
+      const hasReclaim = hand.some(
+        (card) => card.type === 'command' && card.action === 'event-reclaim',
+      );
+
+      client.stop();
+
+      if (hasReclaim && eventCount > 1) {
+        seed = candidate;
+
+        break;
+      }
+    }
+
+    assert(seed, 'Could not find a seed for the Event Reclaim replay.');
+
+    const client = Client({
+      debug: false,
+      game: { ...CardGame, seed },
+    });
+    const hand = client.getState()!.G.hands['0'];
+    const command = hand.find(
+      (card) => card.type === 'command' && card.action === 'event-reclaim',
+    )!;
+    const events = hand.filter((card) => card.type === 'event');
+
+    client.moves.playCard(events[0].id, { column: 1, row: 0 });
+    client.moves.confirmPlacement();
+    client.moves.command(command.id, events[0].id, events[1].id);
+
+    const log = parseGameLog(exportGameLog(seed, 2, client.log));
+    const replay = replayGameLog(log);
+
+    expect(log.actions.at(-1)).toMatchObject({
+      payload: {
+        args: [command.id, events[0].id, events[1].id],
+        type: 'command',
+      },
+    });
+    expect(replay.getState()!.G).toStrictEqual(client.getState()!.G);
+
+    client.stop();
+    replay.stop();
+  });
+
   it('rejects malformed or incompatible logs and unknown actions', () => {
     const valid = parseGameLog(exportGameLog('seed', 2, []));
 
@@ -85,6 +140,7 @@ describe('gameLog', () => {
       '{}',
       JSON.stringify({ ...valid, version: 99 }),
       JSON.stringify({ ...valid, rulesVersion: 3 }),
+      JSON.stringify({ ...valid, rulesVersion: 6 }),
       JSON.stringify({ ...valid, numPlayers: 5 }),
       JSON.stringify({ ...valid, actions: [{ type: 'RESET' }] }),
     ]) {
@@ -180,7 +236,10 @@ describe('gameLog', () => {
 
   it('converts earlier JSON logs with draft moves to confirmed actions', () => {
     const seed = 'replay-test';
-    const client = Client({ debug: false, game: { ...CardGame, seed } });
+    const client = Client({
+      debug: false,
+      game: { ...createCardGame('0', false, 2), seed },
+    });
     const card = client
       .getState()!
       .G.hands['0'].find((card) => card.type === 'event')!;

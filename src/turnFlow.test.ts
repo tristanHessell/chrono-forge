@@ -47,7 +47,7 @@ describe('turnFlow', () => {
     expect(first.ctx.currentPlayer).toBe('0');
     expect(first.G.actionsThisTurn).toBe(1);
     expect(first.G.hands['0']).toHaveLength(4);
-    expect(first.G.deck).toHaveLength(36);
+    expect(first.G.deck).toHaveLength(40);
 
     client.moves.discardCard(first.G.hands['0'][0].id);
 
@@ -56,7 +56,7 @@ describe('turnFlow', () => {
     expect(second.ctx.currentPlayer).toBe('1');
     expect(second.G.actionsThisTurn).toBe(0);
     expect(second.G.hands['0']).toHaveLength(5);
-    expect(second.G.deck).toHaveLength(34);
+    expect(second.G.deck).toHaveLength(38);
     expect(second.G.hands['1']).toStrictEqual(initial.hands['1']);
   });
 

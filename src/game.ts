@@ -50,7 +50,7 @@ export type EventName =
   | 'united-nations'
   | 'wildlife-refuges';
 export type CommandAction =
-  'remove-event' | 'take-control' | 'time-jump' | 'time-swap';
+  'event-reclaim' | 'remove-event' | 'take-control' | 'time-jump' | 'time-swap';
 
 export type EventCard = {
   // Only the neutral starting card has no category.
@@ -78,6 +78,10 @@ export type Card = CommandCard | EventCard;
 
 export type PlayerId = '0' | '1' | '2' | '3';
 export type CardOwner = 'neutral' | PlayerId;
+
+export const CURRENT_RULES_VERSION = 5;
+
+export type CardGameRulesVersion = 2 | 4 | typeof CURRENT_RULES_VERSION;
 
 export type PlacedCard = EventCard & {
   column: number;
@@ -107,6 +111,7 @@ export type CardGameState = {
   round: number;
   roundOver: boolean;
   roundScores: Record<string, number>[];
+  rulesVersion?: CardGameRulesVersion;
   startingPlayer: PlayerId;
   testFuture: CardGameSnapshot[];
   testHistory: CardGameSnapshot[];
@@ -308,6 +313,57 @@ const redoMove: MoveFn<CardGameState> = ({ ctx, events, G }) => {
   }
 };
 
+type CardGameSetupContext = Parameters<
+  NonNullable<Game<CardGameState>['setup']>
+>[0];
+
+function setupCardGame(
+  { ctx, random }: CardGameSetupContext,
+  rulesVersion: CardGameRulesVersion,
+): CardGameState {
+  const catalog = loadCardCatalog(rulesVersion === CURRENT_RULES_VERSION);
+  const deck = random.Shuffle(catalog.deck);
+  const numPlayers = ctx.numPlayers;
+
+  if (!Number.isInteger(numPlayers) || numPlayers < 2 || numPlayers > 4) {
+    throw new Error('Choose between two and four players.');
+  }
+
+  const playerIds = (['0', '1', '2', '3'] as PlayerId[]).slice(0, numPlayers);
+
+  return {
+    actionsThisTurn: 0,
+    deck,
+    discarded: [],
+    freeActionsEnabled: rulesVersion !== 2,
+    hands: Object.fromEntries(
+      playerIds.map((id) => [id, deck.splice(0, HAND_SIZE)]),
+    ),
+    moveUndoHistory: [],
+    nextPlacementOrder: 1,
+    pending: null,
+    pendingSnapshot: null,
+    played: [
+      {
+        ...catalog.startingCard,
+        column: 0,
+        owner: 'neutral',
+        placedAt: 0,
+        row: 0,
+      },
+    ],
+    playerIds,
+    round: 1,
+    roundOver: false,
+    roundScores: [],
+    rulesVersion,
+    startingPlayer: '0',
+    testFuture: [],
+    testHistory: [],
+    undoBlocked: false,
+  };
+}
+
 export const CardGame: Game<CardGameState> = {
   maxPlayers: 4,
   minPlayers: 2,
@@ -335,12 +391,29 @@ export const CardGame: Game<CardGameState> = {
         return;
       }
 
+      const replacement =
+        card.action === 'event-reclaim' && typeof destination === 'string'
+          ? hand.find(
+              (candidate): candidate is EventCard =>
+                candidate.id === destination && candidate.type === 'event',
+            )
+          : undefined;
+
+      if (
+        card.action === 'event-reclaim' &&
+        typeof destination === 'string' &&
+        !replacement
+      ) {
+        return;
+      }
+
       const played = applyCommand(
         G.played,
         card.action,
         targetId,
         ctx.currentPlayer as PlayerId,
         destination,
+        replacement,
       );
 
       if (!played) {
@@ -367,14 +440,44 @@ export const CardGame: Game<CardGameState> = {
         });
       }
       G.played = played;
+
+      if (replacement) {
+        hand.splice(
+          hand.findIndex((candidate) => candidate.id === replacement.id),
+          1,
+        );
+      }
+
       G.nextPlacementOrder = Math.max(
         G.nextPlacementOrder,
         ...played.map((event) => event.placedAt + 1),
       );
-      G.discarded.push(...hand.splice(index, 1));
-      advanceTurn(G, ctx.currentPlayer, (options) => {
-        events.endTurn(options);
-      });
+      G.discarded.push(
+        ...hand.splice(
+          hand.findIndex((candidate) => candidate.id === cardId),
+          1,
+        ),
+      );
+      for (const effect of replacement?.type === 'event'
+        ? (replacement.effects ?? [])
+        : []) {
+        if (effect === 'draw-one') {
+          const drawnCard = G.deck.shift();
+
+          if (drawnCard) {
+            G.hands[ctx.currentPlayer].push(drawnCard);
+            clearMoveHistory(G);
+          }
+        }
+      }
+      advanceTurn(
+        G,
+        ctx.currentPlayer,
+        (options) => {
+          events.endTurn(options);
+        },
+        !replacement?.effects?.includes('free-action') || !G.freeActionsEnabled,
+      );
     },
     confirmPlacement: ({ ctx, events, G }) => {
       const activeOwner = ctx.currentPlayer as PlayerId;
@@ -564,48 +667,7 @@ export const CardGame: Game<CardGameState> = {
 
   name: 'card-table',
 
-  setup: ({ ctx, random }) => {
-    const catalog = loadCardCatalog();
-    const deck = random.Shuffle(catalog.deck);
-    const numPlayers = ctx.numPlayers;
-
-    if (!Number.isInteger(numPlayers) || numPlayers < 2 || numPlayers > 4) {
-      throw new Error('Choose between two and four players.');
-    }
-
-    const playerIds = (['0', '1', '2', '3'] as PlayerId[]).slice(0, numPlayers);
-
-    return {
-      actionsThisTurn: 0,
-      deck,
-      discarded: [],
-      freeActionsEnabled: true,
-      hands: Object.fromEntries(
-        playerIds.map((id) => [id, deck.splice(0, HAND_SIZE)]),
-      ),
-      moveUndoHistory: [],
-      nextPlacementOrder: 1,
-      pending: null,
-      pendingSnapshot: null,
-      played: [
-        {
-          ...catalog.startingCard,
-          column: 0,
-          owner: 'neutral',
-          placedAt: 0,
-          row: 0,
-        },
-      ],
-      playerIds,
-      round: 1,
-      roundOver: false,
-      roundScores: [],
-      startingPlayer: '0',
-      testFuture: [],
-      testHistory: [],
-      undoBlocked: false,
-    };
-  },
+  setup: (context) => setupCardGame(context, CURRENT_RULES_VERSION),
 
   turn: {
     activePlayers: { currentPlayer: 'normal', others: 'undoWindow' },
@@ -627,13 +689,20 @@ CardGame.turn!.stages!.undoWindow.moves = CardGame.moves;
 export function createCardGame(
   startingPlayer: PlayerId,
   freeActionsEnabled = true,
+  rulesVersion: CardGameRulesVersion = freeActionsEnabled
+    ? CURRENT_RULES_VERSION
+    : 2,
 ): Game<CardGameState> {
   return {
     ...CardGame,
-    setup: (context) => ({
-      ...CardGame.setup!(context),
-      freeActionsEnabled,
-      startingPlayer,
-    }),
+    setup: (context) => {
+      const state = setupCardGame(context, rulesVersion);
+
+      return {
+        ...state,
+        freeActionsEnabled,
+        startingPlayer,
+      };
+    },
   };
 }

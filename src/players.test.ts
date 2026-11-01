@@ -18,12 +18,12 @@ describe.each([3, 4])('%i-player games', (numPlayers) => {
     expect(Object.values(G.hands).map((hand) => hand.length)).toStrictEqual(
       Array(numPlayers).fill(5),
     );
-    expect(G.deck).toHaveLength(46 - numPlayers * 5);
+    expect(G.deck).toHaveLength(50 - numPlayers * 5);
     expect(
       new Set(
         [...Object.values(G.hands).flat(), ...G.deck].map((card) => card.id),
       ).size,
-    ).toBe(46);
+    ).toBe(50);
   });
 
   it('rotates through all seats and advances rounds only when wrapping', () => {

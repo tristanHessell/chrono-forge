@@ -190,7 +190,7 @@ describe('computer opponent', () => {
       ).toBe(true);
       expect(
         final.played.length - 1 + final.discarded.length + final.deck.length,
-      ).toBe(46);
+      ).toBe(50);
       expect(final.deck.length).toBeLessThan(2);
     },
     30_000,

@@ -64,7 +64,7 @@ describe('discarding', () => {
       numPlayers: 2,
     });
 
-    for (let count = 1; count <= 46; count += 1) {
+    for (let count = 1; count <= 50; count += 1) {
       const state = client.getState()!;
       const hand =
         state.ctx.currentPlayer === '0'
@@ -83,6 +83,6 @@ describe('discarding', () => {
 
     client.moves.discardCard('missing');
 
-    expect(client.getState()!.G.discarded).toHaveLength(46);
+    expect(client.getState()!.G.discarded).toHaveLength(50);
   });
 });

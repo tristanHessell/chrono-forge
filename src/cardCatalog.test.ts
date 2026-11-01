@@ -32,8 +32,8 @@ describe('cardCatalog', () => {
     const { deck, startingCard } = loadCardCatalog();
     const cards = [startingCard, ...deck];
 
-    expect(Object.keys(modules)).toHaveLength(47);
-    expect(cards).toHaveLength(47);
+    expect(Object.keys(modules)).toHaveLength(51);
+    expect(cards).toHaveLength(51);
     expect(new Set(cards.map((card) => card.id)).size).toBe(cards.length);
 
     for (const module of Object.values(modules)) {
@@ -61,6 +61,7 @@ describe('cardCatalog', () => {
       'time-swap',
       'take-control',
       'remove-event',
+      'event-reclaim',
     ].flatMap((action) => [1, 2, 3, 4].map((copy) => `${action}-${copy}`));
 
     expect(deck.map((card) => card.id)).toStrictEqual([
@@ -137,13 +138,14 @@ describe('cardCatalog', () => {
       (card) => card.type === 'command',
     );
 
-    expect(cards).toHaveLength(16);
+    expect(cards).toHaveLength(20);
 
     for (const action of [
       'time-jump',
       'time-swap',
       'take-control',
       'remove-event',
+      'event-reclaim',
     ]) {
       expect(cards.filter((card) => card.action === action)).toHaveLength(4);
     }

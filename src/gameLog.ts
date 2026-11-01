@@ -3,13 +3,13 @@ import { Client } from 'boardgame.io/client';
 
 import {
   CardGame,
+  type CardGameRulesVersion,
   type CardGameState,
   createCardGame,
+  CURRENT_RULES_VERSION,
   type PlayerId,
 } from './game';
 import type { PlayerCount } from './playerCount';
-
-const RULES_VERSION = 4;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -28,7 +28,7 @@ function isCardPosition(
 export type GameLog = {
   actions: LogEntry['action'][];
   numPlayers: PlayerCount;
-  rulesVersion: 2 | typeof RULES_VERSION;
+  rulesVersion: CardGameRulesVersion;
   seed: string;
   startingPlayer: PlayerId;
   version: 2;
@@ -45,12 +45,21 @@ export function currentGameLog(
   for (let index = 0; index < states.length - 1; index += 1) {
     const before = states[index];
     const after = states[index + 1];
-    const used = before.hands[before.currentPlayer].find(
+    const usedCommand = before.hands[before.currentPlayer].find(
       (card) =>
+        card.type === 'command' &&
         !after.hands[before.currentPlayer].some(
           (remaining) => remaining.id === card.id,
         ),
     );
+    const used =
+      usedCommand ??
+      before.hands[before.currentPlayer].find(
+        (card) =>
+          !after.hands[before.currentPlayer].some(
+            (remaining) => remaining.id === card.id,
+          ),
+      );
 
     if (!used) {
       throw new Error(
@@ -80,10 +89,17 @@ export function currentGameLog(
             card.removed !== next.removed)
         );
       });
+      const replaced =
+        used.action === 'event-reclaim'
+          ? before.played.find(
+              (card) =>
+                !after.played.some((candidate) => candidate.id === card.id),
+            )
+          : undefined;
+      const target = changed.at(0) ?? replaced;
 
       // A discarded Command leaves the board unchanged.
-      if (changed.length) {
-        const target = changed[0];
+      if (target) {
         const moved = after.played.find((card) => card.id === target.id)!;
 
         type = 'command';
@@ -93,6 +109,15 @@ export function currentGameLog(
           args.push({ column: moved.column, row: moved.row });
         } else if (used.action === 'time-swap') {
           args.push(changed[1].id);
+        } else if (used.action === 'event-reclaim' && replaced) {
+          const replacement = after.played.find(
+            (card) =>
+              !before.played.some((previous) => previous.id === card.id),
+          );
+
+          if (replacement) {
+            args.push(replacement.id);
+          }
         }
       }
     }
@@ -106,7 +131,7 @@ export function currentGameLog(
   return {
     actions,
     numPlayers: G.playerIds.length as PlayerCount,
-    rulesVersion: G.freeActionsEnabled ? RULES_VERSION : 2,
+    rulesVersion: G.rulesVersion ?? (G.freeActionsEnabled ? 4 : 2),
     seed,
     startingPlayer: G.startingPlayer,
     version: 2,
@@ -169,11 +194,14 @@ function confirmedActions(
   numPlayers: PlayerCount,
   actions: LogEntry['action'][],
   startingPlayer: PlayerId,
-  rulesVersion: GameLog['rulesVersion'] = RULES_VERSION,
+  rulesVersion: GameLog['rulesVersion'] = CURRENT_RULES_VERSION,
 ): LogEntry['action'][] {
   const client = Client({
     debug: false,
-    game: { ...createCardGame(startingPlayer, rulesVersion !== 2), seed },
+    game: {
+      ...createCardGame(startingPlayer, rulesVersion !== 2, rulesVersion),
+      seed,
+    },
     numPlayers,
   });
   const result: LogEntry['action'][] = [];
@@ -265,7 +293,7 @@ export function exportGameLog(
   numPlayers: PlayerCount,
   entries: readonly LogEntry[] = [],
   startingPlayer: PlayerId = '0',
-  rulesVersion: GameLog['rulesVersion'] = RULES_VERSION,
+  rulesVersion: GameLog['rulesVersion'] = CURRENT_RULES_VERSION,
 ): string {
   // A move and its triggered events share a state ID. The move recreates
   // those events during replay, so retain only the first entry per ID.
@@ -333,8 +361,10 @@ export function parseGameLog(text: string): GameLog {
   if (
     !isRecord(parsed) ||
     (parsed.version !== 1 && parsed.version !== 2) ||
-    (parsed.rulesVersion !== 2 && parsed.rulesVersion !== RULES_VERSION) ||
-    (parsed.rulesVersion === RULES_VERSION &&
+    (parsed.rulesVersion !== 2 &&
+      parsed.rulesVersion !== 4 &&
+      parsed.rulesVersion !== CURRENT_RULES_VERSION) ||
+    (parsed.rulesVersion !== 2 &&
       !isPlayerId(parsed.startingPlayer, parsed.numPlayers)) ||
     typeof parsed.seed !== 'string' ||
     !parsed.seed ||
@@ -444,7 +474,11 @@ export function replayGameLog(log: GameLog, steps = log.actions.length) {
   const client = Client({
     debug: false,
     game: {
-      ...createCardGame(log.startingPlayer, log.rulesVersion !== 2),
+      ...createCardGame(
+        log.startingPlayer,
+        log.rulesVersion !== 2,
+        log.rulesVersion,
+      ),
       seed: log.seed,
     },
     numPlayers: log.numPlayers,

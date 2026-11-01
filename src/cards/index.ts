@@ -1,3 +1,7 @@
+import eventReclaim1 from './commands/event-reclaim-1';
+import eventReclaim2 from './commands/event-reclaim-2';
+import eventReclaim3 from './commands/event-reclaim-3';
+import eventReclaim4 from './commands/event-reclaim-4';
 import removeEvent1 from './commands/remove-event-1';
 import removeEvent2 from './commands/remove-event-2';
 import removeEvent3 from './commands/remove-event-3';
@@ -95,6 +99,10 @@ const definitions = {
     removeEvent2,
     removeEvent3,
     removeEvent4,
+    eventReclaim1,
+    eventReclaim2,
+    eventReclaim3,
+    eventReclaim4,
   ],
   startingCard: starting0,
 } as const;

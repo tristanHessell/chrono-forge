@@ -177,6 +177,9 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
   const [selectedCardId, setSelectedCardId] = useState<null | string>(null);
   const [detailsCard, setDetailsCard] = useState<Card | null>(null);
   const [commandTargetId, setCommandTargetId] = useState<null | string>(null);
+  const [commandMode, setCommandMode] = useState<'replace' | 'restore' | null>(
+    null,
+  );
   const [draggedCard, setDraggedCard] = useState<DraggedCard | null>(null);
   const [snapPosition, setSnapPosition] = useState<CardPosition | null>(null);
   const [boardZoom, setBoardZoom] = useState(1);
@@ -221,16 +224,47 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           card.owner !== 'neutral' &&
           (command.action === 'time-jump'
             ? getTimeJumpPositions(G.played, card.id).length > 0
-            : command.action === 'take-control' ||
-                command.action === 'remove-event'
-              ? Boolean(
-                  applyCommand(G.played, command.action, card.id, activeOwner),
-                )
-              : commandTargetId
-                ? Boolean(applyTimeSwap(G.played, commandTargetId, card.id))
-                : G.played.some((other) =>
-                    applyTimeSwap(G.played, card.id, other.id),
-                  )),
+            : command.action === 'event-reclaim'
+              ? commandMode === 'restore'
+                ? Boolean(
+                    card.removed &&
+                    applyCommand(
+                      G.played,
+                      command.action,
+                      card.id,
+                      activeOwner,
+                    ),
+                  )
+                : commandMode === 'replace' &&
+                  G.hands[activeOwner].some(
+                    (replacement) =>
+                      replacement.type === 'event' &&
+                      Boolean(
+                        applyCommand(
+                          G.played,
+                          command.action,
+                          card.id,
+                          activeOwner,
+                          replacement.id,
+                          replacement,
+                        ),
+                      ),
+                  )
+              : command.action === 'take-control' ||
+                  command.action === 'remove-event'
+                ? Boolean(
+                    applyCommand(
+                      G.played,
+                      command.action,
+                      card.id,
+                      activeOwner,
+                    ),
+                  )
+                : commandTargetId
+                  ? Boolean(applyTimeSwap(G.played, commandTargetId, card.id))
+                  : G.played.some((other) =>
+                      applyTimeSwap(G.played, card.id, other.id),
+                    )),
       )
     : [];
   const availablePositions = command
@@ -342,16 +376,38 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     });
 
   const chooseCard = (cardId: string) => {
+    const chosenCard = G.hands[activeOwner].find((card) => card.id === cardId);
+
+    if (command?.action === 'event-reclaim' && chosenCard?.type === 'event') {
+      if (
+        commandMode === 'replace' &&
+        commandTargetId &&
+        applyCommand(
+          G.played,
+          command.action,
+          commandTargetId,
+          activeOwner,
+          chosenCard.id,
+          chosenCard,
+        )
+      ) {
+        gameMoves.command(command.id, commandTargetId, chosenCard.id);
+        setSelectedCardId(null);
+        setCommandTargetId(null);
+        setCommandMode(null);
+      }
+
+      return;
+    }
+
     setCommandTargetId(null);
 
-    if (
-      G.hands[activeOwner].find((card) => card.id === cardId)?.type ===
-      'command'
-    ) {
+    if (chosenCard?.type === 'command') {
       if (G.pending) {
         gameMoves.returnPendingCard();
       }
 
+      setCommandMode(null);
       setSelectedCardId((current) => (current === cardId ? null : cardId));
 
       return;
@@ -377,6 +433,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
       gameMoves.command(command.id, commandTargetId, position);
       setSelectedCardId(null);
       setCommandTargetId(null);
+      setCommandMode(null);
 
       return;
     }
@@ -412,6 +469,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     setDraggedCard({ cardId, source });
     setSelectedCardId(null);
     setCommandTargetId(null);
+    setCommandMode(null);
   };
 
   const readDraggedCard = (event: React.DragEvent<HTMLElement>) => {
@@ -493,11 +551,13 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
     }
     if (
       command.action === 'take-control' ||
-      command.action === 'remove-event'
+      command.action === 'remove-event' ||
+      (command.action === 'event-reclaim' && commandMode === 'restore')
     ) {
       gameMoves.command(command.id, targetId);
       setSelectedCardId(null);
       setCommandTargetId(null);
+      setCommandMode(null);
     } else {
       setSelectedCardId(command.id);
       setCommandTargetId(targetId);
@@ -1285,12 +1345,24 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                                     return;
                                   }
                                   if (
+                                    command?.action === 'event-reclaim' &&
+                                    commandMode === 'restore'
+                                  ) {
+                                    gameMoves.command(command.id, card.id);
+                                    setSelectedCardId(null);
+                                    setCommandTargetId(null);
+                                    setCommandMode(null);
+
+                                    return;
+                                  }
+                                  if (
                                     command?.action === 'take-control' ||
                                     command?.action === 'remove-event'
                                   ) {
                                     gameMoves.command(command.id, card.id);
                                     setSelectedCardId(null);
                                     setCommandTargetId(null);
+                                    setCommandMode(null);
 
                                     return;
                                   }
@@ -1305,6 +1377,7 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                                     );
                                     setSelectedCardId(null);
                                     setCommandTargetId(null);
+                                    setCommandMode(null);
                                   } else {
                                     setCommandTargetId(card.id);
                                   }
@@ -1573,70 +1646,134 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
           <GameResults played={G.played} playerIds={G.playerIds} />
         ) : (
           <p className={clsx(command && gameBoardStyles.commandPrompt)}>
-            {command
-              ? !commandTargetId
-                ? commandTargets.length
-                  ? intl.formatMessage({
-                      defaultMessage:
-                        'Choose an Event card on the board. The starting card cannot be targeted.',
-                      id: 'command.choose',
-                    })
-                  : intl.formatMessage({
-                      defaultMessage:
-                        'No legal targets for this card. Select another card or discard it.',
-                      id: 'command.noTargets',
-                    })
-                : command.action === 'time-jump'
-                  ? intl.formatMessage({
-                      defaultMessage:
-                        'Choose a highlighted empty position or removed Event to complete Time Jump.',
-                      id: 'command.jumpDestination',
-                    })
-                  : intl.formatMessage({
-                      defaultMessage:
-                        'Choose a highlighted second Event card to complete Time Swap.',
-                      id: 'command.swapDestination',
-                    })
-              : G.pending
-                ? intl.formatMessage({
-                    defaultMessage:
-                      'Drag it to another slot, back to your hand, or confirm.',
-                    id: 'status.pending',
-                  })
-                : draggedCard
-                  ? intl.formatMessage({
-                      defaultMessage:
-                        'Drop the card on a highlighted position.',
-                      id: 'status.dragging',
-                    })
-                  : selectedCardId
+            {command ? (
+              command.action === 'event-reclaim' ? (
+                <>
+                  {commandMode === null
                     ? intl.formatMessage({
                         defaultMessage:
-                          'Choose a slot above, below, or beside a card.',
-                        id: 'status.selected',
+                          'Choose whether to replace an Event or restore a removed Event.',
+                        id: 'command.event-reclaim.chooseMode',
                       })
-                    : activeOwner === '0'
-                      ? // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
-                        intl.formatMessage<{ readonly count: number | bigint }>(
-                          {
+                    : commandTargets.length === 0
+                      ? intl.formatMessage({
+                          defaultMessage:
+                            'No legal targets for this choice. Select another card or choose another mode.',
+                          id: 'command.event-reclaim.noTargets',
+                        })
+                      : commandMode === 'replace'
+                        ? commandTargetId
+                          ? intl.formatMessage({
+                              defaultMessage:
+                                'Choose an Event card from your hand to replace the selected Event.',
+                              id: 'command.event-reclaim.chooseReplacement',
+                            })
+                          : intl.formatMessage({
+                              defaultMessage:
+                                'Choose an Event on the board to replace.',
+                              id: 'command.event-reclaim.chooseReplaceTarget',
+                            })
+                        : intl.formatMessage({
                             defaultMessage:
-                              'Your turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}',
-                            id: 'status.yourTurn',
-                          },
-                          { count: G.deck.length },
-                        )
-                      : intl.formatMessage<{
-                          // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
-                          readonly count: number | bigint;
-                          readonly name: MessageValue;
-                        }>(
-                          {
-                            defaultMessage:
-                              "{name}'s turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}",
-                            id: 'status.playerTurn',
-                          },
-                          { count: G.deck.length, name: activePlayer.name },
-                        )}
+                              'Choose a removed Event to restore.',
+                            id: 'command.event-reclaim.chooseRestoreTarget',
+                          })}
+                  <button
+                    aria-pressed={commandMode === 'replace'}
+                    className={controlsStyles.historyButton}
+                    onClick={() => {
+                      setCommandMode('replace');
+                      setCommandTargetId(null);
+                    }}
+                    type="button"
+                  >
+                    <FormattedMessage
+                      defaultMessage="Replace Event"
+                      id="command.event-reclaim.replaceMode"
+                    />
+                  </button>
+                  <button
+                    aria-pressed={commandMode === 'restore'}
+                    className={controlsStyles.historyButton}
+                    onClick={() => {
+                      setCommandMode('restore');
+                      setCommandTargetId(null);
+                    }}
+                    type="button"
+                  >
+                    <FormattedMessage
+                      defaultMessage="Restore Event"
+                      id="command.event-reclaim.restoreMode"
+                    />
+                  </button>
+                </>
+              ) : !commandTargetId ? (
+                commandTargets.length ? (
+                  intl.formatMessage({
+                    defaultMessage:
+                      'Choose an Event card on the board. The starting card cannot be targeted.',
+                    id: 'command.choose',
+                  })
+                ) : (
+                  intl.formatMessage({
+                    defaultMessage:
+                      'No legal targets for this card. Select another card or discard it.',
+                    id: 'command.noTargets',
+                  })
+                )
+              ) : command.action === 'time-jump' ? (
+                intl.formatMessage({
+                  defaultMessage:
+                    'Choose a highlighted empty position or removed Event to complete Time Jump.',
+                  id: 'command.jumpDestination',
+                })
+              ) : (
+                intl.formatMessage({
+                  defaultMessage:
+                    'Choose a highlighted second Event card to complete Time Swap.',
+                  id: 'command.swapDestination',
+                })
+              )
+            ) : G.pending ? (
+              intl.formatMessage({
+                defaultMessage:
+                  'Drag it to another slot, back to your hand, or confirm.',
+                id: 'status.pending',
+              })
+            ) : draggedCard ? (
+              intl.formatMessage({
+                defaultMessage: 'Drop the card on a highlighted position.',
+                id: 'status.dragging',
+              })
+            ) : selectedCardId ? (
+              intl.formatMessage({
+                defaultMessage: 'Choose a slot above, below, or beside a card.',
+                id: 'status.selected',
+              })
+            ) : activeOwner === '0' ? (
+              // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
+              intl.formatMessage<{ readonly count: number | bigint }>(
+                {
+                  defaultMessage:
+                    'Your turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}',
+                  id: 'status.yourTurn',
+                },
+                { count: G.deck.length },
+              )
+            ) : (
+              intl.formatMessage<{
+                // eslint-disable-next-line perfectionist/sort-union-types -- TODO if we sort this alphabetically then FormatJS complains
+                readonly count: number | bigint;
+                readonly name: MessageValue;
+              }>(
+                {
+                  defaultMessage:
+                    "{name}'s turn — {count, plural, one {# card remains in the deck} other {# cards remain in the deck}}",
+                  id: 'status.playerTurn',
+                },
+                { count: G.deck.length, name: activePlayer.name },
+              )
+            )}
           </p>
         )}
       </footer>
