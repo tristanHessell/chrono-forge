@@ -76,6 +76,10 @@ export const effectNameMessages = defineMessages({
     defaultMessage: 'Free action',
     id: 'effect.free-action.name',
   },
+  'overwrite-event': {
+    defaultMessage: 'Overwrite Event',
+    id: 'effect.overwrite-event.name',
+  },
   'timeline-1900-bonus': {
     defaultMessage: '1900 timeline bonus',
     id: 'effect.timeline-1900-bonus.name',
@@ -92,6 +96,11 @@ export const effectDescriptionMessages = defineMessages({
     defaultMessage:
       'When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.',
     id: 'effect.free-action.description',
+  },
+  'overwrite-event': {
+    defaultMessage:
+      'When you confirm this Event, you can replace any non-starting Event on the board. The new Event inherits its position and links. The whole board must remain legal. The replaced Event is discarded.',
+    id: 'effect.overwrite-event.description',
   },
   'timeline-1900-bonus': {
     defaultMessage:

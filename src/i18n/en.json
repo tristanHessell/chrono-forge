@@ -94,6 +94,8 @@
   "effect.draw-one.name": "Draw one card",
   "effect.free-action.description": "When you confirm this Event card, it does not count as one of your two actions this turn. You can still take up to two other actions.",
   "effect.free-action.name": "Free action",
+  "effect.overwrite-event.description": "When you confirm this Event, you can replace any non-starting Event on the board. The new Event inherits its position and links. The whole board must remain legal. The replaced Event is discarded.",
+  "effect.overwrite-event.name": "Overwrite Event",
   "effect.timeline-1900-bonus.description": "Worth 1 extra point to the player who played this card if its timeline includes a 1900 Event card. Follow the arrows from 1900 to this card; a separate branch does not qualify. Each card awards this bonus only once.",
   "effect.timeline-1900-bonus.name": "1900 timeline bonus",
   "game.new": "New game",

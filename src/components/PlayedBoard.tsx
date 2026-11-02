@@ -286,7 +286,9 @@ export function PlayedBoard({
               {G.played
                 .filter(
                   (card) =>
-                    !card.removed ||
+                    !availablePositions.some(
+                      (position) => positionKey(position) === positionKey(card),
+                    ) ||
                     !(
                       (G.pending &&
                         positionKey(card) === positionKey(G.pending)) ||
@@ -483,9 +485,7 @@ export function PlayedBoard({
                         onDropCard(event, position);
                       }}
                       overwrite={G.played.some(
-                        (card) =>
-                          card.removed &&
-                          positionKey(card) === positionKey(position),
+                        (card) => positionKey(card) === positionKey(position),
                       )}
                       position={position}
                       style={positionStyle(position)}

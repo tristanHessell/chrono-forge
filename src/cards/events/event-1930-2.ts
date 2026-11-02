@@ -2,6 +2,7 @@ import type { EventCard } from '../../game';
 
 export default {
   category: 'tech',
+  effects: ['overwrite-event'],
   id: 'event-1930-2',
   name: 'radar-discovery',
   number: 1930,

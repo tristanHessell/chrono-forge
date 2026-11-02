@@ -2,6 +2,7 @@ import type { EventCard } from '../../game';
 
 export default {
   category: 'nature',
+  effects: ['overwrite-event'],
   id: 'event-1930-3',
   name: 'dust-bowl',
   number: 1930,

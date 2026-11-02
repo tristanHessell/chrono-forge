@@ -1,5 +1,11 @@
 import definitions from './cards';
-import type { Card, CardEffect, CommandAction, EventName } from './game';
+import type {
+  Card,
+  CardEffect,
+  CommandAction,
+  EventCard,
+  EventName,
+} from './game';
 
 function readCard(definition: {
   action?: string;
@@ -81,6 +87,7 @@ export function readEffects(
     (effect: unknown): effect is CardEffect =>
       effect === 'draw-one' ||
       effect === 'free-action' ||
+      effect === 'overwrite-event' ||
       effect === 'timeline-1900-bonus',
   );
 
@@ -91,7 +98,10 @@ export function readEffects(
   return effects;
 }
 
-export function loadCardCatalog(includeEventReclaim = true) {
+export function loadCardCatalog(
+  includeEventReclaim = true,
+  includeEventOverwrite = true,
+): { deck: Card[]; startingCard: EventCard } {
   const startingCard = readCard(definitions.startingCard);
 
   if (startingCard.type !== 'event') {
@@ -105,7 +115,31 @@ export function loadCardCatalog(includeEventReclaim = true) {
         definition.type !== 'command' ||
         definition.action !== 'event-reclaim',
     )
-    .map(readCard);
+    .map((definition) => {
+      const card = readCard(definition);
+
+      if (
+        includeEventOverwrite ||
+        card.type !== 'event' ||
+        !card.effects?.includes('overwrite-event')
+      ) {
+        return card;
+      }
+
+      const effects = card.effects.filter(
+        (effect) => effect !== 'overwrite-event',
+      );
+
+      if (effects.length) {
+        return { ...card, effects };
+      }
+
+      const withoutEffects = { ...card };
+
+      delete withoutEffects.effects;
+
+      return withoutEffects;
+    });
 
   if (
     deck.some((card) => card.type === 'event' && (!card.category || !card.name))

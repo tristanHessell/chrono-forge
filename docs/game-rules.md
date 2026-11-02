@@ -42,12 +42,16 @@ empty.
 ## Place Events
 
 Place an Event in an empty position that touches at least one card above, below,
-to the left, or to the right. Diagonal contact does not count.
+to the left, or to the right. Diagonal contact does not count. An Event with the
+`overwrite-event` effect can replace a non-starting Event.
 
-The new Event must have a later date than every active orthogonal neighbor.
-Removed Events do not constrain new placements. Equal dates cannot touch. When
-a move changes existing links, the full board must still follow these date
-rules.
+An Event in an empty position must have a later date than every active
+orthogonal neighbor. An Event that replaces another Event must keep valid date
+links in both directions. Removed Events do not constrain new placements. Equal
+dates cannot touch. The full board must follow these date rules.
+
+An Event that replaces another Event keeps its position and link directions.
+The whole board must remain legal. The replaced Event enters the discard pile.
 
 A move is illegal if it completes a 2×2 square of four orthogonally adjacent
 cards. Removed Events do not count as occupied cards for this square check.
@@ -94,6 +98,9 @@ All 1940 Events have the `draw-one` effect. Confirming one draws a card into the
 active player's hand before turn progression. The draw counts toward the next
 refill. If the deck is empty, no card is drawn. Discarding a card does not
 trigger its effect.
+
+All 1930 and 1960 Events have the `overwrite-event` effect. When you confirm
+one, you can replace any non-starting Event if the board stays legal.
 
 A player can discard a card from their hand as an action. An unconfirmed Event
 can also be discarded as an action. The discard pile remains in the game and

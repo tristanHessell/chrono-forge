@@ -213,6 +213,96 @@ describe('cardEffects', () => {
     });
   });
 
+  describe('overwrite event effect', () => {
+    it('is defined on all 1930 and 1960 Events only', () => {
+      const cards = loadCardCatalog().deck;
+
+      expect(
+        cards.filter((card) => card.effects?.includes('overwrite-event')),
+      ).toHaveLength(6);
+
+      for (const card of cards) {
+        expect(Boolean(card.effects?.includes('overwrite-event'))).toBe(
+          card.number === 1930 || card.number === 1960,
+        );
+      }
+    });
+
+    it('replaces an active Event, keeps its position, and supports undo and redo', () => {
+      const cards = loadCardCatalog();
+      const overwriteCard = event('event-1930-1');
+      const replacementCard = event('event-1980-1');
+      const targetCard: PlacedCard = {
+        ...event('event-1920-1'),
+        column: 1,
+        owner: '1',
+        placedAt: 1,
+        row: 0,
+      };
+      const startingCard: PlacedCard = {
+        ...cards.startingCard,
+        column: 0,
+        owner: 'neutral',
+        placedAt: 0,
+        row: 0,
+      };
+      const client = Client({
+        game: {
+          ...CardGame,
+          setup: (context) => {
+            const initial = CardGame.setup!(context);
+
+            return {
+              ...initial,
+              deck: [],
+              hands: {
+                ...initial.hands,
+                '0': [overwriteCard, replacementCard],
+                '1': [event('event-1950-1')],
+              },
+              nextPlacementOrder: 2,
+              played: [startingCard, targetCard],
+            };
+          },
+        },
+        numPlayers: 2,
+      });
+
+      client.moves.playCard(overwriteCard.id, { column: 1, row: 0 });
+      client.moves.confirmPlacement();
+
+      const after = client.getState()!.G;
+
+      expect(after.played).toContainEqual({
+        ...overwriteCard,
+        column: 1,
+        owner: '0',
+        placedAt: 1,
+        row: 0,
+      });
+      expect(after.played).not.toContainEqual(targetCard);
+      expect(after.discarded).toContainEqual(event('event-1920-1'));
+
+      client.moves.undoTest();
+
+      expect(client.getState()!.G.played).toStrictEqual([
+        startingCard,
+        targetCard,
+      ]);
+      expect(client.getState()!.G.hands['0']).toStrictEqual([
+        overwriteCard,
+        replacementCard,
+      ]);
+
+      client.moves.redoTest();
+
+      expect(client.getState()!.G.played).toStrictEqual(after.played);
+      expect(client.getState()!.G.discarded).toStrictEqual(after.discarded);
+
+      client.stop();
+    });
+  });
+
   it('applies three different effects from one Event card', () => {
     const cards = loadCardCatalog();
     const playedCard = {

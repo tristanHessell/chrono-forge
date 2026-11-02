@@ -384,6 +384,7 @@ export function parseGameLog(text: string): GameLog {
     (parsed.rulesVersion !== 2 &&
       parsed.rulesVersion !== 4 &&
       parsed.rulesVersion !== 5 &&
+      parsed.rulesVersion !== 6 &&
       parsed.rulesVersion !== CURRENT_RULES_VERSION) ||
     (parsed.rulesVersion !== 2 &&
       !isPlayerId(parsed.startingPlayer, parsed.numPlayers)) ||

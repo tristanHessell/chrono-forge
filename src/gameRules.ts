@@ -83,7 +83,13 @@ const isValidEventPlacement = (
   );
 
   if (occupying) {
-    if (!occupying.removed || occupying.owner === 'neutral') {
+    const canOverwrite =
+      card?.type === 'event' && card.effects?.includes('overwrite-event');
+
+    if (
+      occupying.owner === 'neutral' ||
+      (!occupying.removed && !canOverwrite)
+    ) {
       return false;
     }
 
@@ -142,7 +148,7 @@ export function withPlacedEvent(
 
   return [
     ...played.filter((existing) => positionKey(existing) !== positionKey(card)),
-    overwritten?.removed ? { ...card, placedAt: overwritten.placedAt } : card,
+    overwritten ? { ...card, placedAt: overwritten.placedAt } : card,
   ];
 }
 
@@ -167,15 +173,24 @@ export const getAvailablePositions = (
   played: PlacedCard[],
   selectedCard?: Card,
 ) => {
+  const canOverwrite =
+    selectedCard?.type === 'event' &&
+    selectedCard.effects?.includes('overwrite-event');
   const occupiedPositions = new Set(
-    played.filter((card) => !card.removed).map(positionKey),
+    played
+      .filter(
+        (card) => !card.removed && !(canOverwrite && card.owner !== 'neutral'),
+      )
+      .map(positionKey),
   );
 
   return Array.from(
     new Map(
       played.flatMap((card) =>
         [
-          ...(card.removed ? [{ column: card.column, row: card.row }] : []),
+          ...(card.removed || (canOverwrite && card.owner !== 'neutral')
+            ? [{ column: card.column, row: card.row }]
+            : []),
           ...ADJACENT_OFFSETS.map(({ column, row }) => ({
             column: card.column + column,
             row: card.row + row,

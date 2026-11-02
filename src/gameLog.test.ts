@@ -84,6 +84,93 @@ describe.each([2, 3, 4] as const)('%i-player seeded replay', (numPlayers) => {
 });
 
 describe('gameLog', () => {
+  it('replays Event overwrite actions and preserves rules version 6', () => {
+    let setup:
+      | { oldEventId: string; overwriteEventId: string; seed: string }
+      | undefined;
+
+    for (let index = 0; index < 100; index += 1) {
+      const seed = `event-overwrite-replay-${index}`;
+      const client = Client({
+        debug: false,
+        game: { ...CardGame, seed },
+      });
+      const hand = client.getState()!.G.hands['0'];
+      const overwriteEvent = hand.find(
+        (card) =>
+          card.type === 'event' && card.effects?.includes('overwrite-event'),
+      );
+      const oldEvent = hand.find(
+        (card) =>
+          card.type === 'event' &&
+          overwriteEvent?.type === 'event' &&
+          card.number < overwriteEvent.number,
+      );
+
+      client.stop();
+
+      if (overwriteEvent && oldEvent) {
+        setup = {
+          oldEventId: oldEvent.id,
+          overwriteEventId: overwriteEvent.id,
+          seed,
+        };
+
+        break;
+      }
+    }
+
+    assert(setup, 'Could not find a seed for the Event overwrite replay.');
+
+    const client = Client({
+      debug: false,
+      game: { ...CardGame, seed: setup.seed },
+    });
+
+    client.moves.playCard(setup.oldEventId, { column: 1, row: 0 });
+    client.moves.confirmPlacement();
+    client.moves.playCard(setup.overwriteEventId, { column: 1, row: 0 });
+    client.moves.confirmPlacement();
+    client.moves.confirmTurn();
+
+    const text = exportGameLog(setup.seed, 2, client.log);
+
+    const log = parseGameLog(text);
+    const replay = replayGameLog(log);
+
+    expect(replay.getState()!.G).toStrictEqual(client.getState()!.G);
+    expect(
+      parseGameLog(exportGameLog(setup.seed, 2, [], '0', 6)).rulesVersion,
+    ).toBe(6);
+
+    const legacy = Client({
+      debug: false,
+      game: { ...createCardGame('0', true, 6), seed: setup.seed },
+    });
+    const legacyCards = [
+      ...legacy.getState()!.G.deck,
+      ...Object.values(legacy.getState()!.G.hands).flat(),
+    ];
+
+    expect(
+      legacyCards.filter(
+        (card) =>
+          card.type === 'event' &&
+          (card.number === 1930 || card.number === 1960),
+      ),
+    ).toHaveLength(6);
+    expect(
+      legacyCards.every(
+        (card) =>
+          card.type !== 'event' || !card.effects?.includes('overwrite-event'),
+      ),
+    ).toBe(true);
+
+    client.stop();
+    replay.stop();
+    legacy.stop();
+  });
+
   it('replays Event Reclaim replacement actions', () => {
     let seed: string | undefined;
 
@@ -148,7 +235,7 @@ describe('gameLog', () => {
       '{}',
       JSON.stringify({ ...valid, version: 99 }),
       JSON.stringify({ ...valid, rulesVersion: 3 }),
-      JSON.stringify({ ...valid, rulesVersion: 7 }),
+      JSON.stringify({ ...valid, rulesVersion: 8 }),
       JSON.stringify({ ...valid, numPlayers: 5 }),
       JSON.stringify({ ...valid, actions: [{ type: 'RESET' }] }),
     ]) {
