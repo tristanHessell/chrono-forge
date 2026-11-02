@@ -101,12 +101,6 @@ export function PlayerRow({
         data-active={active}
         data-player-turn
       >
-        <span>
-          <FormattedMessage
-            defaultMessage="Current player"
-            id="turn.currentPlayer"
-          />
-        </span>
         {confirmTurn && turnPendingConfirmation ? (
           <button
             className={playerRowStyles.confirmTurn}

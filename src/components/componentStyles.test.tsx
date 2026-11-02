@@ -60,8 +60,9 @@ describe('componentStyles', () => {
     }
   });
 
-  it('uses the same card back artwork for the deck and computer hands', () => {
+  it('uses the same card back artwork for the deck, discard, and hands', () => {
     for (const value of [
+      gameBoardStyles.discardBack,
       gameBoardStyles.deckCardBack,
       playerRowStyles.cardBack,
     ]) {
