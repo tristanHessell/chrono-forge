@@ -16,7 +16,7 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 0.5rem;
-  grid-column: identity-start / actions-end;
+  grid-column: identity-start / identity-end;
   min-width: 0;
   text-transform: uppercase;
 }
@@ -75,44 +75,33 @@
 }
 
 .hidden-cards {
+  --hand-icon-size: 1.1rem;
+
+  align-items: center;
   display: flex;
   flex-wrap: nowrap;
-  grid-column: identity-start / identity-end;
-  grid-row: details-start / details-end;
-  justify-content: flex-start;
-  min-height: 1.7rem;
-  min-width: 2.5rem;
-  position: relative;
-  width: fit-content;
+  gap: 0.3rem;
+  grid-column: actions-start / actions-end;
+  grid-row: identity-start / identity-end;
+  justify-content: flex-end;
+  white-space: nowrap;
 }
 
-.card-back {
-  box-shadow: 0.15rem 0.15rem 0 rgb(0 0 0 / 20%);
-  composes: card-back from './CardBack.module.css';
-  display: grid;
-  flex: 0 0 auto;
-  height: 1.7rem;
-  place-items: center;
-  width: 2.5rem;
+.hidden-cards svg {
+  fill: none;
+  height: var(--hand-icon-size);
+  stroke: var(--accent-text);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+  width: var(--hand-icon-size);
 }
 
-.card-back + .card-back {
-  margin-left: -1.7rem;
-}
-
-.card-back:first-child:not(:last-child) {
-  transform: rotate(-8deg) translateY(0.1rem);
-}
-
-.card-back:last-child:not(:first-child) {
-  transform: rotate(8deg) translateY(0.1rem);
-}
-
-.card-count {
-  color: #f7f2e8;
-  font-size: 0.9rem;
+.hand-count {
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 800;
   line-height: 1;
-  z-index: 1;
 }
 
 @media (width <= 540px) {
@@ -138,12 +127,7 @@
     font-size: 0.55rem;
   }
 
-  .card-back {
-    height: 1.3rem;
-    width: 1.8rem;
-  }
-
-  .card-back + .card-back {
-    margin-left: -1.15rem;
+  .hidden-cards {
+    --hand-icon-size: 0.95rem;
   }
 }

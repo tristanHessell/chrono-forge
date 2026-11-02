@@ -1,7 +1,7 @@
 import type { BoardProps } from 'boardgame.io/react';
 import clsx from 'clsx';
 import { use, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import {
   applyCommand,
@@ -740,31 +740,16 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                   aria-hidden="true"
                   className={gameBoardStyles.discardStack}
                 >
-                  <span
-                    className={clsx(
-                      gameBoardStyles.discardBack,
-                      gameBoardStyles.discardBackLeft,
-                    )}
-                  />
-                  <span
-                    className={clsx(
-                      gameBoardStyles.discardBack,
-                      gameBoardStyles.discardBackRight,
-                    )}
-                  />
                   <span className={gameBoardStyles.discardTop}>
-                    <strong>{intl.formatNumber(G.discarded.length)}</strong>
-                    <svg viewBox="0 0 24 24">
-                      <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
-                    </svg>
+                    {G.discarded.length > 0 ? (
+                      <strong>{intl.formatNumber(G.discarded.length)}</strong>
+                    ) : (
+                      <svg viewBox="0 0 24 24">
+                        <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
+                      </svg>
+                    )}
                   </span>
                 </span>
-                <small>
-                  <FormattedMessage
-                    defaultMessage="Discard"
-                    id="discard.title"
-                  />
-                </small>
               </button>
               <div
                 aria-label={intl.formatMessage({

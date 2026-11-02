@@ -47,6 +47,11 @@ describe(PlayerRow, () => {
         page.getByCSS('[data-player-score="1"] [aria-label="2 cards in hand"]'),
       )
       .toBeInTheDocument();
+    expect(
+      page.getByCSS(
+        '[data-player-score="1"] [aria-label="2 cards in hand"] svg',
+      ),
+    ).toHaveLength(1);
     expect(page.getByLabelText('2 cards in hand')).toHaveLength(1);
     await expect
       .element(page.getByText('2', { exact: true }))
