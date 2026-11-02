@@ -38,13 +38,6 @@ describe(PlayerRow, () => {
     await expect
       .element(
         page.getByCSS(
-          '[data-player-score="1"][data-current-turn="true"] [data-player-turn] > span:first-child',
-        ),
-      )
-      .toBeInTheDocument();
-    await expect
-      .element(
-        page.getByCSS(
           '[data-player-score="1"][data-current-turn="true"] [data-active="true"] button',
         ),
       )
@@ -63,6 +56,27 @@ describe(PlayerRow, () => {
     await expect
       .element(page.getByCSS('body'))
       .not.toMatchTextContent("Sally's hand");
+  });
+
+  it('shows only the remaining action count for the active player', async () => {
+    render(
+      <IntlProvider locale="en" messages={messages}>
+        <PlayerRow
+          actionsThisTurn={0}
+          active
+          cards={cards}
+          player={{ id: '1', name: 'Sally', type: 'human' }}
+          score={3}
+        />
+      </IntlProvider>,
+    );
+
+    await expect
+      .element(page.getByCSS('[data-player-score="1"] [data-player-turn]'))
+      .toHaveTextContent('2 actions left');
+    await expect
+      .element(page.getByCSS('body'))
+      .not.toMatchTextContent('Current player');
   });
 
   it('keeps the turn status in the layout when the player is inactive', () => {

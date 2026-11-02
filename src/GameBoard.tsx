@@ -736,22 +736,35 @@ export function GameBoard({ ctx, G, moves }: BoardProps<CardGameState>) {
                 })}
                 type="button"
               >
-                <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
-                </svg>
-                <span>
+                <span
+                  aria-hidden="true"
+                  className={gameBoardStyles.discardStack}
+                >
+                  <span
+                    className={clsx(
+                      gameBoardStyles.discardBack,
+                      gameBoardStyles.discardBackLeft,
+                    )}
+                  />
+                  <span
+                    className={clsx(
+                      gameBoardStyles.discardBack,
+                      gameBoardStyles.discardBackRight,
+                    )}
+                  />
+                  <span className={gameBoardStyles.discardTop}>
+                    <strong>{intl.formatNumber(G.discarded.length)}</strong>
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 3v14m-6-6 6 6 6-6M5 21h14" />
+                    </svg>
+                  </span>
+                </span>
+                <small>
                   <FormattedMessage
                     defaultMessage="Discard"
                     id="discard.title"
                   />
-                  <small>
-                    <FormattedMessage
-                      defaultMessage="{count, number} discarded"
-                      id="discard.count"
-                      values={{ count: G.discarded.length }}
-                    />
-                  </small>
-                </span>
+                </small>
               </button>
               <div
                 aria-label={intl.formatMessage({

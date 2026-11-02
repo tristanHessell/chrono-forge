@@ -5,8 +5,8 @@
   gap: 0.5rem;
   grid-template-columns:
     [identity-start] minmax(0, 1fr)
-    [identity-end cards-start] auto [cards-end];
-  grid-template-rows: [row-start] auto [row-end];
+    [identity-end actions-start] auto [actions-end];
+  grid-template-rows: [identity-start] auto [identity-end details-start] auto [details-end];
   min-width: 0;
   padding: 0.25rem;
 }
@@ -16,6 +16,7 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 0.5rem;
+  grid-column: identity-start / actions-end;
   min-width: 0;
   text-transform: uppercase;
 }
@@ -41,12 +42,15 @@
 }
 
 .player-turn {
+  align-items: center;
   color: var(--accent-text);
-  display: grid;
+  display: flex;
+  flex-wrap: nowrap;
   font-size: 0.68rem;
   font-weight: 800;
   gap: 0.1rem;
-  grid-column: 1 / -1;
+  grid-column: actions-start / actions-end;
+  grid-row: details-start / details-end;
   visibility: hidden;
   white-space: nowrap;
 }
@@ -73,10 +77,11 @@
 .hidden-cards {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: flex-end;
+  grid-column: identity-start / identity-end;
+  grid-row: details-start / details-end;
+  justify-content: flex-start;
   min-height: 1.7rem;
   min-width: 2.5rem;
-  padding-right: 0.8rem;
   position: relative;
   width: fit-content;
 }
@@ -93,6 +98,14 @@
 
 .card-back + .card-back {
   margin-left: -1.7rem;
+}
+
+.card-back:first-child:not(:last-child) {
+  transform: rotate(-8deg) translateY(0.1rem);
+}
+
+.card-back:last-child:not(:first-child) {
+  transform: rotate(8deg) translateY(0.1rem);
 }
 
 .card-count {
@@ -123,10 +136,6 @@
 
   .player-details > span {
     font-size: 0.55rem;
-  }
-
-  .hidden-cards {
-    padding-right: 0.4rem;
   }
 
   .card-back {

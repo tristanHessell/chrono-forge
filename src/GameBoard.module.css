@@ -79,16 +79,17 @@
 
 .area-controls {
   align-items: center;
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(6, [control] minmax(0, 1fr));
   max-width: 100%;
   min-width: 0;
-  overflow-x: auto;
+  overflow: visible;
+  width: min(100%, 19rem);
 }
 
 .area-controls > * {
-  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .opponent-hand [data-current-turn='true'] {
@@ -104,17 +105,22 @@
   border-radius: 0.25rem;
   color: var(--text);
   cursor: pointer;
-  display: inline-flex;
-  flex-wrap: nowrap;
+  display: flex;
+  flex-direction: column;
   font-size: 0.72rem;
-  gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
+  gap: 0;
+  height: 2.75rem;
+  justify-content: center;
+  padding: 0;
+  width: 100%;
 }
 
 .discard-pile small {
-  color: var(--text-muted);
+  color: var(--accent-text);
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.48rem;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .discard-pile:disabled {
@@ -136,7 +142,11 @@
   font-size: 0.72rem;
   font-weight: 800;
   gap: 0.1rem;
+  height: 2.75rem;
+  justify-content: center;
+  min-width: 0;
   white-space: nowrap;
+  width: 100%;
 }
 
 .deck-display > span {
@@ -158,9 +168,66 @@
   composes: card-back from './components/CardBack.module.css';
   display: grid;
   font-size: 0.9rem;
-  height: 35px;
+  height: 1.9rem;
   place-items: center;
-  width: 50px;
+  width: 2.65rem;
+}
+
+.discard-stack {
+  height: 1.8rem;
+  position: relative;
+  width: 2rem;
+}
+
+.discard-back {
+  composes: card-back from './components/CardBack.module.css';
+  height: 1.55rem;
+  position: absolute;
+  width: 1.1rem;
+}
+
+.discard-back-left {
+  left: 0.1rem;
+  top: 0.15rem;
+  transform: rotate(-18deg);
+}
+
+.discard-back-right {
+  right: 0.1rem;
+  top: 0.15rem;
+  transform: rotate(18deg);
+}
+
+.discard-top {
+  composes: discard-back;
+  display: grid;
+  left: 0.45rem;
+  place-items: center;
+  top: 0;
+}
+
+.discard-top strong {
+  font-size: 0.55rem;
+  position: absolute;
+  right: 0.05rem;
+  top: 0.05rem;
+  z-index: 1;
+}
+
+.discard-top svg {
+  fill: none;
+  height: 0.8rem;
+  stroke: var(--accent-text);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 0.8rem;
+}
+
+.area-controls button[data-icon-button] {
+  height: 2.75rem;
+  padding: 0;
+  width: 100%;
 }
 
 .board-surface {
@@ -287,20 +354,11 @@
 }
 
 .history-controls {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  gap: 0.35rem;
-}
-
-.discard-pile > svg {
-  fill: none;
-  flex-shrink: 0;
-  height: 1.5rem;
-  stroke: currentcolor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.75;
-  width: 1.5rem;
+  display: grid;
+  gap: 0.5rem;
+  grid-column: span 2;
+  grid-template-columns: repeat(2, [history-control] minmax(0, 1fr));
+  width: 100%;
 }
 
 @media (hover: hover) {
