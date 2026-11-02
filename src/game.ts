@@ -15,7 +15,8 @@ export {
   wouldCreateSquare,
 } from './gameRules';
 
-export type CardEffect = 'draw-one' | 'free-action' | 'timeline-1900-bonus';
+export type CardEffect =
+  'draw-one' | 'free-action' | 'overwrite-event' | 'timeline-1900-bonus';
 export type EventCategory = 'nature' | 'politics' | 'tech';
 export type EventName =
   | 'assembly-lines'
@@ -79,9 +80,9 @@ export type Card = CommandCard | EventCard;
 export type PlayerId = '0' | '1' | '2' | '3';
 export type CardOwner = 'neutral' | PlayerId;
 
-export const CURRENT_RULES_VERSION = 6;
+export const CURRENT_RULES_VERSION = 7;
 
-export type CardGameRulesVersion = 2 | 4 | 5 | typeof CURRENT_RULES_VERSION;
+export type CardGameRulesVersion = 2 | 4 | 5 | 6 | typeof CURRENT_RULES_VERSION;
 
 export type PlacedCard = EventCard & {
   column: number;
@@ -344,7 +345,7 @@ function setupCardGame(
   { ctx, random }: CardGameSetupContext,
   rulesVersion: CardGameRulesVersion,
 ): CardGameState {
-  const catalog = loadCardCatalog(rulesVersion >= 5);
+  const catalog = loadCardCatalog(rulesVersion >= 5, rulesVersion >= 7);
   const deck = random.Shuffle(catalog.deck);
   const numPlayers = ctx.numPlayers;
 

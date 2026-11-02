@@ -106,3 +106,7 @@ full board must remain legal, including its links and square limits.
 On confirmation, the removed Event enters the discard pile. The new Event scores
 as its owner and triggers its play effect. The player spends one action. If the
 player cancels before confirmation, the removed Event stays in place.
+
+An Event with the `overwrite-event` effect can also replace any non-starting
+active Event. The new Event keeps the existing position and link directions. The
+whole board must remain legal.

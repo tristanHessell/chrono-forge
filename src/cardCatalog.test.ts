@@ -9,13 +9,13 @@ describe('cardCatalog', () => {
   it('accepts no more than three known effects per Event', () => {
     expect(
       readEffects(
-        ['draw-one', 'free-action', 'timeline-1900-bonus'],
+        ['draw-one', 'overwrite-event', 'timeline-1900-bonus'],
         'test-event',
       ),
-    ).toStrictEqual(['draw-one', 'free-action', 'timeline-1900-bonus']);
+    ).toStrictEqual(['draw-one', 'overwrite-event', 'timeline-1900-bonus']);
     expect(() =>
       readEffects(
-        ['draw-one', 'free-action', 'timeline-1900-bonus', 'draw-one'],
+        ['draw-one', 'free-action', 'overwrite-event', 'timeline-1900-bonus'],
         'test-event',
       ),
     ).toThrow('Invalid effects for Event card: test-event');
@@ -90,11 +90,21 @@ describe('cardCatalog', () => {
         .filter((card) => card.number === 1910)
         .every((card) => card.effects?.includes('free-action')),
     ).toBe(true);
+
+    for (const year of [1930, 1960]) {
+      expect(
+        deck
+          .filter((card) => card.number === year)
+          .every((card) => card.effects?.includes('overwrite-event')),
+      ).toBe(true);
+    }
+
     expect(
       deck
         .filter((card) => card.number === 1940)
         .every((card) => card.effects?.includes('draw-one')),
     ).toBe(true);
+
     expect(
       deck
         .filter((card) => card.number === 1990)

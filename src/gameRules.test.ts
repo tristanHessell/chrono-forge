@@ -35,6 +35,51 @@ const card = (id: string, row: number, column: number): PlacedCard => ({
 });
 
 describe('placement rules', () => {
+  it('lets overwrite-effect Events replace active cards when the board stays valid', () => {
+    const start = {
+      ...card('start', 0, 0),
+      id: 'starting-0',
+      number: 0,
+      owner: 'neutral' as const,
+      placedAt: 0,
+    };
+    const target = { ...card('target', 0, 1), number: 1920 };
+    const later = {
+      ...card('later', 0, 2),
+      number: 1940,
+      placedAt: 2,
+    };
+    const played = [start, target, later];
+    const overwrite = {
+      effects: ['overwrite-event'] as const,
+      id: 'overwrite',
+      name: 'timeline-origin' as const,
+      number: 1930,
+      type: 'event' as const,
+    };
+    const targetPosition = { column: 1, row: 0 };
+
+    expect(getAvailablePositions(played, overwrite)).toContainEqual(
+      targetPosition,
+    );
+    expect(isValidPlacement(played, targetPosition, overwrite)).toBe(true);
+    expect(
+      isValidPlacement(played, targetPosition, {
+        ...overwrite,
+        effects: undefined,
+      }),
+    ).toBe(false);
+    expect(
+      isValidPlacement(played, targetPosition, {
+        ...overwrite,
+        number: 1940,
+      }),
+    ).toBe(false);
+    expect(isValidPlacement(played, { column: 0, row: 0 }, overwrite)).toBe(
+      false,
+    );
+  });
+
   it('requires a later date than every adjacent card, including duplicate Event cards', () => {
     const played = [{ ...card('a', 0, 0), number: 1950 }];
     const position = { column: 1, row: 0 };
