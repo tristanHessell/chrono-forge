@@ -81,19 +81,12 @@ export function PlayerRow({
         className={playerRowStyles.hiddenCards}
         role="img"
       >
-        {cards.map((card, index) => (
-          <span
-            aria-hidden="true"
-            className={playerRowStyles.cardBack}
-            key={card.id}
-          >
-            {index === cards.length - 1 && (
-              <strong className={playerRowStyles.cardCount}>
-                {intl.formatNumber(cards.length)}
-              </strong>
-            )}
-          </span>
-        ))}
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M7 11V5a1.5 1.5 0 0 1 3 0v5V4a1.5 1.5 0 0 1 3 0v6V5a1.5 1.5 0 0 1 3 0v6V8a1.5 1.5 0 0 1 3 0v7a7 7 0 0 1-7 7h-1a7 7 0 0 1-6.1-3.6L3.2 14a1.7 1.7 0 0 1 2.7-2.1L7 13" />
+        </svg>
+        <strong className={playerRowStyles.handCount}>
+          {intl.formatNumber(cards.length)}
+        </strong>
       </div>
       <div
         aria-hidden={!active}

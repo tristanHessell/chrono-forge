@@ -8,7 +8,6 @@ import gameBoardStyles from '../GameBoard.module.css';
 import messages from '../i18n/en.json';
 import cardStyles from './Card.module.css';
 import appearanceStyles from './CardAppearance.module.css';
-import cardBackStyles from './CardBack.module.css';
 import effectStyles from './CardEffect.module.css';
 import logStyles from './GameLogView.module.css';
 import ownerStyles from './Ownership.module.css';
@@ -60,14 +59,15 @@ describe('componentStyles', () => {
     }
   });
 
-  it('uses the same card back artwork for the deck, discard, and hands', () => {
-    for (const value of [
-      gameBoardStyles.discardBack,
-      gameBoardStyles.deckCardBack,
-      playerRowStyles.cardBack,
-    ]) {
-      expect(value.split(' ')).toContain(cardBackStyles.cardBack);
-    }
+  it('uses the same card back artwork for the deck and discard', () => {
+    expect(gameBoardStyles.discardTop.split(' ')).toStrictEqual(
+      expect.arrayContaining(gameBoardStyles.deckCardBack.split(' ')),
+    );
+  });
+
+  it('exports styles for the player hand count', () => {
+    expect(playerRowStyles.handCount).toBeTruthy();
+    expect(playerRowStyles.hiddenCards).toBeTruthy();
   });
 
   it('renders board card states and effect icons with their scoped classes', async () => {

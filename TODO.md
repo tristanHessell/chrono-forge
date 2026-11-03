@@ -51,29 +51,15 @@ Comment through functions as a lot of this code is confusing
 
 ---
 
+Question: How do we deal with events that connect to removed events?
+
 Should a removed event invalidate any of the events that are no longer connected to the timeline?
-
----
-
-Add a `Settings` section in the menu.
-
-Toggle arrows to be on or off
-
-Animate arrows option - have them moving in the direction they point or option not too.
-
-Move colour independent backgrounds to the options
-
-Include a version number in the settings page
 
 ---
 
 Make the discards private in the game log (unless they are for the human player).
 
 - They will need to be visible in the export and saved state, that is not an issue at this point in time.
-
----
-
-Mobile: Can't drag event cards around in the hand.
 
 ---
 
@@ -100,5 +86,23 @@ No number parameters in functions (must use object instead).
 Show scores in a line chart.
 
 Which library?
+
+---
+
+Make sure Game Log modal doesn't go higher than page.
+
+---
+
+Move player points below & extend the size of the game board.
+
+---
+
+Make an android version of the game
+
+---
+
+Change the new game dialog in mobile so that the dropdowns and remove buttons are next to, not under the name.
+
+This will save space vertically.
 
 ---

@@ -8,7 +8,11 @@ export default mergeConfig(
   defineConfig({
     test: {
       css: { include: [/\.module\.css$/] },
-      exclude: [...configDefaults.exclude, 'src/**/*.test.tsx'],
+      exclude: [
+        ...configDefaults.exclude,
+        '**/.worktrees/**',
+        'src/**/*.test.tsx',
+      ],
     },
   }),
 );
