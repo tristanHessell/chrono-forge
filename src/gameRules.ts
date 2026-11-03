@@ -70,6 +70,7 @@ const isValidEventPlacement = (
   played: PlacedCard[],
   position: CardPosition,
   card?: Card,
+  requireActiveNeighbor = false,
 ) => {
   if (card && card.type !== 'event') {
     return false;
@@ -110,8 +111,9 @@ const isValidEventPlacement = (
   }
 
   const remaining = played;
-  const positionIsAdjacent = remaining.some((card) =>
-    areAdjacent(card, position),
+  const positionIsAdjacent = remaining.some(
+    (card) =>
+      (!requireActiveNeighbor || !card.removed) && areAdjacent(card, position),
   );
 
   const valid =
@@ -136,7 +138,7 @@ export const isValidPlacement = (
   played: PlacedCard[],
   position: CardPosition,
   card?: Card,
-) => isValidEventPlacement(played, position, card);
+) => isValidEventPlacement(played, position, card, true);
 
 export function withPlacedEvent(
   played: PlacedCard[],

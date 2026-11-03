@@ -80,7 +80,7 @@ export type Card = CommandCard | EventCard;
 export type PlayerId = '0' | '1' | '2' | '3';
 export type CardOwner = 'neutral' | PlayerId;
 
-export const CURRENT_RULES_VERSION = 8;
+export const CURRENT_RULES_VERSION = 9;
 
 export type CardGameRulesVersion = 2 | 4 | 5 | 6 | typeof CURRENT_RULES_VERSION;
 
