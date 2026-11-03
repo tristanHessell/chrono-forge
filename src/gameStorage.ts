@@ -1,7 +1,11 @@
 import type { LogEntry, State } from 'boardgame.io';
 import { type Client } from 'boardgame.io/client';
 
-import type { CardGameState, PlayerId } from './game';
+import {
+  type CardGameState,
+  CURRENT_RULES_VERSION,
+  type PlayerId,
+} from './game';
 import type { PlayerCount } from './playerCount';
 import type { PlayerSetup } from './playerSetup';
 
@@ -53,7 +57,7 @@ function isCardGameState(value: unknown): value is CardGameState {
       value.rulesVersion === 4 ||
       value.rulesVersion === 5 ||
       value.rulesVersion === 6 ||
-      value.rulesVersion === 8) &&
+      value.rulesVersion === CURRENT_RULES_VERSION) &&
     (value.turnPendingConfirmation === undefined ||
       typeof value.turnPendingConfirmation === 'boolean') &&
     isRecord(value.hands) &&

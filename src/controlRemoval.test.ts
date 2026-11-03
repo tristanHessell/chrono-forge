@@ -417,7 +417,24 @@ describe('overwriting removed Events', () => {
         { column: 1, row: -1 },
         { ...event, number: 1900 },
       ),
-    ).toBe(true);
+    ).toBe(false);
+  });
+
+  it('does not allow a placement connected only to a removed Event', () => {
+    const played = board().map((card) =>
+      card.id === 'bonus' ? { ...card, removed: true } : card,
+    );
+    const event = {
+      id: 'new',
+      name: 'timeline-origin' as const,
+      number: 1980,
+      type: 'event' as const,
+    };
+    const position = { column: 3, row: 0 };
+
+    expect(isValidBoard(played)).toBe(true);
+    expect(isValidPlacement(played, position, event)).toBe(false);
+    expect(getAvailablePositions(played, event)).not.toContainEqual(position);
   });
 
   it('allows a 1970 Event below New Deal beside a removed 1990 Event', () => {
@@ -464,12 +481,14 @@ describe('overwriting removed Events', () => {
       number: 1940,
       type: 'event' as const,
     };
-    const position = { column: 1, row: -1 };
+    const position = { column: 1, row: 1 };
+    const connectedEvent = { ...event, number: 1950 };
 
-    expect(isValidPlacement(board(), position, event)).toBe(true);
-    expect(isValidPlacement(played, position, event)).toBe(true);
+    expect(isValidPlacement(played, position, connectedEvent)).toBe(true);
     expect(isValidPlacement(played, position)).toBe(true);
-    expect(getAvailablePositions(played, event)).toContainEqual(position);
+    expect(getAvailablePositions(played, connectedEvent)).toContainEqual(
+      position,
+    );
     expect(getAvailablePositions(played)).toContainEqual(position);
     expect(isValidPlacement(played, { column: 1, row: 0 }, event)).toBe(true);
     expect(isValidPlacement(played, { column: 0, row: -1 }, event)).toBe(true);

@@ -236,6 +236,7 @@ describe('gameLog', () => {
       JSON.stringify({ ...valid, version: 99 }),
       JSON.stringify({ ...valid, rulesVersion: 3 }),
       JSON.stringify({ ...valid, rulesVersion: 7 }),
+      JSON.stringify({ ...valid, rulesVersion: 8 }),
       JSON.stringify({ ...valid, numPlayers: 5 }),
       JSON.stringify({ ...valid, actions: [{ type: 'RESET' }] }),
     ]) {
