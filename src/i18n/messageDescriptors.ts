@@ -45,7 +45,7 @@ export const commandNameMessages = defineMessages({
 export const commandDescriptionMessages = defineMessages({
   'event-reclaim': {
     defaultMessage:
-      'Choose to replace any Event on the board with an Event from your hand, or restore a removed Event. The board must remain legal. The replaced Event is discarded. The new Event belongs to you and triggers its effect. Restoring an Event keeps its owner and does not trigger its effect again. The starting card cannot be targeted.',
+      'Choose to replace any Event on the board with an Event from your hand, or restore a removed Event. The board must remain legal. The replaced Event is discarded. The new Event belongs to you and triggers its effect. A restored Event belongs to you and does not trigger its effect again. The starting card cannot be targeted.',
     id: 'command.event-reclaim.description',
   },
   'remove-event': {

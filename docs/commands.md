@@ -93,8 +93,9 @@ For replacement, the new Event takes the target's position and link directions.
 The entire board must remain legal. The replaced Event enters the discard pile.
 The new Event belongs to you and triggers its play effects.
 
-For restoration, the removed Event keeps its owner and position. It scores again
-and does not trigger its effects again. The entire board must remain legal.
+For restoration, the removed Event belongs to you and keeps its position. It
+scores again and does not trigger its effects again. The entire board must
+remain legal.
 
 ## Overwrite a removed Event
 

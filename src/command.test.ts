@@ -130,7 +130,7 @@ function clientFor(
 describe('command rules', () => {
   it('replaces an Event from hand or restores a removed Event', () => {
     const played = board().map((card) =>
-      card.id === 'd' ? { ...card, removed: true } : card,
+      card.id === 'd' ? { ...card, owner: '1' as const, removed: true } : card,
     );
     const replacement = {
       effects: ['draw-one'] as const,
@@ -156,6 +156,9 @@ describe('command rules', () => {
 
     const restored = applyEventReclaim(played, 'd', '0');
 
+    expect(restored?.find((card) => card.id === 'd')).toMatchObject({
+      owner: '0',
+    });
     expect(restored?.find((card) => card.id === 'd')).not.toHaveProperty(
       'removed',
     );
@@ -505,9 +508,9 @@ describe('command game moves', () => {
     client.stop();
   });
 
-  it('restores a removed Event without changing its owner', () => {
+  it('assigns ownership to the player who restores a removed Event', () => {
     const played = board().map((card) =>
-      card.id === 'd' ? { ...card, removed: true } : card,
+      card.id === 'd' ? { ...card, owner: '1' as const, removed: true } : card,
     );
     const client = clientFor('event-reclaim', { played });
 
