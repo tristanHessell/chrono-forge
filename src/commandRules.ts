@@ -86,7 +86,7 @@ export function applyEventReclaim(
         return card;
       }
 
-      const active = { ...card };
+      const active = { ...card, owner };
 
       delete active.removed;
 
