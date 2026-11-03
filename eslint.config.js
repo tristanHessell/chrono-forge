@@ -18,7 +18,7 @@ const variableDeclaration = {
 };
 
 export default defineConfig(
-  { ignores: ['dist', '**/*.module.css.d.ts'] },
+  { ignores: ['**/.worktrees/**', 'dist', '**/*.module.css.d.ts'] },
   {
     extends: [js.configs.recommended, comments.recommended],
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],

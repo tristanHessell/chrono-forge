@@ -1,6 +1,6 @@
 import { playwright } from '@vitest/browser-playwright';
 import { mergeConfig } from 'vite';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 import viteConfig from './vite.config';
 
@@ -15,6 +15,7 @@ export default mergeConfig(
         provider: playwright(),
       },
       css: { include: [/\.module\.css$/] },
+      exclude: [...configDefaults.exclude, '**/.worktrees/**'],
       include: ['src/**/*.test.tsx'],
     },
   }),
